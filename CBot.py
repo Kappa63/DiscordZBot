@@ -399,7 +399,7 @@ async def on_message(message):
 @DClient.event
 async def on_ready():
     await DClient.change_presence(activity = discord.Game(random.choice(Doing)))
-    print("Online...")
+    print("Online Yay...")
 
 @DClient.event
 async def on_member_join(member):
