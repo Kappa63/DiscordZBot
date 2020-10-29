@@ -6,7 +6,7 @@ import pymongo
 from pymongo import MongoClient
 import os  
 import deeppyer
-from PIL import Image 
+from PIL import Image
 import requests
 from prawcore import NotFound, Forbidden
 
