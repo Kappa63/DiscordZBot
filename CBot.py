@@ -126,12 +126,24 @@ async def SMsg(ctx, *args):
 
 @DClient.command(aliases = ["p","profile"])
 async def PecoS(ctx):
-    if Col.count_documents({"IDd":str(ctx.author.id)}) != 0:
-        PeEm = discord.Embed(title = "Server List", description = "Words/Phrases being tracked", color = 0xf59542) 
-        PeEm.set_thumbnail(url = ctx.author.avatar_url)
-        await ctx.message.channel.send(embed = PeEm)
-    else:
-        await ctx.message.channel.send(":point_right: Why don't you setup your economy profile first! Check commands with zhelp :point_left:")
+    if ctx.author.bot == False:
+        if Col.count_documents({"IDd":str(ctx.author.id)}) != 0:
+            OSfDb = Col.find({"IDd":str(ctx.author.id)})
+            for i in OSfDb:
+                Kyes = i.keys()
+            PeEm = discord.Embed(title = ctx.author.display_name, description = "Newbie", color = 0xf59542) 
+            PeEm.set_thumbnail(url = ctx.author.avatar_url)
+            for Wp in Kyes:
+                OSfDb = Col.find({"IDd":str(ctx.author.id)})
+                if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
+                    pass
+                else:
+                    for j in OSfDb:
+                        Num = j[Wp]
+                    PeEm.add_field(name = Wp, value = Num, inline = True)
+            await ctx.message.channel.send(embed = PeEm)
+        else:
+            await ctx.message.channel.send(":point_right: Why don't you setup your economy profile first! Check commands with zhelp :point_left:")
 
 @DClient.command(name = "reddit")
 async def SrSub(ctx, *args):
@@ -281,7 +293,7 @@ async def LWord(ctx):
     
 @DClient.command(name = "total")
 async def TMsg(ctx, *args):
-    if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) != 0:
+    if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) != 0 and ctx.author.bot == False:
         Num = 0
         Enput = " ".join(args)
         DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
@@ -320,7 +332,6 @@ async def TMsg(ctx, *args):
 @DClient.command(name = "Stats")
 async def IMsg(ctx, *args): 
     isBot = False
-
     if len(ctx.message.mentions) > 0:
         if ctx.message.mentions[0].bot == False:
             AUmN = ctx.message.mentions[0]
@@ -328,7 +339,6 @@ async def IMsg(ctx, *args):
             aRGu.pop(0)
         else:
             isBot = True
-
     else:
         AUmN = ctx.author
         aRGu = list(args)
