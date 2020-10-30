@@ -142,10 +142,7 @@ async def PecoS(ctx):
                     Num = ""
                     for j in OSfDb:
                         Num += "**" + Wp + ":** " + j[Wp] + "\n"     
-                    try:
-                        PeEm.add_field(name = "GENERAL: ", value = Num, inline = False)
-                    except UnboundLocalError:
-                        pass
+            PeEm.add_field(name = "GENERAL: ", value = Num, inline = False)
             await ctx.message.channel.send(embed = PeEm)
         else:
             await ctx.message.channel.send(":point_right: Why don't you setup your economy profile first! Check commands with zhelp :point_left:")
