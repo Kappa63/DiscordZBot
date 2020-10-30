@@ -118,11 +118,20 @@ async def SMsg(ctx, *args):
                         else:
                             TraEco.update_one({"IDd":str(ctx.author.id)},{"$set":{Wp:0}})
 
-            await ctx.message.channel.send(":partying_face: Setup complete, you can now user economy commands :partying_face:")
+            await ctx.message.channel.send(":partying_face: Setup complete, you can now use economy commands :partying_face:")
         else:
             await ctx.message.channel.send(":partying_face: You are already setup :partying_face:")
     else:
         await ctx.message.channel.send("Missing argument. Check zhelp for proper way to use it :confused:")
+
+@DClient.command(aliases = ["p","profile"])
+async def PecoS(ctx):
+    if Col.count_documents({"IDd":str(ctx.author.id)}) != 0:
+        PeEm = discord.Embed(title = "Server List", description = "Words/Phrases being tracked", color = 0xf59542) 
+        PeEm.set_thumbnail(url = ctx.author.avatar_url)
+        await ctx.message.channel.send(embed = PeEm)
+    else:
+        await ctx.message.channel.send(":point_right: Why don't you setup your economy profile first! Check commands with zhelp :point_left:")
 
 @DClient.command(name = "reddit")
 async def SrSub(ctx, *args):
@@ -219,7 +228,7 @@ async def AWord(ctx, *args):
 
             await ctx.message.channel.send(Msg)
         else:
-                await ctx.message.channel.send("Why don't you setup first! Check commands with zhelp")
+                await ctx.message.channel.send("Why don't you setup your server first! Check commands with zhelp")
     
     else:
         await ctx.message.channel.send("Non-admins are not allowed to add words :face_with_raised_eyebrow:")
@@ -248,7 +257,7 @@ async def RWord(ctx, *args):
 
             await ctx.message.channel.send(Msg)  
         else:
-                await ctx.message.channel.send(":point_right: Why don't you setup first! Check commands with zhelp :point_left:")
+                await ctx.message.channel.send(":point_right: Why don't you setup your server first! Check commands with zhelp :point_left:")
     else:
         await ctx.message.channel.send("Non-admins are not allowed to remove words :face_with_raised_eyebrow:")
 
@@ -268,7 +277,7 @@ async def LWord(ctx):
                 LEm.add_field(name = Wp, value =  '\u200b', inline = True)
         await ctx.message.channel.send(embed = LEm)    
     else:
-            await ctx.message.channel.send(":point_right: Why don't you setup first! Check commands with zhelp :point_left:")    
+        await ctx.message.channel.send(":point_right: Why don't you setup your server first! Check commands with zhelp :point_left:")    
     
 @DClient.command(name = "total")
 async def TMsg(ctx, *args):
@@ -306,7 +315,7 @@ async def TMsg(ctx, *args):
         else:
             await ctx.message.channel.send("That word doesnt exist yet :confused:")
     else:
-            await ctx.message.channel.send(":point_right: Why don't you setup first! Check commands with zhelp :point_left:")
+            await ctx.message.channel.send(":point_right: Why don't you setup your server first! Check commands with zhelp :point_left:")
 
 @DClient.command(name = "Stats")
 async def IMsg(ctx, *args): 
@@ -358,7 +367,7 @@ async def IMsg(ctx, *args):
         await ctx.message.channel.send("Cannot check a bot's stats :confused:")
 
     else:
-        await ctx.message.channel.send(":point_right: Why don't you setup first! Check commands with zhelp :point_left:")
+        await ctx.message.channel.send(":point_right: Why don't you setup your server first! Check commands with zhelp :point_left:")
     
 @DClient.command(name = "fry")
 async def CMsend(ctx):
