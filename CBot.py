@@ -134,12 +134,12 @@ async def PecoS(ctx):
                 Kyes = i.keys()
             PeEm = discord.Embed(title = ctx.author.display_name, description = "Newbie", color = 0x42e0f5) 
             PeEm.set_thumbnail(url = ctx.author.avatar_url)
+            Num = ""
             for Wp in Kyes:
                 OSfDb = TraEco.find({"IDd":str(ctx.author.id)})
                 if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
                     pass
                 else:
-                    Num = ""
                     for j in OSfDb:
                         Num += "**" + Wp + ":** " + str(j[Wp]) + "\n"     
             PeEm.add_field(name = "GENERAL: ", value = Num, inline = False)
