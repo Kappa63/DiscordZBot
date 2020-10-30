@@ -47,7 +47,7 @@ def PosType(Pty):
 async def SendH(ctx):
     HEm = discord.Embed(title = "CBot Help", description = "Commands", color = 0x0af531)
     HEm.add_field(name = "zversion: ", value = "Checks the current running version of CBot", inline = False)
-    HEm.add_field(name = "zsetup (count/economy): ", value = "Setsup the bot for the first time (for counting/economy repectively)", inline = False)
+    HEm.add_field(name = "zsetup (server/economy): ", value = "Setsup the bot for the first time (for counting/economy repectively)", inline = False)
     HEm.add_field(name = "zfry (Image Attachment): ", value = "Deep fries the attached image", inline = False)
     HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a post from the top 50 posts in hot from any subreddit", inline = False)
     HEm.add_field(name = "zadd: ", value = "Adds a word/phrase to keep track of", inline = False)
@@ -70,7 +70,7 @@ async def RetVer(ctx):
 
 @DClient.command(name = "setup")
 async def SMsg(ctx, *args):
-    if ("".join(args)).lower() == "count":
+    if ("".join(args)).lower() == "server":
         if (Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) == 0) or Col.count_documents({}) == 0:
             if ctx.author.guild_permissions.administrator:
                 DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
@@ -109,18 +109,20 @@ async def SMsg(ctx, *args):
                 Kyes = i.keys()
 
             if ctx.author.bot == False:
-                if (TraEco.count_documents({}) == 0) or (TraEco.count_documents({"IDd":str(Pid.id)}) == 0):
+                if (TraEco.count_documents({}) == 0) or (TraEco.count_documents({"IDd":str(ctx.author.id)}) == 0):
                     info = {"IDd":str(ctx.author.id)}
                     TraEco.insert_one(info)
                     for Wp in Kyes:
                         if Wp == "_id" or Wp == "IDd" or Wp == "Setup":
                             pass
                         else:
-                            TraEco.update_one({"IDd":str(Pid.id)},{"$set":{Wp:0}})
+                            TraEco.update_one({"IDd":str(ctx.author.id)},{"$set":{Wp:0}})
 
             await ctx.message.channel.send(":partying_face: Setup complete, you can now user economy commands :partying_face:")
         else:
             await ctx.message.channel.send(":partying_face: You are already setup :partying_face:")
+    else:
+        await ctx.message.channel.send("Missing argument. Check zhelp for proper way to use it :confused:")
 
 @DClient.command(name = "reddit")
 async def SrSub(ctx, *args):
