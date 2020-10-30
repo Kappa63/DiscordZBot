@@ -144,7 +144,7 @@ async def PecoS(ctx):
                     pass
                 elif Wp == "ReqXp":
                     for j in OSfDb:
-                        Num += "**Xp for level up:** " + str(j[Wp]-j["Xp"]) + "\n"  
+                        Num += "**Xp for level up:** " + str(j[Wp]-j["XP"]) + "\n"  
                 else:
                     for j in OSfDb:
                         Num += "**" + Wp + ":** " + str(j[Wp]) + "\n"     
