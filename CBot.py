@@ -127,14 +127,14 @@ async def SMsg(ctx, *args):
 @DClient.command(aliases = ["p","profile"])
 async def PecoS(ctx):
     if ctx.author.bot == False:
-        if Col.count_documents({"IDd":str(ctx.author.id)}) != 0:
-            OSfDb = Col.find({"IDd":str(ctx.author.id)})
+        if TraEco.count_documents({"IDd":str(ctx.author.id)}) != 0:
+            OSfDb = TraEco.find({"IDd":str(ctx.author.id)})
             for i in OSfDb:
                 Kyes = i.keys()
             PeEm = discord.Embed(title = ctx.author.display_name, description = "Newbie", color = 0xf59542) 
             PeEm.set_thumbnail(url = ctx.author.avatar_url)
             for Wp in Kyes:
-                OSfDb = Col.find({"IDd":str(ctx.author.id)})
+                OSfDb = TraEco.find({"IDd":str(ctx.author.id)})
                 if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
                     pass
                 else:
