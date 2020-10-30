@@ -48,6 +48,7 @@ async def SendH(ctx):
     HEm = discord.Embed(title = "CBot Help", description = "Commands", color = 0x0af531)
     HEm.add_field(name = "zversion: ", value = "Checks the current running version of CBot", inline = False)
     HEm.add_field(name = "zsetup (server/economy): ", value = "Setsup the bot for the first time (for counting/economy repectively)", inline = False)
+    HEm.add_field(name = "zprofile: ", value = "Shows your economy profile", inline = False)
     HEm.add_field(name = "zfry (Image Attachment): ", value = "Deep fries the attached image", inline = False)
     HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a post from the top 50 posts in hot from any subreddit", inline = False)
     HEm.add_field(name = "zadd: ", value = "Adds a word/phrase to keep track of", inline = False)
@@ -140,7 +141,7 @@ async def PecoS(ctx):
                 else:
                     for j in OSfDb:
                         Num = j[Wp]
-                    PeEm.add_field(name = Wp + ": " + str(Num), value = '\u200b', inline = False)
+                    PeEm.add_field(name = Wp + ": ", end = "" , value = Num, inline = False)
             await ctx.message.channel.send(embed = PeEm)
         else:
             await ctx.message.channel.send(":point_right: Why don't you setup your economy profile first! Check commands with zhelp :point_left:")
