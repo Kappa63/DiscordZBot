@@ -14,6 +14,7 @@ Mdb = "mongodb+srv://Kappa:85699658@cbotdb.exsit.mongodb.net/CBot?retryWrites=tr
 Cls = MongoClient(Mdb)
 DbM = Cls["CBot"]
 Col = DbM["Ser"]
+TraEco = DbM["Ind"]
 
 REqInt = discord.Intents.default()
 REqInt.members = True
@@ -46,7 +47,7 @@ def PosType(Pty):
 async def SendH(ctx):
     HEm = discord.Embed(title = "CBot Help", description = "Commands", color = 0x0af531)
     HEm.add_field(name = "zversion: ", value = "Checks the current running version of CBot", inline = False)
-    HEm.add_field(name = "zsetup: ", value = "Setsup the bot for the first time (for counting)", inline = False)
+    HEm.add_field(name = "zsetup (count/economy): ", value = "Setsup the bot for the first time (for counting/economy repectively)", inline = False)
     HEm.add_field(name = "zfry (Image Attachment): ", value = "Deep fries the attached image", inline = False)
     HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a post from the top 50 posts in hot from any subreddit", inline = False)
     HEm.add_field(name = "zadd: ", value = "Adds a word/phrase to keep track of", inline = False)
@@ -63,42 +64,63 @@ async def SendH(ctx):
 async def RetVer(ctx):
     VEm = discord.Embed(title = "Active Version", description = "CBot build version and info", color = 0xf59542)
     VEm.add_field(name = "Dev: ", value = "Kappa", inline = True)
-    VEm.add_field(name = "Version: ", value = "1.7.1", inline = True)
+    VEm.add_field(name = "Version: ", value = "1.7.2", inline = True)
     VEm.add_field(name = "Release: ", value = "10/20/20", inline = True)
     await ctx.message.channel.send(embed = VEm)
 
 @DClient.command(name = "setup")
-async def SMsg(ctx):
-    if (Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) == 0):
-        if ctx.author.guild_permissions.administrator:
-            DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
+async def SMsg(ctx, *args):
+    if ("".join(args)).lower() == "count":
+        if (Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) == 0) or Col.count_documents({}) == 0:
+            if ctx.author.guild_permissions.administrator:
+                DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
+                for i in DbB:
+                    Kyes = i.keys()
+
+                if (Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) == 0):
+                    info = {"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}
+                    Col.insert_one(info)
+
+                for Pid in ctx.guild.members:
+                    if Pid.bot == False:
+                        if (Col.count_documents({}) == 0) or (Col.count_documents({"IDd":str(Pid.id),"IDg":str(ctx.guild.id)}) == 0):
+                            info = {"IDd":str(Pid.id),"IDg":str(ctx.guild.id)}
+                            Col.insert_one(info)
+                            DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
+                            for i in DbB:
+                                Kyes = i.keys()
+                            
+                            for Wp in Kyes:
+                                if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
+                                    pass
+                                else:
+                                    Col.update_one({"IDd":str(Pid.id),"IDg":str(ctx.guild.id)},{"$set":{Wp:0}})
+
+                await ctx.message.channel.send(":partying_face: Setup complete, you can now use tracking commands:partying_face:")
+            else:
+                await ctx.message.channel.send("Non-admins are not allowed to setup :face_with_raised_eyebrow:")
+        else:
+            await ctx.message.channel.send(":partying_face: This server is already setup :partying_face:")
+    
+    elif ("".join(args)).lower() == "economy":
+        if (TraEco.count_documents({"IDd":str(ctx.author.id)}) == 0) or TraEco.count_documents({}) == 0:
+            DbB = TraEco.find({"IDd":"Setup"})
             for i in DbB:
                 Kyes = i.keys()
 
-            if (Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) == 0):
-                info = {"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}
-                Col.insert_one(info)
+            if ctx.author.bot == False:
+                if (TraEco.count_documents({}) == 0) or (TraEco.count_documents({"IDd":str(Pid.id)}) == 0):
+                    info = {"IDd":str(ctx.author.id)}
+                    TraEco.insert_one(info)
+                    for Wp in Kyes:
+                        if Wp == "_id" or Wp == "IDd" or Wp == "Setup":
+                            pass
+                        else:
+                            TraEco.update_one({"IDd":str(Pid.id)},{"$set":{Wp:0}})
 
-            for Pid in ctx.guild.members:
-                if Pid.bot == False:
-                    if (Col.count_documents({}) == 0) or (Col.count_documents({"IDd":str(Pid.id),"IDg":str(ctx.guild.id)}) == 0):
-                        info = {"IDd":str(Pid.id),"IDg":str(ctx.guild.id)}
-                        Col.insert_one(info)
-                        DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
-                        for i in DbB:
-                            Kyes = i.keys()
-                        
-                        for Wp in Kyes:
-                            if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
-                                pass
-                            else:
-                                Col.update_one({"IDd":str(Pid.id),"IDg":str(ctx.guild.id)},{"$set":{Wp:0}})
-
-            await ctx.message.channel.send(":partying_face: Setup complete :partying_face:")
+            await ctx.message.channel.send(":partying_face: Setup complete, you can now user economy commands :partying_face:")
         else:
-            await ctx.message.channel.send("Non-admins are not allowed to setup :face_with_raised_eyebrow:")
-    else:
-        await ctx.message.channel.send(":partying_face: This server is already setup :partying_face:")
+            await ctx.message.channel.send(":partying_face: You are already setup :partying_face:")
 
 @DClient.command(name = "reddit")
 async def SrSub(ctx, *args):
@@ -399,7 +421,7 @@ async def on_message(message):
 @DClient.event
 async def on_ready():
     await DClient.change_presence(activity = discord.Game(random.choice(Doing)))
-    print("Online Yay...")
+    print("Online...")
 
 @DClient.event
 async def on_member_join(member):
