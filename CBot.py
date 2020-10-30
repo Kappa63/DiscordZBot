@@ -131,7 +131,7 @@ async def PecoS(ctx):
             OSfDb = TraEco.find({"IDd":str(ctx.author.id)})
             for i in OSfDb:
                 Kyes = i.keys()
-            PeEm = discord.Embed(title = ctx.author.display_name, description = "Newbie", color = 0xf59542) 
+            PeEm = discord.Embed(title = ctx.author.display_name, description = "Newbie", color = 0x42e0f5) 
             PeEm.set_thumbnail(url = ctx.author.avatar_url)
             for Wp in Kyes:
                 OSfDb = TraEco.find({"IDd":str(ctx.author.id)})
@@ -140,7 +140,7 @@ async def PecoS(ctx):
                 else:
                     for j in OSfDb:
                         Num = j[Wp]
-                    PeEm.add_field(name = Wp, value = Num, inline = True)
+                    PeEm.add_field(name = Wp, value = Num, inline = False)
             await ctx.message.channel.send(embed = PeEm)
         else:
             await ctx.message.channel.send(":point_right: Why don't you setup your economy profile first! Check commands with zhelp :point_left:")
