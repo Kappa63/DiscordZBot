@@ -116,6 +116,8 @@ async def SMsg(ctx, *args):
                     for Wp in Kyes:
                         if Wp == "_id" or Wp == "IDd" or Wp == "Setup":
                             pass
+                        elif Wp == "ReqXp":
+                            TraEco.update_one({"IDd":str(ctx.author.id)},{"$set":{Wp:500}})
                         else:
                             TraEco.update_one({"IDd":str(ctx.author.id)},{"$set":{Wp:0}})
 
@@ -134,11 +136,15 @@ async def PecoS(ctx):
                 Kyes = i.keys()
             PeEm = discord.Embed(title = ctx.author.display_name, description = "Newbie", color = 0x42e0f5) 
             PeEm.set_thumbnail(url = ctx.author.avatar_url)
+            PeEm.add_field(name = "\u200b", value = "\u200b", inline = False)
             Num = ""
             for Wp in Kyes:
                 OSfDb = TraEco.find({"IDd":str(ctx.author.id)})
                 if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
                     pass
+                elif Wp == "ReqXp":
+                    for j in OSfDb:
+                        Num += "**Xp for level up:** " + str(j[Wp]-j["Xp"]) + "\n"  
                 else:
                     for j in OSfDb:
                         Num += "**" + Wp + ":** " + str(j[Wp]) + "\n"     
@@ -288,7 +294,7 @@ async def LWord(ctx):
             if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
                 pass
             else:
-                LEm.add_field(name = Wp, value =  '\u200b', inline = True)
+                LEm.add_field(name = Wp, value =  "\u200b", inline = True)
         await ctx.message.channel.send(embed = LEm)    
     else:
         await ctx.message.channel.send(":point_right: Why don't you setup your server first! Check commands with zhelp :point_left:")    
