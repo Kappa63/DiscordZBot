@@ -139,9 +139,11 @@ async def PecoS(ctx):
                 if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
                     pass
                 else:
+                    Num = ""
                     for j in OSfDb:
-                        Num = j[Wp]
-                    PeEm.add_field(name = Wp + ": ", end = "" , value = Num, inline = False)
+                        Num += "**" + Wp + ":** " + j[Wp] + "\n"
+                        
+                PeEm.add_field(name = "GENERAL: ", value = Num, inline = False)
             await ctx.message.channel.send(embed = PeEm)
         else:
             await ctx.message.channel.send(":point_right: Why don't you setup your economy profile first! Check commands with zhelp :point_left:")
