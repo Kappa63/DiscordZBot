@@ -141,7 +141,7 @@ async def PecoS(ctx):
                 else:
                     Num = ""
                     for j in OSfDb:
-                        Num += "**" + Wp + ":** " + j[Wp] + "\n"     
+                        Num += "**" + Wp + ":** " + str(j[Wp]) + "\n"     
             PeEm.add_field(name = "GENERAL: ", value = Num, inline = False)
             await ctx.message.channel.send(embed = PeEm)
         else:
