@@ -140,7 +140,7 @@ async def PecoS(ctx):
                 else:
                     for j in OSfDb:
                         Num = j[Wp]
-                    PeEm.add_field(name =": ", value = "Num", inline = False)
+                    PeEm.add_field(name = Wp + ": " + Num, value = '\u200b', inline = False)
             await ctx.message.channel.send(embed = PeEm)
         else:
             await ctx.message.channel.send(":point_right: Why don't you setup your economy profile first! Check commands with zhelp :point_left:")
