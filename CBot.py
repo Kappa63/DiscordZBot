@@ -44,22 +44,35 @@ def PosType(Pty):
     return TextB
 
 @DClient.command(name = "help")
-async def SendH(ctx):
-    HEm = discord.Embed(title = "CBot Help", description = "Commands", color = 0x0af531)
-    HEm.add_field(name = "zversion: ", value = "Checks the current running version of CBot", inline = False)
-    HEm.add_field(name = "zsetup (server/economy): ", value = "Setsup the bot for the first time (for counting/economy repectively)", inline = False)
-    HEm.add_field(name = "zprofile: ", value = "Shows your economy profile", inline = False)
-    HEm.add_field(name = "zfry (Image Attachment): ", value = "Deep fries the attached image", inline = False)
-    HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a post from the top 50 posts in hot from any subreddit", inline = False)
-    HEm.add_field(name = "zadd: ", value = "Adds a word/phrase to keep track of", inline = False)
-    HEm.add_field(name = "zremove: ", value = "Removes an existing word/phrase being tracked", inline = False)
-    HEm.add_field(name = "zlist: ", value = "Returns all added words/phrases", inline = False)
-    HEm.add_field(name = "zstats (@): ", value = "Returns stats for ALL words/phrases", inline = False)
-    HEm.add_field(name = "zstats (@)(Word): ", value = "Returns stats for a SPECIFIC word/phrase", inline = False)
-    HEm.add_field(name = "ztotal: ", value = "Returns the total number of times ALL words/phrases have been said in the server", inline = False)
-    HEm.add_field(name = "ztotal (Word): ", value = "Returns the total number of times a SPECIFIC word/phrase has been said in the server", inline = False)
-    HEm.set_footer(text = "Note: Counting is limited to 10 per Message to reduce spam incentives")
-    await ctx.message.channel.send(embed = HEm)
+async def SendH(ctx, *args):
+    if "".join(args) == "" or "".join(args) == " ":
+        HEm = discord.Embed(title = "CBot Help", description = "Commands", color = 0x0af531)
+        HEm.add_field(name = "zversion: ", value = "Checks the current running version of CBot", inline = False)
+        HEm.add_field(name = "zsetup (server/economy): ", value = "Setsup the bot for the first time (for counting/economy repectively)", inline = False)
+        HEm.add_field(name = "zhelp economy: ", value = "Setsup the bot for the first time (for counting/economy repectively)", inline = False)
+        HEm.add_field(name = "zhelp server: ", value = "Provides all the server commands (including word track commands)", inline = False) 
+        HEm.add_field(name = "zhelp misc: ", value = "Miscellaneous commands", inline = False)   
+        await ctx.message.channel.send(embed = HEm)
+    elif "".join(args).lower()  == "eco" or "".join(args).lower()  == "economy":
+        HEm = discord.Embed(title = "CBot Economy Help", description = "Commands", color = 0x0af531)
+        HEm.add_field(name = "zprofile: ", value = "Shows your economy profile", inline = False)
+        await ctx.message.channel.send(embed = HEm)
+    elif "".join(args).lower()  == "server":
+        HEm.add_field(name = "zadd: ", value = "Adds a word/phrase to keep track of", inline = False)
+        HEm.add_field(name = "zremove: ", value = "Removes an existing word/phrase being tracked", inline = False)
+        HEm.add_field(name = "zlist: ", value = "Returns all added words/phrases", inline = False)
+        HEm.add_field(name = "zstats (@): ", value = "Returns stats for ALL words/phrases", inline = False)
+        HEm.add_field(name = "zstats (@)(Word): ", value = "Returns stats for a SPECIFIC word/phrase", inline = False)
+        HEm.add_field(name = "ztotal: ", value = "Returns the total number of times ALL words/phrases have been said in the server", inline = False)
+        HEm.add_field(name = "ztotal (Word): ", value = "Returns the total number of times a SPECIFIC word/phrase has been said in the server", inline = False)
+        HEm.set_footer(text = "Note: Counting is limited to 10 per Message to reduce spam incentives")
+        await ctx.message.channel.send(embed = HEm)
+    elif "".join(args).lower() == "misc" or "".join(args).lower() == "miscellaneous":
+        HEm.add_field(name = "zfry (Image Attachment): ", value = "Deep fries the attached image", inline = False)
+        HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a post from the top 50 posts in hot from any subreddit", inline = False)
+        await ctx.message.channel.send(embed = HEm)
+    else:
+        await ctx.message.channel.send("That help category doesn't exist.")
 
 @DClient.command(name = "version")
 async def RetVer(ctx):
@@ -128,18 +141,30 @@ async def SMsg(ctx, *args):
         await ctx.message.channel.send("Missing argument. Check zhelp for proper way to use it :confused:")
 
 @DClient.command(aliases = ["p","profile"])
-async def PecoS(ctx):
-    if ctx.author.bot == False:
-        if TraEco.count_documents({"IDd":str(ctx.author.id)}) != 0:
-            OSfDb = TraEco.find({"IDd":str(ctx.author.id)})
+async def PecoS(ctx, *args):
+    isBot = False
+    if len(ctx.message.mentions) > 0:
+        if ctx.message.mentions[0].bot == False:
+            AUmN = ctx.message.mentions[0]
+            aRGu = list(args)
+            aRGu.pop(0)
+        else:
+            isBot = True
+    else:
+        AUmN = ctx.author
+        aRGu = list(args)
+
+    if not isBot:
+        if TraEco.count_documents({"IDd":str(AUmN.id)}) != 0:
+            OSfDb = TraEco.find({"IDd":str(AUmN.id)})
             for i in OSfDb:
                 Kyes = i.keys()
-            PeEm = discord.Embed(title = ctx.author.display_name, description = "Newbie", color = 0x42e0f5) 
-            PeEm.set_thumbnail(url = ctx.author.avatar_url)
+            PeEm = discord.Embed(title = AUmN.display_name, description = "Newbie", color = 0x42e0f5) 
+            PeEm.set_thumbnail(url = AUmN.avatar_url)
             PeEm.add_field(name = "\u200b", value = "\u200b", inline = False)
             Num = ""
             for Wp in Kyes:
-                OSfDb = TraEco.find({"IDd":str(ctx.author.id)})
+                OSfDb = TraEco.find({"IDd":str(AUmN.id)})
                 if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
                     pass
                 elif Wp == "ReqXp":
@@ -151,7 +176,9 @@ async def PecoS(ctx):
             PeEm.add_field(name = "GENERAL: ", value = Num, inline = False)
             await ctx.message.channel.send(embed = PeEm)
         else:
-            await ctx.message.channel.send(":point_right: Why don't you setup your economy profile first! Check commands with zhelp :point_left:")
+            await ctx.message.channel.send(":point_right: That profile doesnt exist yet. Please setup your economy profile first (with 'zsetup eco')! Check all economy commands with 'zhelp eco' :point_left:")
+    else:
+        await ctx.message.channel.send("Cannot check a bot's profile :confused:")
 
 @DClient.command(name = "reddit")
 async def SrSub(ctx, *args):
@@ -248,7 +275,7 @@ async def AWord(ctx, *args):
 
             await ctx.message.channel.send(Msg)
         else:
-                await ctx.message.channel.send("Why don't you setup your server first! Check commands with zhelp")
+                await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelpserver' :point_left:")
     
     else:
         await ctx.message.channel.send("Non-admins are not allowed to add words :face_with_raised_eyebrow:")
@@ -277,7 +304,7 @@ async def RWord(ctx, *args):
 
             await ctx.message.channel.send(Msg)  
         else:
-                await ctx.message.channel.send(":point_right: Why don't you setup your server first! Check commands with zhelp :point_left:")
+                await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelpserver' :point_left:")
     else:
         await ctx.message.channel.send("Non-admins are not allowed to remove words :face_with_raised_eyebrow:")
 
@@ -297,7 +324,7 @@ async def LWord(ctx):
                 LEm.add_field(name = Wp, value =  "\u200b", inline = True)
         await ctx.message.channel.send(embed = LEm)    
     else:
-        await ctx.message.channel.send(":point_right: Why don't you setup your server first! Check commands with zhelp :point_left:")    
+        await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelpserver' :point_left:")    
     
 @DClient.command(name = "total")
 async def TMsg(ctx, *args):
@@ -335,7 +362,7 @@ async def TMsg(ctx, *args):
         else:
             await ctx.message.channel.send("That word doesnt exist yet :confused:")
     else:
-            await ctx.message.channel.send(":point_right: Why don't you setup your server first! Check commands with zhelp :point_left:")
+            await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelpserver' :point_left:")
 
 @DClient.command(name = "Stats")
 async def IMsg(ctx, *args): 
@@ -385,7 +412,7 @@ async def IMsg(ctx, *args):
         await ctx.message.channel.send("Cannot check a bot's stats :confused:")
 
     else:
-        await ctx.message.channel.send(":point_right: Why don't you setup your server first! Check commands with zhelp :point_left:")
+        await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelpserver' :point_left:")
     
 @DClient.command(name = "fry")
 async def CMsend(ctx):
