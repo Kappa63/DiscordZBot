@@ -58,6 +58,7 @@ async def SendH(ctx, *args):
         HEm.add_field(name = "zprofile: ", value = "Shows your economy profile", inline = False)
         await ctx.message.channel.send(embed = HEm)
     elif "".join(args).lower()  == "server":
+        HEm = discord.Embed(title = "CBot Server Help", description = "Commands", color = 0x0af531)
         HEm.add_field(name = "zadd: ", value = "Adds a word/phrase to keep track of", inline = False)
         HEm.add_field(name = "zremove: ", value = "Removes an existing word/phrase being tracked", inline = False)
         HEm.add_field(name = "zlist: ", value = "Returns all added words/phrases", inline = False)
@@ -68,6 +69,7 @@ async def SendH(ctx, *args):
         HEm.set_footer(text = "Note: Counting is limited to 10 per Message to reduce spam incentives")
         await ctx.message.channel.send(embed = HEm)
     elif "".join(args).lower() == "misc" or "".join(args).lower() == "miscellaneous":
+        HEm = discord.Embed(title = "CBot Misc. Help", description = "Commands", color = 0x0af531)
         HEm.add_field(name = "zfry (Image Attachment): ", value = "Deep fries the attached image", inline = False)
         HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a post from the top 50 posts in hot from any subreddit", inline = False)
         await ctx.message.channel.send(embed = HEm)
