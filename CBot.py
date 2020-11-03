@@ -226,7 +226,7 @@ async def nHen(ctx, args):
                 await ctx.message.channel.send("**WARNING:** ALL messages sent after the embed will be deleted until doujin is closed. This is to ensure a proper reading experience.")
                 DmSent = await ctx.message.channel.send(embed = DEm)
                 while True:
-                    if time.time() - ToPn == 120:
+                    if time.time() - ToPn >= 120:
                         DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
                         DEmE.set_thumbnail(url = DentAi.image_urls[0])
                         DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
