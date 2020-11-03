@@ -230,7 +230,7 @@ async def nHen(ctx, args):
                     try:
                         Res = await DClient.wait_for('message', check = ChCHan, timeout = 120)
                         LRes = (Res.content).lower()
-                        if LRes != "close" or LRes != "close":
+                        if LRes != "close" or LRes != "close" or LRes != "zhentai":
                             await Res.delete()
                         Rese = (Res.content.lower()).split(" ")
                         if len(Rese) == 1:
@@ -272,6 +272,7 @@ async def nHen(ctx, args):
                                 break
                         elif len(Rese) == 2:
                             if Rese[0] == "go":
+                                await Res.delete()
                                 try:
                                     pG = int(Rese[1])
                                     if 0 < pG <= len(DentAi.image_urls)-1:
@@ -283,6 +284,13 @@ async def nHen(ctx, args):
                                         DEmE.add_field(name = "\u200b", value = "**Doujin OPEN** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
                                         await DmSent.edit(embed = DEmE)
                                     elif pG < 1:
+                                        Page = 0
+                                        DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
+                                        DEmE.set_thumbnail(url = DentAi.image_urls[0])
+                                        DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
+                                        DEmE.set_image(url = DentAi.image_urls[Page])
+                                        DEmE.add_field(name = "\u200b", value = "**Doujin OPEN** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
+                                        await DmSent.edit(embed = DEmE)
                                         pass
                                     else:
                                         Page = len(DentAi.image_urls)-1
