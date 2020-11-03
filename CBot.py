@@ -231,7 +231,7 @@ async def nHen(ctx, args):
                         Res = await DClient.wait_for('message', check = ChCHan, timeout = 120)
                         LRes = (Res.content).lower()
                         Rese = (Res.content.lower()).split(" ")
-                        if LRes != "close" or LRes != "close" or LRes != "zhentai" or Rese[0] != "zhentai":
+                        if (LRes != "close") or (LRes != "c") or (LRes != "zhentai") or (Rese[0] != "zhentai"):
                             await Res.delete()
                         if len(Rese) == 1:
                             if LRes == "n" or LRes == "next":
