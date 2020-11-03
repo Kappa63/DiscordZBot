@@ -205,7 +205,7 @@ async def DEco(ctx):
        await ctx.message.channel.send("Silly Bot. You can't use commands :pensive:")
     
 @DClient.command(name = "hentai")
-async def nHen(ctx, args):
+async def nHen(ctx, args):  
     def ChCHan(MSg):
         return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id
     try:
@@ -230,10 +230,8 @@ async def nHen(ctx, args):
                     try:
                         Res = await DClient.wait_for('message', check = ChCHan, timeout = 120)
                         LRes = (Res.content).lower()
-                        if LRes != "close" or LRes != "close" or LRes != "zhentai":
-                            await Res.delete()
                         Rese = (Res.content.lower()).split(" ")
-                        if Rese[0] != "zhentai":
+                        if LRes != "close" or LRes != "close" or LRes != "zhentai" or Rese[0] != "zhentai":
                             await Res.delete()
                         if len(Rese) == 1:
                             if LRes == "n" or LRes == "next":
