@@ -230,7 +230,7 @@ async def nHen(ctx, args):
                             Page += 1
                             DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
                             DEmE.set_thumbnail(url = DentAi.image_urls[0])
-                            DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. ''")
+                            DEm.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'c' or 'close' to end reading")
                             DEmE.set_image(url = DentAi.image_urls[Page])
                             DEmE.add_field(name = "\u200b", value = "Page: " + str(Page), inline = False)
                             await DmSent.edit(embed = DEmE)
