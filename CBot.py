@@ -283,12 +283,12 @@ async def nHen(ctx, args):
                             else:
                                 await Res.delete()
                         elif len(Rese) == 2:
-                            if Rese[0] == "go":
+                            if Rese[0].lower() == "go":
                                 await Res.delete()
                                 try:
                                     pG = int(Rese[1])
                                     if pG <= len(DentAi.image_urls)-1:
-                                        Page = pG
+                                        Page = pG-1
                                         ToPn = time.time()
                                         DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
                                         DEmE.set_thumbnail(url = DentAi.image_urls[0])
