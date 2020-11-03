@@ -10,9 +10,9 @@ import os
 import deeppyer
 from PIL import Image
 import requests
-import time
 from prawcore import NotFound, Forbidden
 from hentai import Utils, Sort, Hentai, Format
+import asyncio
 
 Mdb = "mongodb+srv://Kappa:85699658@cbotdb.exsit.mongodb.net/CBot?retryWrites=true&w=majority"
 Cls = MongoClient(Mdb)
@@ -206,6 +206,8 @@ async def DEco(ctx):
     
 @DClient.command(name = "hentai")
 async def nHen(ctx, args):
+    def ChCHan(MSg):
+        return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id
     try:
         if(Hentai.exists(int(args))):
             DentAi = Hentai(int(args))
@@ -217,7 +219,6 @@ async def nHen(ctx, args):
                 else:
                     FdesCtI = Tags
                 Page = 0
-                ToPn = time.time()
                 DEm = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
                 DEm.set_thumbnail(url = DentAi.image_urls[0])
                 DEm.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
@@ -226,25 +227,14 @@ async def nHen(ctx, args):
                 await ctx.message.channel.send("**WARNING:** ALL messages sent after the embed will be deleted until doujin is closed. This is to ensure a proper reading experience.")
                 DmSent = await ctx.message.channel.send(embed = DEm)
                 while True:
-                    if time.time() - ToPn >= 120:
-                        DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
-                        DEmE.set_thumbnail(url = DentAi.image_urls[0])
-                        DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
-                        DEmE.set_image(url = DentAi.image_urls[Page])
-                        DEmE.add_field(name = "\u200b", value = "**Doujin CLOSED** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
-                        await DmSent.edit(embed = DEmE)
-                        await ctx.message.channel.send("2mins of inactivity.. Please dont forget to close the doujin once you're done. :confused:")
-                        break
-                        
-                    Res = await DClient.wait_for('message')
-                    if Res.guild.id == ctx.guild.id and Res.channel.id == ctx.channel.id:
+                    try:
+                        Res = await DClient.wait_for('message', check = ChCHan, timeout = 120)
                         Rese = Res.content.split(" ")
                         if len(Rese) == 1:
                             if (Res.content).lower() == "n" or (Res.content).lower() == "next":
                                 await Res.delete()
                                 if Page < len(DentAi.image_urls)-1:
                                     Page += 1
-                                    ToPn = time.time()
                                     DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
                                     DEmE.set_thumbnail(url = DentAi.image_urls[0])
                                     DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
@@ -263,7 +253,6 @@ async def nHen(ctx, args):
                                 await Res.delete()
                                 if Page != 0:
                                     Page -= 1
-                                    ToPn = time.time()
                                     DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
                                     DEmE.set_thumbnail(url = DentAi.image_urls[0])
                                     DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
@@ -289,7 +278,6 @@ async def nHen(ctx, args):
                                     pG = int(Rese[1])
                                     if pG <= len(DentAi.image_urls)-1:
                                         Page = pG-1
-                                        ToPn = time.time()
                                         DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
                                         DEmE.set_thumbnail(url = DentAi.image_urls[0])
                                         DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
@@ -298,7 +286,6 @@ async def nHen(ctx, args):
                                         await DmSent.edit(embed = DEmE)
                                     else:
                                         Page = len(DentAi.image_urls)-1
-                                        ToPn = time.time()
                                         DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
                                         DEmE.set_thumbnail(url = DentAi.image_urls[0])
                                         DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
@@ -319,6 +306,15 @@ async def nHen(ctx, args):
                                 await Res.delete()
                         else:
                             await Res.delete()
+                    except asyncio.TimeoutError:
+                        DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
+                        DEmE.set_thumbnail(url = DentAi.image_urls[0])
+                        DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
+                        DEmE.set_image(url = DentAi.image_urls[Page])
+                        DEmE.add_field(name = "\u200b", value = "**Doujin CLOSED** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
+                        await DmSent.edit(embed = DEmE)
+                        await ctx.message.channel.send("2mins of inactivity. Please close the Doujin once you're done :confused:")
+                        break
                 await ctx.message.channel.send(":newspaper2: Doujin Closed :newspaper2:")
             else:
                 await ctx.message.channel.send("This isn't an NSFW channel. No NSFW allowed here. :confused:")
