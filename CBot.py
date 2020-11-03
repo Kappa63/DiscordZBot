@@ -233,6 +233,8 @@ async def nHen(ctx, args):
                         if LRes != "close" or LRes != "close" or LRes != "zhentai":
                             await Res.delete()
                         Rese = (Res.content.lower()).split(" ")
+                        if Rese[0] != "zhentai":
+                            await Res.delete()
                         if len(Rese) == 1:
                             if LRes == "n" or LRes == "next":
                                 if Page < len(DentAi.image_urls)-1:
