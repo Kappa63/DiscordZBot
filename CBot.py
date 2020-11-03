@@ -272,7 +272,6 @@ async def nHen(ctx, args):
                                 break
                         elif len(Rese) == 2:
                             if Rese[0] == "go":
-                                await Res.delete()
                                 try:
                                     pG = int(Rese[1])
                                     if 0 < pG <= len(DentAi.image_urls)-1:
