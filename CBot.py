@@ -208,9 +208,17 @@ async def DEco(ctx):
 async def nHen(ctx, args):  
     def ChCHan(MSg):
         return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id
-    try:
-        if(Hentai.exists(int(args))):
-            DentAi = Hentai(int(args))
+    if args != "" and args != " ":
+        try:
+            Srch = int(args)
+        except ValueError:
+            if args.lower() == "random":
+                Srch = Utils.get_random_id()
+            else:
+                await ctx.message.channel.send("The argument contained non-numeral characters and wasn't a random request. :no_mouth:")
+
+        if(Hentai.exists(Srch)):
+            DentAi = Hentai(Srch)
             if ctx.channel.is_nsfw(): 
                 Tags = ", ".join([tag.name for tag in DentAi.tag])
                 if len(Tags) > 253:
@@ -219,7 +227,7 @@ async def nHen(ctx, args):
                 else:
                     FdesCtI = Tags
                 Page = 0
-                DEm = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
+                DEm = discord.Embed(title = DentAi.title(Format.Pretty) + " ||| " + DentAi.id,  description = FdesCtI, color = 0x000000)
                 DEm.set_thumbnail(url = DentAi.image_urls[0])
                 DEm.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
                 DEm.set_image(url = DentAi.image_urls[0])
@@ -323,8 +331,8 @@ async def nHen(ctx, args):
                 await ctx.message.channel.send("This isn't an NSFW channel. No NSFW allowed here. :confused:")
         else:
             await ctx.message.channel.send("That Doujin doesn't exist :expressionless:")
-    except ValueError:
-        await ctx.message.channel.send("The argument contained non-numeral characters. :no_mouth:")
+    else:
+        await ctx.message.channel.send("No arguments :no_mouth:")
 
 @DClient.command(name = "reddit")
 async def SrSub(ctx, *args):
