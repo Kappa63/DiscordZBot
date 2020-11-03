@@ -232,7 +232,7 @@ async def nHen(ctx, args):
                         LRes = (Res.content).lower()
                         if LRes != "close" or LRes != "close":
                             await Res.delete()
-                        Rese = (Res.content.split(" ")).lower()
+                        Rese = (Res.content.lower()).split(" ")
                         if len(Rese) == 1:
                             if LRes == "n" or LRes == "next":
                                 if Page < len(DentAi.image_urls)-1:
