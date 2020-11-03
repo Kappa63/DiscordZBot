@@ -4,11 +4,14 @@ import random
 from discord.ext import commands
 import pymongo
 from pymongo import MongoClient
+import FuncMon
+import ItemFind
 import os  
 import deeppyer
 from PIL import Image
 import requests
 from prawcore import NotFound, Forbidden
+from hentai import Utils, Sort, Hentai, Format
 
 Mdb = "mongodb+srv://Kappa:85699658@cbotdb.exsit.mongodb.net/CBot?retryWrites=true&w=majority"
 Cls = MongoClient(Mdb)
@@ -56,6 +59,7 @@ async def SendH(ctx, *args):
     elif "".join(args).lower()  == "eco" or "".join(args).lower()  == "economy":
         HEm = discord.Embed(title = "CBot Economy Help", description = "Commands", color = 0x0af531)
         HEm.add_field(name = "zprofile: ", value = "Shows your economy profile", inline = False)
+        HEm.add_field(name = "zdig: ", value = "Dig for treasure. Who knows? You might find some gold (or bones)", inline = False)
         await ctx.message.channel.send(embed = HEm)
     elif "".join(args).lower()  == "server":
         HEm = discord.Embed(title = "CBot Server Help", description = "Commands", color = 0x0af531)
@@ -111,7 +115,6 @@ async def SMsg(ctx, *args):
                                     pass
                                 else:
                                     Col.update_one({"IDd":str(Pid.id),"IDg":str(ctx.guild.id)},{"$set":{Wp:0}})
-
                 await ctx.message.channel.send(":partying_face: Setup complete, you can now use tracking commands:partying_face:")
             else:
                 await ctx.message.channel.send("Non-admins are not allowed to setup :face_with_raised_eyebrow:")
@@ -135,8 +138,9 @@ async def SMsg(ctx, *args):
                             TraEco.update_one({"IDd":str(ctx.author.id)},{"$set":{Wp:500}})
                         else:
                             TraEco.update_one({"IDd":str(ctx.author.id)},{"$set":{Wp:0}})
-
-            await ctx.message.channel.send(":partying_face: Setup complete, you can now use economy commands :partying_face:")
+                await ctx.message.channel.send(":partying_face: Setup complete, you can now use economy commands :partying_face:")
+            else:
+                await ctx.message.channel.send("Silly Bot. You can't setup a profile :pensive:")
         else:
             await ctx.message.channel.send(":partying_face: You are already setup :partying_face:")
     else:
@@ -182,6 +186,78 @@ async def PecoS(ctx, *args):
     else:
         await ctx.message.channel.send("Cannot check a bot's profile :confused:")
 
+@DClient.command(name = "dig")
+async def DEco(ctx):
+    if ctx.author.bot == False:
+        if TraEco.count_documents({"IDd":str(ctx.author.id)}) != 0:
+            PosDigs = ["Bones","Pure Gold","Dirt","Copper","Landmine","Plumbing"]
+            Ch = {"IDd":str(ctx.author.id)}
+            CDug = random.choice(PosDigs)
+            FuncMon.DbAdd(Ch,CDug)   
+            Numo = ItemFind.Item(CDug)
+            FuncMon.AddTo(Ch, CDug, Numo)
+            await ctx.message.channel.send("You found " + str(Numo) + " " + CDug +"!!")
+        else:
+            await ctx.message.channel.send(":point_right: Please setup your economy profile first (with 'zsetup eco')! Check all economy commands with 'zhelp eco' :point_left:")
+    else:   
+       await ctx.message.channel.send("Silly Bot. You can't use commands :pensive:")
+    
+@DClient.command(name = "hentai")
+async def nHen(ctx, args):
+    try:
+        DentAi = Hentai(int(args))
+        if(Hentai.exists(DentAi.id)):
+            if ctx.channel.is_nsfw(): 
+                Tags = ", ".join([tag.name for tag in DentAi.tag])
+                if len(Tags) > 253:
+                    FdesCtI = Tags[0:253]
+                    FdesCtI = FdesCtI + "..."
+                else:
+                    FdesCtI = Tags
+                Page = 0
+                DEm = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
+                DEm.set_thumbnail(url = DentAi.image_urls[0])
+                DEm.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'c' or 'close' to end")
+                DEm.set_image(url = DentAi.image_urls[0])
+                DEm.add_field(name = "\u200b", value = "*Page:* " + str(Page), inline = False)
+                await ctx.message.channel.send("**WARNING:** ALL messages sent after the embed will be deleted until doujin is closed. This is to ensure a proper reading experience.")
+                DmSent = await ctx.message.channel.send(embed = DEm)
+                while True:
+                    Res = await DClient.wait_for('message')
+                    if Res.content == "n" or Res.content == "next":
+                        await Res.delete()
+                        if Page < len(DentAi.image_urls):
+                            Page += 1
+                            DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
+                            DEmE.set_thumbnail(url = DentAi.image_urls[0])
+                            DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. ''")
+                            DEmE.set_image(url = DentAi.image_urls[Page])
+                            DEmE.add_field(name = "\u200b", value = "Page: " + str(Page), inline = False)
+                            await DmSent.edit(embed = DEmE)
+                        else:
+                            pass
+                    elif Res.content == "b" or Res.content == "back":
+                        await Res.delete()
+                        if Page != 0:
+                            Page -= 1
+                            DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
+                            DEmE.set_thumbnail(url = DentAi.image_urls[0])
+                            DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. ''")
+                            DEmE.set_image(url = DentAi.image_urls[Page])
+                            DEmE.add_field(name = "\u200b", value = "Page: " + str(Page), inline = False)
+                            await DmSent.edit(embed = DEmE)
+                        else:
+                            pass
+                    elif Res.content == "c" or Res.content == "close":
+                        await Res.delete()
+                        break
+            else:
+                await ctx.message.channel.send("This isn't an NSFW channel. No NSFW allowed here. :confused:")
+        else:
+            await ctx.message.channel.send("That Doujin doesn't exist :expressionless:")
+    except ValueError:
+        await ctx.message.channel.send("The argument contained non-numeral characters. :no_mouth:")
+
 @DClient.command(name = "reddit")
 async def SrSub(ctx, *args):
     if len(args) == 1:
@@ -207,43 +283,43 @@ async def SrSub(ctx, *args):
                 if PosType(SubCpoS):
                     NSfw = False
                     if SubCpoS.over_18 and ctx.channel.is_nsfw():
-                        PEm = discord.Embed(title = FtiTle,  description = "Upvote Ratio: " + str(SubCpoS.upvote_ratio) + " // Post is NSFW", color = 0x8b0000)
+                        REm = discord.Embed(title = FtiTle,  description = "Upvote Ratio: " + str(SubCpoS.upvote_ratio) + " // Post is NSFW", color = 0x8b0000)
                         NSfw = True
                     else:
-                        PEm = discord.Embed(title = FtiTle, description = "Upvote Ratio: " + str(SubCpoS.upvote_ratio) + " // Post is Clean", color = 0x8b0000)
+                        REm = discord.Embed(title = FtiTle, description = "Upvote Ratio: " + str(SubCpoS.upvote_ratio) + " // Post is Clean", color = 0x8b0000)
                     if (NSfw and ctx.channel.is_nsfw()) or (NSfw == False):
                         if SubCpoS.selftext != "":
-                            PEm.add_field(name = "Body", value = FteXt, inline = False)
-                        PEm.add_field(name = "Post: ", value = SubCpoS.url, inline = True)
+                            REm.add_field(name = "Body", value = FteXt, inline = False)
+                        REm.add_field(name = "Post: ", value = SubCpoS.url, inline = True)
                     else:
-                        PEm.add_field(name = "NSFW: ", value = "This channel isn't NSFW. No NSFW here", inline = False)
-                    PEm.set_footer(text = "From " + "r/" + "".join(args))
-                    PEm.set_author(name = "By: u/" + str(SubCpoS.author))
+                        REm.add_field(name = "NSFW: ", value = "This channel isn't NSFW. No NSFW here", inline = False)
+                    REm.set_footer(text = "From " + "r/" + "".join(args))
+                    REm.set_author(name = "By: u/" + str(SubCpoS.author))
                 else:
                     NSfw = False
                     if SubCpoS.over_18:
                         if ctx.channel.is_nsfw():
-                            PEm = discord.Embed(title = FtiTle,  description = "Upvote Ratio: " + str(SubCpoS.upvote_ratio) + " // Post is NSFW", color = 0x8b0000)
+                            REm = discord.Embed(title = FtiTle,  description = "Upvote Ratio: " + str(SubCpoS.upvote_ratio) + " // Post is NSFW", color = 0x8b0000)
                         else:
-                            PEm = discord.Embed(title = "***NOT NSFW CHANNEL***",  description = "Post is NSFW", color = 0x8b0000)
+                            REm = discord.Embed(title = "***NOT NSFW CHANNEL***",  description = "Post is NSFW", color = 0x8b0000)
                         NSfw = True
                     else:
-                        PEm = discord.Embed(title = FtiTle, description = "Upvote Ratio: " + str(SubCpoS.upvote_ratio) + " // Post is Clean", color = 0x8b0000)
+                        REm = discord.Embed(title = FtiTle, description = "Upvote Ratio: " + str(SubCpoS.upvote_ratio) + " // Post is Clean", color = 0x8b0000)
                     C = 0
                     if (NSfw and ctx.channel.is_nsfw()) or (NSfw == False):
                         for ExT in [".png",".jpg",".jpeg"]:
                             C += 1
                             if (SubCpoS.url).endswith(ExT):
-                                PEm.set_image(url = SubCpoS.url)
+                                REm.set_image(url = SubCpoS.url)
                                 break
                             elif C == 3:
-                                PEm.add_field(name = "Couldnt get media. Probably a video, gallery, or external webpage. Sorry!!", value = '\u200b')
-                                PEm.add_field(name = "Post: ", value = SubCpoS.url, inline = False)
+                                REm.add_field(name = "Couldnt get media. Probably a video, gallery, or external webpage. Sorry!!", value = '\u200b')
+                                REm.add_field(name = "Post: ", value = SubCpoS.url, inline = False)
                     else:
-                        PEm.add_field(name = "NSFW: ", value = "This isn't an NSFW channel. No NSFW allowed here.", inline = False)
-                    PEm.set_footer(text = "From " + "r/" + "".join(args))
-                    PEm.set_author(name = "By: u/" + str(SubCpoS.author))
-                await ctx.message.channel.send(embed = PEm)
+                        REm.add_field(name = "NSFW: ", value = "This isn't an NSFW channel. No NSFW allowed here.", inline = False)
+                    REm.set_footer(text = "From " + "r/" + "".join(args))
+                    REm.set_author(name = "By: u/" + str(SubCpoS.author))
+                await ctx.message.channel.send(embed = REm)
             except StopIteration:
                 await ctx.message.channel.send("Sub has less than 50 posts :no_mouth:")
         else:
@@ -256,78 +332,83 @@ async def SrSub(ctx, *args):
 
 @DClient.command(name = "add")
 async def AWord(ctx, *args): 
-    if ctx.author.guild_permissions.administrator:
-        if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) != 0:
-            DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
-            for i in DbB:
-                KMeys = i.keys()
-            if " ".join(args) not in KMeys:
-                Col.update_one({"IDd":"GuildInfo","IDg":str(ctx.guild.id)},{"$set":{" ".join(args):0}})
-                Msg = "'" + (" ".join(args)) + "' ADDED :thumbsup:"
+    if ctx.author.bot == False:
+        if ctx.author.guild_permissions.administrator:
+            if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) != 0:
+                DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
+                for i in DbB:
+                    KMeys = i.keys()
+                if " ".join(args) not in KMeys:
+                    Col.update_one({"IDd":"GuildInfo","IDg":str(ctx.guild.id)},{"$set":{" ".join(args):0}})
+                    Msg = "'" + (" ".join(args)) + "' ADDED :thumbsup:" 
+                    DbA = Col.find({"IDg":str(ctx.guild.id)})
+                    for j in DbA:
+                        if j == i:
+                            pass
+                        else:
+                            Col.update_one(j,{"$set":{" ".join(args):0}})
+                else:
+                    Msg = "'" + (" ".join(args)) + "' ALREADY EXIST :confused:"
+                await ctx.message.channel.send(Msg)
+            else:
+                await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelpserver' :point_left:")
+        else:
+            await ctx.message.channel.send("Non-admins are not allowed to add words :face_with_raised_eyebrow:")
+    else:
+       await ctx.message.channel.send("Silly Bot. You can't use commands :pensive:")
+
+@DClient.command(aliases = ["rem","remove"])
+async def RWord(ctx, *args):
+    if ctx.authot.bot == False:
+        if ctx.author.guild_permissions.administrator:
+            if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) != 0:
+                DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
                 
+                for i in DbB:
+                    Kyes = i.keys()
+
+                if " ".join(args) in Kyes:
+                    Col.update_one({"IDd":"GuildInfo","IDg":str(ctx.guild.id)},{"$unset":{" ".join(args): ""}})
+                    Msg = "'" + (" ".join(args)) + "' REMOVED :thumbsup:"
+                else:
+                    Msg = "'" + (" ".join(args)) + "' DOESNT EXISTS :confused:"
+
                 DbA = Col.find({"IDg":str(ctx.guild.id)})
                 for j in DbA:
                     if j == i:
                         pass
                     else:
-                        Col.update_one(j,{"$set":{" ".join(args):0}})
+                        Col.update_one(j,{"$unset":{" ".join(args): ""}})
 
+                await ctx.message.channel.send(Msg)  
             else:
-                Msg = "'" + (" ".join(args)) + "' ALREADY EXIST :confused:"
-
-            await ctx.message.channel.send(Msg)
+                    await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelpserver' :point_left:")
         else:
-                await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelpserver' :point_left:")
-    
+            await ctx.message.channel.send("Non-admins are not allowed to remove words :face_with_raised_eyebrow:")
     else:
-        await ctx.message.channel.send("Non-admins are not allowed to add words :face_with_raised_eyebrow:")
+       await ctx.message.channel.send("Silly Bot. You can't use commands :pensive:")
 
-@DClient.command(name = "remove")
-async def RWord(ctx, *args):
-    if ctx.author.guild_permissions.administrator:
+@DClient.command(name = "list")
+async def LWord(ctx):
+    if ctx.authot.bot == False:
         if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) != 0:
+            LEm = discord.Embed(title = "Server List", description = "Words/Phrases being tracked", color = 0xf59542) 
+
             DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
-            
             for i in DbB:
                 Kyes = i.keys()
 
-            if " ".join(args) in Kyes:
-                Col.update_one({"IDd":"GuildInfo","IDg":str(ctx.guild.id)},{"$unset":{" ".join(args): ""}})
-                Msg = "'" + (" ".join(args)) + "' REMOVED :thumbsup:"
-            else:
-                Msg = "'" + (" ".join(args)) + "' DOESNT EXISTS :confused:"
-
-            DbA = Col.find({"IDg":str(ctx.guild.id)})
-            for j in DbA:
-                if j == i:
+            for Wp in Kyes:
+                if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
                     pass
                 else:
-                    Col.update_one(j,{"$unset":{" ".join(args): ""}})
-
-            await ctx.message.channel.send(Msg)  
+                    LEm.add_field(name = Wp, value =  "\u200b", inline = True)
+            await ctx.message.channel.send(embed = LEm)    
         else:
-                await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelpserver' :point_left:")
+            await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelpserver' :point_left:")    
     else:
-        await ctx.message.channel.send("Non-admins are not allowed to remove words :face_with_raised_eyebrow:")
+       await ctx.message.channel.send("Silly Bot. You can't use commands :pensive:")
 
-@DClient.command(name = "List")
-async def LWord(ctx):
-    if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) != 0:
-        LEm = discord.Embed(title = "Server List", description = "Words/Phrases being tracked", color = 0xf59542) 
-
-        DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
-        for i in DbB:
-            Kyes = i.keys()
-
-        for Wp in Kyes:
-            if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
-                pass
-            else:
-                LEm.add_field(name = Wp, value =  "\u200b", inline = True)
-        await ctx.message.channel.send(embed = LEm)    
-    else:
-        await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelpserver' :point_left:")    
-    
 @DClient.command(name = "total")
 async def TMsg(ctx, *args):
     if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) != 0 and ctx.author.bot == False:
@@ -363,10 +444,12 @@ async def TMsg(ctx, *args):
         
         else:
             await ctx.message.channel.send("That word doesnt exist yet :confused:")
-    else:
+    elif Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) == 0 and ctx.author.bot == False:
             await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelpserver' :point_left:")
+    else:
+        await ctx.message.channel.send("Silly Bot. You can't use commands :pensive:")
 
-@DClient.command(name = "Stats")
+@DClient.command(name = "stats")
 async def IMsg(ctx, *args): 
     isBot = False
     if len(ctx.message.mentions) > 0:
