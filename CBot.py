@@ -219,7 +219,7 @@ async def nHen(ctx, args):
                 DEm.set_thumbnail(url = DentAi.image_urls[0])
                 DEm.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'c' or 'close' to end reading")
                 DEm.set_image(url = DentAi.image_urls[0])
-                DEm.add_field(name = "\u200b", value = "*Page:* " + str(Page), inline = False)
+                DEm.add_field(name = "\u200b", value = "*Page:* " + str(Page+1), inline = False)
                 await ctx.message.channel.send("**WARNING:** ALL messages sent after the embed will be deleted until doujin is closed. This is to ensure a proper reading experience.")
                 DmSent = await ctx.message.channel.send(embed = DEm)
                 while True:
@@ -232,7 +232,7 @@ async def nHen(ctx, args):
                             DEmE.set_thumbnail(url = DentAi.image_urls[0])
                             DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'c' or 'close' to end reading")
                             DEmE.set_image(url = DentAi.image_urls[Page])
-                            DEmE.add_field(name = "\u200b", value = "'Page: " + str(Page) + "'", inline = False)
+                            DEmE.add_field(name = "\u200b", value = "'Page: " + str(Page+1) + "'", inline = False)
                             await DmSent.edit(embed = DEmE)
                         else:
                             pass
@@ -244,7 +244,7 @@ async def nHen(ctx, args):
                             DEmE.set_thumbnail(url = DentAi.image_urls[0])
                             DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'c' or 'close' to end reading")
                             DEmE.set_image(url = DentAi.image_urls[Page])
-                            DEmE.add_field(name = "\u200b", value = "'Page: " + str(Page) + "'", inline = False)
+                            DEmE.add_field(name = "\u200b", value = "'Page: " + str(Page+1) + "'", inline = False)
                             await DmSent.edit(embed = DEmE)
                         else:
                             pass
