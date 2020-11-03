@@ -228,10 +228,11 @@ async def nHen(ctx, args):
                 else:
                     FdesCtI = Tags
                 Page = 0
-                DEm = discord.Embed(title = DentAi.title(Format.Pretty) + " ||| " + DentAi.id,  description = FdesCtI, color = 0x000000)
+                DEm = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
                 DEm.set_thumbnail(url = DentAi.image_urls[0])
                 DEm.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
                 DEm.set_image(url = DentAi.image_urls[0])
+                DEm.add_field(name = "Doujin ID", value = str(DentAi.id), inline = False)
                 DEm.add_field(name = "\u200b", value = "**Doujin OPEN** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
                 await ctx.message.channel.send("**WARNING:** ALL messages sent after the embed will be deleted until doujin is closed. This is to ensure a proper reading experience.")
                 DmSent = await ctx.message.channel.send(embed = DEm)
@@ -250,6 +251,7 @@ async def nHen(ctx, args):
                                     DEmE.set_thumbnail(url = DentAi.image_urls[0])
                                     DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
                                     DEmE.set_image(url = DentAi.image_urls[Page])
+                                    DEm.add_field(name = "Doujin ID", value = str(DentAi.id), inline = False)
                                     DEmE.add_field(name = "\u200b", value = "**Doujin OPEN** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
                                     await DmSent.edit(embed = DEmE)
                                 else:
@@ -257,6 +259,7 @@ async def nHen(ctx, args):
                                     DEmE.set_thumbnail(url = DentAi.image_urls[0])
                                     DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
                                     DEmE.set_image(url = DentAi.image_urls[Page])
+                                    DEm.add_field(name = "Doujin ID", value = str(DentAi.id), inline = False)
                                     DEmE.add_field(name = "\u200b", value = "**Doujin CLOSED** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
                                     await DmSent.edit(embed = DEmE)
                                     break
@@ -267,6 +270,7 @@ async def nHen(ctx, args):
                                     DEmE.set_thumbnail(url = DentAi.image_urls[0])
                                     DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
                                     DEmE.set_image(url = DentAi.image_urls[Page])
+                                    DEm.add_field(name = "Doujin ID", value = str(DentAi.id), inline = False)
                                     DEmE.add_field(name = "\u200b", value = "**Doujin OPEN** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
                                     await DmSent.edit(embed = DEmE)
                                 else:
@@ -276,6 +280,7 @@ async def nHen(ctx, args):
                                 DEmE.set_thumbnail(url = DentAi.image_urls[0])
                                 DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
                                 DEmE.set_image(url = DentAi.image_urls[Page])
+                                DEm.add_field(name = "Doujin ID", value = str(DentAi.id), inline = False)
                                 DEmE.add_field(name = "\u200b", value = "**Doujin CLOSED** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
                                 await DmSent.edit(embed = DEmE)
                                 break
@@ -289,6 +294,7 @@ async def nHen(ctx, args):
                                         DEmE.set_thumbnail(url = DentAi.image_urls[0])
                                         DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
                                         DEmE.set_image(url = DentAi.image_urls[Page])
+                                        DEm.add_field(name = "Doujin ID", value = str(DentAi.id), inline = False)
                                         DEmE.add_field(name = "\u200b", value = "**Doujin OPEN** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
                                         await DmSent.edit(embed = DEmE)
                                     elif pG < 1:
@@ -297,6 +303,7 @@ async def nHen(ctx, args):
                                         DEmE.set_thumbnail(url = DentAi.image_urls[0])
                                         DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
                                         DEmE.set_image(url = DentAi.image_urls[Page])
+                                        DEm.add_field(name = "Doujin ID", value = str(DentAi.id), inline = False)
                                         DEmE.add_field(name = "\u200b", value = "**Doujin OPEN** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
                                         await DmSent.edit(embed = DEmE)
                                         pass
@@ -306,6 +313,7 @@ async def nHen(ctx, args):
                                         DEmE.set_thumbnail(url = DentAi.image_urls[0])
                                         DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
                                         DEmE.set_image(url = DentAi.image_urls[Page])
+                                        DEm.add_field(name = "Doujin ID", value = str(DentAi.id), inline = False)
                                         DEmE.add_field(name = "\u200b", value = "**Doujin OPEN** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
                                         await DmSent.edit(embed = DEmE)
                                 except ValueError:
@@ -315,6 +323,7 @@ async def nHen(ctx, args):
                                 DEmE.set_thumbnail(url = DentAi.image_urls[0])
                                 DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
                                 DEmE.set_image(url = DentAi.image_urls[Page])
+                                DEm.add_field(name = "Doujin ID", value = str(DentAi.id), inline = False)
                                 DEmE.add_field(name = "\u200b", value = "**Doujin CLOSED** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
                                 await DmSent.edit(embed = DEmE)
                                 break
@@ -323,6 +332,7 @@ async def nHen(ctx, args):
                         DEmE.set_thumbnail(url = DentAi.image_urls[0])
                         DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
                         DEmE.set_image(url = DentAi.image_urls[Page])
+                        DEm.add_field(name = "Doujin ID", value = str(DentAi.id), inline = False)
                         DEmE.add_field(name = "\u200b", value = "**Doujin CLOSED** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
                         await DmSent.edit(embed = DEmE)
                         await ctx.message.channel.send("2mins of inactivity. Please close the Doujin once you're done :confused:")
