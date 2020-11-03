@@ -77,7 +77,8 @@ async def SendH(ctx, *args):
         HEm = discord.Embed(title = "CBot Misc. Help", description = "Commands", color = 0x0af531)
         HEm.add_field(name = "zfry (Image Attachment): ", value = "Deep fries the attached image", inline = False)
         HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a post from the top 50 posts in hot from any subreddit", inline = False)
-        HEm.add_field(name = "zhentai (Magic Numbers): ", value = "Gets hentai from nhentai using doujin numbers", inline = False)
+        HEm.add_field(name = "zhentai (Magic Numbers): ", value = "Gets doujin from nhentai using magic numbers", inline = False)
+        HEm.add_field(name = "zhentai random: ", value = "Gets a random doujin from nhentai", inline = False)
         await ctx.message.channel.send(embed = HEm)
     else:
         await ctx.message.channel.send("That help category doesn't exist.")
