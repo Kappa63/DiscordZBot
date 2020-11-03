@@ -272,7 +272,7 @@ async def nHen(ctx, args):
                                     await DmSent.edit(embed = DEmE)
                                 else:
                                     pass
-                            elif (Res.content).lower() == "c" or (Res.content).lower() == "close":
+                            elif (Res.content).lower() == "c" or (Res.content).lower() == "close" or (Res.content).lower() == "zhentai":
                                 DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
                                 DEmE.set_thumbnail(url = DentAi.image_urls[0])
                                 DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. ''")
@@ -307,6 +307,14 @@ async def nHen(ctx, args):
                                         await DmSent.edit(embed = DEmE)
                                 except ValueError:
                                     pass
+                            elif (Rese[0]).lower() == "zhentai":
+                                DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
+                                DEmE.set_thumbnail(url = DentAi.image_urls[0])
+                                DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. ''")
+                                DEmE.set_image(url = DentAi.image_urls[Page])
+                                DEmE.add_field(name = "\u200b", value = "**Doujin CLOSED** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
+                                await DmSent.edit(embed = DEmE)
+                                break
                             else:
                                 await Res.delete()
                         else:
