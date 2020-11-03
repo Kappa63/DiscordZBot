@@ -205,8 +205,8 @@ async def DEco(ctx):
 @DClient.command(name = "hentai")
 async def nHen(ctx, args):
     try:
-        DentAi = Hentai(int(args))
-        if(Hentai.exists(DentAi.id)):
+        if(Hentai.exists(int(args))):
+            DentAi = Hentai(int(args))
             if ctx.channel.is_nsfw(): 
                 Tags = ", ".join([tag.name for tag in DentAi.tag])
                 if len(Tags) > 253:
@@ -224,34 +224,55 @@ async def nHen(ctx, args):
                 DmSent = await ctx.message.channel.send(embed = DEm)
                 while True:
                     Res = await DClient.wait_for('message')
-                    if Res.content == "n" or Res.content == "next":
-                        await Res.delete()
-                        if Page < len(DentAi.image_urls):
-                            Page += 1
-                            DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
-                            DEmE.set_thumbnail(url = DentAi.image_urls[0])
-                            DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'c' or 'close' to end reading")
-                            DEmE.set_image(url = DentAi.image_urls[Page])
-                            DEmE.add_field(name = "\u200b", value = "`Page: " + str(Page+1) + "`", inline = False)
-                            await DmSent.edit(embed = DEmE)
+                    Rese = Res.content.split(" ")
+                    if len(Rese) == 1:
+                        if (Res.content).lower() == "n" or (Res.content).lower() == "next":
+                            await Res.delete()
+                            if Page < len(DentAi.image_urls)-1:
+                                Page += 1
+                                DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
+                                DEmE.set_thumbnail(url = DentAi.image_urls[0])
+                                DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'c' or 'close' to end reading")
+                                DEmE.set_image(url = DentAi.image_urls[Page])
+                                DEmE.add_field(name = "\u200b", value = "`Page: " + str(Page+1) + "`", inline = False)
+                                await DmSent.edit(embed = DEmE)
+                            else:
+                                break
+                        elif (Res.content).lower() == "b" or (Res.content).lower() == "back":
+                            await Res.delete()
+                            if Page != 0:
+                                Page -= 1
+                                DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
+                                DEmE.set_thumbnail(url = DentAi.image_urls[0])
+                                DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'c' or 'close' to end reading")
+                                DEmE.set_image(url = DentAi.image_urls[Page])
+                                DEmE.add_field(name = "\u200b", value = "`Page: " + str(Page+1) + "`", inline = False)
+                                await DmSent.edit(embed = DEmE)
+                            else:
+                                pass
+                        elif (Res.content).lower() == "c" or (Res.content).lower() == "close":
+                            break
                         else:
-                            pass
-                    elif Res.content == "b" or Res.content == "back":
-                        await Res.delete()
-                        if Page != 0:
-                            Page -= 1
-                            DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
-                            DEmE.set_thumbnail(url = DentAi.image_urls[0])
-                            DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'c' or 'close' to end reading")
-                            DEmE.set_image(url = DentAi.image_urls[Page])
-                            DEmE.add_field(name = "\u200b", value = "`Page: " + str(Page+1) + "`", inline = False)
-                            await DmSent.edit(embed = DEmE)
+                            await Res.delete()
+                    elif len(Rese) == 2:
+                        if Rese[0] == "go":
+                            await Res.delete()
+                            try:
+                                pG = int(Rese[1])
+                                Page = pG
+                                DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
+                                DEmE.set_thumbnail(url = DentAi.image_urls[0])
+                                DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. ''")
+                                DEmE.set_image(url = DentAi.image_urls[Page])
+                                DEmE.add_field(name = "\u200b", value = "Page: " + str(Page), inline = False)
+                                await DmSent.edit(embed = DEmE)
+                            except ValueError:
+                                pass
                         else:
-                            pass
-                    elif Res.content == "c" or Res.content == "close":
-                        break
+                            await Res.delete()
                     else:
                         await Res.delete()
+                await ctx.message.channel.send(":newspaper2: Doujin Closed :newspaper2:")
             else:
                 await ctx.message.channel.send("This isn't an NSFW channel. No NSFW allowed here. :confused:")
         else:
