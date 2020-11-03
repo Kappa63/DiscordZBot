@@ -224,8 +224,8 @@ async def nHen(ctx, args):
                 DmSent = await ctx.message.channel.send(embed = DEm)
                 while True:
                     Res = await DClient.wait_for('message')
+                    await Res.delete()
                     if Res.content == "n" or Res.content == "next":
-                        await Res.delete()
                         if Page < len(DentAi.image_urls):
                             Page += 1
                             DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
@@ -237,7 +237,6 @@ async def nHen(ctx, args):
                         else:
                             pass
                     elif Res.content == "b" or Res.content == "back":
-                        await Res.delete()
                         if Page != 0:
                             Page -= 1
                             DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
@@ -249,7 +248,6 @@ async def nHen(ctx, args):
                         else:
                             pass
                     elif Res.content == "c" or Res.content == "close":
-                        await Res.delete()
                         break
             else:
                 await ctx.message.channel.send("This isn't an NSFW channel. No NSFW allowed here. :confused:")
