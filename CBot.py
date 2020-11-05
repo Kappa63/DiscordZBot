@@ -50,7 +50,7 @@ def PosType(Pty):
 @DClient.command(name = "help")
 async def SendH(ctx, *args):
     if "".join(args) == "" or "".join(args) == " ":
-        HEm = discord.Embed(title = "CBot Help", description = "Commands", color = 0x0af531)
+        HEm = discord.Embed(title = "**CBot Help**", description = "\u200b", color = 0x0af531)
         HEm.add_field(name = "zversion: ", value = "Checks the current running version of CBot", inline = False)
         HEm.add_field(name = "zsetup (server/economy): ", value = "Setsup the bot for the first time (for counting/economy repectively)", inline = False)
         HEm.add_field(name = "zhelp economy: ", value = "Setsup the bot for the first time (for counting/economy repectively)", inline = False)
@@ -58,12 +58,12 @@ async def SendH(ctx, *args):
         HEm.add_field(name = "zhelp misc: ", value = "Miscellaneous commands", inline = False)   
         await ctx.message.channel.send(embed = HEm)
     elif "".join(args).lower()  == "eco" or "".join(args).lower()  == "economy":
-        HEm = discord.Embed(title = "CBot Economy Help", description = "Commands", color = 0x0af531)
+        HEm = discord.Embed(title = "**CBot Economy Help**", description = "\u200b", color = 0x0af531)
         HEm.add_field(name = "zprofile: ", value = "Shows your economy profile", inline = False)
         HEm.add_field(name = "zdig: ", value = "Dig for treasure. Who knows? You might find some gold (or bones)", inline = False)
         await ctx.message.channel.send(embed = HEm)
     elif "".join(args).lower()  == "server":
-        HEm = discord.Embed(title = "CBot Server Help", description = "Commands", color = 0x0af531)
+        HEm = discord.Embed(title = "**CBot Server Help**", description = "\u200b", color = 0x0af531)
         HEm.add_field(name = "zadd: ", value = "Adds a word/phrase to keep track of", inline = False)
         HEm.add_field(name = "zremove: ", value = "Removes an existing word/phrase being tracked", inline = False)
         HEm.add_field(name = "zlist: ", value = "Returns all added words/phrases", inline = False)
@@ -74,7 +74,7 @@ async def SendH(ctx, *args):
         HEm.set_footer(text = "Note: Counting is limited to 10 per Message to reduce spam incentives")
         await ctx.message.channel.send(embed = HEm)
     elif "".join(args).lower() == "misc" or "".join(args).lower() == "miscellaneous":
-        HEm = discord.Embed(title = "CBot Misc. Help", description = "Commands", color = 0x0af531)
+        HEm = discord.Embed(title = "**CBot Misc. Help**", description = "\u200b", color = 0x0af531)
         HEm.add_field(name = "zfry (Image Attachment): ", value = "Deep fries the attached image", inline = False)
         HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a post from the top 50 posts in hot from any subreddit", inline = False)
         HEm.add_field(name = "zhentai (Magic Numbers): ", value = "Gets doujin from nhentai using magic numbers", inline = False)
