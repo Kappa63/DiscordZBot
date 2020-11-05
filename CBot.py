@@ -414,19 +414,20 @@ async def SrSub(ctx, *args):
                                     REm.set_image(url = pstR)
                                     break
                                 elif C == 5: 
-                                    if "v.redd.it" in SubCpoS.url:
-                                        REm.add_field(name = "\u200b", value = "The original post is a video(reddit) [click here](" + SubCpoS.url + ") to view the original", inline = False)
-                                        REm.set_image(url = SubCpoS.preview['images'][-1]['source']['url'])
-                                    elif "youtu.be" in SubCpoS.url  or "youtube.com" in SubCpoS.url:
-                                        REm.add_field(name = "\u200b", value = "The original post is a video(youtube) [click here](" + SubCpoS.url + ") to view the original", inline = False)
-                                        REm.set_image(url = SubCpoS.preview['images'][-1]['source']['url'])
-                                    elif "gfycat" in SubCpoS.url:
-                                        REm.add_field(name = "\u200b", value = "The original post is a video(gfycat) [click here](" + SubCpoS.url + ") to view the original", inline = False)
-                                        REm.set_image(url = SubCpoS.preview['images'][-1]['source']['url'])
-                                    elif "redgifs" in SubCpoS.url:
-                                        REm.add_field(name = "\u200b", value = "The original post is a video(redgifs) [click here](" + SubCpoS.url + ") to view the original", inline = False)
-                                        REm.set_image(url = SubCpoS.preview['images'][-1]['source']['url'])
-                                    else:
+                                    try:
+                                        if "v.redd.it" in SubCpoS.url:
+                                            REm.add_field(name = "\u200b", value = "The original post is a video(reddit) [click here](" + SubCpoS.url + ") to view the original", inline = False)
+                                            REm.set_image(url = SubCpoS.preview['images'][-1]['source']['url'])
+                                        elif "youtu.be" in SubCpoS.url  or "youtube.com" in SubCpoS.url:
+                                            REm.add_field(name = "\u200b", value = "The original post is a video(youtube) [click here](" + SubCpoS.url + ") to view the original", inline = False)
+                                            REm.set_image(url = SubCpoS.preview['images'][-1]['source']['url'])
+                                        elif "gfycat" in SubCpoS.url:
+                                            REm.add_field(name = "\u200b", value = "The original post is a video(gfycat) [click here](" + SubCpoS.url + ") to view the original", inline = False)
+                                            REm.set_image(url = SubCpoS.preview['images'][-1]['source']['url'])
+                                        elif "redgifs" in SubCpoS.url:
+                                            REm.add_field(name = "\u200b", value = "The original post is a video(redgifs) [click here](" + SubCpoS.url + ") to view the original", inline = False)
+                                            REm.set_image(url = SubCpoS.preview['images'][-1]['source']['url'])
+                                    except AttributeError:
                                         REm.add_field(name = "Post: ", value = SubCpoS.url, inline = False)
                                         REm.add_field(name = "Couldnt get media. Sorry!!", value = '\u200b')
                     else:
