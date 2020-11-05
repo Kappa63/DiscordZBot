@@ -423,7 +423,7 @@ async def SrSub(ctx, *args):
                                     elif "gfycat" in SubCpoS.url:
                                         REm.add_field(name = "\u200b", value = "The original post is a video(gfycat) [click here](" + SubCpoS.url + ") to view the original", inline = False)
                                         REm.set_image(url = SubCpoS.preview['images'][-1]['source']['url'])
-                                    elif "gfycat" in SubCpoS.url:
+                                    elif "redgifs" in SubCpoS.url:
                                         REm.add_field(name = "\u200b", value = "The original post is a video(redgifs) [click here](" + SubCpoS.url + ") to view the original", inline = False)
                                         REm.set_image(url = SubCpoS.preview['images'][-1]['source']['url'])
                                     else:
