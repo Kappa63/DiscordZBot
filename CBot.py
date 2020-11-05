@@ -394,14 +394,38 @@ async def SrSub(ctx, *args):
                         REm = discord.Embed(title = FtiTle, description = "Upvote Ratio: " + str(SubCpoS.upvote_ratio) + " // Post is Clean", color = 0x8b0000)
                     C = 0
                     if (NSfw and ctx.channel.is_nsfw()) or (NSfw == False):
-                        for ExT in [".png",".jpg",".jpeg"]:
-                            C += 1
-                            if (SubCpoS.url).endswith(ExT):
-                                REm.set_image(url = SubCpoS.url)
-                                break
-                            elif C == 3:
-                                REm.add_field(name = "Couldnt get media. Probably a video, gallery, or external webpage. Sorry!!", value = '\u200b')
-                                REm.add_field(name = "Post: ", value = SubCpoS.url, inline = False)
+                        try:
+                            GaLpos = SubCpoS.gallery_data['items']
+                            for ImgPoGa in GaLpos:
+                                FiPoS = SubCpoS.media_metadata[ImgPoGa['media_id']]
+                                if FiPoS['e'] == 'Image':
+                                    REm.add_field(name = "\u200b", value = "The original post is a gallery [click here](" + SubCpoS.url + ") to view the rest of the post", inline = False)
+                                    pstR = FiPoS['p'][-1]['u']
+                                    REm.set_image(url = pstR)
+                                    break
+                        except AttributeError:
+                            for ExT in [".png",".jpg",".jpeg",".gif",".gifv"]:
+                                C += 1
+                                if (SubCpoS.url).endswith(ExT):
+                                    pstR = SubCpoS.url
+                                    if ExT == ".gifv":
+                                        REm.add_field(name = "\u200b", value = "The original post is a video(imgur) [click here](" + SubCpoS.url + ") to view the original video", inline = False)
+                                        pstR = SubCpoS.url[:-1]
+                                    REm.set_image(url = pstR)
+                                    break
+                                elif C == 5: 
+                                    if "v.redd.it" in SubCpoS.url:
+                                        REm.add_field(name = "\u200b", value = "The original post is a video(reddit) [click here](" + SubCpoS.url + ") to view the original video", inline = False)
+                                        REm.set_image(url = SubCpoS.preview['images'][-1]['source']['url'])
+                                    elif "youtu.be" in SubCpoS.url  or "youtube.com" in SubCpoS.url:
+                                        REm.add_field(name = "\u200b", value = "The original post is a video(youtube) [click here](" + SubCpoS.url + ") to view the original video", inline = False)
+                                        REm.set_image(url = SubCpoS.preview['images'][-1]['source']['url'])
+                                    elif "gfycat" in SubCpoS.url:
+                                        REm.add_field(name = "\u200b", value = "The original post is a video(gfycat) [click here](" + SubCpoS.url + ") to view the original video", inline = False)
+                                        REm.set_image(url = SubCpoS.preview['images'][-1]['source']['url'])
+                                    else:
+                                        REm.add_field(name = "Post: ", value = SubCpoS.url, inline = False)
+                                        REm.add_field(name = "Couldnt get media. Sorry!!", value = '\u200b')
                     else:
                         REm.add_field(name = "NSFW: ", value = "This isn't an NSFW channel. No NSFW allowed here.", inline = False)
                     REm.set_footer(text = "From " + "r/" + "".join(args))
