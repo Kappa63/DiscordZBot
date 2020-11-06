@@ -7,8 +7,8 @@ DbM = Cls["CBot"]
 Col = DbM["Ser"]
 TraEco = DbM["Ind"]
 
-def CleanDb(Stf):
-    DbB = TraEco.find(Stf)
+def CleanDb(Datab, Stf):
+    DbB = Datab.find(Stf)
     for i in DbB:
         KMeys = i.keys()
     for Wp in KMeys:
@@ -16,18 +16,39 @@ def CleanDb(Stf):
             pass
         else:
             if i[Wp] == 0:
-                TraEco.update_one(Stf,{"$unset":{Wp: ""}})   
+                Datab.update_one(Stf,{"$unset":{Wp: ""}})   
 
-def DbAdd(Stf, ItV):
-    DbB = TraEco.find(Stf)
+def DbAdd(Datab, Stf, ItV):
+    DbB = Datab.find(Stf)
     for i in DbB:
         KMeys = i.keys()
     if ItV not in KMeys:
-        TraEco.update_one(i,{"$set":{ItV:0}})
+        Datab.update_one(i,{"$set":{ItV:0}})
+        return True
+    return False
 
-def AddTo(Stf, ItV, Num):
-    DbB = TraEco.find(Stf)
+def DbRem(Datab, Stf, ItV):
+    DbB = Datab.find(Stf)
     for i in DbB:
         KMeys = i.keys()
     if ItV in KMeys:
-        TraEco.update_one(i,{"$set":{ItV:i[ItV] +Num}})
+        Datab.update_one(i,{"$unset":{ItV:0}})
+        return True
+    return False
+
+def DbAppendRest(Datab, Stf, Exc, ItV, Num):
+    DbA = Datab.find(Stf)
+    for j in DbA:
+        if j == Exc:
+            pass
+        else:
+            Datab.update_one(j,{"$set":{ItV:Num}})
+
+def AddTo(Datab, Stf, ItV, Num):
+    DbB = Datab.find(Stf)
+    for i in DbB:
+        KMeys = i.keys()
+    if (ItV in KMeys) and (ItV != "IDd") and (ItV != "IDg") and (ItV != "Setup") and (ItV != "_id"):
+        Datab.update_one(i,{"$set":{ItV:i[ItV] +Num}})
+        return True
+    return False

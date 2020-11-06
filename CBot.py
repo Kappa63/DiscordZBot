@@ -47,6 +47,26 @@ def PosType(Pty):
         TextB = True
     return TextB
 
+def StrCool(ErrorCoolSec):
+    Day = 0
+    Hour = 0
+    Min = 0
+    while ErrorCoolSec >= 60:
+        Min += 1
+        if Min == 60:
+            Hour += 1
+            Min -= 60
+        if Hour == 24:
+            Day += 1
+            Hour -= 24
+        ErrorCoolSec -= 60
+    if Day != 0:
+        return str(Day)+"Day(s) "+str(Hour)+"Hour(s) "+str(Min)+"Min(s) "+str(ErrorCoolSec)+"Sec(s)"
+    elif Hour != 0:
+        return str(Hour)+"Hour(s) "+str(Min)+"Min(s) "+str(ErrorCoolSec)+"Sec(s)"
+    else:
+        return str(Min)+"Min(s) "+str(ErrorCoolSec)+"Sec(s) "
+
 @DClient.command(name = "help")
 async def SendH(ctx, *args):
     if "".join(args) == "" or "".join(args) == " ":
@@ -84,12 +104,12 @@ async def SendH(ctx, *args):
     else:
         await ctx.message.channel.send("That help category doesn't exist.")
 
-@DClient.command(name = "version")
+@DClient.command(aliases = ["ver","version"])
 async def RetVer(ctx):
     VEm = discord.Embed(title = "Active Version", description = "CBot build version and info", color = 0xf59542)
     VEm.add_field(name = "Dev: ", value = "Kappa", inline = True)
-    VEm.add_field(name = "Version: ", value = "1.7.2", inline = True)
-    VEm.add_field(name = "Release: ", value = "10/20/20", inline = True)
+    VEm.add_field(name = "Version: ", value = "0.4b", inline = True)
+    VEm.add_field(name = "Release: ", value = "Null", inline = True)
     await ctx.message.channel.send(embed = VEm)
 
 @DClient.command(name = "setup")
@@ -191,15 +211,16 @@ async def PecoS(ctx, *args):
         await ctx.message.channel.send("Cannot check a bot's profile :confused:")
 
 @DClient.command(name = "dig")
+@commands.cooldown(1, 60)
 async def DEco(ctx):
     if ctx.author.bot == False:
         if TraEco.count_documents({"IDd":str(ctx.author.id)}) != 0:
             PosDigs = ["Bones","Pure Gold","Dirt","Copper","Landmine","Plumbing"]
             Ch = {"IDd":str(ctx.author.id)}
             CDug = random.choice(PosDigs)
-            FuncMon.DbAdd(Ch,CDug)   
+            FuncMon.DbAdd(TraEco, Ch, CDug)   
             Numo = ItemFind.Item(CDug)
-            FuncMon.AddTo(Ch, CDug, Numo)
+            FuncMon.AddTo(TraEco, Ch, CDug, Numo)
             await ctx.message.channel.send("You found " + str(Numo) + " " + CDug +"!!")
         else:
             await ctx.message.channel.send(":point_right: Please setup your economy profile first (with 'zsetup eco')! Check all economy commands with 'zhelp eco' :point_left:")
@@ -461,23 +482,26 @@ async def AWord(ctx, *args):
     if ctx.author.bot == False:
         if ctx.author.guild_permissions.administrator:
             if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) != 0:
+                WorA = " ".join(args)
                 DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
                 for i in DbB:
                     KMeys = i.keys()
-                if " ".join(args) not in KMeys:
-                    Col.update_one({"IDd":"GuildInfo","IDg":str(ctx.guild.id)},{"$set":{" ".join(args):0}})
-                    Msg = "'" + (" ".join(args)) + "' ADDED :thumbsup:" 
+                if WorA not in KMeys:
+                    Col.update_one({"IDd":"GuildInfo","IDg":str(ctx.guild.id)},{"$set":{WorA:0}})
+                # if FuncMon.DbAdd(Col, {"IDd":"GuildInfo","IDg":str(ctx.guild.id)}, WorA):
+                    Msg = "'" + (WorA) + "' ADDED :thumbsup:" 
+                    FuncMon.DbAppendRest(Col, {"IDg":str(ctx.guild.id)}, {"IDd":"GuildInfo","IDg":str(ctx.guild.id)}, WorA, 0)
                     DbA = Col.find({"IDg":str(ctx.guild.id)})
                     for j in DbA:
                         if j == i:
                             pass
                         else:
-                            Col.update_one(j,{"$set":{" ".join(args):0}})
+                            Col.update_one(j,{"$set":{WorA:0}})
                 else:
-                    Msg = "'" + (" ".join(args)) + "' ALREADY EXIST :confused:"
+                    Msg = "'" + (WorA) + "' ALREADY EXIST :confused:"
                 await ctx.message.channel.send(Msg)
             else:
-                await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelpserver' :point_left:")
+                await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelp server' :point_left:")
         else:
             await ctx.message.channel.send("Non-admins are not allowed to add words :face_with_raised_eyebrow:")
     else:
@@ -516,8 +540,11 @@ async def RWord(ctx, *args):
 
 @DClient.command(name = "list")
 async def LWord(ctx):
+    print("j")
     if ctx.authot.bot == False:
+        print("uh")
         if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) != 0:
+            print("ok")
             LEm = discord.Embed(title = "Server List", description = "Words/Phrases being tracked", color = 0xf59542) 
 
             DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
@@ -528,10 +555,11 @@ async def LWord(ctx):
                 if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
                     pass
                 else:
+                    print("kk")
                     LEm.add_field(name = Wp, value =  "\u200b", inline = True)
             await ctx.message.channel.send(embed = LEm)    
         else:
-            await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelpserver' :point_left:")    
+            await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelp server' :point_left:")    
     else:
        await ctx.message.channel.send("Silly Bot. You can't use commands :pensive:")
 
@@ -571,7 +599,7 @@ async def TMsg(ctx, *args):
         else:
             await ctx.message.channel.send("That word doesnt exist yet :confused:")
     elif Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) == 0 and ctx.author.bot == False:
-            await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelpserver' :point_left:")
+            await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelp server' :point_left:")
     else:
         await ctx.message.channel.send("Silly Bot. You can't use commands :pensive:")
 
@@ -623,10 +651,11 @@ async def IMsg(ctx, *args):
         await ctx.message.channel.send("Cannot check a bot's stats :confused:")
 
     else:
-        await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelpserver' :point_left:")
+        await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelp server' :point_left:")
     
 @DClient.command(name = "fry")
 async def CMsend(ctx):
+    print("j")
     if len(ctx.message.attachments) > 0:
         files = []
         C = 0
@@ -655,26 +684,19 @@ async def on_message(message):
     CmSLim = 0
     if Col.count_documents({"IDd":"GuildInfo","IDg":str(message.guild.id),"Setup":"Done"}) != 0:
         Remove = '*_'
-        DbB = Col.find({"IDd":str(message.author.id),"IDg":str(message.guild.id)})
-        for i in DbB:
-            Kyes = i.keys()
         PhMsRase = ((message.content.lower()).strip(Remove)).split(" ")
         R = len(PhMsRase)
         PhMsRase = removeExtraS(PhMsRase, "")
         if message.author.bot == False:
-            for i in range(R):
+            for _ in range(R):
                 if CmSLim >= 10:
                     break
-                DbB = Col.find({"IDd":str(message.author.id),"IDg":str(message.guild.id)})
-                for i in DbB:
-                    Kyes = i.keys()
                 Temp = []
                 for MMmsg in PhMsRase:
                     Temp.append(MMmsg)
                     CTemp = " ".join(Temp)
                     if len(Temp) > 0:
-                        if (CTemp in Kyes) and (CTemp != "IDd") and (CTemp != "IDg") and (CTemp != "Setup") and (CTemp != "_id"):      
-                            Col.update_one(i,{"$set":{CTemp:i[CTemp]+1}}) 
+                        if FuncMon.AddTo(Col, {"IDd":str(message.author.id),"IDg":str(message.guild.id)}, CTemp, 1):
                             CmSLim += 1
                 try:
                     PhMsRase.pop(0)
@@ -682,7 +704,6 @@ async def on_message(message):
                     pass
     else:
         pass
-
     await DClient.process_commands(message)
 
 @DClient.event
@@ -720,5 +741,10 @@ async def on_guild_remove(guild):
     DbB = Col.find({"IDg":str(guild.id)})
     for DbG in DbB:
         Col.delete_one(DbG)
+
+@DClient.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+        await ctx.message.channel.send("You can use this command again in " + StrCool(int(error.retry_after)))
 
 DClient.run("NzY4Mzk3NjQwMTQwMDYyNzIx.X4_4EQ.mpWIl074jvRs0X-ceDoKdwv4H_E")
