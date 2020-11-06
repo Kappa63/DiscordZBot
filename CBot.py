@@ -117,28 +117,17 @@ async def SMsg(ctx, *args):
     if ("".join(args)).lower() == "server":
         if (Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) == 0) or Col.count_documents({}) == 0:
             if ctx.author.guild_permissions.administrator:
-                DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
-                for i in DbB:
-                    Kyes = i.keys()
-
                 if (Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) == 0):
-                    info = {"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}
-                    Col.insert_one(info)
-
+                    Col.insert_one({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"})
                 for Pid in ctx.guild.members:
                     if Pid.bot == False:
                         if (Col.count_documents({}) == 0) or (Col.count_documents({"IDd":str(Pid.id),"IDg":str(ctx.guild.id)}) == 0):
-                            info = {"IDd":str(Pid.id),"IDg":str(ctx.guild.id)}
-                            Col.insert_one(info)
+                            Col.insert_one({"IDd":str(Pid.id),"IDg":str(ctx.guild.id)})
                             DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
                             for i in DbB:
-                                Kyes = i.keys()
-                            
+                                Kyes = i.keys()    
                             for Wp in Kyes:
-                                if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
-                                    pass
-                                else:
-                                    Col.update_one({"IDd":str(Pid.id),"IDg":str(ctx.guild.id)},{"$set":{Wp:0}})
+                                FuncMon.DbAdd(Col, {"IDd":str(Pid.id),"IDg":str(ctx.guild.id)}, Wp, 0)
                 await ctx.message.channel.send(":partying_face: Setup complete, you can now use tracking commands:partying_face:")
             else:
                 await ctx.message.channel.send("Non-admins are not allowed to setup :face_with_raised_eyebrow:")
@@ -159,9 +148,9 @@ async def SMsg(ctx, *args):
                         if Wp == "_id" or Wp == "IDd" or Wp == "Setup":
                             pass
                         elif Wp == "ReqXp":
-                            TraEco.update_one({"IDd":str(ctx.author.id)},{"$set":{Wp:500}})
+                            FuncMon.DbAdd(TraEco, {"IDd":str(ctx.author.id)}, Wp, 500)
                         else:
-                            TraEco.update_one({"IDd":str(ctx.author.id)},{"$set":{Wp:0}})
+                            FuncMon.DbAdd(TraEco, {"IDd":str(ctx.author.id)}, Wp, 0)
                 await ctx.message.channel.send(":partying_face: Setup complete, you can now use economy commands :partying_face:")
             else:
                 await ctx.message.channel.send("Silly Bot. You can't setup a profile :pensive:")
@@ -216,11 +205,10 @@ async def DEco(ctx):
     if ctx.author.bot == False:
         if TraEco.count_documents({"IDd":str(ctx.author.id)}) != 0:
             PosDigs = ["Bones","Pure Gold","Dirt","Copper","Landmine","Plumbing"]
-            Ch = {"IDd":str(ctx.author.id)}
             CDug = random.choice(PosDigs)
-            FuncMon.DbAdd(TraEco, Ch, CDug)   
+            FuncMon.DbAdd(TraEco, {"IDd":str(ctx.author.id)}, CDug, 0)   
             Numo = ItemFind.Item(CDug)
-            FuncMon.AddTo(TraEco, Ch, CDug, Numo)
+            FuncMon.AddTo(TraEco, {"IDd":str(ctx.author.id)}, CDug, Numo)
             await ctx.message.channel.send("You found " + str(Numo) + " " + CDug +"!!")
         else:
             await ctx.message.channel.send(":point_right: Please setup your economy profile first (with 'zsetup eco')! Check all economy commands with 'zhelp eco' :point_left:")
@@ -483,20 +471,9 @@ async def AWord(ctx, *args):
         if ctx.author.guild_permissions.administrator:
             if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) != 0:
                 WorA = " ".join(args)
-                DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
-                for i in DbB:
-                    KMeys = i.keys()
-                if WorA not in KMeys:
-                    Col.update_one({"IDd":"GuildInfo","IDg":str(ctx.guild.id)},{"$set":{WorA:0}})
-                # if FuncMon.DbAdd(Col, {"IDd":"GuildInfo","IDg":str(ctx.guild.id)}, WorA):
+                if FuncMon.DbAdd(Col, {"IDd":"GuildInfo","IDg":str(ctx.guild.id)}, WorA, 0):
                     Msg = "'" + (WorA) + "' ADDED :thumbsup:" 
-                    # FuncMon.DbAppendRest(Col, {"IDg":str(ctx.guild.id)}, {"IDd":"GuildInfo","IDg":str(ctx.guild.id)}, WorA, 0)
-                    DbA = Col.find({"IDg":str(ctx.guild.id)})
-                    for j in DbA:
-                        if j == i:
-                            pass
-                        else:
-                            Col.update_one(j,{"$set":{WorA:0}})
+                    FuncMon.DbAppendRest(Col, {"IDg":str(ctx.guild.id)}, {"IDd":"GuildInfo","IDg":str(ctx.guild.id)}, WorA, 0, "a")
                 else:
                     Msg = "'" + (WorA) + "' ALREADY EXIST :confused:"
                 await ctx.message.channel.send(Msg)
@@ -509,27 +486,15 @@ async def AWord(ctx, *args):
 
 @DClient.command(aliases = ["rem","remove"])
 async def RWord(ctx, *args):
-    if ctx.authot.bot == False:
+    if ctx.author.bot == False:
         if ctx.author.guild_permissions.administrator:
-            if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) != 0:
-                DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
-                
-                for i in DbB:
-                    Kyes = i.keys()
-
-                if " ".join(args) in Kyes:
-                    Col.update_one({"IDd":"GuildInfo","IDg":str(ctx.guild.id)},{"$unset":{" ".join(args): ""}})
-                    Msg = "'" + (" ".join(args)) + "' REMOVED :thumbsup:"
+            if Col.count_documents({"IDd":"GuildInfo", "IDg":str(ctx.guild.id),"Setup":"Done"}) != 0:
+                WorA = " ".join(args)
+                if FuncMon.DbRem(Col, {"IDd":"GuildInfo", "IDg":str(ctx.guild.id)}, WorA):
+                    Msg = "'" + WorA + "' REMOVED :thumbsup:"
+                    FuncMon.DbAppendRest(Col, {"IDg":str(ctx.guild.id)}, {"IDd":"GuildInfo","IDg":str(ctx.guild.id)}, WorA, 0, "r")
                 else:
-                    Msg = "'" + (" ".join(args)) + "' DOESNT EXISTS :confused:"
-
-                DbA = Col.find({"IDg":str(ctx.guild.id)})
-                for j in DbA:
-                    if j == i:
-                        pass
-                    else:
-                        Col.update_one(j,{"$unset":{" ".join(args): ""}})
-
+                    Msg = "'" + WorA + "' DOESNT EXIST :confused:"
                 await ctx.message.channel.send(Msg)  
             else:
                     await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup server')! Check all server commands with 'zhelpserver' :point_left:")
@@ -540,11 +505,8 @@ async def RWord(ctx, *args):
 
 @DClient.command(name = "list")
 async def LWord(ctx):
-    print("j")
-    if ctx.authot.bot == False:
-        print("uh")
+    if ctx.author.bot == False:
         if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) != 0:
-            print("ok")
             LEm = discord.Embed(title = "Server List", description = "Words/Phrases being tracked", color = 0xf59542) 
 
             DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
@@ -555,7 +517,6 @@ async def LWord(ctx):
                 if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
                     pass
                 else:
-                    print("kk")
                     LEm.add_field(name = Wp, value =  "\u200b", inline = True)
             await ctx.message.channel.send(embed = LEm)    
         else:
@@ -618,6 +579,7 @@ async def IMsg(ctx, *args):
         aRGu = list(args)
 
     if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) != 0 and (isBot == False):
+        print("kk")
         Num = 0
         Enput = " ".join(aRGu)
         DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
@@ -626,6 +588,7 @@ async def IMsg(ctx, *args):
             Kyes = i.keys()
 
         if (Enput == "") or (Enput == " "):
+            print("kk")
             IEm = discord.Embed(title = AUmN.name, description = "All stats", color = 0x3252a8)
             for Wp in Kyes:
                 OSfDb = Col.find({"IDd":str(AUmN.id),"IDg":str(ctx.guild.id)})
@@ -638,6 +601,7 @@ async def IMsg(ctx, *args):
             await ctx.message.channel.send(embed = IEm)
 
         elif Enput in Kyes:
+            print("kk")
             IEm = discord.Embed(title = AUmN.name, description = "Word stats", color = 0x3252a8)
             for j in OSfDb:
                 Num = j[Enput]
@@ -716,25 +680,19 @@ async def on_member_join(member):
     Pid = member
     if Pid.bot == False:
         if (Col.count_documents({}) == 0) or (Col.count_documents({"IDd":str(Pid.id),"IDg":str(member.guild.id)}) == 0):
-            info = {"IDd":str(Pid.id),"IDg":str(member.guild.id)}
-            Col.insert_one(info)
+            Col.insert_one({"IDd":str(Pid.id),"IDg":str(member.guild.id)})
             DbB = Col.find({"IDd":"GuildInfo","IDg":str(member.guild.id)})
             for i in DbB:
                 Kyes = i.keys()
-            
             for Wp in Kyes:
-                if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
-                    pass
-                else:
-                    Col.update_one({"IDd":str(Pid.id),"IDg":str(member.guild.id)},{"$set":{Wp:0}})
+                FuncMon.DbAdd(Col, {"IDd":str(Pid.id),"IDg":str(member.guild.id)}, Wp, 0)
 
 @DClient.event
 async def on_member_remove(member):
     Pid = member
     if Pid.bot == False:
         if (Col.count_documents({"IDd":str(Pid.id),"IDg":str(member.guild.id)}) != 0):
-            info = {"IDd":str(Pid.id),"IDg":str(member.guild.id)}
-            Col.delete_one(info)
+            Col.delete_one({"IDd":str(Pid.id),"IDg":str(member.guild.id)})
 
 @DClient.event
 async def on_guild_remove(guild):
@@ -746,5 +704,6 @@ async def on_guild_remove(guild):
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
         await ctx.message.channel.send("You can use this command again in " + StrCool(int(error.retry_after)))
+    raise error
 
 DClient.run("NzY4Mzk3NjQwMTQwMDYyNzIx.X4_4EQ.mpWIl074jvRs0X-ceDoKdwv4H_E")
