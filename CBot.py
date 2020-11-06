@@ -490,7 +490,7 @@ async def AWord(ctx, *args):
                     Col.update_one({"IDd":"GuildInfo","IDg":str(ctx.guild.id)},{"$set":{WorA:0}})
                 # if FuncMon.DbAdd(Col, {"IDd":"GuildInfo","IDg":str(ctx.guild.id)}, WorA):
                     Msg = "'" + (WorA) + "' ADDED :thumbsup:" 
-                    FuncMon.DbAppendRest(Col, {"IDg":str(ctx.guild.id)}, {"IDd":"GuildInfo","IDg":str(ctx.guild.id)}, WorA, 0)
+                    # FuncMon.DbAppendRest(Col, {"IDg":str(ctx.guild.id)}, {"IDd":"GuildInfo","IDg":str(ctx.guild.id)}, WorA, 0)
                     DbA = Col.find({"IDg":str(ctx.guild.id)})
                     for j in DbA:
                         if j == i:

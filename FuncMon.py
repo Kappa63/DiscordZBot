@@ -27,22 +27,22 @@ def DbAdd(Datab, Stf, ItV):
         return True
     return False
 
-def DbRem(Datab, Stf, ItV):
-    DbB = Datab.find(Stf)
-    for i in DbB:
-        KMeys = i.keys()
-    if ItV in KMeys:
-        Datab.update_one(i,{"$unset":{ItV:0}})
-        return True
-    return False
+# def DbRem(Datab, Stf, ItV):
+#     DbB = Datab.find(Stf)
+#     for i in DbB:
+#         KMeys = i.keys()
+#     if ItV in KMeys:
+#         Datab.update_one(i,{"$unset":{ItV: ""}})
+#         return True
+#     return False
 
-def DbAppendRest(Datab, Stf, Exc, ItV, Num):
-    DbA = Datab.find(Stf)
-    for j in DbA:
-        if j == Exc:
-            pass
-        else:
-            Datab.update_one(j,{"$set":{ItV:Num}})
+# def DbAppendRest(Datab, Stf, Exc, ItV, Num):
+#     DbA = Datab.find(Stf)
+#     for j in DbA:
+#         if j == Exc:
+#             pass
+#         else:
+#             Datab.update_one(j,{"$set":{ItV:Num}})
 
 def AddTo(Datab, Stf, ItV, Num):
     DbB = Datab.find(Stf)
