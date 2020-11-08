@@ -353,15 +353,18 @@ async def SrSub(ctx, *args):
         REm.add_field(name = "\u200b", value = "The original post is a video(" + Type + ") [click here](" + SubCpoS.url + ") to view the original", inline = False)
         REm.set_image(url = SubCpoS.preview['images'][-1]['source']['url'])
         return REm
+
     if len(args) == 1:
         if CheckSub("".join(args)):
-            Post = Reddit.subreddit("".join(args)).hot()
-            try:
-                ChoicePosts = random.randint(1, 50)
-            except StopIteration:
-                pass
-            for _ in range(0, ChoicePosts):
-                SubCpoS = next(Sub for Sub in Post if not Sub.stickied)
+            while True:
+                try:
+                    Post = Reddit.subreddit("".join(args)).hot()
+                    ChoicePosts = random.randint(1, 50)
+                    for _ in range(0, ChoicePosts):
+                        SubCpoS = next(Sub for Sub in Post if not Sub.stickied)
+                    break
+                except StopIteration:
+                    continue
 
             if len(SubCpoS.title) > 253:
                 FtiTle = SubCpoS.title[0:253]
