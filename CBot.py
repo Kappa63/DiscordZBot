@@ -610,6 +610,10 @@ async def CMsend(ctx):
     else:
         await ctx.message.channel.send("No image(s) were attached :woozy_face:")
 
+@DClient.command(name = "ping")
+async def laTP(ctx):
+    await ctx.message.channel.send("Latency: " + str(round(DClient.latency, 1)) + "ms")
+
 @DClient.event
 async def on_message(message):
     CmSLim = 0
@@ -670,13 +674,13 @@ async def on_guild_remove(guild):
 @DEco.error
 async def on_eco_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
-        await ctx.message.channel.send("You can use this command again in " + StrCool(int(error.retry_after)))
+        await ctx.message.channel.send("You can use this command again in " + StrCool(round(error.retry_after,2)))
     raise error
 
 @DClient.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
-        await ctx.message.channel.send("Hold the spam. Wait atleast " + StrCool(int(error.retry_after)))
+        await ctx.message.channel.send("Hold the spam. Wait atleast " + StrCool(round(error.retry_after,2)))
     elif isinstance(error, IsBot):
         await ctx.message.channel.send("Bots can't use commands :pensive:")
     elif isinstance(error, IsAdmin):
