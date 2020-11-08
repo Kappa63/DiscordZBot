@@ -272,8 +272,11 @@ async def SrSub(ctx, *args):
         return REm
 
     if len(args) == 1:
+        Tries = 0
         if CheckSub("".join(args)):
             while True:
+                if Tries >= 50:
+                    break
                 try:
                     Post = Reddit.subreddit("".join(args)).hot()
                     ChoicePosts = random.randint(1, 50)
@@ -281,6 +284,7 @@ async def SrSub(ctx, *args):
                         SubCpoS = next(Sub for Sub in Post if not Sub.stickied)
                     break
                 except StopIteration:
+                    Tries += 1
                     continue
 
             if len(SubCpoS.title) > 253:
@@ -353,7 +357,7 @@ async def SrSub(ctx, *args):
                                         EmbOri(REm, "webpage", SubCpoS)
                                 except AttributeError:
                                     REm.add_field(name = "Post: ", value = SubCpoS.url, inline = False)
-                                    REm.add_field(name = "Couldnt get media. Sorry!!", value = '\u200b')
+                                    REm.add_field(name = "Media Unavailable. Sorry!!", value = '\u200b')
                 else:
                     REm.add_field(name = "NSFW: ", value = "This isn't an NSFW channel. No NSFW allowed here.", inline = False)
             REm.set_footer(text = "From " + "r/" + "".join(args))
@@ -584,7 +588,7 @@ async def on_guild_remove(guild):
     DbB = Col.find({"IDg":str(guild.id)})
     for DbG in DbB:
         Col.delete_one(DbG)
-        
+
 @DClient.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
