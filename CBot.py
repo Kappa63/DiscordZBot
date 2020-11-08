@@ -105,15 +105,8 @@ async def SendH(ctx, *args):
         HEm = discord.Embed(title = "**CBot Help**", description = "\u200b", color = 0x0af531)
         HEm.add_field(name = "zversion: ", value = "Checks the current running version of CBot", inline = False)
         HEm.add_field(name = "zsetupserver: ", value = "Sets up the bot for the first time for counting/tracking", inline = False)
-        HEm.add_field(name = "zsetupeconomy: ", value = "Sets up the bot for the first time for economy", inline = False)
-        HEm.add_field(name = "zhelp economy: ", value = "Setsup the bot for the first time (for counting/economy repectively)", inline = False)
         HEm.add_field(name = "zhelp server: ", value = "Provides all the server commands (including word track commands)", inline = False) 
         HEm.add_field(name = "zhelp misc: ", value = "Miscellaneous commands", inline = False)   
-        await ctx.message.channel.send(embed = HEm)
-    elif "".join(args).lower()  == "eco" or "".join(args).lower()  == "economy":
-        HEm = discord.Embed(title = "**CBot Economy Help**", description = "\u200b", color = 0x0af531)
-        HEm.add_field(name = "zprofile: ", value = "Shows your economy profile", inline = False)
-        HEm.add_field(name = "zdig: ", value = "Dig for treasure. Who knows? You might find some gold (or bones)", inline = False)
         await ctx.message.channel.send(embed = HEm)
     elif "".join(args).lower()  == "server":
         HEm = discord.Embed(title = "**CBot Server Help**", description = "\u200b", color = 0x0af531)
@@ -167,82 +160,6 @@ async def SMsg(ctx):
     else:
         await ctx.message.channel.send(":partying_face: This server is already setup :partying_face:")
 
-@DClient.command(aliases = ["setupeconomy","setupeco"])
-@commands.check(ChBot)
-@commands.cooldown(1, 2, commands.BucketType.user)
-async def STec(ctx):
-    if TraEco.count_documents({"IDd":str(ctx.author.id)}) == 0:
-        DbB = TraEco.find({"IDd":"Setup"})
-        for i in DbB:
-            Kyes = i.keys()
-        if TraEco.count_documents({"IDd":str(ctx.author.id)}) == 0:
-            info = {"IDd":str(ctx.author.id)}
-            TraEco.insert_one(info)
-            for Wp in Kyes:
-                if Wp == "_id" or Wp == "IDd" or Wp == "Setup":
-                    pass
-                elif Wp == "ReqXp":
-                    FuncMon.DbAdd(TraEco, {"IDd":str(ctx.author.id)}, Wp, 500)
-                else:
-                    FuncMon.DbAdd(TraEco, {"IDd":str(ctx.author.id)}, Wp, 0)
-        await ctx.message.channel.send(":partying_face: Setup complete, you can now use economy commands :partying_face:")
-    else:
-        await ctx.message.channel.send(":partying_face: You are already setup :partying_face:")
-
-@DClient.command(aliases = ["p","profile"])
-@commands.check(ChBot)
-@commands.cooldown(1, 2, commands.BucketType.user)
-async def PecoS(ctx, *args):
-    isBot = False
-    if len(ctx.message.mentions) > 0:
-        if ctx.message.mentions[0].bot == False:
-            AUmN = ctx.message.mentions[0]
-            aRGu = list(args)
-            aRGu.pop(0)
-        else:
-            isBot = True
-    else:
-        AUmN = ctx.author
-        aRGu = list(args)
-
-    if not isBot:
-        if TraEco.count_documents({"IDd":str(AUmN.id)}) != 0:
-            OSfDb = TraEco.find({"IDd":str(AUmN.id)})
-            for i in OSfDb:
-                Kyes = i.keys()
-            PeEm = discord.Embed(title = AUmN.display_name, description = "Newbie", color = 0x42e0f5) 
-            PeEm.set_thumbnail(url = AUmN.avatar_url)
-            PeEm.add_field(name = "\u200b", value = "\u200b", inline = False)
-            Num = ""
-            for Wp in Kyes:
-                OSfDb = TraEco.find({"IDd":str(AUmN.id)})
-                if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
-                    pass
-                elif Wp == "ReqXp":
-                    for j in OSfDb:
-                        Num += "**Xp for level up:** " + str(j[Wp]-j["XP"]) + "\n"  
-                else:
-                    for j in OSfDb:
-                        Num += "**" + Wp + ":** " + str(j[Wp]) + "\n"     
-            PeEm.add_field(name = "GENERAL: ", value = Num, inline = False)
-            await ctx.message.channel.send(embed = PeEm)
-        else:
-            await ctx.message.channel.send(":point_right: That profile doesnt exist yet. Please setup your economy profile first (with 'zsetupeco')! Check all economy commands with 'zhelp eco' :point_left:")
-    else:
-        await ctx.message.channel.send("Cannot check a bot's profile :confused:")
-
-@DClient.command(name = "dig")
-@commands.check(ChBot)
-@commands.check(ChEco)
-@commands.cooldown(1, 60, commands.BucketType.user)
-async def DEco(ctx):
-    PosDigs = ["Bones","Pure Gold","Dirt","Copper","Landmine","Plumbing"]
-    CDug = random.choice(PosDigs)
-    FuncMon.DbAdd(TraEco, {"IDd":str(ctx.author.id)}, CDug, 0)   
-    Numo = ItemFind.Item(CDug)
-    FuncMon.AddTo(TraEco, {"IDd":str(ctx.author.id)}, CDug, Numo)
-    await ctx.message.channel.send("You found " + str(Numo) + " " + CDug +"!!")
-    
 @DClient.command(name = "hentai")
 @commands.check(ChBot)
 @commands.cooldown(1, 2, commands.BucketType.user)
@@ -667,13 +584,7 @@ async def on_guild_remove(guild):
     DbB = Col.find({"IDg":str(guild.id)})
     for DbG in DbB:
         Col.delete_one(DbG)
-
-@DEco.error
-async def on_eco_error(ctx, error):
-    if isinstance(error, commands.CommandOnCooldown):
-        await ctx.message.channel.send("You can use this command again in " + StrCool(round(error.retry_after,2)))
-    raise error
-
+        
 @DClient.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
