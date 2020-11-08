@@ -350,7 +350,7 @@ async def nHen(ctx, args):
 @commands.cooldown(1, 2, commands.BucketType.user)
 async def SrSub(ctx, *args):
     def EmbOri(REm, Type, SubCpoS):
-        REm.add_field(name = "\u200b", value = "The original post is a video(" + Type + ") [click here](" + SubCpoS.url + ") to view the original", inline = False)
+        REm.add_field(name = "\u200b", value = "The original post is a " + Type + " [click here](" + SubCpoS.url + ") to view the original", inline = False)
         REm.set_image(url = SubCpoS.preview['images'][-1]['source']['url'])
         return REm
 
@@ -425,15 +425,15 @@ async def SrSub(ctx, *args):
                             elif C == 5: 
                                 try:
                                     if "v.redd.it" in SubCpoS.url:
-                                        EmbOri(REm, "reddit", SubCpoS)
+                                        EmbOri(REm, "video (reddit)", SubCpoS)
                                     elif "youtu.be" in SubCpoS.url  or "youtube.com" in SubCpoS.url:
-                                        EmbOri(REm, "youtube", SubCpoS)
+                                        EmbOri(REm, "video (youtube)", SubCpoS)
                                     elif "gfycat" in SubCpoS.url:
-                                        EmbOri(REm, "gfycat", SubCpoS)
+                                        EmbOri(REm, "video (gfycat)", SubCpoS)
                                     elif "redgifs" in SubCpoS.url:
-                                        EmbOri(REm, "redgifs", SubCpoS)
+                                        EmbOri(REm, "video (redgifs)", SubCpoS)
                                     else:
-                                        EmbOri(REm, "-", SubCpoS)
+                                        EmbOri(REm, "webpage", SubCpoS)
                                 except AttributeError:
                                     REm.add_field(name = "Post: ", value = SubCpoS.url, inline = False)
                                     REm.add_field(name = "Couldnt get media. Sorry!!", value = '\u200b')
