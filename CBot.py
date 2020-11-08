@@ -99,7 +99,7 @@ def ChEco(ctx):
 
 @DClient.command(name = "help")
 @commands.check(ChBot)
-@commands.cooldown(1, 1, commands.BucketType.user)
+@commands.cooldown(1, 2, commands.BucketType.user)
 async def SendH(ctx, *args):
     if "".join(args) == "" or "".join(args) == " ":
         HEm = discord.Embed(title = "**CBot Help**", description = "\u200b", color = 0x0af531)
@@ -139,7 +139,7 @@ async def SendH(ctx, *args):
 
 @DClient.command(aliases = ["ver","version"])
 @commands.check(ChBot)
-@commands.cooldown(1, 1, commands.BucketType.user)
+@commands.cooldown(1, 2, commands.BucketType.user)
 async def RetVer(ctx):
     VEm = discord.Embed(title = "Active Version", description = "CBot build version and info", color = 0xf59542)
     VEm.add_field(name = "Dev: ", value = "Kappa", inline = True)
@@ -150,7 +150,7 @@ async def RetVer(ctx):
 @DClient.command(aliases = ["setupserver","setupser"])
 @commands.check(ChBot)
 @commands.check(ChAdmin)
-@commands.cooldown(1, 1, commands.BucketType.user)
+@commands.cooldown(1, 2, commands.BucketType.user)
 async def SMsg(ctx):
     if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) == 0:
         Col.insert_one({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"})
@@ -169,7 +169,7 @@ async def SMsg(ctx):
 
 @DClient.command(aliases = ["setupeconomy","setupeco"])
 @commands.check(ChBot)
-@commands.cooldown(1, 1, commands.BucketType.user)
+@commands.cooldown(1, 2, commands.BucketType.user)
 async def STec(ctx):
     if TraEco.count_documents({"IDd":str(ctx.author.id)}) == 0:
         DbB = TraEco.find({"IDd":"Setup"})
@@ -191,7 +191,7 @@ async def STec(ctx):
 
 @DClient.command(aliases = ["p","profile"])
 @commands.check(ChBot)
-@commands.cooldown(1, 1, commands.BucketType.user)
+@commands.cooldown(1, 2, commands.BucketType.user)
 async def PecoS(ctx, *args):
     isBot = False
     if len(ctx.message.mentions) > 0:
@@ -245,7 +245,7 @@ async def DEco(ctx):
     
 @DClient.command(name = "hentai")
 @commands.check(ChBot)
-@commands.cooldown(1, 1, commands.BucketType.user)
+@commands.cooldown(1, 2, commands.BucketType.user)
 async def nHen(ctx, args):  
     def ChCHan(MSg):
         return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id
@@ -347,7 +347,7 @@ async def nHen(ctx, args):
 
 @DClient.command(name = "reddit")
 @commands.check(ChBot)
-@commands.cooldown(1, 1, commands.BucketType.user)
+@commands.cooldown(1, 2, commands.BucketType.user)
 async def SrSub(ctx, *args):
     def EmbOri(REm, Type, SubCpoS):
         REm.add_field(name = "\u200b", value = "The original post is a video(" + Type + ") [click here](" + SubCpoS.url + ") to view the original", inline = False)
@@ -453,7 +453,7 @@ async def SrSub(ctx, *args):
 @commands.check(ChBot)
 @commands.check(ChAdmin)
 @commands.check(ChSer)
-@commands.cooldown(1, 1, commands.BucketType.user)
+@commands.cooldown(1, 2, commands.BucketType.user)
 async def AWord(ctx, *args): 
     WorA = " ".join(args)
     if FuncMon.DbAdd(Col, {"IDd":"GuildInfo","IDg":str(ctx.guild.id)}, WorA, 0):
@@ -467,7 +467,7 @@ async def AWord(ctx, *args):
 @commands.check(ChBot)
 @commands.check(ChAdmin)
 @commands.check(ChSer)
-@commands.cooldown(1, 1, commands.BucketType.user)
+@commands.cooldown(1, 2, commands.BucketType.user)
 async def RWord(ctx, *args):
     WorA = " ".join(args)
     if FuncMon.DbRem(Col, {"IDd":"GuildInfo", "IDg":str(ctx.guild.id)}, WorA):
@@ -480,7 +480,7 @@ async def RWord(ctx, *args):
 @DClient.command(name = "list")
 @commands.check(ChBot)
 @commands.check(ChSer)
-@commands.cooldown(1, 1, commands.BucketType.user)
+@commands.cooldown(1, 2, commands.BucketType.user)
 async def LWord(ctx):
     LEm = discord.Embed(title = "Server List", description = "Words/Phrases being tracked", color = 0xf59542) 
 
@@ -498,7 +498,7 @@ async def LWord(ctx):
 @DClient.command(name = "total")
 @commands.check(ChBot)
 @commands.check(ChSer)
-@commands.cooldown(1, 1, commands.BucketType.user)
+@commands.cooldown(1, 2, commands.BucketType.user)
 async def TMsg(ctx, *args):
     Num = 0
     Enput = " ".join(args)
@@ -536,7 +536,7 @@ async def TMsg(ctx, *args):
 @DClient.command(name = "stats")
 @commands.check(ChBot)
 @commands.check(ChSer)
-@commands.cooldown(1, 1, commands.BucketType.user)
+@commands.cooldown(1, 2, commands.BucketType.user)
 async def IMsg(ctx, *args): 
     isBot = False
     if len(ctx.message.mentions) > 0:
@@ -578,8 +578,7 @@ async def IMsg(ctx, *args):
             for j in OSfDb:
                 Num = j[Enput]
             IEm.add_field(name = Enput, value = Num, inline = True)
-            await ctx.message.channel.send(embed = IEm)
-        
+            await ctx.message.channel.send(embed = IEm)    
         else:
             await ctx.message.channel.send("That word doesnt exist yet! :confused:")
     elif isBot == True:
@@ -587,7 +586,7 @@ async def IMsg(ctx, *args):
     
 @DClient.command(name = "fry")
 @commands.check(ChBot)
-@commands.cooldown(1, 1, commands.BucketType.user)
+@commands.cooldown(1, 2, commands.BucketType.user)
 async def CMsend(ctx):
     if len(ctx.message.attachments) > 0:
         files = []
@@ -669,7 +668,7 @@ async def on_guild_remove(guild):
         Col.delete_one(DbG)
 
 @DEco.error
-async def on_dig_error(ctx, error):
+async def on_eco_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
         await ctx.message.channel.send("You can use this command again in " + StrCool(int(error.retry_after)))
     raise error
