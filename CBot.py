@@ -388,8 +388,6 @@ async def SrSub(ctx, *args):
                     REm.add_field(name = "Post: ", value = SubCpoS.url, inline = True)
                 else:
                     REm.add_field(name = "NSFW: ", value = "This channel isn't NSFW. No NSFW here", inline = False)
-                REm.set_footer(text = "From " + "r/" + "".join(args))
-                REm.set_author(name = "By: u/" + str(SubCpoS.author))
             else:
                 NSfw = False
                 if SubCpoS.over_18:
@@ -438,8 +436,8 @@ async def SrSub(ctx, *args):
                                     REm.add_field(name = "Couldnt get media. Sorry!!", value = '\u200b')
                 else:
                     REm.add_field(name = "NSFW: ", value = "This isn't an NSFW channel. No NSFW allowed here.", inline = False)
-                REm.set_footer(text = "From " + "r/" + "".join(args))
-                REm.set_author(name = "By: u/" + str(SubCpoS.author))
+            REm.set_footer(text = "From " + "r/" + "".join(args) + "in " + str(round(DClient.latency, 2)))
+            REm.set_author(name = "*By: u/" + str(SubCpoS.author) + "*")
             await ctx.message.channel.send(embed = REm)
         else:
             await ctx.message.channel.send("Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)")
@@ -612,7 +610,7 @@ async def CMsend(ctx):
 
 @DClient.command(name = "ping")
 async def laTP(ctx):
-    await ctx.message.channel.send("Latency: " + str(round(DClient.latency, 1)) + "ms")
+    await ctx.message.channel.send("Latency: " + str(round(DClient.latency, 2)) + "ms")
 
 @DClient.event
 async def on_message(message):
