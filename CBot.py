@@ -13,6 +13,7 @@ import requests
 from prawcore import NotFound, Forbidden
 from hentai import Utils, Sort, Hentai, Format
 import asyncio
+import time
 
 Mdb = "mongodb+srv://Kappa:85699658@cbotdb.exsit.mongodb.net/CBot?retryWrites=true&w=majority"
 Cls = MongoClient(Mdb)
@@ -612,7 +613,11 @@ async def CMsend(ctx):
 @commands.check(ChBot)
 @commands.cooldown(1, 2, commands.BucketType.user)
 async def laTP(ctx):
-    await ctx.message.channel.send("Latency: " + str(round(DClient.latency, 3)*1000) + "ms")
+    time_then = time.monotonic()
+    pinger = await ctx.message.channel.send("__*`Pinging...`*__")
+    ping = '%.2f' % (1000*(time.monotonic()-time_then))
+    await pinger.edit(':ping_pong: \n **Pong!** __**`' + ping + 'ms`**__')
+    # await ctx.message.channel.send("Latency: " + str(round(DClient.latency, 3)*1000) + "ms")
 
 @DClient.event
 async def on_message(message):
