@@ -540,7 +540,7 @@ async def on_message(message):
         for i in DbB:
             KMeys = i.keys()
         LoKmeys = min(KMeys)
-        LoKmeys = LoKmeys[0].split(" ")
+        LoKmeys = LoKmeys.split(" ")
         print(LoKmeys)
         Remove = '*_'
         PhMsRase = ((message.content.lower()).strip(Remove)).split(" ")
