@@ -548,7 +548,7 @@ async def on_message(message):
     if Col.count_documents({"IDd":"GuildInfo","IDg":str(message.guild.id),"Setup":"Done"}) != 0:
         DbB = Col.find({"IDd":str(message.author.id),"IDg":str(message.guild.id)})
         for i in DbB:
-            KMeys = i.keys()
+            KMeys = await i.keys()
         Remove = '*_'
         PhMsRase = ((message.content.lower()).strip(Remove)).split(" ")
         PhMsRase = removeExtraS(PhMsRase, "")
