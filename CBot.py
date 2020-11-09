@@ -556,7 +556,7 @@ async def on_message(message):
                             print("added")
                             CmSLim += 1
                 try:
-                    PhMsRase.pop(0)
+                    PhMsRase.remove(0)
                 except IndexError:
                     pass
     else:
