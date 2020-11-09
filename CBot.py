@@ -552,7 +552,10 @@ async def on_message(message):
         Remove = '*_'
         PhMsRase = ((message.content.lower()).strip(Remove)).split(" ")
         PhMsRase = removeExtraS(PhMsRase, "")
-        LoKmeys = ("".join(min(KMeys))).split(" ")
+        LoKmeys = 1
+        for Ph in KMeys:
+            if len(Ph.split(" ")) > LoKmeys:
+                LoKmeys = len(Ph.split(" "))        
         if message.author.bot == False:
             for _ in range(len(PhMsRase)):
                 if CmSLim >= 10:
@@ -564,7 +567,7 @@ async def on_message(message):
                         break
                     Temp.append(MMmsg)
                     CTemp = " ".join(Temp)
-                    if len(LoKmeys) >= len(Temp) > 0:
+                    if LoKmeys >= len(Temp) > 0:
                         if FuncMon.AddTo(Col, {"IDd":str(message.author.id),"IDg":str(message.guild.id)}, CTemp, 1):
                             print("Added")
                             CmSLim += 1
