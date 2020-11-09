@@ -541,12 +541,11 @@ async def on_message(message):
         PhMsRase = removeExtraS(PhMsRase, "")
         if message.author.bot == False:
             for _ in range(R):
-                print(CmSLim)
-                if CmSLim >= 10:
-                    print("Broke count")
-                    break
                 Temp = []
                 for MMmsg in PhMsRase:
+                    if CmSLim >= 10:
+                        print("Broke count")
+                        break
                     Temp.append(MMmsg)
                     CTemp = " ".join(Temp)
                     if len(Temp) > 0:
