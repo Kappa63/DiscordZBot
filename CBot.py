@@ -553,6 +553,7 @@ async def on_message(message):
                     CTemp = " ".join(Temp)
                     if len(Temp) > 0:
                         if FuncMon.AddTo(Col, {"IDd":str(message.author.id),"IDg":str(message.guild.id)}, CTemp, 1):
+                            print("added")
                             CmSLim += 1
                 try:
                     PhMsRase.pop(0)
