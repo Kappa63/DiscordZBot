@@ -27,7 +27,7 @@ DClient = commands.Bot(case_insensitive = True, command_prefix = ["z","Z"], help
 
 Reddit = praw.Reddit(client_id = "ntnBVsoqGHtoNw", client_secret = "ZklNqu4BQK4jWRp9dYXb4ApoQ10", user_agent = "CBot by u/Kamlin333")
 
-Doing = ["Calculations", "Flipping", "Griffin", "Getting Tortured", "Crying", "Still Counting", "Telescopes", "In Pain", "Aerodynamics", "Not A Robot", "Astrology", "Quantum Physics"]
+Doing = ["Calculations", "Flipping", "Cry away the pain at night, so I can fake a smile next day", "Griffin", "Getting Tortured", "Crying", "Still Counting", "Telescopes", "In Pain", "Aerodynamics", "Not A Robot", "Astrology", "Quantum Physics"]
 
 def removeExtraS(listRm, val):
    return [value for value in listRm if value != val]
@@ -541,6 +541,7 @@ async def on_message(message):
         PhMsRase = removeExtraS(PhMsRase, "")
         if message.author.bot == False:
             for _ in range(R):
+                print(CmSLim)
                 if CmSLim >= 10:
                     print("Broke count")
                     break
