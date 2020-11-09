@@ -94,13 +94,6 @@ def ChSer(ctx):
         return True
     raise ProfSer("Unready")
 
-class ProfEco(commands.CheckFailure):
-    pass
-def ChEco(ctx):
-    if TraEco.count_documents({"IDd":str(ctx.author.id)}) != 0:
-        return True
-    raise ProfEco("Unready")
-
 @DClient.command(name = "help")
 @commands.check(ChBot)
 @commands.cooldown(1, 2, commands.BucketType.user)
@@ -625,8 +618,6 @@ async def on_command_error(ctx, error):
         await ctx.message.channel.send("Non-admins are not allowed to use this command :face_with_raised_eyebrow:")
     elif isinstance(error, ProfSer):
         await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetupserver')! Check all server commands with 'zhelp server' :point_left:")   
-    elif isinstance(error, ProfEco):
-        await ctx.message.channel.send(":point_right: Please setup your economy profile first (with 'zsetupeco')! Check all economy commands with 'zhelp eco' :point_left:")
     else:
         raise error
 
