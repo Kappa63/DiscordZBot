@@ -441,7 +441,6 @@ async def TMsg(ctx, *args):
                     Num += j[Wp]
                     
                 IEm.add_field(name = Wp, value = Num, inline = True)
-
         await ctx.message.channel.send(embed = IEm)
 
     elif Enput in Kyes:
