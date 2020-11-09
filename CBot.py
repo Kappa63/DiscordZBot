@@ -539,6 +539,7 @@ async def on_message(message):
         DbB = Col.find({"IDd":str(message.author.id),"IDg":str(message.guild.id)})
         for i in DbB:
             KMeys = i.keys()
+        print(KMeys)
         LoKmeys = max(KMeys).split(" ")
         print(LoKmeys)
         Remove = '*_'
@@ -556,7 +557,7 @@ async def on_message(message):
                         break
                     Temp.append(MMmsg)
                     CTemp = " ".join(Temp)
-                    if len(LoKmeys) > len(Temp) > 0:
+                    if len(LoKmeys) >= len(Temp) > 0:
                         if FuncMon.AddTo(Col, {"IDd":str(message.author.id),"IDg":str(message.guild.id)}, CTemp, 1):
                             print("added")
                             CmSLim += 1
