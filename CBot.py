@@ -556,13 +556,12 @@ async def on_message(message):
         DbB = Col.find({"IDd":str(message.author.id),"IDg":str(message.guild.id)})
         for i in DbB:
             KMeys = i.keys()
-        LoKmeys = ("".join(min(KMeys))).split(" ")
         Remove = '*_'
         PhMsRase = ((message.content.lower()).strip(Remove)).split(" ")
-        R = len(PhMsRase)
         PhMsRase = removeExtraS(PhMsRase, "")
+        LoKmeys = ("".join(min(KMeys))).split(" ")
         if message.author.bot == False:
-            for _ in range(R):
+            for _ in range(len(PhMsRase)):
                 if CmSLim >= 10:
                     print("Broke count")
                     break
@@ -574,7 +573,7 @@ async def on_message(message):
                     CTemp = " ".join(Temp)
                     if len(LoKmeys) >= len(Temp) > 0:
                         if FuncMon.AddTo(Col, {"IDd":str(message.author.id),"IDg":str(message.guild.id)}, CTemp, 1):
-                            print("added")
+                            print("Added")
                             CmSLim += 1
                     else:
                         break
@@ -628,6 +627,7 @@ async def on_command_error(ctx, error):
         await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetupserver')! Check all server commands with 'zhelp server' :point_left:")   
     elif isinstance(error, ProfEco):
         await ctx.message.channel.send(":point_right: Please setup your economy profile first (with 'zsetupeco')! Check all economy commands with 'zhelp eco' :point_left:")
-    raise error
+    else:
+        raise error
 
 DClient.run("NzY4Mzk3NjQwMTQwMDYyNzIx.X4_4EQ.mpWIl074jvRs0X-ceDoKdwv4H_E")
