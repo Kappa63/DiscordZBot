@@ -542,6 +542,7 @@ async def on_message(message):
         if message.author.bot == False:
             for _ in range(R):
                 if CmSLim >= 10:
+                    print("Broke count")
                     break
                 Temp = []
                 for MMmsg in PhMsRase:
