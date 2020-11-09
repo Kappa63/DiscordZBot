@@ -546,9 +546,9 @@ async def CMsend(ctx):
 async def on_message(message):
     CmSLim = 0
     if Col.count_documents({"IDd":"GuildInfo","IDg":str(message.guild.id),"Setup":"Done"}) != 0:
-        DbB = Col.find({"IDd":str(message.author.id),"IDg":str(message.guild.id)})
+        DbB = Col.find({"IDd":"GuildInfo","IDg":str(message.guild.id),"Setup":"Done"})
         for i in DbB:
-            KMeys = await i.keys()
+            KMeys = i.keys()
         Remove = '*_'
         PhMsRase = ((message.content.lower()).strip(Remove)).split(" ")
         PhMsRase = removeExtraS(PhMsRase, "")
