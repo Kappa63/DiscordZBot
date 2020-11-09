@@ -13,6 +13,7 @@ import requests
 from prawcore import NotFound, Forbidden
 from hentai import Utils, Sort, Hentai, Format
 import asyncio
+import giphy_client
 
 Mdb = "mongodb+srv://Kappa:85699658@cbotdb.exsit.mongodb.net/CBot?retryWrites=true&w=majority"
 Cls = MongoClient(Mdb)
@@ -27,8 +28,10 @@ DClient = commands.Bot(case_insensitive = True, command_prefix = ["z","Z"], help
 
 Reddit = praw.Reddit(client_id = "ntnBVsoqGHtoNw", client_secret = "ZklNqu4BQK4jWRp9dYXb4ApoQ10", user_agent = "CBot by u/Kamlin333")
 
-# Doing = ["Calculations", "Flipping", "Cry away the pain at night, so I can fake a smile next day", "Griffin", "Getting Tortured", "Crying", "Still Counting", "Telescopes", "In Pain", "Aerodynamics", "Not A Robot", "Astrology", "Quantum Physics"]
-Doing = ["Cry away the pain at night, so I can fake a smile next day"]
+GClient = "ZH1xoGH0XUffrtqFKdj3kD4YrVoZvb8i"
+GApi = giphy_client.DefaultApi()
+
+Doing = ["Calculations", "Flipping", "Cry away the pain at night, so I can fake a smile next day", "Griffin", "Getting Tortured", "Crying", "Still Counting", "Telescopes", "In Pain", "Aerodynamics", "Not A Robot", "Astrology", "Quantum Physics"]
 
 def removeExtraS(listRm, val):
    return [value for value in listRm if value != val]
@@ -126,6 +129,7 @@ async def SendH(ctx, *args):
         HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a post from the top 50 posts in hot from any subreddit", inline = False)
         HEm.add_field(name = "zhentai (Magic Numbers): ", value = "Gets doujin from nhentai using magic numbers", inline = False)
         HEm.add_field(name = "zhentai random: ", value = "Gets a random doujin from nhentai", inline = False)
+        HEm.add_field(name = "zgiphy (Phrase/Word to search for): ", value = "Returns a random gif from top 50 results on giphy", inline = False)
         HEm.set_footer(text = "Note: Some hentai are not available. This is to abide by the discord TOS")
         await ctx.message.channel.send(embed = HEm)
     else:
@@ -505,7 +509,20 @@ async def IMsg(ctx, *args):
             await ctx.message.channel.send("That word doesnt exist yet! :confused:")
     elif isBot == True:
         await ctx.message.channel.send("Cannot check a bot's stats :confused:")
-    
+
+@DClient.command(name = "giphy")
+async def Gfin(ctx, *args):
+    if args:
+        try:
+            QRGifs = GApi.gifs_search_get(GClient, *args, limit = 50)
+            GifSAl = list(QRGifs.data)
+            GifF = random.choices(GifSAl)
+            await ctx.message.channel.send(GifF[0].url)
+        except IndexError:
+            await ctx.message.channel.send("No gifs found :expressionless:")
+    else:
+        await ctx.message.channel.send("No search term given :confused:")
+
 @DClient.command(name = "fry")
 @commands.check(ChBot)
 @commands.cooldown(1, 2, commands.BucketType.user)
