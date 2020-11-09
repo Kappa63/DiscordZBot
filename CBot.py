@@ -104,7 +104,7 @@ async def SendH(ctx, *args):
     if "".join(args) == "" or "".join(args) == " ":
         HEm = discord.Embed(title = "**CBot Help**", description = "\u200b", color = 0x0af531)
         HEm.add_field(name = "zversion: ", value = "Checks the current running version of CBot", inline = False)
-        HEm.add_field(name = "zsetupserver: ", value = "Sets up the bot for the first time for counting/tracking", inline = False)
+        HEm.add_field(name = "zsetup: ", value = "Sets up the bot for the first time for counting/tracking", inline = False)
         HEm.add_field(name = "zhelp server: ", value = "Provides all the server commands (including word track commands)", inline = False) 
         HEm.add_field(name = "zhelp misc: ", value = "Miscellaneous commands", inline = False)   
         await ctx.message.channel.send(embed = HEm)
@@ -140,7 +140,7 @@ async def RetVer(ctx):
     VEm.add_field(name = "Release: ", value = "Null", inline = True)
     await ctx.message.channel.send(embed = VEm)
 
-@DClient.command(aliases = ["setupserver","setupser"])
+@DClient.command(name = "setup")
 @commands.check(ChBot)
 @commands.check(ChAdmin)
 @commands.cooldown(1, 2, commands.BucketType.user)
