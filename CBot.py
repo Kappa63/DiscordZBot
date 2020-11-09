@@ -539,8 +539,8 @@ async def on_message(message):
         DbB = Col.find({"IDd":str(message.author.id),"IDg":str(message.guild.id)})
         for i in DbB:
             KMeys = i.keys()
-        print(KMeys)
-        LoKmeys = max(KMeys).split(" ")
+        LoKmeys = min(KMeys)
+        LoKmeys = LoKmeys[0].split(" ")
         print(LoKmeys)
         Remove = '*_'
         PhMsRase = ((message.content.lower()).strip(Remove)).split(" ")
