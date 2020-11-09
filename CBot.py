@@ -536,6 +536,10 @@ async def CMsend(ctx):
 async def on_message(message):
     CmSLim = 0
     if Col.count_documents({"IDd":"GuildInfo","IDg":str(message.guild.id),"Setup":"Done"}) != 0:
+        DbB = Col.find({"IDd":str(message.author.id),"IDg":str(message.guild.id)})
+        for i in DbB:
+            KMeys = i.keys()
+        LoKmeys = max(KMeys)
         Remove = '*_'
         PhMsRase = ((message.content.lower()).strip(Remove)).split(" ")
         R = len(PhMsRase)
@@ -551,10 +555,12 @@ async def on_message(message):
                         break
                     Temp.append(MMmsg)
                     CTemp = " ".join(Temp)
-                    if len(Temp) > 0:
+                    if len(LoKmeys) > len(Temp) > 0:
                         if FuncMon.AddTo(Col, {"IDd":str(message.author.id),"IDg":str(message.guild.id)}, CTemp, 1):
                             print("added")
                             CmSLim += 1
+                    else:
+                        break
                 try:
                     PhMsRase.pop(0)
                 except IndexError:
