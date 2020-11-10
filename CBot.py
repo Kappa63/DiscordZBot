@@ -584,24 +584,23 @@ async def CMsend(ctx, *args):
         if ArC[0] == "profile":
             ArC.pop(0)
             if len(ctx.message.mentions) > 0 and ("<@!"+str(ctx.message.mentions[0].id)+">") == ArC[0]:
-                print(str((ctx.message.mentions[0]).avatar_url))
                 AttLi.append(str((ctx.message.mentions[0]).avatar_url))
                 ArC.pop(0)
             else:
                 AttLi.append(str(ctx.author.avatar_url))
         try:
-            AttLi.append(*ArC)
+            for Lin in ArC:
+                AttLi.append(Lin)
         except TypeError:
             pass
         for AtT in ctx.message.attachments:
             AttLi.append(AtT.url)
         files = []
         C = 0
-        print(AttLi)
         for file in AttLi:
-            C += 1
             try:
                 if requests.head(file).headers.get('content-type').split("/")[0] == "image":
+                    C += 1
                     r = requests.get(file, allow_redirects = True)
                     open("resend.jpg", "wb").write(r.content)
                     img = Image.open("resend.jpg")
