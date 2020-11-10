@@ -122,6 +122,7 @@ async def SendH(ctx, *args):
         HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a post from the top 50 posts in hot from any subreddit", inline = False)
         HEm.add_field(name = "zhentai (Magic Numbers): ", value = "Gets doujin from nhentai using magic numbers", inline = False)
         HEm.add_field(name = "zhentai random: ", value = "Gets a random doujin from nhentai", inline = False)
+        HEm.add_field(name = "zhentai search (Phrase/Word to search for): ", value = "Searches for the 10 most popular doujin", inline = False)
         HEm.add_field(name = "zgiphy (Phrase/Word to search for): ", value = "Returns a random gif from top 50 results on giphy", inline = False)
         HEm.set_footer(text = "Note: Some hentai are not available. This is to abide by the discord TOS")
         await ctx.message.channel.send(embed = HEm)
@@ -161,9 +162,27 @@ async def SMsg(ctx):
 @DClient.command(name = "hentai")
 @commands.check(ChBot)
 @commands.cooldown(1, 2, commands.BucketType.user)
-async def nHen(ctx, args):  
+async def nHen(ctx, *args):  
+    def ChCHanS(MSg):
+        MesS = MSg.content.lower()
+        MeseS = (MSg.content.lower()).split(" ")
+        RsT = False
+        try:
+            if int(MSg.content) <= 10:
+                RsT = True
+        except ValueError:
+            if (MesS == "cancel") or (MesS == "c") or (MesS == "zhentai") or (MeseS[0] == "zhentai"):
+                RsT = True
+        return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
+
     def ChCHan(MSg):
-        return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id
+        MesS = MSg.content.lower()
+        MeseS = (MSg.content.lower()).split(" ")
+        RsT = False
+        if (MesS == "close") or (MesS == "c") or (MesS == "zhentai") or (MesS == "n") or (MesS == "next") or (MesS == "back") or (MesS == "b") or (MeseS[0] == "zhentai") or (MeseS[0] == "go"):
+            RsT = True
+        return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
+
     def EmbedMaker(DentAi,Page, State):
         DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
         DEmE.set_thumbnail(url = DentAi.image_urls[0])
@@ -173,90 +192,127 @@ async def nHen(ctx, args):
         DEmE.add_field(name = "\u200b", value = "**Doujin " + State +"** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
         return DEmE
 
-    if args != "" and args != " ":
-        try:
-            Srch = int(args)
-        except ValueError:
-            if args.lower() == "random":
-                while True:
-                    Srch = Utils.get_random_id()
-                    DentAi = Hentai(Srch)
-                    if ("lolicon" not in [tag.name for tag in DentAi.tag]) and ("shotacon" not in [tag.name for tag in DentAi.tag]):
+    if args:
+        Chlks = " ".join(args).split(" ")
+        if Chlks[0].lower() == "search":
+            Chlks.pop(0)
+            C = 0
+            SrchDen = []
+            if " ".join(Chlks):
+                for DeOujin in Utils.search_by_query(query =  " ".join(Chlks) + ' -tag:"lolicon" -tag:"shotacon"', sort = Sort.Popular):
+                    C += 1
+                    if C == 1:
+                        SEm = discord.Embed(title = ":mag: Search for '" + " ".join(Chlks) + "'",  description = "\u200b", color = 0x000000)
+                    SEm.add_field(name = "\u200b", value = str(C) + ". `" + DeOujin['title']['english'] + "`", inline = False)
+                    SrchDen.append(DeOujin)
+                    if C == 10:
                         break
+                SEm.set_footer(text = "Choose a number to open doujin. 'c' or 'cancel' to exit search. \n\n*The Search closes automatically after 20sec of inactivity.*" )
+                DmSent = await ctx.message.channel.send(embed = SEm)
+                try:
+                    ResS = await DClient.wait_for('message', check = ChCHanS, timeout = 20)
+                    LResS = ResS.content.lower()
+                    ReseS = (ResS.content.lower()).split(" ")
+
+                    try:
+                        if int(ResS.content) <= 10:
+                            Srch = SrchDen[int(ResS.content)-1]['id']
+                            DentAi = Hentai(Srch)
+                            await DmSent.edit(embed = discord.Embed(title = ":newspaper: Opening...",  description = DentAi.title(Format.Pretty), color = 0x000000)) 
+                    except ValueError:
+                        if (LResS == "cancel") or (LResS == "c") or (LResS == "zhentai") or (ReseS[0] == "zhentai"):
+                            await DmSent.edit(embed = discord.Embed(title = ":newspaper2: Search Cancelled",  description = "\u200b", color = 0x000000))
+                except asyncio.TimeoutError:
+                    await DmSent.edit(embed = discord.Embed(title = ":hourglass: Search Timeout...",  description = "\u200b", color = 0x000000))
             else:
-                await ctx.message.channel.send("The argument contained non-numeral characters and wasn't a random request. :no_mouth:")
-        if(Hentai.exists(Srch)):
-            DentAi = Hentai(Srch)
-            if ("lolicon" not in [tag.name for tag in DentAi.tag]) and ("shotacon" not in [tag.name for tag in DentAi.tag]):
-                if ctx.channel.is_nsfw(): 
-                    Tags = ", ".join([tag.name for tag in DentAi.tag])
-                    if len(Tags) > 253:
-                        FdesCtI = Tags[0:253]
-                        FdesCtI = FdesCtI + "..."
-                    else:
-                        FdesCtI = Tags
-                    Page = 0
-                    DEm = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
-                    DEm.set_thumbnail(url = DentAi.image_urls[0])
-                    DEm.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
-                    DEm.set_image(url = DentAi.image_urls[0])
-                    DEm.add_field(name = "Doujin ID", value = str(DentAi.id), inline = False)
-                    DEm.add_field(name = "\u200b", value = "**Doujin OPEN** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
-                    await ctx.message.channel.send("**WARNING:** ALL messages sent after the embed will be deleted until doujin is closed. This is to ensure a proper reading experience.")
-                    DmSent = await ctx.message.channel.send(embed = DEm)
+                await ctx.message.channel.send("No search argument :woozy_face:")     
+        elif len(Chlks) == 1:
+            try:
+                Srch = int(" ".join(args))
+            except ValueError:
+                if " ".join(args).lower() == "random":
                     while True:
-                        try:
-                            Res = await DClient.wait_for('message', check = ChCHan, timeout = 120)
-                            LRes = (Res.content).lower()
-                            Rese = (Res.content.lower()).split(" ")
-                            if (LRes != "close") and (LRes != "c") and (LRes != "zhentai") and (Rese[0] != "zhentai"):
-                                await Res.delete()
-                            if len(Rese) == 1:
-                                if LRes == "n" or LRes == "next":
-                                    if Page < len(DentAi.image_urls)-1:
-                                        Page += 1
-                                        await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
-                                    else:
+                        Srch = Utils.get_random_id()
+                        DentAi = Hentai(Srch)
+                        if ("lolicon" not in [tag.name for tag in DentAi.tag]) and ("shotacon" not in [tag.name for tag in DentAi.tag]):
+                            break
+                else:
+                    await ctx.message.channel.send("The argument contained non-numeral characters and wasn't a random request. :no_mouth:")
+        try:
+            if (Hentai.exists(Srch)):
+                DentAi = Hentai(Srch)
+                if ("lolicon" not in [tag.name for tag in DentAi.tag]) and ("shotacon" not in [tag.name for tag in DentAi.tag]):
+                    if ctx.channel.is_nsfw(): 
+                        Tags = ", ".join([tag.name for tag in DentAi.tag])
+                        if len(Tags) > 253:
+                            FdesCtI = Tags[0:253]
+                            FdesCtI = FdesCtI + "..."
+                        else:
+                            FdesCtI = Tags
+                        Page = 0
+                        DEm = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
+                        DEm.set_thumbnail(url = DentAi.image_urls[0])
+                        DEm.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
+                        DEm.set_image(url = DentAi.image_urls[0])
+                        DEm.add_field(name = "Doujin ID", value = str(DentAi.id), inline = False)
+                        DEm.add_field(name = "\u200b", value = "**Doujin OPEN** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
+                        await ctx.message.channel.send("**WARNING:** ALL messages sent after the embed will be deleted until doujin is closed. This is to ensure a proper reading experience.")
+                        DmSent = await ctx.message.channel.send(embed = DEm)
+                        while True:
+                            try:
+                                Res = await DClient.wait_for('message', check = ChCHan, timeout = 120)
+                                LRes = (Res.content).lower()
+                                Rese = (Res.content.lower()).split(" ")
+                                if (LRes != "close") and (LRes != "c") and (LRes != "zhentai") and (Rese[0] != "zhentai"):
+                                    await Res.delete()
+                                if len(Rese) == 1:
+                                    if LRes == "n" or LRes == "next":
+                                        if Page < len(DentAi.image_urls)-1:
+                                            Page += 1
+                                            await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
+                                        else:
+                                            await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
+                                            break
+                                    elif LRes == "b" or LRes == "back":
+                                        if Page != 0:
+                                            Page -= 1
+                                            await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
+                                        else:
+                                            pass
+                                    elif LRes == "c" or LRes == "close" or LRes == "zhentai":
                                         await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
                                         break
-                                elif LRes == "b" or LRes == "back":
-                                    if Page != 0:
-                                        Page -= 1
-                                        await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
-                                    else:
-                                        pass
-                                elif LRes == "c" or LRes == "close" or LRes == "zhentai":
-                                    await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
-                                    break
-                            elif len(Rese) == 2:
-                                if Rese[0] == "go":
-                                    try:
-                                        pG = int(Rese[1])
-                                        if 0 < pG <= len(DentAi.image_urls)-1:
-                                            Page = pG-1
-                                            await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
-                                        elif pG < 1:
-                                            Page = 0
-                                            await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
+                                elif len(Rese) == 2:
+                                    if Rese[0] == "go":
+                                        try:
+                                            pG = int(Rese[1])
+                                            if 0 < pG <= len(DentAi.image_urls)-1:
+                                                Page = pG-1
+                                                await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
+                                            elif pG < 1:
+                                                Page = 0
+                                                await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
+                                                pass
+                                            else:
+                                                Page = len(DentAi.image_urls)-1
+                                                await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
+                                        except ValueError:
                                             pass
-                                        else:
-                                            Page = len(DentAi.image_urls)-1
-                                            await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
-                                    except ValueError:
-                                        pass
-                                elif Rese[0] == "zhentai":
-                                    await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
-                                    break
-                        except asyncio.TimeoutError:
-                            await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
-                            break
-                    await ctx.message.channel.send(":newspaper2: Doujin Closed :newspaper2:")
+                                    elif Rese[0] == "zhentai":
+                                        await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
+                                        break
+                            except asyncio.TimeoutError:
+                                await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
+                                break
+                        await ctx.message.channel.send(":newspaper2: Doujin Closed :newspaper2:")
+                    else:
+                        await ctx.message.channel.send("This isn't an NSFW channel. No NSFW allowed here. :confused:")
                 else:
-                    await ctx.message.channel.send("This isn't an NSFW channel. No NSFW allowed here. :confused:")
+                    await ctx.message.channel.send("Doujin contains prohibited terms. :zipper_mouth:")
             else:
-                await ctx.message.channel.send("Doujin contains prohibited terms. :zipper_mouth:")
-        else:
-            await ctx.message.channel.send("That Doujin doesn't exist :expressionless:")
+                await ctx.message.channel.send("That Doujin doesn't exist :expressionless:")
+        except UnboundLocalError:
+            pass
     else:
         await ctx.message.channel.send("No arguments :no_mouth:")
 
