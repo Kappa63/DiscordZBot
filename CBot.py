@@ -507,7 +507,7 @@ async def IMsg(ctx, *args):
 async def Gfin(ctx, *args):
     if args:
         try:
-            QRGifs = GApi.gifs_search_get(GClient, *args, limit = 50)
+            QRGifs = GApi.gifs_search_get(GClient, " ".join(args), limit = 50)
             GifSAl = list(QRGifs.data)
             GifF = random.choices(GifSAl)
             await ctx.message.channel.send(GifF[0].url)
