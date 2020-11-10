@@ -99,14 +99,14 @@ def ChSer(ctx):
 @commands.cooldown(1, 2, commands.BucketType.user)
 async def SendH(ctx, *args):
     if "".join(args) == "" or "".join(args) == " ":
-        HEm = discord.Embed(title = "**CBot Help**", description = "\u200b", color = 0x0af531)
+        HEm = discord.Embed(title = "**ZBot Help**", description = "\u200b", color = 0x0af531)
         HEm.add_field(name = "zversion: ", value = "Checks the current running version of CBot", inline = False)
         HEm.add_field(name = "zsetup: ", value = "Sets up the bot for the first time for counting/tracking", inline = False)
         HEm.add_field(name = "zhelp server: ", value = "Provides all the server commands (including word track commands)", inline = False) 
         HEm.add_field(name = "zhelp misc: ", value = "Miscellaneous commands", inline = False)   
         await ctx.message.channel.send(embed = HEm)
     elif "".join(args).lower()  == "server":
-        HEm = discord.Embed(title = "**CBot Server Help**", description = "\u200b", color = 0x0af531)
+        HEm = discord.Embed(title = "**ZBot Server Help**", description = "\u200b", color = 0x0af531)
         HEm.add_field(name = "zadd: ", value = "Adds a word/phrase to keep track of", inline = False)
         HEm.add_field(name = "zremove: ", value = "Removes an existing word/phrase being tracked", inline = False)
         HEm.add_field(name = "zlist: ", value = "Returns all added words/phrases", inline = False)
@@ -117,7 +117,7 @@ async def SendH(ctx, *args):
         HEm.set_footer(text = "Note: Counting is limited to 10 per Message to reduce spam incentives")
         await ctx.message.channel.send(embed = HEm)
     elif "".join(args).lower() == "misc" or "".join(args).lower() == "miscellaneous":
-        HEm = discord.Embed(title = "**CBot Misc. Help**", description = "\u200b", color = 0x0af531)
+        HEm = discord.Embed(title = "**ZBot Misc. Help**", description = "\u200b", color = 0x0af531)
         HEm.add_field(name = "zfry (Image Attachment): ", value = "Deep fries the attached image", inline = False)
         HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a post from the top 50 posts in hot from any subreddit", inline = False)
         HEm.add_field(name = "zhentai (Magic Numbers): ", value = "Gets doujin from nhentai using magic numbers", inline = False)
@@ -133,7 +133,7 @@ async def SendH(ctx, *args):
 @commands.check(ChBot)
 @commands.cooldown(1, 2, commands.BucketType.user)
 async def RetVer(ctx):
-    VEm = discord.Embed(title = "Active Version", description = "CBot build version and info", color = 0xf59542)
+    VEm = discord.Embed(title = "Active Version", description = "ZBot build version and info", color = 0xf59542)
     VEm.add_field(name = "Dev: ", value = "Kappa", inline = True)
     VEm.add_field(name = "Version: ", value = "0.4b", inline = True)
     VEm.add_field(name = "Release: ", value = "Null", inline = True)
@@ -515,12 +515,14 @@ async def TMsg(ctx, *args):
 async def IMsg(ctx, *args): 
     isBot = False
     if len(ctx.message.mentions) > 0:
-        if ctx.message.mentions[0].bot == False:
+        if ctx.message.mentions[0].bot == False and ("<@!"+str(ctx.message.mentions[0].id)+">") == args[0]:
             AUmN = ctx.message.mentions[0]
             aRGu = list(args)
             aRGu.pop(0)
-        else:
+        elif ctx.message.mentions[0].bot == True:
             isBot = True
+        else:
+            pass
     else:
         AUmN = ctx.author
         aRGu = list(args)
@@ -575,28 +577,46 @@ async def Gfin(ctx, *args):
 @DClient.command(name = "fry")
 @commands.check(ChBot)
 @commands.cooldown(1, 2, commands.BucketType.user)
-async def CMsend(ctx):
-    if len(ctx.message.attachments) > 0:
+async def CMsend(ctx, *args):
+    if len(ctx.message.attachments) > 0 or args:
+        ArC = " ".join(args).split(" ")
+        AttLi = []
+        if ArC[0] == "profile":
+            ArC.pop(0)
+            if len(ctx.message.mentions) > 0 and ("<@!"+str(ctx.message.mentions[0].id)+">") == ArC[0]:
+                print(str((ctx.message.mentions[0]).avatar_url))
+                AttLi.append(str((ctx.message.mentions[0]).avatar_url))
+                ArC.pop(0)
+            else:
+                AttLi.append(str(ctx.author.avatar_url))
+        try:
+            AttLi.append(*ArC)
+        except TypeError:
+            pass
+        for AtT in ctx.message.attachments:
+            AttLi.append(AtT.url)
         files = []
         C = 0
-        for file in ctx.message.attachments:
+        print(AttLi)
+        for file in AttLi:
             C += 1
-            for ExT in [".png",".jpg",".jpeg"]:
-                if (file.url).endswith(ExT):
-                    r = requests.get(file.url, allow_redirects = True)
+            try:
+                if requests.head(file).headers.get('content-type').split("/")[0] == "image":
+                    r = requests.get(file, allow_redirects = True)
                     open("resend.jpg", "wb").write(r.content)
                     img = Image.open("resend.jpg")
                     img = await deeppyer.deepfry(img, flares = False)
                     img.save("resend.jpg")
-                    files.append(discord.File("resend.jpg", filename = file.filename, spoiler = file.is_spoiler()))
+                    files.append(discord.File("resend.jpg"))
                     await ctx.message.channel.send(files = files)
                     files.pop(0)
                     os.remove("resend.jpg")
-                    break
-            else:
-                await ctx.message.channel.send("file(" + str(C) + ") isnt a valid image type :sweat:")
+                else:
+                    await ctx.message.channel.send("file(" + str(C) + ") isnt a valid image type :sweat:")
+            except requests.exceptions.MissingSchema:
+                pass
     else:
-        await ctx.message.channel.send("No image(s) were attached :woozy_face:")
+        await ctx.message.channel.send("No image(s) or link(s) were attached :woozy_face:")
 
 @DClient.event
 async def on_message(message):
