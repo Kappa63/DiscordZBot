@@ -284,31 +284,34 @@ async def nHen(ctx, *args):
             C = 0
             SrchDen = []
             if " ".join(Chlks):
-                for DeOujin in Utils.search_by_query(query =  " ".join(Chlks) + ' -tag:"lolicon" -tag:"shotacon"', sort = Sort.Popular):
-                    C += 1
-                    if C == 1:
-                        SEm = discord.Embed(title = ":mag: Search for '" + " ".join(Chlks) + "'",  description = "\u200b", color = 0x000000)
-                    SEm.add_field(name = "\u200b", value = str(C) + ". `" + DeOujin['title']['english'] + "`", inline = False)
-                    SrchDen.append(DeOujin)
-                    if C == 10:
-                        break
-                SEm.set_footer(text = "Choose a number to open doujin. 'c' or 'cancel' to exit search. \n\n*The Search closes automatically after 20sec of inactivity.*" )
-                DmSent = await ctx.message.channel.send(embed = SEm)
                 try:
-                    ResS = await DClient.wait_for('message', check = ChCHanS, timeout = 20)
-                    LResS = ResS.content.lower()
-                    ReseS = (ResS.content.lower()).split(" ")
-
+                    for DeOujin in Utils.search_by_query(query =  " ".join(Chlks) + ' -tag:"lolicon" -tag:"shotacon"', sort = Sort.Popular):
+                        C += 1
+                        if C == 1:
+                            SEm = discord.Embed(title = ":mag: Search for '" + " ".join(Chlks) + "'",  description = "\u200b", color = 0x000000)
+                        SEm.add_field(name = "\u200b", value = str(C) + ". `" + DeOujin['title']['english'] + "`", inline = False)
+                        SrchDen.append(DeOujin)
+                        if C == 10:
+                            break
+                    SEm.set_footer(text = "Choose a number to open doujin. 'c' or 'cancel' to exit search. \n\n*The Search closes automatically after 20sec of inactivity.*" )
+                    DmSent = await ctx.message.channel.send(embed = SEm)
                     try:
-                        if int(ResS.content) <= 10:
-                            Srch = SrchDen[int(ResS.content)-1]['id']
-                            DentAi = Hentai(Srch)
-                            await DmSent.edit(embed = discord.Embed(title = ":newspaper: Opening...",  description = DentAi.title(Format.Pretty), color = 0x000000)) 
-                    except ValueError:
-                        if (LResS == "cancel") or (LResS == "c") or (LResS == "zhentai") or (ReseS[0] == "zhentai"):
-                            await DmSent.edit(embed = discord.Embed(title = ":newspaper2: Search Cancelled",  description = "\u200b", color = 0x000000))
-                except asyncio.TimeoutError:
-                    await DmSent.edit(embed = discord.Embed(title = ":hourglass: Search Timeout...",  description = "\u200b", color = 0x000000))
+                        ResS = await DClient.wait_for('message', check = ChCHanS, timeout = 20)
+                        LResS = ResS.content.lower()
+                        ReseS = (ResS.content.lower()).split(" ")
+
+                        try:
+                            if int(ResS.content) <= 10:
+                                Srch = SrchDen[int(ResS.content)-1]['id']
+                                DentAi = Hentai(Srch)
+                                await DmSent.edit(embed = discord.Embed(title = ":newspaper: Opening...",  description = DentAi.title(Format.Pretty), color = 0x000000)) 
+                        except ValueError:
+                            if (LResS == "cancel") or (LResS == "c") or (LResS == "zhentai") or (ReseS[0] == "zhentai"):
+                                await DmSent.edit(embed = discord.Embed(title = ":newspaper2: Search Cancelled",  description = "\u200b", color = 0x000000))
+                    except asyncio.TimeoutError:
+                        await DmSent.edit(embed = discord.Embed(title = ":hourglass: Search Timeout...",  description = "\u200b", color = 0x000000))
+                except UnboundLocalError:
+                    await ctx.message.channel.send("No results found :woozy_face:") 
             else:
                 await ctx.message.channel.send("No search argument :woozy_face:")     
         elif len(Chlks) == 1:
