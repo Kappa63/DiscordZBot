@@ -96,7 +96,7 @@ def ChSer(ctx):
 
 @DClient.command(name = "help")
 @commands.check(ChBot)
-@commands.cooldown(1, 2, commands.BucketType.user)
+@commands.cooldown(1, 1, commands.BucketType.user)
 async def SendH(ctx, *args):
     if "".join(args) == "" or "".join(args) == " ":
         HEm = discord.Embed(title = "**ZBot Help**", description = "\u200b", color = 0x0af531)
@@ -118,7 +118,8 @@ async def SendH(ctx, *args):
         await ctx.message.channel.send(embed = HEm)
     elif "".join(args).lower() == "misc" or "".join(args).lower() == "miscellaneous":
         HEm = discord.Embed(title = "**ZBot Misc. Help**", description = "\u200b", color = 0x0af531)
-        HEm.add_field(name = "zfry (Image Attachment): ", value = "Deep fries the attached image", inline = False)
+        HEm.add_field(name = "zfry (Image Attachment/Image Url): ", value = "Deep fries the image", inline = False)
+        HEm.add_field(name = "zfry profile (@): ", value = "Deep fries the avatar", inline = False)
         HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a post from the top 50 posts in hot from any subreddit", inline = False)
         HEm.add_field(name = "zhentai (Magic Numbers): ", value = "Gets doujin from nhentai using magic numbers", inline = False)
         HEm.add_field(name = "zhentai random: ", value = "Gets a random doujin from nhentai", inline = False)
@@ -131,7 +132,7 @@ async def SendH(ctx, *args):
 
 @DClient.command(aliases = ["ver","version"])
 @commands.check(ChBot)
-@commands.cooldown(1, 2, commands.BucketType.user)
+@commands.cooldown(1, 1, commands.BucketType.user)
 async def RetVer(ctx):
     VEm = discord.Embed(title = "Active Version", description = "ZBot build version and info", color = 0xf59542)
     VEm.add_field(name = "Dev: ", value = "Kappa", inline = True)
@@ -142,7 +143,7 @@ async def RetVer(ctx):
 @DClient.command(name = "setup")
 @commands.check(ChBot)
 @commands.check(ChAdmin)
-@commands.cooldown(1, 2, commands.BucketType.user)
+@commands.cooldown(1, 1, commands.BucketType.user)
 async def SMsg(ctx):
     if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) == 0:
         Col.insert_one({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"})
@@ -161,7 +162,7 @@ async def SMsg(ctx):
 
 @DClient.command(name = "hentai")
 @commands.check(ChBot)
-@commands.cooldown(1, 2, commands.BucketType.user)
+@commands.cooldown(1, 1, commands.BucketType.user)
 async def nHen(ctx, *args):  
     def ChCHanS(MSg):
         MesS = MSg.content.lower()
@@ -318,7 +319,7 @@ async def nHen(ctx, *args):
 
 @DClient.command(name = "reddit")
 @commands.check(ChBot)
-@commands.cooldown(1, 2, commands.BucketType.user)
+@commands.cooldown(1, 1, commands.BucketType.user)
 async def SrSub(ctx, *args):
     def EmbOri(REm, Type, SubCpoS):
         REm.add_field(name = "\u200b", value = "The original post is a " + Type + " [click here](" + SubCpoS.url + ") to view the original", inline = False)
@@ -329,7 +330,7 @@ async def SrSub(ctx, *args):
         Tries = 0
         if CheckSub("".join(args)):
             while True:
-                if Tries >= 50:
+                if Tries >= 100:
                     break
                 try:
                     Post = Reddit.subreddit("".join(args)).hot()
@@ -411,7 +412,7 @@ async def SrSub(ctx, *args):
                                         EmbOri(REm, "webpage", SubCpoS)
                                 except AttributeError:
                                     REm.add_field(name = "Post: ", value = SubCpoS.url, inline = False)
-                                    REm.add_field(name = "Media Unavailable. Sorry!!", value = '\u200b')
+                                    REm.add_field(name = "Media Preview Unavailable. Sorry!!", value = '\u200b')
                 else:
                     REm.add_field(name = "NSFW: ", value = "This isn't an NSFW channel. No NSFW allowed here.", inline = False)
             REm.set_footer(text = "From " + "r/" + "".join(args))
@@ -429,7 +430,7 @@ async def SrSub(ctx, *args):
 @commands.check(ChBot)
 @commands.check(ChAdmin)
 @commands.check(ChSer)
-@commands.cooldown(1, 2, commands.BucketType.user)
+@commands.cooldown(1, 1, commands.BucketType.user)
 async def AWord(ctx, *args): 
     WorA = " ".join(args)
     if FuncMon.DbAdd(Col, {"IDd":"GuildInfo","IDg":str(ctx.guild.id)}, WorA, 0):
@@ -443,7 +444,7 @@ async def AWord(ctx, *args):
 @commands.check(ChBot)
 @commands.check(ChAdmin)
 @commands.check(ChSer)
-@commands.cooldown(1, 2, commands.BucketType.user)
+@commands.cooldown(1, 1, commands.BucketType.user)
 async def RWord(ctx, *args):
     WorA = " ".join(args)
     if FuncMon.DbRem(Col, {"IDd":"GuildInfo", "IDg":str(ctx.guild.id)}, WorA):
@@ -456,7 +457,7 @@ async def RWord(ctx, *args):
 @DClient.command(name = "list")
 @commands.check(ChBot)
 @commands.check(ChSer)
-@commands.cooldown(1, 2, commands.BucketType.user)
+@commands.cooldown(1, 1, commands.BucketType.user)
 async def LWord(ctx):
     LEm = discord.Embed(title = "Server List", description = "Words/Phrases being tracked", color = 0xf59542) 
 
@@ -474,7 +475,7 @@ async def LWord(ctx):
 @DClient.command(name = "total")
 @commands.check(ChBot)
 @commands.check(ChSer)
-@commands.cooldown(1, 2, commands.BucketType.user)
+@commands.cooldown(1, 1, commands.BucketType.user)
 async def TMsg(ctx, *args):
     Num = 0
     Enput = " ".join(args)
@@ -511,7 +512,7 @@ async def TMsg(ctx, *args):
 @DClient.command(name = "stats")
 @commands.check(ChBot)
 @commands.check(ChSer)
-@commands.cooldown(1, 2, commands.BucketType.user)
+@commands.cooldown(1, 1, commands.BucketType.user)
 async def IMsg(ctx, *args): 
     isBot = False
     if len(ctx.message.mentions) > 0:
@@ -528,7 +529,6 @@ async def IMsg(ctx, *args):
         aRGu = list(args)
 
     if isBot == False:
-        print("kk")
         Num = 0
         Enput = " ".join(aRGu)
         DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
@@ -537,7 +537,6 @@ async def IMsg(ctx, *args):
             Kyes = i.keys()
 
         if (Enput == "") or (Enput == " "):
-            print("kk")
             IEm = discord.Embed(title = AUmN.name, description = "All stats", color = 0x3252a8)
             for Wp in Kyes:
                 OSfDb = Col.find({"IDd":str(AUmN.id),"IDg":str(ctx.guild.id)})
@@ -550,7 +549,6 @@ async def IMsg(ctx, *args):
             await ctx.message.channel.send(embed = IEm)
 
         elif Enput in Kyes:
-            print("kk")
             IEm = discord.Embed(title = AUmN.name, description = "Word stats", color = 0x3252a8)
             for j in OSfDb:
                 Num = j[Enput]
@@ -576,7 +574,7 @@ async def Gfin(ctx, *args):
 
 @DClient.command(name = "fry")
 @commands.check(ChBot)
-@commands.cooldown(1, 2, commands.BucketType.user)
+@commands.cooldown(1, 1, commands.BucketType.user)
 async def CMsend(ctx, *args):
     if len(ctx.message.attachments) > 0 or args:
         ArC = " ".join(args).split(" ")
