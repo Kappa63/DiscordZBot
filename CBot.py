@@ -14,6 +14,7 @@ from prawcore import NotFound, Forbidden
 from hentai import Utils, Sort, Hentai, Format
 import asyncio
 import giphy_client
+import twitter
 
 Mdb = "mongodb+srv://Kappa:85699658@cbotdb.exsit.mongodb.net/CBot?retryWrites=true&w=majority"
 Cls = MongoClient(Mdb)
@@ -25,6 +26,8 @@ REqInt = discord.Intents.default()
 REqInt.members = True
 
 DClient = commands.Bot(case_insensitive = True, command_prefix = ["z","Z"], help_command = None, intents = REqInt)
+
+Twitter = twitter.Api(consumer_key = "2lv4MgQDREClbQxjeWOQU5aGf", consumer_secret = "4vq5UjqJetyLm37YhQtpc6htb0WPimFJVV088TL0LDMXHUdYTA", access_token_key = "1297802233841623040-rYG0sXCKz0PSDUNAhUPx9hecf507LY", access_token_secret = "02dNbliU0EJOfUzGx8UVmrbaqZTlYOmwwKAWqnkecWzgd")
 
 Reddit = praw.Reddit(client_id = "ntnBVsoqGHtoNw", client_secret = "ZklNqu4BQK4jWRp9dYXb4ApoQ10", user_agent = "CBot by u/Kamlin333")
 
@@ -159,6 +162,85 @@ async def SMsg(ctx):
         await ctx.message.channel.send(":partying_face: Setup complete, you can now use tracking commands:partying_face:")
     else:
         await ctx.message.channel.send(":partying_face: This server is already setup :partying_face:")
+
+@DClient.command(name = "twitter")
+@commands.cooldown(1, 1)
+async def TestiNNGone(ctx, *args):
+    def ChCHanS(MSg):
+        MesS = MSg.content.lower()
+        RsT = False
+        try:
+            if int(MSg.content) <= 10:
+                RsT = True
+        except ValueError:
+            if (MesS == "cancel") or (MesS == "c"):
+                RsT = True
+        return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
+
+    TwCS = " ".join(args).split(" ")
+    if TwCS[0].lower() == "search" and args:
+        TwCS.pop(0)
+        if " ".join(TwCS):
+            C = 0
+            SrchTw = []
+            for TwU in Twitter.GetUsersSearch(term = TwCS, count = 10):
+                C += 1
+                if C == 1:
+                    STEm = discord.Embed(title = ":mag: Search for '" + " ".join(TwCS) + "'",  description = "\u200b", color = 0x000000)
+                VrMa = ""
+                if TwU.verified:
+                    VrMa = ":ballot_box_with_check: "
+                STEm.add_field(name = "\u200b", value = str(C) + ". `" + "@" + TwU.screen_name + " / " + TwU.name + "` " + VrMa, inline = False)
+                SrchTw.append(TwU)
+            STEm.set_footer(text = "Choose a number to open doujin. 'c' or 'cancel' to exit search. \n\n*The Search closes automatically after 20sec of inactivity.*" )
+            TwSent = await ctx.message.channel.send(embed = STEm)
+            try:
+                ResS = await DClient.wait_for('message', check = ChCHanS, timeout = 20)
+                LResS = ResS.content.lower()
+                try:
+                    if int(ResS.content) <= 10:
+                        ProT = SrchTw[int(ResS.content)-1]
+                        VrMa = ""
+                        if ProT.verified:
+                            VrMa = ":ballot_box_with_check: "
+                        TwS = SrchTw[int(ResS.content)-1].screen_name
+                        await TwSent.edit(embed = discord.Embed(title = ":calling: Finding...",  description = "@" + ProT.screen_name + " / " + ProT.name + "` " + VrMa, color = 0x000000)) 
+                except ValueError:
+                    if (LResS == "cancel") or (LResS == "c"):
+                        await TwSent.edit(embed = discord.Embed(title = ":x: Search Cancelled",  description = "\u200b", color = 0x000000))
+            except asyncio.TimeoutError:
+                await TwSent.edit(embed = discord.Embed(title = ":hourglass: Search Timeout...",  description = "\u200b", color = 0x000000))
+        else:
+            await ctx.message.channel.send("No search argument :woozy_face:")
+    elif args:
+        TwS = " ".join(args)
+    else:
+        await ctx.message.channel.send("No Arguments")
+
+    try:
+        try:
+            TwTp = Twitter.GetUser(screen_name = TwS)
+            print(TwTp)
+            VrMa = ""
+            TwDes = "\u200b"
+            if TwTp.verified:
+                VrMa = ":ballot_box_with_check: "
+            if TwTp.description:
+                TwDes = TwTp.description
+            TEm = discord.Embed(title = "@" + TwTp.screen_name + " / " + TwTp.name + " " + VrMa,  description = TwDes, color = 0x0384fc)
+            TEm.set_thumbnail(url = TwTp.profile_image_url_https)
+            if TwTp.location:
+                TEm.add_field(name = "Location: ", value = TwTp.location, inline = True)
+            if TwTp.url:
+                TEm.add_field(name = "Website: ", value = (requests.head(TwTp.url)).headers['Location'], inline = True)
+            TEm.add_field(name = "Created: ", value = "-".join(TwTp.created_at.split(" ")[1:3]) + "-" + str(TwTp.created_at.split(" ")[-1]), inline = False)
+            TEm.add_field(name = "Following: ", value = f"{TwTp.friends_count:,}", inline = True) 
+            TEm.add_field(name = "Followers: ", value = f"{TwTp.followers_count:,}", inline = True)
+            await ctx.message.channel.send(embed = TEm)
+        except twitter.error.TwitterError:
+            await ctx.message.channel.send("Not Found")
+    except UnboundLocalError:
+        pass
 
 @DClient.command(name = "hentai")
 @commands.check(ChBot)
