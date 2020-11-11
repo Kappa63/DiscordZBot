@@ -124,6 +124,8 @@ async def SendH(ctx, *args):
         HEm.add_field(name = "zfry (Image Attachment/Image Url): ", value = "Deep fries the image", inline = False)
         HEm.add_field(name = "zfry profile (@): ", value = "Deep fries the avatar", inline = False)
         HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a post from the top 50 posts in hot from any subreddit", inline = False)
+        HEm.add_field(name = "ztwitter (User @): ", value = "Returns the user profile", inline = False)
+        HEm.add_field(name = "ztwitter search (Phrase/Word to search for): ", value = "Searches for 10 users related to search argument", inline = False)
         HEm.add_field(name = "zhentai (Magic Numbers): ", value = "Gets doujin from nhentai using magic numbers", inline = False)
         HEm.add_field(name = "zhentai random: ", value = "Gets a random doujin from nhentai", inline = False)
         HEm.add_field(name = "zhentai search (Phrase/Word to search for): ", value = "Searches for the 10 most popular doujin", inline = False)
@@ -164,7 +166,8 @@ async def SMsg(ctx):
         await ctx.message.channel.send(":partying_face: This server is already setup :partying_face:")
 
 @DClient.command(name = "twitter")
-@commands.cooldown(1, 1)
+@commands.check(ChBot)
+@commands.cooldown(1, 1, commands.BucketType.user)
 async def TestiNNGone(ctx, *args):
     def ChCHanS(MSg):
         MesS = MSg.content.lower()
@@ -220,7 +223,6 @@ async def TestiNNGone(ctx, *args):
     try:
         try:
             TwTp = Twitter.GetUser(screen_name = TwS)
-            print(TwTp)
             VrMa = ""
             TwDes = "\u200b"
             if TwTp.verified:
