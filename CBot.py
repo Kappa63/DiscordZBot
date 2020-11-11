@@ -316,7 +316,7 @@ async def nHen(ctx, *args):
                     await ctx.message.channel.send(embed = SEm)    
             else:
                 await ctx.message.channel.send("No search argument :woozy_face:")     
-        elif len(Chlks) == 1:
+        elif len(Chlks) >= 1:
             try:
                 Srch = int(" ".join(args))
             except ValueError:
