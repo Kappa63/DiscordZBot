@@ -245,8 +245,14 @@ async def AniMa(ctx, *args):
                 AEm.add_field(name = "Summary:", value = " **//** ".join(AniF.related_anime["Summary"]), inline = False)
             except KeyError:
                 pass
-            AEm.add_field(name = "Opening Theme(s):", value = " **//** ".join(AniF.opening_themes), inline = False)
-            AEm.add_field(name = "Ending Theme(s):", value = " **//** ".join(AniF.ending_themes), inline = True)
+            try:
+                AEm.add_field(name = "Opening Theme(s):", value = " **//** ".join(AniF.opening_themes), inline = False)
+            except TypeError:
+                pass
+            try:
+                AEm.add_field(name = "Ending Theme(s):", value = " **//** ".join(AniF.ending_themes), inline = False)
+            except TypeError:
+                pass
             await ctx.message.channel.send(embed = AEm)
 
         except UnboundLocalError:
@@ -350,13 +356,6 @@ async def nHen(ctx, *args):
         return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
 
     def ChCHan(MSg):
-        MesS = MSg.content.lower()
-        MeseS = (MSg.content.lower()).split(" ")
-        RsT = False
-        if (MesS == "close") or (MesS == "c") or (MesS == "zhentai") or (MesS == "n") or (MesS == "next") or (MesS == "back") or (MesS == "b") or (MeseS[0] == "zhentai") or (MeseS[0] == "go"):
-            RsT = True
-        else:
-            await MSg.delete()
         return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
 
     def EmbedMaker(DentAi,Page, State):
