@@ -15,6 +15,7 @@ from hentai import Utils, Sort, Hentai, Format
 import asyncio
 import giphy_client
 import twitter
+import mal
 
 Mdb = "mongodb+srv://Kappa:85699658@cbotdb.exsit.mongodb.net/CBot?retryWrites=true&w=majority"
 Cls = MongoClient(Mdb)
@@ -125,10 +126,11 @@ async def SendH(ctx, *args):
         HEm.add_field(name = "zfry profile (@): ", value = "Deep fries the avatar", inline = False)
         HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a post from the top 50 posts in hot from any subreddit", inline = False)
         HEm.add_field(name = "ztwitter (User @): ", value = "Returns the user profile", inline = False)
-        HEm.add_field(name = "ztwitter search (Phrase/Word to search for): ", value = "Searches for 10 users related to search argument", inline = False)
+        HEm.add_field(name = "ztwitter search (Username): ", value = "Searches for 10 users related to search argument", inline = False)
+        HEm.add_field(name = "zanime (Anime Name): ", value = "Searches for anime and returns all the info about chosen anime", inline = False)
         HEm.add_field(name = "zhentai (Magic Numbers): ", value = "Gets doujin from nhentai using magic numbers", inline = False)
         HEm.add_field(name = "zhentai random: ", value = "Gets a random doujin from nhentai", inline = False)
-        HEm.add_field(name = "zhentai search (Phrase/Word to search for): ", value = "Searches for the 10 most popular doujin", inline = False)
+        HEm.add_field(name = "zhentai search (Doujin Name): ", value = "Searches for the 10 most popular doujin", inline = False)
         HEm.add_field(name = "zgiphy (Phrase/Word to search for): ", value = "Returns a random gif from top 50 results on giphy", inline = False)
         HEm.set_footer(text = "Note: Some hentai are not available. This is to abide by the discord TOS")
         await ctx.message.channel.send(embed = HEm)
@@ -165,6 +167,93 @@ async def SMsg(ctx):
     else:
         await ctx.message.channel.send(":partying_face: This server is already setup :partying_face:")
 
+@DClient.command(name = "anime")
+@commands.check(ChBot)
+@commands.cooldown(1, 1, commands.BucketType.user)
+async def AniMa(ctx, *args):
+    def ChCHanS(MSg):
+        MesS = MSg.content.lower()
+        RsT = False
+        try:
+            if int(MSg.content) <= 10:
+                RsT = True
+        except ValueError:
+            if (MesS == "cancel") or (MesS == "c"):
+                RsT = True
+        return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
+
+    if args:
+        try:
+            Srks = " ".join(args)
+            C = 0
+            SrchAni = []
+            for AniRes in mal.AnimeSearch(Srks).results:
+                C += 1
+                if C == 1:
+                    SAEm = discord.Embed(title = ":mag: Search for '" + Srks + "'",  description = "\u200b", color = 0xa49cff)
+                SAEm.add_field(name = "\u200b", value = str(C) + ". `" + AniRes.title + "`", inline = False)
+                SrchAni.append(AniRes)
+                if C == 10:
+                    break
+            SAEm.set_footer(text = "Choose a number to view MAL entry. 'c' or 'cancel' to exit search. \n\n*The Search closes automatically after 20sec of inactivity.*" )
+            AnSrS = await ctx.message.channel.send(embed = SAEm)
+            try:
+                ResS = await DClient.wait_for('message', check = ChCHanS, timeout = 20)
+                LResS = ResS.content.lower()
+                try:
+                    if int(ResS.content) <= 10:
+                        AniI = SrchAni[int(ResS.content)-1].mal_id
+                        await AnSrS.edit(embed = discord.Embed(title = ":calling: Finding...",  description = SrchAni[int(ResS.content)-1].title, color = 0xa49cff)) 
+                except ValueError:
+                    if (LResS == "cancel") or (LResS == "c"):
+                        await AnSrS.edit(embed = discord.Embed(title = ":x: Search Cancelled",  description = "\u200b", color = 0xa49cff))
+            except asyncio.TimeoutError:
+                await AnSrS.edit(embed = discord.Embed(title = ":hourglass: Search Timeout...",  description = "\u200b", color = 0xa49cff))
+        except UnboundLocalError:
+            SAEm = discord.Embed(title = ":mag: Search for '" + Srks + "'",  description = "\u200b", color = 0xa49cff)
+            SAEm.add_field(name = "\u200b", value = "No Results found :woozy_face:", inline = False)
+            await ctx.message.channel.send(embed = SAEm)
+
+        try:
+            AniF = mal.Anime(AniI)
+            AEm = discord.Embed(title = AniF.title + " / " + AniF.title_japanese,  description = ", ".join(AniF.genres), color = 0xa49cff)
+            AEm.set_thumbnail(url = AniF.image_url)
+            if len(AniF.synopsis) > 1021:
+                AniSyn = AniF.synopsis[0:1021]
+                AniSyn = AniSyn + "..."
+            else:
+                AniSyn = AniF.synopsis
+            AEm.add_field(name = "Synopsis:", value = AniSyn, inline = False)
+            AEm.add_field(name = "Aired on:", value = AniF.aired, inline = True)
+            AEm.add_field(name = "Status:", value = AniF.status, inline = True)
+            AEm.add_field(name = "Rating:", value = AniF.rating, inline = True)
+            AEm.add_field(name = "Score:", value = AniF.score, inline = True)
+            AEm.add_field(name = "Rank:", value = AniF.rank, inline = True)
+            AEm.add_field(name = "Popularity:", value = AniF.popularity, inline = True)
+            AEm.add_field(name = "No# Episodes:", value = AniF.episodes, inline = True)
+            AEm.add_field(name = "Episode Duration:", value = AniF.duration, inline = True)
+            AEm.add_field(name = "\u200b", value = "\u200b", inline = False)
+            try:
+                AEm.add_field(name = "Adaptation:", value = " **//** ".join(AniF.related_anime["Adaptation"]), inline = False)
+            except KeyError:
+                pass
+            try:
+                AEm.add_field(name = "Side Story:", value = " **//** ".join(AniF.related_anime["Side story"]), inline = False)
+            except KeyError:
+                pass
+            try:
+                AEm.add_field(name = "Summary:", value = " **//** ".join(AniF.related_anime["Summary"]), inline = False)
+            except KeyError:
+                pass
+            AEm.add_field(name = "Opening Theme(s):", value = " **//** ".join(AniF.opening_themes), inline = False)
+            AEm.add_field(name = "Ending Theme(s):", value = " **//** ".join(AniF.ending_themes), inline = True)
+            await ctx.message.channel.send(embed = AEm)
+
+        except UnboundLocalError:
+            pass
+    else:
+        await ctx.message.channel.send("No Arguments")
+
 @DClient.command(name = "twitter")
 @commands.check(ChBot)
 @commands.cooldown(1, 1, commands.BucketType.user)
@@ -189,7 +278,7 @@ async def TestiNNGone(ctx, *args):
             for TwU in Twitter.GetUsersSearch(term = TwCS, count = 10):
                 C += 1
                 if C == 1:
-                    STEm = discord.Embed(title = ":mag: Search for '" + " ".join(TwCS) + "'",  description = "\u200b", color = 0x000000)
+                    STEm = discord.Embed(title = ":mag: Search for '" + " ".join(TwCS) + "'",  description = "\u200b", color = 0x0384fc)
                 VrMa = ""
                 if TwU.verified:
                     VrMa = ":ballot_box_with_check: "
@@ -207,12 +296,12 @@ async def TestiNNGone(ctx, *args):
                         if ProT.verified:
                             VrMa = ":ballot_box_with_check: "
                         TwS = SrchTw[int(ResS.content)-1].screen_name
-                        await TwSent.edit(embed = discord.Embed(title = ":calling: Finding...",  description = "@" + ProT.screen_name + " / " + ProT.name + "` " + VrMa, color = 0x000000)) 
+                        await TwSent.edit(embed = discord.Embed(title = ":calling: Finding...",  description = "@" + ProT.screen_name + " / " + ProT.name + "` " + VrMa, color = 0x0384fc)) 
                 except ValueError:
                     if (LResS == "cancel") or (LResS == "c"):
-                        await TwSent.edit(embed = discord.Embed(title = ":x: Search Cancelled",  description = "\u200b", color = 0x000000))
+                        await TwSent.edit(embed = discord.Embed(title = ":x: Search Cancelled",  description = "\u200b", color = 0x0384fc))
             except asyncio.TimeoutError:
-                await TwSent.edit(embed = discord.Embed(title = ":hourglass: Search Timeout...",  description = "\u200b", color = 0x000000))
+                await TwSent.edit(embed = discord.Embed(title = ":hourglass: Search Timeout...",  description = "\u200b", color = 0x0384fc))
         else:
             await ctx.message.channel.send("No search argument :woozy_face:")
     elif args:
@@ -266,6 +355,8 @@ async def nHen(ctx, *args):
         RsT = False
         if (MesS == "close") or (MesS == "c") or (MesS == "zhentai") or (MesS == "n") or (MesS == "next") or (MesS == "back") or (MesS == "b") or (MeseS[0] == "zhentai") or (MeseS[0] == "go"):
             RsT = True
+        else:
+            await MSg.delete()
         return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
 
     def EmbedMaker(DentAi,Page, State):
