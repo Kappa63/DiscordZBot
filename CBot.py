@@ -311,7 +311,9 @@ async def nHen(ctx, *args):
                     except asyncio.TimeoutError:
                         await DmSent.edit(embed = discord.Embed(title = ":hourglass: Search Timeout...",  description = "\u200b", color = 0x000000))
                 except UnboundLocalError:
-                    await ctx.message.channel.send("No results found :woozy_face:") 
+                    SEm = discord.Embed(title = ":mag: Search for '" + " ".join(Chlks) + "'",  description = "\u200b", color = 0x000000)
+                    SEm.add_field(name = "\u200b", value = "No Results found :woozy_face:", inline = False)
+                    await ctx.message.channel.send(embed = SEm)    
             else:
                 await ctx.message.channel.send("No search argument :woozy_face:")     
         elif len(Chlks) == 1:
