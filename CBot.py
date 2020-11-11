@@ -235,23 +235,23 @@ async def AniMa(ctx, *args):
             AEm.add_field(name = "\u200b", value = "\u200b", inline = False)
             try:
                 AEm.add_field(name = "Adaptation:", value = " **//** ".join(AniF.related_anime["Adaptation"]), inline = False)
-            except KeyError or AttributeError:
+            except KeyError:
                 pass
             try:
                 AEm.add_field(name = "Side Story:", value = " **//** ".join(AniF.related_anime["Side story"]), inline = False)
-            except KeyError or AttributeError:
+            except KeyError:
                 pass
             try:
                 AEm.add_field(name = "Summary:", value = " **//** ".join(AniF.related_anime["Summary"]), inline = False)
-            except KeyError or AttributeError:
+            except KeyError:
                 pass
             try:
                 AEm.add_field(name = "Opening Theme(s):", value = " **//** ".join(AniF.opening_themes), inline = False)
-            except KeyError or AttributeError:
+            except TypeError:
                 pass
             try:
-                AEm.add_field(name = "Ending Theme(s):", value = " **//** ".join(AniF.ending_themes), inline = False)
-            except KeyError or AttributeError:
+                AEm.add_field(name = "Ending Theme(s):", value = " **//** ".join(AniF.ending_themes), inline = True)
+            except TypeError:
                 pass
             await ctx.message.channel.send(embed = AEm)
 
