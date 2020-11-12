@@ -15,7 +15,8 @@ from hentai import Utils, Sort, Hentai, Format
 import asyncio
 import giphy_client
 import twitter
-from mal import Anime, AnimeSearch
+import mal
+import malclient
 
 Mdb = "mongodb+srv://Kappa:85699658@cbotdb.exsit.mongodb.net/CBot?retryWrites=true&w=majority"
 Cls = MongoClient(Mdb)
@@ -181,13 +182,13 @@ async def AniMa(ctx, *args):
             if (MesS == "cancel") or (MesS == "c"):
                 RsT = True
         return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
-
     if args:
         try:
             Srks = " ".join(args)
             C = 0
             SrchAni = []
-            for AniRes in AnimeSearch(Srks).results:
+            SAEm = discord.Embed(title = ":mag: Search for '" + Srks + "'",  description = "\u200b", color = 0xa49cff)
+            for AniRes in mal.AnimeSearch(Srks).results:
                 C += 1
                 if C == 1:
                     SAEm = discord.Embed(title = ":mag: Search for '" + Srks + "'",  description = "\u200b", color = 0xa49cff)
@@ -215,78 +216,119 @@ async def AniMa(ctx, *args):
             await ctx.message.channel.send(embed = SAEm)
 
         try:
-            AniF = Anime(AniI)
-            AniRA = AniF.related_anime
-            AEm = discord.Embed(title = AniF.title + " / " + AniF.title_japanese,  description = ", ".join(AniF.genres), color = 0xa49cff)
-            AEm.set_thumbnail(url = AniF.image_url)
+            AniF = MClient.get_anime_details(AniI)
+            AniFmal = mal.Anime(AniI)
+            AniG = []
+            for TAniG in AniF.genres:
+                AniG.append(TAniG.name)
+            AEm = discord.Embed(title = AniF.title + " / " + AniF.alternative_titles.ja,  description = ", ".join(AniG) + f"\n [Mal Page]({AniFmal.url})", color = 0xa49cff)
+            AEm.set_thumbnail(url = AniF.main_picture.large)
             if len(AniF.synopsis) > 1021:
                 AniSyn = AniF.synopsis[0:1021]
                 AniSyn = AniSyn + "..."
             else:
                 AniSyn = AniF.synopsis
             AEm.add_field(name = "Synopsis:", value = AniSyn, inline = False)
-            AEm.add_field(name = "Aired on:", value = AniF.aired, inline = True)
-            AEm.add_field(name = "Status:", value = AniF.status, inline = True)
-            AEm.add_field(name = "Rating:", value = AniF.rating, inline = True)
-            AEm.add_field(name = "Score:", value = AniF.score, inline = True)
+            AEm.add_field(name = "Start Airing on:", value = AniF.start_date, inline = True)
+            AEm.add_field(name = "Finish Airing on:", value = AniF.end_date, inline = True)
+            AEm.add_field(name = "Status:", value = AniFmal.status, inline = True)
+            AEm.add_field(name = "Rating:", value = AniFmal.rating, inline = False)
+            AEm.add_field(name = "Score:", value = AniF.mean, inline = True)
             AEm.add_field(name = "Rank:", value = AniF.rank, inline = True)
             AEm.add_field(name = "Popularity:", value = AniF.popularity, inline = True)
-            AEm.add_field(name = "No# Episodes:", value = AniF.episodes, inline = True)
-            AEm.add_field(name = "Episode Duration:", value = AniF.duration, inline = True)
+            AEm.add_field(name = "No# Episodes:", value = AniF.num_episodes, inline = True)
+            AEm.add_field(name = "Episode Duration:", value = AniFmal.duration, inline = True)
+            AEm.add_field(name = "\u200b", value = "\u200b", inline = False)
+            AniAdp = []
+            AniAlt = []
+            AniSum = []
+            AniSeq = []
+            AniSiSt = []
+            AniSpO = []
+            for TAniAdp in AniF.related_anime:
+                if TAniAdp.relation_type_formatted == "Adaptation":
+                    AniAdp.append(TAniAdp.node.title)
+                elif TAniAdp.relation_type_formatted == "Summary":
+                    AniSum.append(TAniAdp.node.title)
+                elif TAniAdp.relation_type_formatted == "Sequel":
+                    AniSeq.append(TAniAdp.node.title)
+                elif TAniAdp.relation_type_formatted == "Spin-off":
+                    AniSpO.append(TAniAdp.node.title)
+                elif TAniAdp.relation_type_formatted == "Alternative version":
+                    AniAlt.append(TAniAdp.node.title)
+                elif TAniAdp.relation_type_formatted == "Side story":
+                    AniSiSt.append(TAniAdp.node.title)
+
+            if len("\n".join(AniSeq)) > 950:
+                AniSeqF = "\n".join(AniSeq)[0:950]
+                AniSeqF = AniSeqF + "..."
+            else:
+                AniSeqF = "\n".join(AniSeq)
+
+            if len("\n".join(AniAdp)) > 950:
+                AniAdpF = "\n".join(AniAdp)[0:950]
+                AniAdpF = AniAdpF + "..."
+            else:
+                AniAdpF = "\n".join(AniAdp)
+
+            if len("\n".join(AniSum)) > 950:
+                AniSumF = "\n".join(AniSum)[0:950]
+                AniSumF = AniSumF + "..."
+            else:
+                AniSumF = "\n".join(AniSum)
+
+            if len("\n".join(AniAlt)) > 950:
+                AniAltF = "\n".join(AniAlt)[0:950]
+                AniAltF = AniAltF + "..."
+            else:
+                AniAltF = "\n".join(AniAlt)
+
+            if len("\n".join(AniSpO)) > 950:
+                AniSpOF = "\n".join(AniSpO)[0:950]
+                AniSpOF = AniSpOF + "..."
+            else:
+                AniSpOF = "\n".join(AniSpO)
+
+            if len("\n".join(AniSiSt)) > 950:
+                AniSiStF = "\n".join(AniSiSt)[0:950]
+                AniSiStF = AniSiStF + "..."
+            else:
+                AniSiStF = "\n".join(AniSiSt)
+
+            if AniSeqF:
+                AEm.add_field(name = "Sequel:", value = AniSeqF, inline = False)
+            if AniSumF:
+                AEm.add_field(name = "Alternate Version:", value = AniAltF, inline = False)
+            if AniAdpF:
+                AEm.add_field(name = "Adaptation:", value = AniAdpF, inline = False)
+            if AniSumF:
+                AEm.add_field(name = "Side Story:", value = AniSiStF, inline = False)
+            if AniSumF:
+                AEm.add_field(name = "Summary:", value = AniSumF, inline = False)
+            if AniSumF:
+                AEm.add_field(name = "Spin Off:", value = AniSpOF, inline = False)
+
             AEm.add_field(name = "\u200b", value = "\u200b", inline = False)
             try:
-                if len("\n".join(AniRA["Adaptation"])) > 950:
-                    AniAdp = "\n".join(AniRA["Adaptation"])[0:950]
-                    AniAdp = AniAdp + "..."
-                else:
-                    AniAdp = "\n".join(AniRA["Adaptation"])
-                AEm.add_field(name = "Adaptation:", value = AniAdp, inline = True)
-            except KeyError:
-                pass
-
-            try:
-                if len("\n".join(AniRA["Side story"])) > 950:
-                    AniSS = "\n".join(AniRA["Side story"])[0:950]
-                    AniSS = AniSS + "..."
-                else:
-                    AniSS = " \n".join(AniRA["Side story"])
-                AEm.add_field(name = "Side Story:", value = AniSS, inline = True)
-            except KeyError:
-                pass
-
-            try:
-                if len("\n".join(AniRA["Summary"])) > 950:
-                    AniSum = "\n".join(AniRA["Summary"])[0:950]
-                    AniSum = AniSum + "..."
-                else:
-                    AniSum = "\n".join(AniRA["Summary"])
-                AEm.add_field(name = "Summary:", value = AniSum, inline = False)
-            except KeyError:
-                pass
-
-            AEm.add_field(name = "\u200b", value = "\u200b", inline = False)
-
-            try:
-                if len("\n".join(AniF.opening_themes)) > 950:
-                    AniOT = ("\n".join(AniF.opening_themes))[0:950]
+                if len("\n".join(AniFmal.opening_themes)) > 950:
+                    AniOT = ("\n".join(AniFmal.opening_themes))[0:950]
                     AniOT = AniOT + "..."
                 else:
-                    AniOT = "\n".join(AniF.opening_themes)
+                    AniOT = "\n".join(AniFmal.opening_themes)
                 AEm.add_field(name = "Opening Theme(s):", value = AniOT, inline = False)
             except TypeError:
                 pass
 
             try:
-                if len("\n".join(AniF.ending_themes)) > 950:
-                    AniET = ("\n".join(AniF.ending_themes))[0:950]
+                if len("\n".join(AniFmal.ending_themes)) > 950:
+                    AniET = ("\n".join(AniFmal.ending_themes))[0:950]
                     AniET = AniET + "..."
                 else:
-                    AniET = "\n".join(AniF.ending_themes)
+                    AniET = "\n".join(AniFmal.ending_themes)
                 AEm.add_field(name = "Ending Theme(s):", value = AniET, inline = True)
             except TypeError:
                 pass
             await ctx.message.channel.send(embed = AEm)
-
         except UnboundLocalError:
             pass
     else:

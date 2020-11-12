@@ -11,3 +11,4 @@ asyncio==3.4.3
 giphy-client==1.0.0
 python-twitter==3.5
 mal-api==0.3.1
+malclient==0.1.5
