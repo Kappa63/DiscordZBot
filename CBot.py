@@ -235,19 +235,23 @@ async def AniMa(ctx, *args):
             AEm.add_field(name = "No# Episodes:", value = AniF.episodes, inline = True)
             AEm.add_field(name = "Episode Duration:", value = AniF.duration, inline = True)
             AEm.add_field(name = "\u200b", value = "\u200b", inline = False)
-            AniRA = AniF.related_anime
             try:
-                AEm.add_field(name = "Adaptation:", value = " **//** ".join(AniRA["Adaptation"]), inline = False)
-            except KeyError:
+                print(AniF.related_anime)
+            except commands.errors.CommandInvokeError:
                 pass
-            try:
-                AEm.add_field(name = "Side Story:", value = " **//** ".join(AniRA["Side story"]), inline = False)
-            except KeyError:
-                pass
-            try:
-                AEm.add_field(name = "Summary:", value = " **//** ".join(AniRA["Summary"]), inline = False)
-            except KeyError:
-                pass
+            # AniRA = AniF.related_anime
+            # try:
+            #     AEm.add_field(name = "Adaptation:", value = " **//** ".join(AniRA["Adaptation"]), inline = False)
+            # except KeyError:
+            #     pass
+            # try:
+            #     AEm.add_field(name = "Side Story:", value = " **//** ".join(AniRA["Side story"]), inline = False)
+            # except KeyError:
+            #     pass
+            # try:
+            #     AEm.add_field(name = "Summary:", value = " **//** ".join(AniRA["Summary"]), inline = False)
+            # except KeyError:
+            #     pass
             try:
                 AEm.add_field(name = "Opening Theme(s):", value = " **//** ".join(AniF.opening_themes), inline = False)
             except TypeError:
