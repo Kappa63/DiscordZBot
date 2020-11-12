@@ -15,7 +15,7 @@ from hentai import Utils, Sort, Hentai, Format
 import asyncio
 import giphy_client
 import twitter
-from mal import Anime, AnimeSearch, config
+from mal import Anime, AnimeSearch
 
 Mdb = "mongodb+srv://Kappa:85699658@cbotdb.exsit.mongodb.net/CBot?retryWrites=true&w=majority"
 Cls = MongoClient(Mdb)
@@ -31,8 +31,6 @@ DClient = commands.Bot(case_insensitive = True, command_prefix = ["z","Z"], help
 Twitter = twitter.Api(consumer_key = "2lv4MgQDREClbQxjeWOQU5aGf", consumer_secret = "4vq5UjqJetyLm37YhQtpc6htb0WPimFJVV088TL0LDMXHUdYTA", access_token_key = "1297802233841623040-rYG0sXCKz0PSDUNAhUPx9hecf507LY", access_token_secret = "02dNbliU0EJOfUzGx8UVmrbaqZTlYOmwwKAWqnkecWzgd")
 
 Reddit = praw.Reddit(client_id = "ntnBVsoqGHtoNw", client_secret = "ZklNqu4BQK4jWRp9dYXb4ApoQ10", user_agent = "CBot by u/Kamlin333")
-
-config.TIMEOUT = 1
 
 GClient = "ZH1xoGH0XUffrtqFKdj3kD4YrVoZvb8i"
 GApi = giphy_client.DefaultApi()
@@ -217,7 +215,7 @@ async def AniMa(ctx, *args):
             await ctx.message.channel.send(embed = SAEm)
 
         try:
-            AniF = Anime(AniI, timeout = 1)
+            AniF = Anime(AniI)
             AEm = discord.Embed(title = AniF.title + " / " + AniF.title_japanese,  description = ", ".join(AniF.genres), color = 0xa49cff)
             AEm.set_thumbnail(url = AniF.image_url)
             if len(AniF.synopsis) > 1021:
