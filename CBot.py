@@ -359,7 +359,7 @@ async def nHen(ctx, *args):
         return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
 
     def ChCHan(MSg):
-        return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
+        return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id
 
     def EmbedMaker(DentAi,Page, State):
         DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
