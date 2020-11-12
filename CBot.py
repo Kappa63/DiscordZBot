@@ -132,7 +132,8 @@ async def SendH(ctx, *args):
         HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a post from the top 50 posts in hot from any subreddit", inline = False)
         HEm.add_field(name = "ztwitter (User @): ", value = "Returns the user profile", inline = False)
         HEm.add_field(name = "ztwitter search (Username): ", value = "Searches for 10 users related to search argument", inline = False)
-        HEm.add_field(name = "zanime (Anime Name): ", value = "Searches for anime and returns all the info about chosen anime", inline = False)
+        HEm.add_field(name = "zanime (Anime Name): ", value = "Searches for anime and returns all the info about chosen one", inline = False)
+        HEm.add_field(name = "zmanga (Manga Name): ", value = "Searches for manga and returns all the info about chosen one", inline = False)
         HEm.add_field(name = "zhentai (Magic Numbers): ", value = "Gets doujin from nhentai using magic numbers", inline = False)
         HEm.add_field(name = "zhentai random: ", value = "Gets a random doujin from nhentai", inline = False)
         HEm.add_field(name = "zhentai search (Doujin Name): ", value = "Searches for the 10 most popular doujin", inline = False)
@@ -175,7 +176,7 @@ async def SMsg(ctx):
 @DClient.command(name = "manga")
 @commands.check(ChBot)
 @commands.cooldown(1, 10, commands.BucketType.guild)
-async def AniMa(ctx, *args):
+async def MagMa(ctx, *args):
     def ChCHanS(MSg):
         MesS = MSg.content.lower()
         RsT = False
@@ -245,7 +246,6 @@ async def AniMa(ctx, *args):
             AEm.add_field(name = "Popularity:", value = MagFmal.popularity, inline = True)
             AEm.add_field(name = "No# Volumes:", value = MagFmal.volumes, inline = True)
             AEm.add_field(name = "No# Chapters:", value = MagFmal.chapters, inline = True)
-            AEm.add_field(name = "\u200b", value = "\u200b", inline = False)
             MagAdp = []
             MagAlt = []
             MagSum = []
@@ -301,7 +301,8 @@ async def AniMa(ctx, *args):
                 MagSiStF = MagSiStF + "..."
             else:
                 MagSiStF = "\n".join(MagSiSt)
-
+            if MagSeqF or MagAltF or MagAdpF or MagSiStF or MagSumF or MagSpOF:
+                AEm.add_field(name = "\u200b", value = "\u200b", inline = False)
             if MagSeqF:
                 AEm.add_field(name = "Sequel:", value = MagSeqF, inline = False)
             if MagAltF:
@@ -446,7 +447,8 @@ async def AniMa(ctx, *args):
                 AniSiStF = AniSiStF + "..."
             else:
                 AniSiStF = "\n".join(AniSiSt)
-
+            if AniSeqF or AniAltF or AniAdpF or AniSiStF or AniSumF or AniSpOF:
+                AEm.add_field(name = "\u200b", value = "\u200b", inline = False)
             if AniSeqF:
                 AEm.add_field(name = "Sequel:", value = AniSeqF, inline = False)
             if AniAltF:
