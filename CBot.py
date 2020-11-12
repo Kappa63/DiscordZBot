@@ -301,15 +301,15 @@ async def AniMa(ctx, *args):
 
             if AniSeqF:
                 AEm.add_field(name = "Sequel:", value = AniSeqF, inline = False)
-            if AniSumF:
+            if AniAltF:
                 AEm.add_field(name = "Alternate Version:", value = AniAltF, inline = False)
             if AniAdpF:
                 AEm.add_field(name = "Adaptation:", value = AniAdpF, inline = False)
-            if AniSumF:
+            if AniSiStF:
                 AEm.add_field(name = "Side Story:", value = AniSiStF, inline = False)
             if AniSumF:
                 AEm.add_field(name = "Summary:", value = AniSumF, inline = False)
-            if AniSumF:
+            if AniSpOF:
                 AEm.add_field(name = "Spin Off:", value = AniSpOF, inline = False)
 
             AEm.add_field(name = "\u200b", value = "\u200b", inline = False)
