@@ -192,10 +192,10 @@ async def AniMa(ctx, *args):
             C = 0
             SrchAni = []
             AnSrS = await ctx.message.channel.send(embed = discord.Embed(title = ":mag: Searching...",  description = "\u200b", color = 0xa49cff))
-            SAEm = discord.Embed(title = ":mag: Results for '" + Srks + "'",  description = "\u200b", color = 0xa49cff)
+            SAEm = discord.Embed(title = f":mag: Results for '{Srks}'",  description = "\u200b", color = 0xa49cff)
             for AniRes in mal.AnimeSearch(Srks).results:
                 C += 1
-                SAEm.add_field(name = "\u200b", value = str(C) + ". `" + AniRes.title + "`", inline = False)
+                SAEm.add_field(name = "\u200b", value = f"{str(C)}. `{AniRes.title}` **({AniRes.type})**", inline = False)
                 SrchAni.append(AniRes)
                 if C == 10:
                     break
@@ -207,14 +207,14 @@ async def AniMa(ctx, *args):
                 try:
                     if int(ResS.content) <= 10:
                         AniI = SrchAni[int(ResS.content)-1].mal_id
-                        await AnSrS.edit(embed = discord.Embed(title = ":calling: Finding...",  description = SrchAni[int(ResS.content)-1].title, color = 0xa49cff)) 
+                        await AnSrS.edit(embed = discord.Embed(title = ":calling: Finding...",  description = f"{SrchAni[int(ResS.content)-1].title} **({SrchAni[int(ResS.content)-1].type})**", color = 0xa49cff)) 
                 except ValueError:
                     if (LResS == "cancel") or (LResS == "c"):
                         await AnSrS.edit(embed = discord.Embed(title = ":x: Search Cancelled",  description = "\u200b", color = 0xa49cff))
             except asyncio.TimeoutError:
                 await AnSrS.edit(embed = discord.Embed(title = ":hourglass: Search Timeout...",  description = "\u200b", color = 0xa49cff))
         except UnboundLocalError:
-            SAEm = discord.Embed(title = ":mag: Search for '" + Srks + "'",  description = "\u200b", color = 0xa49cff)
+            SAEm = discord.Embed(title = f":mag: Search for '{Srks}'",  description = "\u200b", color = 0xa49cff)
             SAEm.add_field(name = "\u200b", value = "No Results found :woozy_face:", inline = False)
             await AnSrS.edit(embed = SAEm)
 
@@ -224,7 +224,7 @@ async def AniMa(ctx, *args):
             AniG = []
             for TAniG in AniF.genres:
                 AniG.append(TAniG.name)
-            AEm = discord.Embed(title = AniF.title + " / " + AniF.alternative_titles.ja,  description = ", ".join(AniG) + f"\n [Mal Page]({AniFmal.url})", color = 0xa49cff)
+            AEm = discord.Embed(title = f"{AniF.title} / {AniF.alternative_titles.ja} **({AniFmal.type})**",  description = ", ".join(AniG) + f"\n [Mal Page]({AniFmal.url})", color = 0xa49cff)
             AEm.set_thumbnail(url = AniF.main_picture.large)
             if len(AniF.synopsis) > 1021:
                 AniSyn = AniF.synopsis[0:1021]
