@@ -172,6 +172,154 @@ async def SMsg(ctx):
     else:
         await ctx.message.channel.send(":partying_face: This server is already setup :partying_face:")
 
+@DClient.command(name = "manga")
+@commands.check(ChBot)
+@commands.cooldown(1, 10, commands.BucketType.guild)
+async def AniMa(ctx, *args):
+    def ChCHanS(MSg):
+        MesS = MSg.content.lower()
+        RsT = False
+        try:
+            if int(MSg.content) <= 10:
+                RsT = True
+        except ValueError:
+            if (MesS == "cancel") or (MesS == "c"):
+                RsT = True
+        return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
+    if args:
+        try:
+            Srks = " ".join(args)
+            C = 0
+            SrchMag = []
+            MnSrS = await ctx.message.channel.send(embed = discord.Embed(title = ":mag: Searching...",  description = "\u200b", color = 0xa49cff))
+            SAEm = discord.Embed(title = f":mag: Results for '{Srks}'",  description = "\u200b", color = 0xa49cff)
+            for MagRes in mal.MangaSearch(Srks).results:
+                C += 1
+                SAEm.add_field(name = "\u200b", value = f"{str(C)}. `{MagRes.title}` **({MagRes.type})**", inline = False)
+                SrchMag.append(MagRes)
+                if C == 10:
+                    print(MagRes)
+                    break
+            SAEm.set_footer(text = "Choose a number to view MAL entry. 'c' or 'cancel' to exit search. \n\n*The Search closes automatically after 20sec of inactivity.*" )
+            await MnSrS.edit(embed = SAEm)
+            try:
+                ResS = await DClient.wait_for('message', check = ChCHanS, timeout = 20)
+                LResS = ResS.content.lower()
+                try:
+                    if int(ResS.content) <= 10:
+                        MagI = SrchMag[int(ResS.content)-1].mal_id
+                        await MnSrS.edit(embed = discord.Embed(title = ":calling: Finding...",  description = f"{SrchMag[int(ResS.content)-1].title} **({SrchMag[int(ResS.content)-1].type})**", color = 0xa49cff)) 
+                except ValueError:
+                    if (LResS == "cancel") or (LResS == "c"):
+                        await MnSrS.edit(embed = discord.Embed(title = ":x: Search Cancelled",  description = "\u200b", color = 0xa49cff))
+            except asyncio.TimeoutError:
+                await MnSrS.edit(embed = discord.Embed(title = ":hourglass: Search Timeout...",  description = "\u200b", color = 0xa49cff))
+        except UnboundLocalError:
+            SAEm = discord.Embed(title = f":mag: Search for '{Srks}'",  description = "\u200b", color = 0xa49cff)
+            SAEm.add_field(name = "\u200b", value = "No Results found :woozy_face:", inline = False)
+            await MnSrS.edit(embed = SAEm)
+
+        try:
+            MagF = MClient.get_manga_details(MagI)
+            MagFmal = mal.Manga(MagI)
+            MagG = []
+            print(MagF)
+            print(MagFmal.published)
+            print(MagFmal.authors)
+            for TMagG in MagF.genres:
+                MagG.append(TMagG.name)
+            AEm = discord.Embed(title = f"{MagF.title} / {MagF.alternative_titles.ja} **({MagFmal.type})**",  description = ", ".join(MagG) + f"\n [Mal Page]({MagFmal.url})", color = 0xa49cff)
+            AEm.set_thumbnail(url = MagF.main_picture.large)
+            if len(MagF.synopsis) > 1021:
+                MagSyn = MagF.synopsis[0:1021]
+                MagSyn = MagSyn + "..."
+            else:
+                MagSyn = MagF.synopsis
+            AEm.add_field(name = "By: " + ", ".join(MagFmal.authors), value = "\u200b", inline = False)
+            AEm.add_field(name = "Synopsis:", value = MagSyn, inline = False)
+            AEm.add_field(name = "Start Airing on:", value = MagF.start_date, inline = True)
+            AEm.add_field(name = "Finish Airing on:", value = MagF.end_date, inline = True)
+            AEm.add_field(name = "Status:", value = MagFmal.status, inline = True)
+            AEm.add_field(name = "Score:", value = MagFmal.score, inline = True)
+            AEm.add_field(name = "Rank:", value = MagFmal.rank, inline = True)
+            AEm.add_field(name = "Popularity:", value = MagFmal.popularity, inline = True)
+            AEm.add_field(name = "No# Volumes:", value = MagFmal.volumes, inline = True)
+            AEm.add_field(name = "No# Chapters:", value = MagFmal.chapters, inline = True)
+            AEm.add_field(name = "\u200b", value = "\u200b", inline = False)
+            MagAdp = []
+            MagAlt = []
+            MagSum = []
+            MagSeq = []
+            MagSiSt = []
+            MagSpO = []
+            for TMagAdp in MagF.related_manga:
+                if TMagAdp.relation_type_formatted == "Adaptation":
+                    MagAdp.append(TMagAdp.node.title)
+                elif TMagAdp.relation_type_formatted == "Summary":
+                    MagSum.append(TMagAdp.node.title)
+                elif TMagAdp.relation_type_formatted == "Sequel":
+                    MagSeq.append(TMagAdp.node.title)
+                elif TMagAdp.relation_type_formatted == "Spin-off":
+                    MagSpO.append(TMagAdp.node.title)
+                elif TMagAdp.relation_type_formatted == "Alternative version":
+                    MagAlt.append(TMagAdp.node.title)
+                elif TMagAdp.relation_type_formatted == "Side story":
+                    MagSiSt.append(TMagAdp.node.title)
+
+            if len("\n".join(MagSeq)) > 950:
+                MagSeqF = "\n".join(MagSeq)[0:950]
+                MagSeqF = MagSeqF + "..."
+            else:
+                MagSeqF = "\n".join(MagSeq)
+
+            if len("\n".join(MagAdp)) > 950:
+                MagAdpF = "\n".join(MagAdp)[0:950]
+                MagAdpF = MagAdpF + "..."
+            else:
+                MagAdpF = "\n".join(MagAdp)
+
+            if len("\n".join(MagSum)) > 950:
+                MagSumF = "\n".join(MagSum)[0:950]
+                MagSumF = MagSumF + "..."
+            else:
+                MagSumF = "\n".join(MagSum)
+
+            if len("\n".join(MagAlt)) > 950:
+                MagAltF = "\n".join(MagAlt)[0:950]
+                MagAltF = MagAltF + "..."
+            else:
+                MagAltF = "\n".join(MagAlt)
+
+            if len("\n".join(MagSpO)) > 950:
+                MagSpOF = "\n".join(MagSpO)[0:950]
+                MagSpOF = MagSpOF + "..."
+            else:
+                MagSpOF = "\n".join(MagSpO)
+
+            if len("\n".join(MagSiSt)) > 950:
+                MagSiStF = "\n".join(MagSiSt)[0:950]
+                MagSiStF = MagSiStF + "..."
+            else:
+                MagSiStF = "\n".join(MagSiSt)
+
+            if MagSeqF:
+                AEm.add_field(name = "Sequel:", value = MagSeqF, inline = False)
+            if MagAltF:
+                AEm.add_field(name = "Alternate Version:", value = MagAltF, inline = False)
+            if MagAdpF:
+                AEm.add_field(name = "Adaptation:", value = MagAdpF, inline = False)
+            if MagSiStF:
+                AEm.add_field(name = "Side Story:", value = MagSiStF, inline = False)
+            if MagSumF:
+                AEm.add_field(name = "Summary:", value = MagSumF, inline = False)
+            if MagSpOF:
+                AEm.add_field(name = "Spin Off:", value = MagSpOF, inline = False)
+            await ctx.message.channel.send(embed = AEm)
+        except UnboundLocalError:
+            pass
+    else:
+        await ctx.message.channel.send("No Arguments")
+
 @DClient.command(name = "anime")
 @commands.check(ChBot)
 @commands.cooldown(1, 10, commands.BucketType.guild)
@@ -231,6 +379,7 @@ async def AniMa(ctx, *args):
                 AniSyn = AniSyn + "..."
             else:
                 AniSyn = AniF.synopsis
+            AEm.add_field(name = "Studios: " + ", ".join(AniFmal.studios), value = "\u200b", inline = False)
             AEm.add_field(name = "Synopsis:", value = AniSyn, inline = False)
             AEm.add_field(name = "Start Airing on:", value = AniF.start_date, inline = True)
             AEm.add_field(name = "Finish Airing on:", value = AniF.end_date, inline = True)
