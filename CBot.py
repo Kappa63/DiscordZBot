@@ -234,7 +234,7 @@ async def AniMa(ctx, *args):
             AEm.add_field(name = "Episode Duration:", value = AniF.duration, inline = True)
             AEm.add_field(name = "\u200b", value = "\u200b", inline = False)
             # try:
-            #     print(AniF.related_anime)
+            print(Anime(AniI).related_anime)
             # except commands.errors.CommandInvokeError:
             #     pass
             # AniRA = AniF.related_anime
