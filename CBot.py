@@ -15,7 +15,7 @@ from hentai import Utils, Sort, Hentai, Format
 import asyncio
 import giphy_client
 import twitter
-import mal
+from mal import Anime, AnimeSearch
 
 Mdb = "mongodb+srv://Kappa:85699658@cbotdb.exsit.mongodb.net/CBot?retryWrites=true&w=majority"
 Cls = MongoClient(Mdb)
@@ -187,7 +187,7 @@ async def AniMa(ctx, *args):
             Srks = " ".join(args)
             C = 0
             SrchAni = []
-            for AniRes in mal.AnimeSearch(Srks).results:
+            for AniRes in AnimeSearch(Srks).results:
                 C += 1
                 if C == 1:
                     SAEm = discord.Embed(title = ":mag: Search for '" + Srks + "'",  description = "\u200b", color = 0xa49cff)
@@ -215,7 +215,7 @@ async def AniMa(ctx, *args):
             await ctx.message.channel.send(embed = SAEm)
 
         try:
-            AniF = mal.Anime(AniI)
+            AniF = Anime(AniI)
             AEm = discord.Embed(title = AniF.title + " / " + AniF.title_japanese,  description = ", ".join(AniF.genres), color = 0xa49cff)
             AEm.set_thumbnail(url = AniF.image_url)
             if len(AniF.synopsis) > 1021:
