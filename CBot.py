@@ -174,7 +174,7 @@ async def SMsg(ctx):
 
 @DClient.command(name = "anime")
 @commands.check(ChBot)
-@commands.cooldown(1, 5, commands.BucketType.guild)
+@commands.cooldown(1, 10, commands.BucketType.guild)
 async def AniMa(ctx, *args):
     def ChCHanS(MSg):
         MesS = MSg.content.lower()
@@ -191,17 +191,16 @@ async def AniMa(ctx, *args):
             Srks = " ".join(args)
             C = 0
             SrchAni = []
-            SAEm = discord.Embed(title = ":mag: Search for '" + Srks + "'",  description = "\u200b", color = 0xa49cff)
+            AnSrS = await ctx.message.channel.send(embed = discord.Embed(title = ":mag: Searching...",  description = "\u200b", color = 0xa49cff))
+            SAEm = discord.Embed(title = ":mag: Results for '" + Srks + "'",  description = "\u200b", color = 0xa49cff)
             for AniRes in mal.AnimeSearch(Srks).results:
                 C += 1
-                if C == 1:
-                    SAEm = discord.Embed(title = ":mag: Search for '" + Srks + "'",  description = "\u200b", color = 0xa49cff)
                 SAEm.add_field(name = "\u200b", value = str(C) + ". `" + AniRes.title + "`", inline = False)
                 SrchAni.append(AniRes)
                 if C == 10:
                     break
             SAEm.set_footer(text = "Choose a number to view MAL entry. 'c' or 'cancel' to exit search. \n\n*The Search closes automatically after 20sec of inactivity.*" )
-            AnSrS = await ctx.message.channel.send(embed = SAEm)
+            await AnSrS.edit(embed = SAEm)
             try:
                 ResS = await DClient.wait_for('message', check = ChCHanS, timeout = 20)
                 LResS = ResS.content.lower()
@@ -217,7 +216,7 @@ async def AniMa(ctx, *args):
         except UnboundLocalError:
             SAEm = discord.Embed(title = ":mag: Search for '" + Srks + "'",  description = "\u200b", color = 0xa49cff)
             SAEm.add_field(name = "\u200b", value = "No Results found :woozy_face:", inline = False)
-            await ctx.message.channel.send(embed = SAEm)
+            await AnSrS.edit(embed = SAEm)
 
         try:
             AniF = MClient.get_anime_details(AniI)
@@ -237,10 +236,10 @@ async def AniMa(ctx, *args):
             AEm.add_field(name = "Finish Airing on:", value = AniF.end_date, inline = True)
             AEm.add_field(name = "Status:", value = AniFmal.status, inline = True)
             AEm.add_field(name = "Rating:", value = AniFmal.rating, inline = False)
-            AEm.add_field(name = "Score:", value = AniF.mean, inline = True)
-            AEm.add_field(name = "Rank:", value = AniF.rank, inline = True)
-            AEm.add_field(name = "Popularity:", value = AniF.popularity, inline = True)
-            AEm.add_field(name = "No# Episodes:", value = AniF.num_episodes, inline = True)
+            AEm.add_field(name = "Score:", value = AniFmal.score, inline = True)
+            AEm.add_field(name = "Rank:", value = AniFmal.rank, inline = True)
+            AEm.add_field(name = "Popularity:", value = AniFmal.popularity, inline = True)
+            AEm.add_field(name = "No# Episodes:", value = AniFmal.episodes, inline = True)
             AEm.add_field(name = "Episode Duration:", value = AniFmal.duration, inline = True)
             AEm.add_field(name = "\u200b", value = "\u200b", inline = False)
             AniAdp = []
