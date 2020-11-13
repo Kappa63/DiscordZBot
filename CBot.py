@@ -74,13 +74,13 @@ def StrCool(ErrorCoolSec):
             Hour -= 24
         ErrorCoolSec -= 60
     if Day != 0:
-        return str(Day)+"Day(s) "+str(Hour)+"Hour(s) "+str(Min)+"Min(s) "+str(ErrorCoolSec)+"Sec(s)"
+        return f'{Day}Day(s) {Hour}Hour(s) {Min}Min(s) {ErrorCoolSec}Sec(s)'
     elif Hour != 0:
-        return str(Hour)+"Hour(s) "+str(Min)+"Min(s) "+str(ErrorCoolSec)+"Sec(s)"
+        return f'{Hour}Hour(s) {Min}Min(s) {ErrorCoolSec}Sec(s)'
     elif Min != 0:
-        return str(Min)+"Min(s) "+str(ErrorCoolSec)+"Sec(s)"
+        return f'{Min}Min(s) {ErrorCoolSec}Sec(s)'
     else:
-        return str(ErrorCoolSec)+"Sec(s)"
+        return f'{ErrorCoolSec}Sec(s)'
 
 class IsBot(commands.CheckFailure):
     pass
@@ -169,7 +169,7 @@ async def SMsg(ctx):
                         Kyes = i.keys()    
                     for Wp in Kyes:
                         FuncMon.DbAdd(Col, {"IDd":str(Pid.id),"IDg":str(ctx.guild.id)}, Wp, 0)
-        await ctx.message.channel.send(":partying_face: Setup complete, you can now use tracking commands:partying_face:")
+        await ctx.message.channel.send(":partying_face: Setup complete, you can now use tracking commands :partying_face:")
     else:
         await ctx.message.channel.send(":partying_face: This server is already setup :partying_face:")
 
@@ -196,12 +196,12 @@ async def MagMa(ctx, *args):
             SAEm = discord.Embed(title = f":mag: Results for '{Srks}'",  description = "\u200b", color = 0xa49cff)
             for MagRes in mal.MangaSearch(Srks).results:
                 C += 1
-                SAEm.add_field(name = "\u200b", value = f"{str(C)}. `{MagRes.title}` **({MagRes.type})**", inline = False)
+                SAEm.add_field(name = "\u200b", value = f'{C}. `{MagRes.title}` **({MagRes.type})**', inline = False)
                 SrchMag.append(MagRes)
                 if C == 10:
                     print(MagRes)
                     break
-            SAEm.set_footer(text = "Choose a number to view MAL entry. 'c' or 'cancel' to exit search. \n\n*The Search closes automatically after 20sec of inactivity.*" )
+            SAEm.set_footer(text = 'Choose a number to view MAL entry. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
             await MnSrS.edit(embed = SAEm)
             try:
                 ResS = await DClient.wait_for('message', check = ChCHanS, timeout = 20)
@@ -209,14 +209,14 @@ async def MagMa(ctx, *args):
                 try:
                     if int(ResS.content) <= 10:
                         MagI = SrchMag[int(ResS.content)-1].mal_id
-                        await MnSrS.edit(embed = discord.Embed(title = ":calling: Finding...",  description = f"{SrchMag[int(ResS.content)-1].title} **({SrchMag[int(ResS.content)-1].type})**", color = 0xa49cff)) 
+                        await MnSrS.edit(embed = discord.Embed(title = ":calling: Finding...",  description = f'{SrchMag[int(ResS.content)-1].title} **({SrchMag[int(ResS.content)-1].type})**', color = 0xa49cff)) 
                 except ValueError:
                     if (LResS == "cancel") or (LResS == "c"):
                         await MnSrS.edit(embed = discord.Embed(title = ":x: Search Cancelled",  description = "\u200b", color = 0xa49cff))
             except asyncio.TimeoutError:
                 await MnSrS.edit(embed = discord.Embed(title = ":hourglass: Search Timeout...",  description = "\u200b", color = 0xa49cff))
         except UnboundLocalError:
-            SAEm = discord.Embed(title = f":mag: Search for '{Srks}'",  description = "\u200b", color = 0xa49cff)
+            SAEm = discord.Embed(title = f':mag: Search for "{Srks}"',  description = "\u200b", color = 0xa49cff)
             SAEm.add_field(name = "\u200b", value = "No Results found :woozy_face:", inline = False)
             await MnSrS.edit(embed = SAEm)
 
@@ -224,19 +224,16 @@ async def MagMa(ctx, *args):
             MagF = MClient.get_manga_details(MagI)
             MagFmal = mal.Manga(MagI)
             MagG = []
-            print(MagF)
-            print(MagFmal.published)
-            print(MagFmal.authors)
             for TMagG in MagF.genres:
                 MagG.append(TMagG.name)
-            AEm = discord.Embed(title = f"{MagF.title} / {MagF.alternative_titles.ja} **({MagFmal.type})**",  description = ", ".join(MagG) + f"\n[Mal Page]({MagFmal.url})", color = 0xa49cff)
+            AEm = discord.Embed(title = f'{MagF.title} / {MagF.alternative_titles.ja} **({MagFmal.type})**',  description = f'{", ".join(MagG)}\n[Mal Page]({MagFmal.url})', color = 0xa49cff)
             AEm.set_thumbnail(url = MagF.main_picture.large)
             if len(MagF.synopsis) > 1021:
                 MagSyn = MagF.synopsis[0:1021]
                 MagSyn = MagSyn + "..."
             else:
                 MagSyn = MagF.synopsis
-            AEm.add_field(name = "By: " + ", ".join(MagFmal.authors), value = "\u200b", inline = False)
+            AEm.add_field(name = f'By: {", ".join(MagFmal.authors)}', value = "\u200b", inline = False)
             AEm.add_field(name = "Synopsis:", value = MagSyn, inline = False)
             if MagF.start_date:
                 AEm.add_field(name = "Start Airing on:", value = MagF.start_date, inline = True)
@@ -321,7 +318,7 @@ async def MagMa(ctx, *args):
         except UnboundLocalError:
             pass
     else:
-        await ctx.message.channel.send("No Arguments")
+        await ctx.message.channel.send("No Arguments :no_mouth:")
 
 @DClient.command(name = "anime")
 @commands.check(ChBot)
@@ -343,14 +340,14 @@ async def AniMa(ctx, *args):
             C = 0
             SrchAni = []
             AnSrS = await ctx.message.channel.send(embed = discord.Embed(title = ":mag: Searching...",  description = "\u200b", color = 0xa49cff))
-            SAEm = discord.Embed(title = f":mag: Results for '{Srks}'",  description = "\u200b", color = 0xa49cff)
+            SAEm = discord.Embed(title = f':mag: Results for "{Srks}"',  description = "\u200b", color = 0xa49cff)
             for AniRes in mal.AnimeSearch(Srks).results:
                 C += 1
-                SAEm.add_field(name = "\u200b", value = f"{str(C)}. `{AniRes.title}` **({AniRes.type})**", inline = False)
+                SAEm.add_field(name = "\u200b", value = f"{C}. `{AniRes.title}` **({AniRes.type})**", inline = False)
                 SrchAni.append(AniRes)
                 if C == 10:
                     break
-            SAEm.set_footer(text = "Choose a number to view MAL entry. 'c' or 'cancel' to exit search. \n\n*The Search closes automatically after 20sec of inactivity.*" )
+            SAEm.set_footer(text = 'Choose a number to view MAL entry. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
             await AnSrS.edit(embed = SAEm)
             try:
                 ResS = await DClient.wait_for('message', check = ChCHanS, timeout = 20)
@@ -358,14 +355,14 @@ async def AniMa(ctx, *args):
                 try:
                     if int(ResS.content) <= 10:
                         AniI = SrchAni[int(ResS.content)-1].mal_id
-                        await AnSrS.edit(embed = discord.Embed(title = ":calling: Finding...",  description = f"{SrchAni[int(ResS.content)-1].title} **({SrchAni[int(ResS.content)-1].type})**", color = 0xa49cff)) 
+                        await AnSrS.edit(embed = discord.Embed(title = ":calling: Finding...",  description = f'{SrchAni[int(ResS.content)-1].title} **({SrchAni[int(ResS.content)-1].type})**', color = 0xa49cff)) 
                 except ValueError:
                     if (LResS == "cancel") or (LResS == "c"):
                         await AnSrS.edit(embed = discord.Embed(title = ":x: Search Cancelled",  description = "\u200b", color = 0xa49cff))
             except asyncio.TimeoutError:
                 await AnSrS.edit(embed = discord.Embed(title = ":hourglass: Search Timeout...",  description = "\u200b", color = 0xa49cff))
         except UnboundLocalError:
-            SAEm = discord.Embed(title = f":mag: Search for '{Srks}'",  description = "\u200b", color = 0xa49cff)
+            SAEm = discord.Embed(title = f':mag: Search for "{Srks}"',  description = "\u200b", color = 0xa49cff)
             SAEm.add_field(name = "\u200b", value = "No Results found :woozy_face:", inline = False)
             await AnSrS.edit(embed = SAEm)
 
@@ -375,14 +372,14 @@ async def AniMa(ctx, *args):
             AniG = []
             for TAniG in AniF.genres:
                 AniG.append(TAniG.name)
-            AEm = discord.Embed(title = f"{AniF.title} / {AniF.alternative_titles.ja} **({AniFmal.type})**",  description = ", ".join(AniG) + f"\n[Mal Page]({AniFmal.url})", color = 0xa49cff)
+            AEm = discord.Embed(title = f'{AniF.title} / {AniF.alternative_titles.ja} **({AniFmal.type})**',  description = f'{", ".join(AniG)}\n[Mal Page]({AniFmal.url})', color = 0xa49cff)
             AEm.set_thumbnail(url = AniF.main_picture.large)
             if len(AniF.synopsis) > 1021:
                 AniSyn = AniF.synopsis[0:1021]
                 AniSyn = AniSyn + "..."
             else:
                 AniSyn = AniF.synopsis
-            AEm.add_field(name = "Studios: " + ", ".join(AniFmal.studios), value = "\u200b", inline = False)
+            AEm.add_field(name = f'Studios: {", ".join(AniFmal.studios)}', value = "\u200b", inline = False)
             AEm.add_field(name = "Synopsis:", value = AniSyn, inline = False)
             if AniF.start_date:
                 AEm.add_field(name = "Start Airing on:", value = AniF.start_date, inline = True)
@@ -395,7 +392,6 @@ async def AniMa(ctx, *args):
             AEm.add_field(name = "Popularity:", value = AniFmal.popularity, inline = True)
             AEm.add_field(name = "No# Episodes:", value = AniFmal.episodes, inline = True)
             AEm.add_field(name = "Episode Duration:", value = AniFmal.duration, inline = True)
-            AEm.add_field(name = "\u200b", value = "\u200b", inline = False)
             AniAdp = []
             AniAlt = []
             AniSum = []
@@ -415,7 +411,6 @@ async def AniMa(ctx, *args):
                     AniAlt.append(TAniAdp.node.title)
                 elif TAniAdp.relation_type_formatted == "Side story":
                     AniSiSt.append(TAniAdp.node.title)
-
             if len("\n".join(AniSeq)) > 950:
                 AniSeqF = "\n".join(AniSeq)[0:950]
                 AniSeqF = AniSeqF + "..."
@@ -490,7 +485,7 @@ async def AniMa(ctx, *args):
         except UnboundLocalError:
             pass
     else:
-        await ctx.message.channel.send("No Arguments")
+        await ctx.message.channel.send("No Arguments :no_mouth:")
 
 @DClient.command(name = "twitter")
 @commands.check(ChBot)
@@ -516,13 +511,13 @@ async def TestiNNGone(ctx, *args):
             for TwU in Twitter.GetUsersSearch(term = TwCS, count = 10):
                 C += 1
                 if C == 1:
-                    STEm = discord.Embed(title = ":mag: Search for '" + " ".join(TwCS) + "'",  description = "\u200b", color = 0x0384fc)
+                    STEm = discord.Embed(title = f':mag: Search for "{" ".join(TwCS)}"',  description = "\u200b", color = 0x0384fc)
                 VrMa = ""
                 if TwU.verified:
                     VrMa = ":ballot_box_with_check: "
-                STEm.add_field(name = "\u200b", value = str(C) + ". `" + "@" + TwU.screen_name + " / " + TwU.name + "` " + VrMa, inline = False)
+                STEm.add_field(name = "\u200b", value = f'{C}. `@{TwU.screen_name} / {TwU.name}` {VrMa}', inline = False)
                 SrchTw.append(TwU)
-            STEm.set_footer(text = "Choose a number to open doujin. 'c' or 'cancel' to exit search. \n\n*The Search closes automatically after 20sec of inactivity.*" )
+            STEm.set_footer(text = 'Choose a number to open doujin. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
             TwSent = await ctx.message.channel.send(embed = STEm)
             try:
                 ResS = await DClient.wait_for('message', check = ChCHanS, timeout = 20)
@@ -534,7 +529,7 @@ async def TestiNNGone(ctx, *args):
                         if ProT.verified:
                             VrMa = ":ballot_box_with_check: "
                         TwS = SrchTw[int(ResS.content)-1].screen_name
-                        await TwSent.edit(embed = discord.Embed(title = ":calling: Finding...",  description = "@" + ProT.screen_name + " / " + ProT.name + "` " + VrMa, color = 0x0384fc)) 
+                        await TwSent.edit(embed = discord.Embed(title = ":calling: Finding...",  description = f'@{ProT.screen_name} / {ProT.name} {VrMa}', color = 0x0384fc)) 
                 except ValueError:
                     if (LResS == "cancel") or (LResS == "c"):
                         await TwSent.edit(embed = discord.Embed(title = ":x: Search Cancelled",  description = "\u200b", color = 0x0384fc))
@@ -545,7 +540,7 @@ async def TestiNNGone(ctx, *args):
     elif args:
         TwS = " ".join(args)
     else:
-        await ctx.message.channel.send("No Arguments")
+        await ctx.message.channel.send("No Arguments :no_mouth:")
 
     try:
         try:
@@ -556,18 +551,18 @@ async def TestiNNGone(ctx, *args):
                 VrMa = ":ballot_box_with_check: "
             if TwTp.description:
                 TwDes = TwTp.description
-            TEm = discord.Embed(title = "@" + TwTp.screen_name + " / " + TwTp.name + " " + VrMa,  description = TwDes, color = 0x0384fc)
+            TEm = discord.Embed(title = f'@{TwTp.screen_name} / {TwTp.name} {VrMa}',  description = TwDes, color = 0x0384fc)
             TEm.set_thumbnail(url = TwTp.profile_image_url_https)
             if TwTp.location:
                 TEm.add_field(name = "Location: ", value = TwTp.location, inline = True)
             if TwTp.url:
                 TEm.add_field(name = "Website: ", value = (requests.head(TwTp.url)).headers['Location'], inline = True)
-            TEm.add_field(name = "Created: ", value = "-".join(TwTp.created_at.split(" ")[1:3]) + "-" + str(TwTp.created_at.split(" ")[-1]), inline = False)
-            TEm.add_field(name = "Following: ", value = f"{TwTp.friends_count:,}", inline = True) 
-            TEm.add_field(name = "Followers: ", value = f"{TwTp.followers_count:,}", inline = True)
+            TEm.add_field(name = "Created: ", value = f'{"-".join(TwTp.created_at.split(" ")[1:3])}-{TwTp.created_at.split(" ")[-1]}', inline = False)
+            TEm.add_field(name = "Following: ", value = f'{TwTp.friends_count:,}', inline = True) 
+            TEm.add_field(name = "Followers: ", value = f'{TwTp.followers_count:,}', inline = True)
             await ctx.message.channel.send(embed = TEm)
         except twitter.error.TwitterError:
-            await ctx.message.channel.send("Not Found")
+            await ctx.message.channel.send("Not Found :expressionless:")
     except UnboundLocalError:
         pass
 
@@ -593,10 +588,10 @@ async def nHen(ctx, *args):
     def EmbedMaker(DentAi,Page, State):
         DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
         DEmE.set_thumbnail(url = DentAi.image_urls[0])
-        DEmE.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n 'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
+        DEmE.set_footer(text = f'Released on {DentAi.upload_date}\n\n"n" or "next" for next page. "b"" or "back" for previous page. "go (page n#)" for a specific page. "c" or "close" to end reading.\n\n*The Doujin closes automatically after 2mins of inactivity.*')
         DEmE.set_image(url = DentAi.image_urls[Page])
-        DEmE.add_field(name = "Doujin ID", value = str(DentAi.id), inline = False)
-        DEmE.add_field(name = "\u200b", value = "**Doujin " + State +"** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
+        DEmE.add_field(name = "Doujin ID", value = DentAi.id, inline = False)
+        DEmE.add_field(name = "\u200b", value = f'**Doujin {State}**\n\n`Page: {(Page+1)}/{len(DentAi.image_urls)}`', inline = False)
         return DEmE
 
     if args:
@@ -607,24 +602,24 @@ async def nHen(ctx, *args):
             SrchDen = []
             if " ".join(Chlks):
                 try:
-                    for DeOujin in Utils.search_by_query(query =  " ".join(Chlks) + ' -tag:"lolicon" -tag:"shotacon"', sort = Sort.Popular):
+                    for DeOujin in Utils.search_by_query(query =  f'{" ".join(Chlks)} -tag:"lolicon" -tag:"shotacon"', sort = Sort.Popular):
                         C += 1
                         if C == 1:
-                            SEm = discord.Embed(title = ":mag: Search for '" + " ".join(Chlks) + "'",  description = "\u200b", color = 0x000000)
-                        SEm.add_field(name = "\u200b", value = str(C) + ". `" + DeOujin['title']['english'] + "`", inline = False)
+                            SEm = discord.Embed(title = f':mag: Search for "{" ".join(Chlks)}"',  description = "\u200b", color = 0x000000)
+                        SEm.add_field(name = "\u200b", value = f'{C}. `{DeOujin["title"]["english"]}`', inline = False)
                         SrchDen.append(DeOujin)
                         if C == 10:
                             break
-                    SEm.set_footer(text = "Choose a number to open doujin. 'c' or 'cancel' to exit search. \n\n*The Search closes automatically after 20sec of inactivity.*" )
+                    SEm.set_footer(text = 'Choose a number to open doujin. "c" or "cancel" to exit search. \n\n*The Search closes automatically after 20sec of inactivity.*' )
                     DmSent = await ctx.message.channel.send(embed = SEm)
                     try:
-                        ResS = await DClient.wait_for('message', check = ChCHanS, timeout = 20)
+                        ResS = await DClient.wait_for("message", check = ChCHanS, timeout = 20)
                         LResS = ResS.content.lower()
                         ReseS = (ResS.content.lower()).split(" ")
 
                         try:
                             if int(ResS.content) <= 10:
-                                Srch = SrchDen[int(ResS.content)-1]['id']
+                                Srch = SrchDen[int(ResS.content)-1]["id"]
                                 DentAi = Hentai(Srch)
                                 await DmSent.edit(embed = discord.Embed(title = ":newspaper: Opening...",  description = DentAi.title(Format.Pretty), color = 0x000000)) 
                         except ValueError:
@@ -633,7 +628,7 @@ async def nHen(ctx, *args):
                     except asyncio.TimeoutError:
                         await DmSent.edit(embed = discord.Embed(title = ":hourglass: Search Timeout...",  description = "\u200b", color = 0x000000))
                 except UnboundLocalError:
-                    SEm = discord.Embed(title = ":mag: Search for '" + " ".join(Chlks) + "'",  description = "\u200b", color = 0x000000)
+                    SEm = discord.Embed(title = f':mag: Search for "{" ".join(Chlks)}"',  description = "\u200b", color = 0x000000)
                     SEm.add_field(name = "\u200b", value = "No Results found :woozy_face:", inline = False)
                     await ctx.message.channel.send(embed = SEm)    
             else:
@@ -664,15 +659,15 @@ async def nHen(ctx, *args):
                         Page = 0
                         DEm = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
                         DEm.set_thumbnail(url = DentAi.image_urls[0])
-                        DEm.set_footer(text = "Released on " + str(DentAi.upload_date) + "\n\n'n' or 'next' for next page. 'b' or 'back' for previous page. 'go (page n#)' for a specific page. 'c' or 'close' to end reading. \n\n*The Doujin closes automatically after 2mins of inactivity.*")
+                        DEm.set_footer(text = f'Released on {DentAi.upload_date}\n\n"n" or "next" for next page. "b"" or "back" for previous page. "go (page n#)" for a specific page. "c" or "close" to end reading.\n\n*The Doujin closes automatically after 2mins of inactivity.*')
                         DEm.set_image(url = DentAi.image_urls[0])
                         DEm.add_field(name = "Doujin ID", value = str(DentAi.id), inline = False)
-                        DEm.add_field(name = "\u200b", value = "**Doujin OPEN** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
+                        DEm.add_field(name = "\u200b", value = f'**Doujin OPEN**\n\n`Page: {(Page+1)}/{len(DentAi.image_urls)}`', inline = False)
                         await ctx.message.channel.send("**WARNING:** ALL messages sent after the embed will be deleted until doujin is closed. This is to ensure a proper reading experience.")
                         DmSent = await ctx.message.channel.send(embed = DEm)
                         while True:
                             try:
-                                Res = await DClient.wait_for('message', check = ChCHan, timeout = 120)
+                                Res = await DClient.wait_for("message", check = ChCHan, timeout = 120)
                                 LRes = (Res.content).lower()
                                 Rese = (Res.content.lower()).split(" ")
                                 if (LRes != "close") and (LRes != "c") and (LRes != "zhentai") and (Rese[0] != "zhentai"):
@@ -733,8 +728,8 @@ async def nHen(ctx, *args):
 @commands.cooldown(1, 1, commands.BucketType.user)
 async def SrSub(ctx, *args):
     def EmbOri(REm, Type, SubCpoS):
-        REm.add_field(name = "\u200b", value = "The original post is a " + Type + " [click here](" + SubCpoS.url + ") to view the original", inline = False)
-        REm.set_image(url = SubCpoS.preview['images'][-1]['source']['url'])
+        REm.add_field(name = "\u200b", value = f'The original post is a {Type} [click here]({SubCpoS.url}) to view the original', inline = False)
+        REm.set_image(url = SubCpoS.preview["images"][-1]["source"]["url"])
         return REm
 
     if len(args) == 1:
@@ -765,13 +760,14 @@ async def SrSub(ctx, *args):
             else:
                 FteXt = SubCpoS.selftext
 
-            if PosType(SubCpoS):
-                NSfw = False
-                if SubCpoS.over_18 and ctx.channel.is_nsfw():
-                    REm = discord.Embed(title = FtiTle,  description = "Upvote Ratio: " + str(SubCpoS.upvote_ratio) + " // Post is NSFW", color = 0x8b0000)
+            NSfw = False
+            if SubCpoS.over_18 and ctx.channel.is_nsfw():
+                    REm = discord.Embed(title = FtiTle,  description = f'Upvote Ratio: {SubCpoS.upvote_ratio} // Post is NSFW', color = 0x8b0000)
                     NSfw = True
-                else:
-                    REm = discord.Embed(title = FtiTle, description = "Upvote Ratio: " + str(SubCpoS.upvote_ratio) + " // Post is Clean", color = 0x8b0000)
+            else:
+                REm = discord.Embed(title = FtiTle, description = f'Upvote Ratio: {str(SubCpoS.upvote_ratio)} // Post is Clean', color = 0x8b0000)
+
+            if PosType(SubCpoS):
                 if (NSfw and ctx.channel.is_nsfw()) or (NSfw == False):
                     if SubCpoS.selftext != "":
                         REm.add_field(name = "Body", value = FteXt, inline = False)
@@ -779,24 +775,15 @@ async def SrSub(ctx, *args):
                 else:
                     REm.add_field(name = "NSFW: ", value = "This channel isn't NSFW. No NSFW here", inline = False)
             else:
-                NSfw = False
-                if SubCpoS.over_18:
-                    if ctx.channel.is_nsfw():
-                        REm = discord.Embed(title = FtiTle,  description = "Upvote Ratio: " + str(SubCpoS.upvote_ratio) + " // Post is NSFW", color = 0x8b0000)
-                    else:
-                        REm = discord.Embed(title = "***NOT NSFW CHANNEL***",  description = "Post is NSFW", color = 0x8b0000)
-                    NSfw = True
-                else:
-                    REm = discord.Embed(title = FtiTle, description = "Upvote Ratio: " + str(SubCpoS.upvote_ratio) + " // Post is Clean", color = 0x8b0000)
                 C = 0
                 if (NSfw and ctx.channel.is_nsfw()) or (NSfw == False):
                     try:
-                        GaLpos = SubCpoS.gallery_data['items']
+                        GaLpos = SubCpoS.gallery_data["items"]
                         for ImgPoGa in GaLpos:
-                            FiPoS = SubCpoS.media_metadata[ImgPoGa['media_id']]
-                            if FiPoS['e'] == 'Image':
-                                REm.add_field(name = "\u200b", value = "The original post is a gallery [click here](" + SubCpoS.url + ") to view the rest of the post", inline = False)
-                                pstR = FiPoS['p'][-1]['u']
+                            FiPoS = SubCpoS.media_metadata[ImgPoGa["media_id"]]
+                            if FiPoS["e"] == "Image":
+                                REm.add_field(name = "\u200b", value = f'The original post is a gallery [click here]({SubCpoS.url}) to view the rest of the post', inline = False)
+                                pstR = FiPoS["p"][-1]["u"]
                                 REm.set_image(url = pstR)
                                 break
                     except AttributeError:
@@ -805,7 +792,7 @@ async def SrSub(ctx, *args):
                             if (SubCpoS.url).endswith(ExT):
                                 pstR = SubCpoS.url
                                 if ExT == ".gifv":
-                                    REm.add_field(name = "\u200b", value = "The original post is a video(imgur) [click here](" + SubCpoS.url + ") to view the original", inline = False)
+                                    REm.add_field(name = "\u200b", value = f'The original post is a video(imgur) [click here]({SubCpoS.url}) to view the original', inline = False)
                                     pstR = SubCpoS.url[:-1]
                                 REm.set_image(url = pstR)
                                 break
@@ -825,9 +812,10 @@ async def SrSub(ctx, *args):
                                     REm.add_field(name = "Post: ", value = SubCpoS.url, inline = False)
                                     REm.add_field(name = "Media Preview Unavailable. Sorry!!", value = '\u200b')
                 else:
+                    REm = discord.Embed(title = "***NOT NSFW CHANNEL***",  description = "Post is NSFW", color = 0x8b0000)
                     REm.add_field(name = "NSFW: ", value = "This isn't an NSFW channel. No NSFW allowed here.", inline = False)
-            REm.set_footer(text = "From " + "r/" + "".join(args))
-            REm.set_author(name = "*By: u/" + str(SubCpoS.author) + "*")
+            REm.set_footer(text = f'From r/{"".join(args)}')
+            REm.set_author(name = f'*By u/{SubCpoS.author}*')
             await ctx.message.channel.send(embed = REm)
         else:
             await ctx.message.channel.send("Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)")
@@ -845,10 +833,10 @@ async def SrSub(ctx, *args):
 async def AWord(ctx, *args): 
     WorA = " ".join(args)
     if FuncMon.DbAdd(Col, {"IDd":"GuildInfo","IDg":str(ctx.guild.id)}, WorA, 0):
-        Msg = "'" + (WorA) + "' ADDED :thumbsup:" 
+        Msg = f'"{WorA}" ADDED :thumbsup:' 
         FuncMon.DbAppendRest(Col, {"IDg":str(ctx.guild.id)}, {"IDd":"GuildInfo","IDg":str(ctx.guild.id)}, WorA, 0, "a")
     else:
-        Msg = "'" + (WorA) + "' ALREADY EXIST :confused:"
+        Msg = f'"{WorA}" ALREADY EXIST :confused:'
     await ctx.message.channel.send(Msg)
 
 @DClient.command(aliases = ["rem","remove"])
@@ -859,10 +847,10 @@ async def AWord(ctx, *args):
 async def RWord(ctx, *args):
     WorA = " ".join(args)
     if FuncMon.DbRem(Col, {"IDd":"GuildInfo", "IDg":str(ctx.guild.id)}, WorA):
-        Msg = "'" + WorA + "' REMOVED :thumbsup:"
+        Msg = f'"{WorA}" REMOVED :thumbsup:'
         FuncMon.DbAppendRest(Col, {"IDg":str(ctx.guild.id)}, {"IDd":"GuildInfo","IDg":str(ctx.guild.id)}, WorA, 0, "r")
     else:
-        Msg = "'" + WorA + "' DOESNT EXIST :confused:"
+        Msg = f'"{WorA}" DOESNT EXIST :confused:'
     await ctx.message.channel.send(Msg)  
 
 @DClient.command(name = "list")
@@ -927,7 +915,7 @@ async def TMsg(ctx, *args):
 async def IMsg(ctx, *args): 
     isBot = False
     if len(ctx.message.mentions) > 0:
-        if ctx.message.mentions[0].bot == False and ("<@!"+str(ctx.message.mentions[0].id)+">") == args[0]:
+        if ctx.message.mentions[0].bot == False and (f'<@!{ctx.message.mentions[0].id}>') == args[0]:
             AUmN = ctx.message.mentions[0]
             aRGu = list(args)
             aRGu.pop(0)
@@ -992,7 +980,7 @@ async def CMsend(ctx, *args):
         AttLi = []
         if ArC[0] == "profile":
             ArC.pop(0)
-            if len(ctx.message.mentions) > 0 and ("<@!"+str(ctx.message.mentions[0].id)+">") == ArC[0]:
+            if len(ctx.message.mentions) > 0 and (f'<@!{ctx.message.mentions[0].id}>') == ArC[0]:
                 AttLi.append(str((ctx.message.mentions[0]).avatar_url))
                 ArC.pop(0)
             else:
@@ -1020,7 +1008,7 @@ async def CMsend(ctx, *args):
                     files.pop(0)
                     os.remove("resend.jpg")
                 else:
-                    await ctx.message.channel.send("file(" + str(C) + ") isnt a valid image type :sweat:")
+                    await ctx.message.channel.send(f'file({C}) isnt a valid image type :sweat:')
             except requests.exceptions.MissingSchema:
                 pass
     else:
@@ -1098,7 +1086,7 @@ async def on_guild_remove(guild):
 @DClient.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
-        await ctx.message.channel.send("Hold the spam. Wait atleast " + StrCool(round(error.retry_after,2)))
+        await ctx.message.channel.send(f'Hold the spam. Wait atleast {StrCool(round(error.retry_after, 2))}')
     elif isinstance(error, IsBot):
         await ctx.message.channel.send("Bots can't use commands :pensive:")
     elif isinstance(error, IsAdmin):
