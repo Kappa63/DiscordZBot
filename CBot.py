@@ -760,14 +760,13 @@ async def SrSub(ctx, *args):
             else:
                 FteXt = SubCpoS.selftext
 
-            NSfw = False
-            if SubCpoS.over_18 and ctx.channel.is_nsfw():
+            if PosType(SubCpoS):
+                NSfw = False
+                if SubCpoS.over_18 and ctx.channel.is_nsfw():
                     REm = discord.Embed(title = FtiTle,  description = f'Upvote Ratio: {SubCpoS.upvote_ratio} // Post is NSFW', color = 0x8b0000)
                     NSfw = True
-            else:
-                REm = discord.Embed(title = FtiTle, description = f'Upvote Ratio: {str(SubCpoS.upvote_ratio)} // Post is Clean', color = 0x8b0000)
-
-            if PosType(SubCpoS):
+                else:
+                    REm = discord.Embed(title = FtiTle, description = f'Upvote Ratio: {SubCpoS.upvote_ratio} // Post is Clean', color = 0x8b0000)
                 if (NSfw and ctx.channel.is_nsfw()) or (NSfw == False):
                     if SubCpoS.selftext != "":
                         REm.add_field(name = "Body", value = FteXt, inline = False)
@@ -775,6 +774,15 @@ async def SrSub(ctx, *args):
                 else:
                     REm.add_field(name = "NSFW: ", value = "This channel isn't NSFW. No NSFW here", inline = False)
             else:
+                NSfw = False
+                if SubCpoS.over_18:
+                    if ctx.channel.is_nsfw():
+                        REm = discord.Embed(title = FtiTle,  description = f'Upvote Ratio: {SubCpoS.upvote_ratio} // Post is NSFW', color = 0x8b0000)
+                    else:
+                        REm = discord.Embed(title = "***NOT NSFW CHANNEL***",  description = "Post is NSFW", color = 0x8b0000)
+                    NSfw = True
+                else:
+                    REm = discord.Embed(title = FtiTle, description = f'Upvote Ratio: {SubCpoS.upvote_ratio} // Post is Clean', color = 0x8b0000)
                 C = 0
                 if (NSfw and ctx.channel.is_nsfw()) or (NSfw == False):
                     try:
@@ -812,7 +820,6 @@ async def SrSub(ctx, *args):
                                     REm.add_field(name = "Post: ", value = SubCpoS.url, inline = False)
                                     REm.add_field(name = "Media Preview Unavailable. Sorry!!", value = '\u200b')
                 else:
-                    REm = discord.Embed(title = "***NOT NSFW CHANNEL***",  description = "Post is NSFW", color = 0x8b0000)
                     REm.add_field(name = "NSFW: ", value = "This isn't an NSFW channel. No NSFW allowed here.", inline = False)
             REm.set_footer(text = f'From r/{"".join(args)}')
             REm.set_author(name = f'*By u/{SubCpoS.author}*')
