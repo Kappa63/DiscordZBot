@@ -119,17 +119,15 @@ async def SendH(ctx, *args):
         HEm.add_field(name = "zadd: ", value = "Adds a word/phrase to keep track of", inline = False)
         HEm.add_field(name = "zremove: ", value = "Removes an existing word/phrase being tracked", inline = False)
         HEm.add_field(name = "zlist: ", value = "Returns all added words/phrases", inline = False)
-        HEm.add_field(name = "zstats (@): ", value = "Returns stats for ALL words/phrases", inline = False)
-        HEm.add_field(name = "zstats (@)(Word): ", value = "Returns stats for a SPECIFIC word/phrase", inline = False)
-        HEm.add_field(name = "ztotal: ", value = "Returns the total number of times ALL words/phrases have been said in the server", inline = False)
-        HEm.add_field(name = "ztotal (Word): ", value = "Returns the total number of times a SPECIFIC word/phrase has been said in the server", inline = False)
+        HEm.add_field(name = "zstats (@) (Word): ", value = "Returns stats for word(s)/phrase(s)", inline = False)
+        HEm.add_field(name = "ztotal (Word): ", value = "Returns the total number of times word(s)/phrase(s) have been said on server", inline = False)
         HEm.set_footer(text = "Note: Counting is limited to 10 per Message to reduce spam incentives")
         await ctx.message.channel.send(embed = HEm)
     elif "".join(args).lower() == "misc" or "".join(args).lower() == "miscellaneous":
         HEm = discord.Embed(title = "**ZBot Misc. Help**", description = "\u200b", color = 0x0af531)
         HEm.add_field(name = "zfry (Image Attachment/Image Url): ", value = "Deep fries the image", inline = False)
         HEm.add_field(name = "zfry profile (@): ", value = "Deep fries the avatar", inline = False)
-        HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a post from the top 50 posts in hot from any subreddit", inline = False)
+        HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a RANDOM post from the top 100 posts in hot from any subreddit", inline = False)
         HEm.add_field(name = "ztwitter (User @): ", value = "Returns the user profile", inline = False)
         HEm.add_field(name = "ztwitter search (Username): ", value = "Searches for 10 users related to search argument", inline = False)
         HEm.add_field(name = "zanime (Anime Name): ", value = "Searches for anime and returns all the info about chosen one", inline = False)
@@ -137,7 +135,7 @@ async def SendH(ctx, *args):
         HEm.add_field(name = "zhentai (Magic Numbers): ", value = "Gets doujin from nhentai using magic numbers", inline = False)
         HEm.add_field(name = "zhentai random: ", value = "Gets a random doujin from nhentai", inline = False)
         HEm.add_field(name = "zhentai search (Doujin Name): ", value = "Searches for the 10 most popular doujin", inline = False)
-        HEm.add_field(name = "zgiphy (Phrase/Word to search for): ", value = "Returns a random gif from top 50 results on giphy", inline = False)
+        HEm.add_field(name = "zgiphy (Phrase/Word to search for): ", value = "Returns a RANDOM gif from top 50 results on giphy", inline = False)
         HEm.set_footer(text = "Note: Some hentai are not available. This is to abide by the discord TOS")
         await ctx.message.channel.send(embed = HEm)
     else:
@@ -235,10 +233,14 @@ async def MagMa(ctx, *args):
                 MagSyn = MagF.synopsis
             AEm.add_field(name = f'By: {", ".join(MagFmal.authors)}', value = "\u200b", inline = False)
             AEm.add_field(name = "Synopsis:", value = MagSyn, inline = False)
-            if MagF.start_date:
+            try:
                 AEm.add_field(name = "Start Airing on:", value = MagF.start_date, inline = True)
-            if MagF.end_date:
+            except AttributeError:
+                pass
+            try:
                 AEm.add_field(name = "Finish Airing on:", value = MagF.end_date, inline = True)
+            except AttributeError:
+                pass
             AEm.add_field(name = "Status:", value = MagFmal.status, inline = True)
             AEm.add_field(name = "Score:", value = MagFmal.score, inline = True)
             AEm.add_field(name = "Rank:", value = MagFmal.rank, inline = True)
@@ -381,10 +383,14 @@ async def AniMa(ctx, *args):
                 AniSyn = AniF.synopsis
             AEm.add_field(name = f'Studios: {", ".join(AniFmal.studios)}', value = "\u200b", inline = False)
             AEm.add_field(name = "Synopsis:", value = AniSyn, inline = False)
-            if AniF.start_date:
+            try:
                 AEm.add_field(name = "Start Airing on:", value = AniF.start_date, inline = True)
-            if AniF.end_date:
+            except AttributeError:
+                pass
+            try:
                 AEm.add_field(name = "Finish Airing on:", value = AniF.end_date, inline = True)
+            except AttributeError:
+                pass
             AEm.add_field(name = "Status:", value = AniFmal.status, inline = True)
             AEm.add_field(name = "Rating:", value = AniFmal.rating, inline = False)
             AEm.add_field(name = "Score:", value = AniFmal.score, inline = True)
@@ -740,11 +746,12 @@ async def SrSub(ctx, *args):
                     break
                 try:
                     Post = Reddit.subreddit("".join(args)).hot()
-                    ChoicePosts = random.randint(1, 50)
+                    ChoicePosts = random.randint(1, 100)
                     for _ in range(0, ChoicePosts):
                         SubCpoS = next(Sub for Sub in Post if not Sub.stickied)
                     break
                 except StopIteration:
+                    print("Again")
                     Tries += 1
                     continue
 
@@ -1006,14 +1013,14 @@ async def CMsend(ctx, *args):
                 if requests.head(file).headers.get('content-type').split("/")[0] == "image":
                     C += 1
                     r = requests.get(file, allow_redirects = True)
-                    open("resend.jpg", "wb").write(r.content)
-                    img = Image.open("resend.jpg")
+                    open("NsRndo.jpg", "wb").write(r.content)
+                    img = Image.open("NsRndo.jpg")
                     img = await deeppyer.deepfry(img, flares = False)
-                    img.save("resend.jpg")
-                    files.append(discord.File("resend.jpg"))
+                    img.save("NsRndo.jpg")
+                    files.append(discord.File("NsRndo.jpg"))
                     await ctx.message.channel.send(files = files)
                     files.pop(0)
-                    os.remove("resend.jpg")
+                    os.remove("NsRndo.jpg")
                 else:
                     await ctx.message.channel.send(f'file({C}) isnt a valid image type :sweat:')
             except requests.exceptions.MissingSchema:
