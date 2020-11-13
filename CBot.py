@@ -229,7 +229,7 @@ async def MagMa(ctx, *args):
             print(MagFmal.authors)
             for TMagG in MagF.genres:
                 MagG.append(TMagG.name)
-            AEm = discord.Embed(title = f"{MagF.title} / {MagF.alternative_titles.ja} **({MagFmal.type})**",  description = ", ".join(MagG) + f"\n [Mal Page]({MagFmal.url})", color = 0xa49cff)
+            AEm = discord.Embed(title = f"{MagF.title} / {MagF.alternative_titles.ja} **({MagFmal.type})**",  description = ", ".join(MagG) + f"\n[Mal Page]({MagFmal.url})", color = 0xa49cff)
             AEm.set_thumbnail(url = MagF.main_picture.large)
             if len(MagF.synopsis) > 1021:
                 MagSyn = MagF.synopsis[0:1021]
@@ -238,8 +238,10 @@ async def MagMa(ctx, *args):
                 MagSyn = MagF.synopsis
             AEm.add_field(name = "By: " + ", ".join(MagFmal.authors), value = "\u200b", inline = False)
             AEm.add_field(name = "Synopsis:", value = MagSyn, inline = False)
-            AEm.add_field(name = "Start Airing on:", value = MagF.start_date, inline = True)
-            AEm.add_field(name = "Finish Airing on:", value = MagF.end_date, inline = True)
+            if MagF.start_date:
+                AEm.add_field(name = "Start Airing on:", value = MagF.start_date, inline = True)
+            if MagF.end_date:
+                AEm.add_field(name = "Finish Airing on:", value = MagF.end_date, inline = True)
             AEm.add_field(name = "Status:", value = MagFmal.status, inline = True)
             AEm.add_field(name = "Score:", value = MagFmal.score, inline = True)
             AEm.add_field(name = "Rank:", value = MagFmal.rank, inline = True)
@@ -373,7 +375,7 @@ async def AniMa(ctx, *args):
             AniG = []
             for TAniG in AniF.genres:
                 AniG.append(TAniG.name)
-            AEm = discord.Embed(title = f"{AniF.title} / {AniF.alternative_titles.ja} **({AniFmal.type})**",  description = ", ".join(AniG) + f"\n [Mal Page]({AniFmal.url})", color = 0xa49cff)
+            AEm = discord.Embed(title = f"{AniF.title} / {AniF.alternative_titles.ja} **({AniFmal.type})**",  description = ", ".join(AniG) + f"\n[Mal Page]({AniFmal.url})", color = 0xa49cff)
             AEm.set_thumbnail(url = AniF.main_picture.large)
             if len(AniF.synopsis) > 1021:
                 AniSyn = AniF.synopsis[0:1021]
@@ -382,8 +384,10 @@ async def AniMa(ctx, *args):
                 AniSyn = AniF.synopsis
             AEm.add_field(name = "Studios: " + ", ".join(AniFmal.studios), value = "\u200b", inline = False)
             AEm.add_field(name = "Synopsis:", value = AniSyn, inline = False)
-            AEm.add_field(name = "Start Airing on:", value = AniF.start_date, inline = True)
-            AEm.add_field(name = "Finish Airing on:", value = AniF.end_date, inline = True)
+            if AniF.start_date:
+                AEm.add_field(name = "Start Airing on:", value = AniF.start_date, inline = True)
+            if AniF.end_date:
+                AEm.add_field(name = "Finish Airing on:", value = AniF.end_date, inline = True)
             AEm.add_field(name = "Status:", value = AniFmal.status, inline = True)
             AEm.add_field(name = "Rating:", value = AniFmal.rating, inline = False)
             AEm.add_field(name = "Score:", value = AniFmal.score, inline = True)
