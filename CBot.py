@@ -884,6 +884,16 @@ async def LWord(ctx):
             LEm.add_field(name = Wp, value =  "\u200b", inline = True)
     await ctx.message.channel.send(embed = LEm)     
 
+@DClient.command(name = "reset")
+@commands.check(ChBot)
+@commands.check(ChAdmin)
+@commands.check(ChSer)
+@commands.cooldown(1, 1, commands.BucketType.user)
+async def ReAll(ctx):
+    DbB = Col.find({"IDg":str(ctx.guild.id)})
+    for DbG in DbB:
+        Col.delete_one(DbG)
+        
 @DClient.command(name = "total")
 @commands.check(ChBot)
 @commands.check(ChSer)
