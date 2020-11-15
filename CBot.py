@@ -749,7 +749,7 @@ async def CovSt(ctx, *args):
                 CEm.add_field(name = "Confirmed: ", value = f'{TCov["latest"]["confirmed"]:,}', inline = False)
                 CEm.add_field(name = "Deaths: ", value = f'{TCov["latest"]["deaths"]:,}', inline = False)
                 CEm.add_field(name = "Recovered: ", value = f'{TCov["latest"]["recovered"]:,}', inline = False)
-                CEm.set_footer(text = "Note: Data may not be completely accurate\n\nData From John Hopkins University (JHU)")
+                CEm.set_footer(text = "Note: Data may not be completely accurate\n\nData provided by John Hopkins University (JHU)")
                 break
         if not FounCon:
             await ctx.message.channel.send("Country not found :pensive:")
@@ -759,7 +759,7 @@ async def CovSt(ctx, *args):
         CEm.add_field(name = "Confirmed: ", value = f'{CovDWW["confirmed"]:,}', inline = False)
         CEm.add_field(name = "Deaths: ", value = f'{CovDWW["deaths"]:,}', inline = False)
         CEm.add_field(name = "Recovered: ", value = f'{CovDWW["recovered"]:,}', inline = False)
-        CEm.set_footer(text = "Note: Data may not be completely accurate\n\nData From John Hopkins University (JHU)")
+        CEm.set_footer(text = "Note: Data may not be completely accurate\n\nData provided by John Hopkins University (JHU)")
     await ctx.message.channel.send(embed = CEm)
 
 @DClient.command(name = "reddit")
