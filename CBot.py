@@ -123,7 +123,7 @@ async def SendH(ctx, *args):
         HEm.add_field(name = "ztotal (Word): ", value = "Returns the total number of times word(s)/phrase(s) have been said on server", inline = False)
         HEm.set_footer(text = "Note: Counting is limited to 10 per Message to reduce spam incentives")
         await ctx.message.channel.send(embed = HEm)
-    elif "".join(args).lower() == "misc" or "".join(args).lower() == "miscellaneous":
+    elif "".join(args).lower() == "misc" or "".join(args).lower() == "misc." or "".join(args).lower() == "miscellaneous":
         HEm = discord.Embed(title = "**ZBot Misc. Help**", description = "\u200b", color = 0x0af531)
         HEm.add_field(name = "zfry (Image Attachment/Image Url): ", value = "Deep fries the image", inline = False)
         HEm.add_field(name = "zfry profile (@): ", value = "Deep fries the avatar", inline = False)
@@ -466,7 +466,6 @@ async def AniMa(ctx, *args):
                 AEm.add_field(name = "Summary:", value = AniSumF, inline = False)
             if AniSpOF:
                 AEm.add_field(name = "Spin Off:", value = AniSpOF, inline = False)
-
             AEm.add_field(name = "\u200b", value = "\u200b", inline = False)
             try:
                 if len("\n".join(AniFmal.opening_themes)) > 950:
@@ -495,7 +494,7 @@ async def AniMa(ctx, *args):
 
 @DClient.command(name = "twitter")
 @commands.check(ChBot)
-@commands.cooldown(1, 1, commands.BucketType.user)
+@commands.cooldown(1, 3, commands.BucketType.user)
 async def TestiNNGone(ctx, *args):
     def ChCHanS(MSg):
         MesS = MSg.content.lower()
@@ -574,7 +573,7 @@ async def TestiNNGone(ctx, *args):
 
 @DClient.command(name = "hentai")
 @commands.check(ChBot)
-@commands.cooldown(1, 1, commands.BucketType.user)
+@commands.cooldown(1, 3, commands.BucketType.user)
 async def nHen(ctx, *args):  
     def ChCHanS(MSg):
         MesS = MSg.content.lower()
@@ -731,7 +730,7 @@ async def nHen(ctx, *args):
 
 @DClient.command(name = "reddit")
 @commands.check(ChBot)
-@commands.cooldown(1, 1, commands.BucketType.user)
+@commands.cooldown(1, 3, commands.BucketType.user)
 async def SrSub(ctx, *args):
     def EmbOri(REm, Type, SubCpoS):
         REm.add_field(name = "\u200b", value = f'The original post is a {Type} [click here]({SubCpoS.url}) to view the original', inline = False)
