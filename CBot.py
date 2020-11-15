@@ -744,7 +744,7 @@ async def CovSt(ctx, *args):
         for TCov in CovDLoc:
             if TCov["country"].lower() == " ".join(args).lower():
                 FounCon = True
-                CEm = discord.Embed(title = f'{" ".join(args)} Covid-19 Status', description = f'As of {datetime.date.today()}', color = 0xbd9400)
+                CEm = discord.Embed(title = f'{" ".join(args)} Covid-19 Status', description = f'This data was requested on {datetime.date.today()}', color = 0xbd9400)
                 CEm.add_field(name = "Population: ", value = f'{TCov["country_population"]:,}', inline = False)
                 CEm.add_field(name = "Confirmed: ", value = f'{TCov["latest"]["confirmed"]:,}', inline = False)
                 CEm.add_field(name = "Deaths: ", value = f'{TCov["latest"]["deaths"]:,}', inline = False)
@@ -755,7 +755,7 @@ async def CovSt(ctx, *args):
             await ctx.message.channel.send("Country not found :pensive:")
     else: 
         CovDWW = Cov.getLatest()
-        CEm = discord.Embed(title = "Worldwide Covid-19 Status", description = f'As of {datetime.date.today()}', color = 0xbd9400)
+        CEm = discord.Embed(title = "Worldwide Covid-19 Status", description = f'This data was requested on {datetime.date.today()}', color = 0xbd9400)
         CEm.add_field(name = "Confirmed: ", value = f'{CovDWW["confirmed"]:,}', inline = False)
         CEm.add_field(name = "Deaths: ", value = f'{CovDWW["deaths"]:,}', inline = False)
         CEm.add_field(name = "Recovered: ", value = f'{CovDWW["recovered"]:,}', inline = False)
