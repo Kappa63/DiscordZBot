@@ -752,7 +752,6 @@ async def CovSt(ctx, *args):
                 ConFC += TCov["latest"]["confirmed"]
                 DeaFC += TCov["latest"]["deaths"]
                 RecFC += TCov["latest"]["recovered"]
-                break
         if FounCon:
             CEm = discord.Embed(title = f'{ConT} Covid-19 Status', description = f'This data was requested on {datetime.date.today()}', color = 0xbd9400)
             CEm.add_field(name = "Population: ", value = f'{PopT:,}', inline = False)
