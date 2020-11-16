@@ -14,7 +14,7 @@ from prawcore import NotFound, Forbidden
 from hentai import Utils, Sort, Hentai, Format
 import asyncio
 import giphy_client
-import twitter
+import tweepy
 import mal
 import malclient
 import COVID19Py
@@ -31,7 +31,9 @@ REqInt.members = True
 
 DClient = commands.Bot(case_insensitive = True, command_prefix = ["z","Z"], help_command = None, intents = REqInt)
 
-Twitter = twitter.Api(consumer_key = "2lv4MgQDREClbQxjeWOQU5aGf", consumer_secret = "4vq5UjqJetyLm37YhQtpc6htb0WPimFJVV088TL0LDMXHUdYTA", access_token_key = "1297802233841623040-rYG0sXCKz0PSDUNAhUPx9hecf507LY", access_token_secret = "02dNbliU0EJOfUzGx8UVmrbaqZTlYOmwwKAWqnkecWzgd")
+twitter = tweepy.OAuthHandler("2lv4MgQDREClbQxjeWOQU5aGf", "4vq5UjqJetyLm37YhQtpc6htb0WPimFJVV088TL0LDMXHUdYTA")
+twitter.set_access_token("1297802233841623040-rYG0sXCKz0PSDUNAhUPx9hecf507LY", "02dNbliU0EJOfUzGx8UVmrbaqZTlYOmwwKAWqnkecWzgd")
+Twitter = tweepy.API(twitter)
 
 Reddit = praw.Reddit(client_id = "ntnBVsoqGHtoNw", client_secret = "ZklNqu4BQK4jWRp9dYXb4ApoQ10", user_agent = "CBot by u/Kamlin333")
 
@@ -135,7 +137,7 @@ async def SendH(ctx, *args):
         HEm.add_field(name = "zcovid: ", value = "Returns the worldwide status of Covid-19", inline = False)
         HEm.add_field(name = "zcovid (Country): ", value = "Returns the status of Covid-19 in country", inline = False)
         HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a RANDOM post from the top 100 posts in hot from any subreddit", inline = False)
-        HEm.add_field(name = "ztwitter (User @): ", value = "Returns the user profile", inline = False)
+        HEm.add_field(name = "ztwitter (User @): ", value = "Returns the user profile and 20 of their latest tweets", inline = False)
         HEm.add_field(name = "ztwitter search (Username): ", value = "Searches for 10 users related to search argument", inline = False)
         HEm.add_field(name = "zanime (Anime Name): ", value = "Searches for anime and returns all the info about chosen one", inline = False)
         HEm.add_field(name = "zmanga (Manga Name): ", value = "Searches for manga and returns all the info about chosen one", inline = False)
@@ -501,7 +503,7 @@ async def AniMa(ctx, *args):
 
 @DClient.command(name = "twitter")
 @commands.check(ChBot)
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 5, commands.BucketType.user)
 async def TestiNNGone(ctx, *args):
     def ChCHanS(MSg):
         MesS = MSg.content.lower()
@@ -514,13 +516,41 @@ async def TestiNNGone(ctx, *args):
                 RsT = True
         return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
 
+    def ChCHEm(RcM, RuS):
+        return RuS.bot == False and RcM.message == TwTsL and str(RcM.emoji) in ["⬅️","❌","➡️"]
+
+    def MakEmTwt(TwTp, VrMa, TwTYPE, TwExt, TwTNum, TwTtot):
+        TEmE = discord.Embed(title = f'@{TwTp.screen_name} / {TwTp.name} {VrMa}',  description = TwTYPE, color = 0x0384fc)
+        TEmE.set_thumbnail(url = TwTp.profile_image_url_https)
+        TEmE.add_field(name = f'{TwTYPE} on: ', value = (str(TwExt.created_at).split(" "))[0], inline = False)
+        if TwTYPE == "Retweet":
+            TEmE.add_field(name = "Retweeted Body: ", value = TwExt.retweeted_status.full_text, inline = False)
+        elif TwTYPE == "Quoted":
+            TEmE.add_field(name = "Main Body: ", value = TwExt.full_text, inline = False)
+            TEmE.add_field(name = "Quoted Body: ", value = TwExt.quoted_status.full_text, inline = False)
+        if TwTYPE == "Tweet":
+            TEmE.add_field(name = "Tweet Body: ", value = TwExt.full_text, inline = False)
+        TEmE.add_field(name = f"`{TwTNum+1}/{TwTtot}`", value = "\u200b", inline = False)
+        TEmE.add_field(name = "Retweets: ", value = f'{TwExt.retweet_count:,}', inline = True)
+        TEmE.add_field(name = "Likes: ", value = f'{TwExt.favorite_count:,}', inline = True)
+        TEmE.set_footer(text = "Make sure to close the tweet once you are done .\n\n*Tweet closes automatically after 20sec of inactivity.*")
+        return TEmE
+
+    def ChTwTp(TwExt):
+        if hasattr(TwExt, "retweeted_status"):
+            return "Retweet"
+        elif hasattr(TwExt, "quoted_status"):
+            return "Quoted"
+        else:
+            return "Tweet"
+
     TwCS = " ".join(args).split(" ")
     if TwCS[0].lower() == "search" and args:
         TwCS.pop(0)
         if " ".join(TwCS):
             C = 0
             SrchTw = []
-            for TwU in Twitter.GetUsersSearch(term = TwCS, count = 10):
+            for TwU in Twitter.search_users(TwCS, count = 10):
                 C += 1
                 if C == 1:
                     STEm = discord.Embed(title = f':mag: Search for "{" ".join(TwCS)}"',  description = "\u200b", color = 0x0384fc)
@@ -553,10 +583,9 @@ async def TestiNNGone(ctx, *args):
         TwS = " ".join(args)
     else:
         await ctx.message.channel.send("No Arguments :no_mouth:")
-
     try:
         try:
-            TwTp = Twitter.GetUser(screen_name = TwS)
+            TwTp = Twitter.get_user(TwS)
             VrMa = ""
             TwDes = "\u200b"
             if TwTp.verified:
@@ -569,11 +598,50 @@ async def TestiNNGone(ctx, *args):
                 TEm.add_field(name = "Location: ", value = TwTp.location, inline = True)
             if TwTp.url:
                 TEm.add_field(name = "Website: ", value = (requests.head(TwTp.url)).headers['Location'], inline = True)
-            TEm.add_field(name = "Created: ", value = f'{"-".join(TwTp.created_at.split(" ")[1:3])}-{TwTp.created_at.split(" ")[-1]}', inline = False)
+            TEm.add_field(name = "Created: ", value = (str(TwTp.created_at).split(" "))[0], inline = False)
             TEm.add_field(name = "Following: ", value = f'{TwTp.friends_count:,}', inline = True) 
             TEm.add_field(name = "Followers: ", value = f'{TwTp.followers_count:,}', inline = True)
-            await ctx.message.channel.send(embed = TEm)
-        except twitter.error.TwitterError:
+            TEm.set_footer(text = "Make sure to close the tweet once you are done .\n\n*Tweet closes automatically after 20sec of inactivity.*")
+            TwExt = Twitter.user_timeline(TwS, trim_user=True, tweet_mode="extended")
+            TwTsL = await ctx.message.channel.send(embed = TEm)
+            TwTNum = 0
+            OnPrF = True
+            await TwTsL.add_reaction("⬅️")
+            await TwTsL.add_reaction("❌")
+            await TwTsL.add_reaction("➡️")
+            while True:
+                try:
+                    ReaEm = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 30) 
+                    await TwTsL.remove_reaction(ReaEm[0].emoji, ReaEm[1])
+                    if ReaEm[0].emoji == "⬅️" and TwTNum == 0:
+                        OnPrF = True
+                        await TwTsL.edit(embed = TEm)
+                    elif ReaEm[0].emoji == "⬅️" and TwTNum > 0:
+                        TwTNum -= 1
+                        await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt)))
+                    elif ReaEm[0].emoji == "➡️" and OnPrF:
+                        OnPrF = False    
+                        TwTNum = 0
+                        await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt)))
+                    elif ReaEm[0].emoji == "➡️" and len(TwExt) > TwTNum+1 and TwTNum >= 0:
+                        TwTNum += 1
+                        await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt)))
+                    elif ReaEm[0].emoji == "➡️" and len(TwExt) == TwTNum+1:
+                        await TwTsL.remove_reaction("⬅️", DClient.user)
+                        await TwTsL.remove_reaction("❌", DClient.user)
+                        await TwTsL.remove_reaction("➡️", DClient.user)
+                        break
+                    elif ReaEm[0].emoji == "❌":
+                        await TwTsL.remove_reaction("⬅️", DClient.user)
+                        await TwTsL.remove_reaction("❌", DClient.user)
+                        await TwTsL.remove_reaction("➡️", DClient.user)
+                        break
+                except asyncio.TimeoutError:
+                    await TwTsL.remove_reaction("⬅️", DClient.user)
+                    await TwTsL.remove_reaction("❌", DClient.user)
+                    await TwTsL.remove_reaction("➡️", DClient.user)
+                    break
+        except tweepy.error.TweepError:
             await ctx.message.channel.send("Not Found :expressionless:")
     except UnboundLocalError:
         pass

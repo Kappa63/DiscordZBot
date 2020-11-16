@@ -9,7 +9,7 @@ praw==7.1.0
 hentai==2.0
 asyncio==3.4.3
 giphy-client==1.0.0
-python-twitter==3.5
+tweepy==3.9.0
 mal-api==0.3.1
 malclient==0.1.5
 COVID19Py==0.3.0
