@@ -741,17 +741,26 @@ async def nHen(ctx, *args):
 async def CovSt(ctx, *args):
     if args:
         CovDLoc = Cov.getLocations()
+        ConFC = 0
+        DeaFC = 0
+        RecFC = 0
         for TCov in CovDLoc:
             if TCov["country"].lower() == " ".join(args).lower():
                 FounCon = True
-                CEm = discord.Embed(title = f'{TCov["country"]} Covid-19 Status', description = f'This data was requested on {datetime.date.today()}', color = 0xbd9400)
-                CEm.add_field(name = "Population: ", value = f'{TCov["country_population"]:,}', inline = False)
-                CEm.add_field(name = "Confirmed: ", value = f'{TCov["latest"]["confirmed"]:,}', inline = False)
-                CEm.add_field(name = "Deaths: ", value = f'{TCov["latest"]["deaths"]:,}', inline = False)
-                CEm.add_field(name = "Recovered: ", value = f'{TCov["latest"]["recovered"]:,}', inline = False)
-                CEm.set_footer(text = "Note: Data may not be completely accurate\n\nData provided by John Hopkins University (JHU)")
+                ConT = TCov["country"]
+                PopT = TCov["country_population"]
+                ConFC += TCov["latest"]["confirmed"]
+                DeaFC += TCov["latest"]["deaths"]
+                RecFC += TCov["latest"]["recovered"]
                 break
-        if not FounCon:
+        if FounCon:
+            CEm = discord.Embed(title = f'{ConT} Covid-19 Status', description = f'This data was requested on {datetime.date.today()}', color = 0xbd9400)
+            CEm.add_field(name = "Population: ", value = f'{PopT:,}', inline = False)
+            CEm.add_field(name = "Confirmed: ", value = f'{ConFC:,}', inline = False)
+            CEm.add_field(name = "Deaths: ", value = f'{DeaFC:,}', inline = False)
+            CEm.add_field(name = "Recovered: ", value = f'{RecFC:,}', inline = False)
+            CEm.set_footer(text = "Note: Data may not be completely accurate")
+        else:
             await ctx.message.channel.send("Country not found :pensive:")
     else: 
         CovDWW = Cov.getLatest()
