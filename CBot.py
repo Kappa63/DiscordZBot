@@ -549,11 +549,11 @@ async def TestiNNGone(ctx, *args):
         return TEmE
 
     def ChTwTp(TwExt):
-        if hasattr(TwExt, "retweeted_status"):
+        if hasattr(TwExt, "retweeted_status") and TwExt.retweeted_status:
             return "Retweet"
-        elif hasattr(TwExt, "quoted_status"):
+        elif hasattr(TwExt, "quoted_status") and TwExt.quoted_status:
             return "Quote"
-        elif hasattr(TwExt, "in_reply_to_status_id"):
+        elif hasattr(TwExt, "in_reply_to_status_id") and TwExt.in_reply_to_status_id:
             return "Comment"
         else:
             return "Tweet"
