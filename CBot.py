@@ -744,8 +744,9 @@ async def CovSt(ctx, *args):
         ConFC = 0
         DeaFC = 0
         RecFC = 0
+        FounCon = False
         for TCov in CovDLoc:
-            if TCov["country"].lower() == " ".join(args).lower():
+            if TCov["country"].lower() == " ".join(args).lower() or TCov["country_code"].lower() == " ".join(args).lower():
                 FounCon = True
                 ConT = TCov["country"]
                 PopT = TCov["country_population"]
@@ -760,6 +761,7 @@ async def CovSt(ctx, *args):
             CEm.add_field(name = "Recovered: ", value = f'{RecFC:,}', inline = False)
             CEm.set_footer(text = "Note: Data may not be completely accurate")
         else:
+            print("ok")
             await ctx.message.channel.send("Country not found :pensive:")
     else: 
         CovDWW = Cov.getLatest()
