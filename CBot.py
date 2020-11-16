@@ -528,23 +528,23 @@ async def TestiNNGone(ctx, *args):
         TEmE.add_field(name = "Likes: ", value = f'{TwExt.favorite_count:,}', inline = True)
         if TwTYPE == "Retweet":
             if hasattr(TwExt.retweeted_status, "extended_entities"):
-                TEmE.set_image(url = TwExt.retweeted_status.extended_entities["media"][0]["media_url"])
-            TEmE.add_field(name = "Retweeted Body: ", value = TwExt.retweeted_status.full_text, inline = False)
+                TEmE.set_image(url = TwExt.retweeted_status.extended_entities["media"][0]["media_url_https"])
+            TEmE.add_field(name = f'Retweeted Body (By: {Twitter.get_user(user_id = TwExt.retweeted_status.user.id).screen_name}): ', value = TwExt.retweeted_status.full_text, inline = False)
         elif TwTYPE == "Quote":
             if hasattr(TwExt.quoted_status, "extended_entities"):
-                TEmE.set_image(url = TwExt.quoted_status.extended_entities["media"][0]["media_url"])
+                TEmE.set_image(url = TwExt.quoted_status.extended_entities["media"][0]["media_url_https"])
             TEmE.add_field(name = "Main Body: ", value = TwExt.full_text, inline = False)
-            TEmE.add_field(name = "Quoted Body: ", value = TwExt.quoted_status.full_text, inline = False)
+            TEmE.add_field(name = f'Quoted Body (By: {Twitter.get_user(user_id = TwExt.quoted_status.user.id).screen_name}): ', value = TwExt.quoted_status.full_text, inline = False)
         elif TwTYPE == "Tweet":
             if hasattr(TwExt, "extended_entities"):
-                TEmE.set_image(url = TwExt.extended_entities["media"][0]["media_url"])
+                TEmE.set_image(url = TwExt.extended_entities["media"][0]["media_url_https"])
             TEmE.add_field(name = "Tweet Body: ", value = TwExt.full_text, inline = False)
         elif TwTYPE == "Comment":
             TEmE.add_field(name = "Comment Body: ", value = TwExt.full_text, inline = False)
             TwCO = Twitter.get_status(id = TwExt.in_reply_to_status_id, trim_user=True, tweet_mode="extended")
             if hasattr(TwCO, "extended_entities"):
-                TEmE.set_image(url = TwCO.extended_entities["media"][0]["media_url"])
-            TEmE.add_field(name = "On: ", value = TwCO.full_text, inline = False)
+                TEmE.set_image(url = TwCO.extended_entities["media"][0]["media_url_https"])
+            TEmE.add_field(name = f'On (By: {TwExt.in_reply_to_screen_name}): ', value = TwCO.full_text, inline = False)
         TEmE.set_footer(text = f'{"-"*10}\n\nMake sure to close the tweet once you are done .\n\n*Tweet closes automatically after 20sec of inactivity.*')
         return TEmE
 
