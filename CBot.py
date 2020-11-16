@@ -143,7 +143,7 @@ async def SendH(ctx, *args):
         HEm.add_field(name = "zhentai random: ", value = "Gets a random doujin from nhentai", inline = False)
         HEm.add_field(name = "zhentai search (Doujin Name): ", value = "Searches for the 10 most popular doujin", inline = False)
         HEm.add_field(name = "zgiphy (Phrase/Word to search for): ", value = "Returns a RANDOM gif from top 50 results on giphy", inline = False)
-        HEm.set_footer(text = "Note: Some hentai are not available. This is to abide by the discord TOS")
+        HEm.set_footer(text = "Notes: -During testing recovered data from zcovid was extremely inaccurate\n-Some hentai are not available. This is to abide by the discord TOS")
         await ctx.message.channel.send(embed = HEm)
     else:
         await ctx.message.channel.send("That help category doesn't exist.")
@@ -768,7 +768,7 @@ async def CovSt(ctx, *args):
         CEm.add_field(name = "Confirmed: ", value = f'{CovDWW["confirmed"]:,}', inline = False)
         CEm.add_field(name = "Deaths: ", value = f'{CovDWW["deaths"]:,}', inline = False)
         CEm.add_field(name = "Recovered: ", value = f'{CovDWW["recovered"]:,}', inline = False)
-        CEm.set_footer(text = "Note: Data may not be completely accurate\n\nData provided by John Hopkins University (JHU)")
+        CEm.set_footer(text = "Note: Data may not be completely accurate")
     await ctx.message.channel.send(embed = CEm)
 
 @DClient.command(name = "reddit")
