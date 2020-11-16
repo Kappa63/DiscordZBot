@@ -761,7 +761,6 @@ async def CovSt(ctx, *args):
             CEm.add_field(name = "Recovered: ", value = f'{RecFC:,}', inline = False)
             CEm.set_footer(text = "Note: Data may not be completely accurate")
         else:
-            print("ok")
             await ctx.message.channel.send("Country not found :pensive:")
     else: 
         CovDWW = Cov.getLatest()
