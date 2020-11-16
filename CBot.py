@@ -522,8 +522,8 @@ async def TestiNNGone(ctx, *args):
     def MakEmTwt(TwTp, VrMa, TwTYPE, TwExt, TwTNum, TwTtot):
         TEmE = discord.Embed(title = f'@{TwTp.screen_name} / {TwTp.name} {VrMa}',  description = TwTYPE, color = 0x0384fc)
         TEmE.set_thumbnail(url = TwTp.profile_image_url_https)
-        TEmE.add_field(name = f'{TwTYPE} on: ', value = (str(TwExt.created_at).split(" "))[0], inline = False)
-        TEmE.add_field(name = f"`{TwTNum+1}/{TwTtot}`", value = "\u200b", inline = False)
+        TEmE.add_field(name = f'{TwTYPE} on: ', value = TwExt.created_at, inline = False)
+        TEmE.add_field(name = f'`{TwTNum+1}/{TwTtot}`', value = "\u200b", inline = False)
         TEmE.add_field(name = "Retweets: ", value = f'{TwExt.retweet_count:,}', inline = True)
         TEmE.add_field(name = "Likes: ", value = f'{TwExt.favorite_count:,}', inline = True)
         if TwTYPE == "Retweet":
@@ -545,7 +545,7 @@ async def TestiNNGone(ctx, *args):
             if hasattr(TwCO, "extended_entities"):
                 TEmE.set_image(url = TwCO.extended_entities["media"][0]["media_url"])
             TEmE.add_field(name = "On: ", value = TwCO.full_text, inline = False)
-        TEmE.set_footer(text = "Make sure to close the tweet once you are done .\n\n*Tweet closes automatically after 20sec of inactivity.*")
+        TEmE.set_footer(text = f'{"-"*10}\n\nMake sure to close the tweet once you are done .\n\n*Tweet closes automatically after 20sec of inactivity.*')
         return TEmE
 
     def ChTwTp(TwExt):
