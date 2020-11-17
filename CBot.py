@@ -19,6 +19,7 @@ import mal
 import malclient
 import COVID19Py
 import datetime
+from operator import pow, truediv, mul, add, sub 
 
 Mdb = "mongodb+srv://Kappa:85699658@cbotdb.exsit.mongodb.net/CBot?retryWrites=true&w=majority"
 Cls = MongoClient(Mdb)
@@ -179,6 +180,63 @@ async def SMsg(ctx):
         await ctx.message.channel.send(":partying_face: Setup complete, you can now use tracking commands :partying_face:")
     else:
         await ctx.message.channel.send(":partying_face: This server is already setup :partying_face:")
+
+@DClient.command(aliases = ["calculate","calc"])
+@commands.check(ChBot)
+@commands.cooldown(1, 1, commands.BucketType.user)
+async def TestiNNGone(ctx, *args):
+    OpSCalc = {"+":add, "-":sub, "*": mul, "x": mul, "×": mul, "÷": truediv, "/":truediv, "^":pow}
+    FlBrPa = {"(":")","{":"}","[":"]","SnYDnnTSsPt":"NoneEmpty"}
+    NumE = " "+"".join(args)
+    print(NumE)
+    def CalcST(NumE):
+        try:
+            return float("".join(NumE))
+        except ValueError:
+            NeedClense = False
+            for a in FlBrPa.keys():
+                if a in NumE:
+                    NeedClense = True
+                    if not isinstance(NumE,list):
+                        NumE = list(NumE)  
+                    break
+            if NumE[0] == "-":
+                NeedClense = True
+                if not isinstance(NumE,list):
+                    NumE = list(NumE)  
+            if NeedClense:           
+                St = False
+                SSt = False
+                NumR = []
+                PreV = "SnYDnnTSsPt"   
+                for x in range(len(NumE)):
+                    if x == 0:
+                        if NumE[x] == "-":
+                            Tem = x
+                            SSt = True
+                    elif NumE[x] in FlBrPa.keys() and St == False and SSt == False:
+                        Tem = x
+                        PreV = NumE[x]
+                        St = True
+                    elif NumE[x] == FlBrPa[PreV] and St and SSt == False:
+                        St = False
+                        PreV = "SnYDnnTSsPt"
+                        NumR.append("".join(NumE[Tem+1:x]))
+                    elif NumE[x] in OpSCalc.keys() and St == False and SSt:
+                        SSt = False
+                        PreV = "SnYDnnTSsPt"
+                        NumR.append("".join(NumE[:x]))
+                        NumR.append(NumE[x])
+                    elif St == False and SSt == False:
+                        NumR.append(NumE[x])
+            else:
+                NumR = NumE
+            for Ops in OpSCalc.keys():
+                for i in range(len(NumR)):
+                    if NumR[i] == Ops:
+                        NumZPO, CalCa, NumZPT = NumR[:i], NumR[i], NumR[i+1:]
+                        return OpSCalc[CalCa](CalcST(NumZPO),CalcST(NumZPT))
+    await ctx.message.channel.send(f'Answer is {CalcST(NumE)}')
 
 @DClient.command(name = "manga")
 @commands.check(ChBot)
