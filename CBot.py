@@ -197,10 +197,11 @@ async def CalCeR(ctx, *args):
                     SaFTSen = False 
                     break
         if SaFTSen:
-            return eval(NumE)
+            return round(eval(NumE),4)
         else:
             return "Failed to calculate :confused:"
-    await ctx.message.channel.send(f'Answer is: {CalcST(ToCalO)}')
+    AnSrsOErAl = CalcST(ToCalO)
+    await ctx.message.channel.send(f'Answer is: {AnSrsOErAl}')
 
 @DClient.command(name = "manga")
 @commands.check(ChBot)
