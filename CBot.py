@@ -184,59 +184,22 @@ async def SMsg(ctx):
 @DClient.command(aliases = ["calculate","calc"])
 @commands.check(ChBot)
 @commands.cooldown(1, 1, commands.BucketType.user)
-async def TestiNNGone(ctx, *args):
-    OpSCalc = {"+":add, "-":sub, "*": mul, "x": mul, "×": mul, "÷": truediv, "/":truediv, "^":pow}
-    FlBrPa = {"(":")","{":"}","[":"]","SnYDnnTSsPt":"NoneEmpty"}
-    NumE = " "+"".join(args)
-    print(NumE)
+async def CalCeR(ctx, *args):
+    ToCalO = "".join(args)
     def CalcST(NumE):
-        try:
-            return float("".join(NumE))
-        except ValueError:
-            NeedClense = False
-            for a in FlBrPa.keys():
-                if a in NumE:
-                    NeedClense = True
-                    if not isinstance(NumE,list):
-                        NumE = list(NumE)  
+        SaFTSen = True
+        for i in NumE:
+            try:
+                int(i)
+            except ValueError:
+                if i not in ["(",")","*","/","+","-","**"]:
+                    SaFTSen = False 
                     break
-            if NumE[0] == "-":
-                NeedClense = True
-                if not isinstance(NumE,list):
-                    NumE = list(NumE)  
-            if NeedClense:           
-                St = False
-                SSt = False
-                NumR = []
-                PreV = "SnYDnnTSsPt"   
-                for x in range(len(NumE)):
-                    if x == 0:
-                        if NumE[x] == "-":
-                            Tem = x
-                            SSt = True
-                    elif NumE[x] in FlBrPa.keys() and St == False and SSt == False:
-                        Tem = x
-                        PreV = NumE[x]
-                        St = True
-                    elif NumE[x] == FlBrPa[PreV] and St and SSt == False:
-                        St = False
-                        PreV = "SnYDnnTSsPt"
-                        NumR.append("".join(NumE[Tem+1:x]))
-                    elif NumE[x] in OpSCalc.keys() and St == False and SSt:
-                        SSt = False
-                        PreV = "SnYDnnTSsPt"
-                        NumR.append("".join(NumE[:x]))
-                        NumR.append(NumE[x])
-                    elif St == False and SSt == False:
-                        NumR.append(NumE[x])
-            else:
-                NumR = NumE
-            for Ops in OpSCalc.keys():
-                for i in range(len(NumR)):
-                    if NumR[i] == Ops:
-                        NumZPO, CalCa, NumZPT = NumR[:i], NumR[i], NumR[i+1:]
-                        return OpSCalc[CalCa](CalcST(NumZPO),CalcST(NumZPT))
-    await ctx.message.channel.send(f'Answer is {CalcST(NumE)}')
+        if SaFTSen:
+            return eval(NumE)
+        else:
+            return "Failed to calculate :confused:"
+    await ctx.message.channel.send(f'Answer is: {CalcST(ToCalO)}')
 
 @DClient.command(name = "manga")
 @commands.check(ChBot)
@@ -562,7 +525,7 @@ async def AniMa(ctx, *args):
 @DClient.command(name = "twitter")
 @commands.check(ChBot)
 @commands.cooldown(1, 5, commands.BucketType.user)
-async def TestiNNGone(ctx, *args):
+async def TwttMsSur(ctx, *args):
     def ChCHanS(MSg):
         MesS = MSg.content.lower()
         RsT = False
@@ -1291,6 +1254,12 @@ async def on_guild_remove(guild):
         DbB = Col.find({"IDg":str(guild.id)})
         for DbG in DbB:
             Col.delete_one(DbG)
+
+@CalCeR.error
+async def eCalCeRror(ctx, error):
+    if isinstance(error, commands.UnexpectedQuoteError):
+        await ctx.message.channel.send("Failed to calculate :confused:")
+    raise error
 
 @DClient.event
 async def on_command_error(ctx, error):
