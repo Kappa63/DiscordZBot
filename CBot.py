@@ -19,7 +19,6 @@ import mal
 import malclient
 import COVID19Py
 import datetime
-from operator import pow, truediv, mul, add, sub 
 
 Mdb = "mongodb+srv://Kappa:85699658@cbotdb.exsit.mongodb.net/CBot?retryWrites=true&w=majority"
 Cls = MongoClient(Mdb)
@@ -47,7 +46,7 @@ Cov = COVID19Py.COVID19(data_source = "jhu")
 GClient = "ZH1xoGH0XUffrtqFKdj3kD4YrVoZvb8i"
 GApi = giphy_client.DefaultApi()
 
-Doing = ["Calculations", "Flipping", "Cry away the pain at night, so I can fake a smile next day", "Griffin", "Getting Tortured", "Crying", "Still Counting", "Telescopes", "In Pain", "Aerodynamics", "Not A Robot", "Astrology", "Quantum Physics"]
+Doing = ["Calculations", "Flipping", "REEEEEEEEE", "Griffin", "Getting Tortured", "Crying", "Still Counting", "Telescopes", "In Pain", "Aerodynamics", "Not A Robot", "Astrology", "Quantum Physics"]
 
 def removeExtraS(listRm, val):
    return [value for value in listRm if value != val]
@@ -658,7 +657,7 @@ async def TwttMsSur(ctx, *args):
             await TwTsL.add_reaction("➡️")
             while True:
                 try:
-                    ReaEm = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 30) 
+                    ReaEm = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 20) 
                     await TwTsL.remove_reaction(ReaEm[0].emoji, ReaEm[1])
                     if ReaEm[0].emoji == "⬅️" and TwTNum == 0:
                         OnPrF = True
@@ -1048,11 +1047,29 @@ async def LWord(ctx):
 @commands.check(ChSer)
 @commands.cooldown(1, 1, commands.BucketType.user)
 async def ReAll(ctx):
-    if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) > 0:
-        DbB = Col.find({"IDg":str(ctx.guild.id)})
-        for DbG in DbB:
-            Col.delete_one(DbG)
-    await ctx.message.channel.send("All info was cleared successfully :thumbsup:")
+    def ChCHEm(RcM, RuS):
+        return RuS.bot == False and RcM.message == ReSConF and str(RcM.emoji) in ["✔️","❌"]
+    ReSConF = await ctx.message.channel.send(embed = discord.Embed(title = "Delete ALL server data?", description = "This is ```IRREVERSIBLE```", color = 0xf59542))
+    SAEm.set_footer(text = "*The reset request timesout in 10secs.*")
+    await ReSConF.add_reaction("✔️")
+    await ReSConF.add_reaction("❌")
+    try:
+        ReaEm = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 10) 
+        await ReSConF.remove_reaction(ReaEm[0].emoji, ReaEm[1])
+        if ReaEm[0].emoji == "✔️":
+            if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) > 0:
+                DbB = Col.find({"IDg":str(ctx.guild.id)})
+                for DbG in DbB:
+                    Col.delete_one(DbG)
+                await ReSConF.edit(embed = discord.Embed(title = "Success :thumbsup:", description = "All info was cleared", color = 0xf59542))
+        elif ReaEm[0].emoji == "❌":
+            await ReSConF.remove_reaction("✔️", DClient.user)
+            await ReSConF.remove_reaction("❌", DClient.user)
+            await ReSConF.edit(embed = discord.Embed(title = "Cancelled :thumbsup:", description = "Nothing was removed", color = 0xf59542))
+    except asyncio.TimeoutError:
+        await ReSConF.remove_reaction("✔️", DClient.user)
+        await ReSConF.remove_reaction("❌", DClient.user)
+        await ReSConF.edit(embed = discord.Embed(title = "Timeout :thumbsup:", description = "Nothing was removed", color = 0xf59542))
 
 @DClient.command(name = "total")
 @commands.check(ChBot)
