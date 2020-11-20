@@ -1050,7 +1050,7 @@ async def ReAll(ctx):
     def ChCHEm(RcM, RuS):
         return RuS.bot == False and RcM.message == ReSConF and str(RcM.emoji) in ["✔️","❌"]
     ReSConF = await ctx.message.channel.send(embed = discord.Embed(title = "Delete ALL server data?", description = "This is ```IRREVERSIBLE```", color = 0xf59542))
-    SAEm.set_footer(text = "*The reset request timesout in 10secs.*")
+    ReSConF.set_footer(text = "*The reset request timesout in 10secs.*")
     await ReSConF.add_reaction("✔️")
     await ReSConF.add_reaction("❌")
     try:
