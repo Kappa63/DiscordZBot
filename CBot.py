@@ -1052,9 +1052,8 @@ async def ReAll(ctx):
     ResEmF = discord.Embed(title = "Delete ALL server data?", description = "This is ```IRREVERSIBLE```", color = 0xf59542)
     ResEmF.set_footer(text = "*The reset request timesout in 10secs.*")
     ReSConF = await ctx.message.channel.send(embed = ResEmF)
-    
-    await ReSConF.add_reaction("✅")
     await ReSConF.add_reaction("❌")
+    await ReSConF.add_reaction("✅")
     try:
         ReaEm = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 10) 
         if ReaEm[0].emoji == "✅":
@@ -1064,12 +1063,12 @@ async def ReAll(ctx):
                     Col.delete_one(DbG)
                 await ReSConF.edit(embed = discord.Embed(title = "Success :thumbsup:", description = "All info was cleared", color = 0xf59542))
         elif ReaEm[0].emoji == "❌":
-            await ReSConF.remove_reaction("✅", DClient.user)
             await ReSConF.remove_reaction("❌", DClient.user)
+            await ReSConF.remove_reaction("✅", DClient.user)
             await ReSConF.edit(embed = discord.Embed(title = "Cancelled :thumbsup:", description = "Nothing was removed", color = 0xf59542))
     except asyncio.TimeoutError:
-        await ReSConF.remove_reaction("✅", DClient.user)
         await ReSConF.remove_reaction("❌", DClient.user)
+        await ReSConF.remove_reaction("✅", DClient.user)
         await ReSConF.edit(embed = discord.Embed(title = "Timeout :thumbsup:", description = "Nothing was removed", color = 0xf59542))
 
 @DClient.command(name = "total")
