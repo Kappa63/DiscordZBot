@@ -1049,8 +1049,10 @@ async def LWord(ctx):
 async def ReAll(ctx):
     def ChCHEm(RcM, RuS):
         return RuS.bot == False and RcM.message == ReSConF and str(RcM.emoji) in ["✔️","❌"]
-    ReSConF = await ctx.message.channel.send(embed = discord.Embed(title = "Delete ALL server data?", description = "This is ```IRREVERSIBLE```", color = 0xf59542))
-    ReSConF.set_footer(text = "*The reset request timesout in 10secs.*")
+    ResEmF = discord.Embed(title = "Delete ALL server data?", description = "This is ```IRREVERSIBLE```", color = 0xf59542)
+    ResEmF.set_footer(text = "*The reset request timesout in 10secs.*")
+    ReSConF = await ctx.message.channel.send(embed = ResEmF)
+    
     await ReSConF.add_reaction("✔️")
     await ReSConF.add_reaction("❌")
     try:
