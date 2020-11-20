@@ -1056,16 +1056,16 @@ async def ReAll(ctx):
     await ReSConF.add_reaction("✅")
     try:
         ReaEm = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 10) 
-        if ReaEm[0].emoji == "✅":
+        await ReSConF.remove_reaction("❌", DClient.user)
+        await ReSConF.remove_reaction("✅", DClient.user)
+        if ReaEm[0].emoji == "❌":
+            await ReSConF.edit(embed = discord.Embed(title = "Cancelled :thumbsup:", description = "Nothing was removed", color = 0xf59542))
+        elif ReaEm[0].emoji == "✅":
             if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) > 0:
                 DbB = Col.find({"IDg":str(ctx.guild.id)})
                 for DbG in DbB:
                     Col.delete_one(DbG)
                 await ReSConF.edit(embed = discord.Embed(title = "Success :thumbsup:", description = "All info was cleared", color = 0xf59542))
-        elif ReaEm[0].emoji == "❌":
-            await ReSConF.remove_reaction("❌", DClient.user)
-            await ReSConF.remove_reaction("✅", DClient.user)
-            await ReSConF.edit(embed = discord.Embed(title = "Cancelled :thumbsup:", description = "Nothing was removed", color = 0xf59542))
     except asyncio.TimeoutError:
         await ReSConF.remove_reaction("❌", DClient.user)
         await ReSConF.remove_reaction("✅", DClient.user)
