@@ -6,10 +6,12 @@ libice6
 libgl1
 libGL
 matplotlib
+libpng-dev
+Poppler-utils
+libpng-dev
+libpng-dev
+Poppler-utils
 libGL1
 libgl1-mesa-glx
 mesa-libGL.x86_64
-libpng-dev
 libgl1
-libpng-dev
-Poppler-utils
