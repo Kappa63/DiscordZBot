@@ -1,4 +1,5 @@
 libpng12
+libpng16
 libsm6
 libxrender1
 libfontconfig1
@@ -6,3 +7,4 @@ libice6
 libgl1
 libGL
 libgl1-mesa-glx
+libssl1.0.0
