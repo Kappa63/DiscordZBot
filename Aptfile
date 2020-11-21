@@ -9,5 +9,6 @@ matplotlib
 libpng-dev
 Poppler-utils
 libgl1-mesa-glx
+http://se.archive.ubuntu.com/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb
 mesa-libGL.x86_64
 libgl1
