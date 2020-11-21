@@ -2,6 +2,8 @@ poppler-utils
 libsm6
 libxrender1
 libfontconfig1
+libxrender1
+libssl1.0.0
 libice6
 libgl1
 libGL
