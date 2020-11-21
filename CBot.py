@@ -1114,104 +1114,104 @@ async def TMsg(ctx, *args):
     else:
         await ctx.message.channel.send("That word doesnt exist yet :confused:")
 
-@DClient.command(name = "pdf")
-@commands.check(ChBot)
-@commands.cooldown(1, 5, commands.BucketType.user)
-async def PdSwtOI(ctx, *args):
-    def EmbTI(NfIRa, ImGCns, NpIMg, SImAUp):
-        try:
-            ImFA = SImAUp[NpIMg]
-            print("Cached...")
-            SEco = False
-        except IndexError:
-            print("Uploading...")
-            ImGCns[NpIMg].save(f'{NfIRa}.jpg', "JPEG")
-            ImFA = Imgur.upload_from_path(f'{NfIRa}.jpg')["link"]
-            SEco = True
-        PcEmE = discord.Embed(title = "PDF Viewer")
-        PcEmE.set_image(url = ImFA)
-        PcEmE.add_field(name = f'```{NpIMg+1}/{len(ImGCns)}```', value = "\u200b")
-        PcEmE.set_footer(text = "Make sure to close the PDF once you are done .\n\n*PDF closes automatically after 2mins of inactivity.*")
-        return SEco, ImFA, PcEmE
+# @DClient.command(name = "pdf")
+# @commands.check(ChBot)
+# @commands.cooldown(1, 5, commands.BucketType.user)
+# async def PdSwtOI(ctx, *args):
+#     def EmbTI(NfIRa, ImGCns, NpIMg, SImAUp):
+#         try:
+#             ImFA = SImAUp[NpIMg]
+#             print("Cached...")
+#             SEco = False
+#         except IndexError:
+#             print("Uploading...")
+#             ImGCns[NpIMg].save(f'{NfIRa}.jpg', "JPEG")
+#             ImFA = Imgur.upload_from_path(f'{NfIRa}.jpg')["link"]
+#             SEco = True
+#         PcEmE = discord.Embed(title = "PDF Viewer")
+#         PcEmE.set_image(url = ImFA)
+#         PcEmE.add_field(name = f'```{NpIMg+1}/{len(ImGCns)}```', value = "\u200b")
+#         PcEmE.set_footer(text = "Make sure to close the PDF once you are done .\n\n*PDF closes automatically after 2mins of inactivity.*")
+#         return SEco, ImFA, PcEmE
 
-    def ChCHEm(RcM, RuS):
-        return RuS.bot == False and RcM.message == PcEm and str(RcM.emoji) in ["⬅️","❌","➡️"]
-    if (len(ctx.message.attachments) == 1 and len(args) == 0) or (len(ctx.message.attachments) == 0 and len(args) == 1):
-        AttLi = []
-        ArC = " ".join(args).split(" ")
-        if len(ctx.message.attachments) == 1:
-            for AtT in ctx.message.attachments:
-                AttLi.append(AtT.url)
-        else:
-            try:
-                for Lin in ArC:
-                    AttLi.append(Lin)
-            except TypeError:
-                pass
+#     def ChCHEm(RcM, RuS):
+#         return RuS.bot == False and RcM.message == PcEm and str(RcM.emoji) in ["⬅️","❌","➡️"]
+#     if (len(ctx.message.attachments) == 1 and len(args) == 0) or (len(ctx.message.attachments) == 0 and len(args) == 1):
+#         AttLi = []
+#         ArC = " ".join(args).split(" ")
+#         if len(ctx.message.attachments) == 1:
+#             for AtT in ctx.message.attachments:
+#                 AttLi.append(AtT.url)
+#         else:
+#             try:
+#                 for Lin in ArC:
+#                     AttLi.append(Lin)
+#             except TypeError:
+#                 pass
 
-        for DoPdRd in AttLi:
-            try:
-                TyPaT = requests.head(DoPdRd).headers.get("content-type").split("/")[1]
-                if TyPaT == "pdf":
-                    ChLeT = "ioewsahkzcldnpq"
-                    NfIRa = "".join((random.choice(ChLeT) for i in range(10)))
-                    rETyP = requests.get(DoPdRd, allow_redirects = True)
-                    open(f'{NfIRa}.pdf', "wb").write(rETyP.content)
-                    ImGCns = convert_from_path(f'{NfIRa}.pdf', 500, last_page = 40) 
-                    print(ImGCns)
-                    NpIMg = 0   
-                    SImAUp = [] 
-                    SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp)
-                    if SEco:
-                        SImAUp.append(ImFA)
-                    PcEm = await ctx.message.channel.send(embed = PcEmE)
-                    await PcEm.add_reaction("⬅️")
-                    await PcEm.add_reaction("❌")
-                    await PcEm.add_reaction("➡️")
-                    while True:
-                        try:
-                            ReaEm = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 120) 
-                            await PcEm.remove_reaction(ReaEm[0].emoji, ReaEm[1])
-                            if ReaEm[0].emoji == "⬅️" and NpIMg != 0:
-                                NpIMg -= 1
-                                SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp)
-                                if SEco:
-                                    SImAUp.append(ImFA)
-                                await PcEm.edit(embed = PcEmE)
+#         for DoPdRd in AttLi:
+#             try:
+#                 TyPaT = requests.head(DoPdRd).headers.get("content-type").split("/")[1]
+#                 if TyPaT == "pdf":
+#                     ChLeT = "ioewsahkzcldnpq"
+#                     NfIRa = "".join((random.choice(ChLeT) for i in range(10)))
+#                     rETyP = requests.get(DoPdRd, allow_redirects = True)
+#                     open(f'{NfIRa}.pdf', "wb").write(rETyP.content)
+#                     ImGCns = convert_from_path(f'{NfIRa}.pdf', 500, last_page = 40) 
+#                     print(ImGCns)
+#                     NpIMg = 0   
+#                     SImAUp = [] 
+#                     SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp)
+#                     if SEco:
+#                         SImAUp.append(ImFA)
+#                     PcEm = await ctx.message.channel.send(embed = PcEmE)
+#                     await PcEm.add_reaction("⬅️")
+#                     await PcEm.add_reaction("❌")
+#                     await PcEm.add_reaction("➡️")
+#                     while True:
+#                         try:
+#                             ReaEm = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 120) 
+#                             await PcEm.remove_reaction(ReaEm[0].emoji, ReaEm[1])
+#                             if ReaEm[0].emoji == "⬅️" and NpIMg != 0:
+#                                 NpIMg -= 1
+#                                 SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp)
+#                                 if SEco:
+#                                     SImAUp.append(ImFA)
+#                                 await PcEm.edit(embed = PcEmE)
 
-                            elif ReaEm[0].emoji == "➡️":
-                                if NpIMg < len(ImGCns)-1:
-                                    NpIMg += 1
-                                    SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp)
-                                    if SEco:
-                                        SImAUp.append(ImFA)
-                                    await PcEm.edit(embed = PcEmE)
-                                else:
-                                    await PcEm.remove_reaction("⬅️", DClient.user)
-                                    await PcEm.remove_reaction("❌", DClient.user)
-                                    await PcEm.remove_reaction("➡️", DClient.user)
-                                    os.remove(f'{NfIRa}.jpg')
-                                    os.remove(f'{NfIRa}.pdf')
-                                    break
+#                             elif ReaEm[0].emoji == "➡️":
+#                                 if NpIMg < len(ImGCns)-1:
+#                                     NpIMg += 1
+#                                     SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp)
+#                                     if SEco:
+#                                         SImAUp.append(ImFA)
+#                                     await PcEm.edit(embed = PcEmE)
+#                                 else:
+#                                     await PcEm.remove_reaction("⬅️", DClient.user)
+#                                     await PcEm.remove_reaction("❌", DClient.user)
+#                                     await PcEm.remove_reaction("➡️", DClient.user)
+#                                     os.remove(f'{NfIRa}.jpg')
+#                                     os.remove(f'{NfIRa}.pdf')
+#                                     break
 
-                            elif ReaEm[0].emoji == "❌":
-                                await PcEm.remove_reaction("⬅️", DClient.user)
-                                await PcEm.remove_reaction("❌", DClient.user)
-                                await PcEm.remove_reaction("➡️", DClient.user)
-                                os.remove(f'{NfIRa}.jpg')
-                                os.remove(f'{NfIRa}.pdf')
-                                break
-                        except asyncio.TimeoutError:
-                            await PcEm.remove_reaction("⬅️", DClient.user)
-                            await PcEm.remove_reaction("❌", DClient.user)
-                            await PcEm.remove_reaction("➡️", DClient.user)
-                            os.remove(f'{NfIRa}.jpg')
-                            os.remove(f'{NfIRa}.pdf')
-                            break
-            except requests.exceptions.MissingSchema:
-                pass
-    else:
-        await ctx.message.channel.send("No or too many attachments :woozy_face:")
+#                             elif ReaEm[0].emoji == "❌":
+#                                 await PcEm.remove_reaction("⬅️", DClient.user)
+#                                 await PcEm.remove_reaction("❌", DClient.user)
+#                                 await PcEm.remove_reaction("➡️", DClient.user)
+#                                 os.remove(f'{NfIRa}.jpg')
+#                                 os.remove(f'{NfIRa}.pdf')
+#                                 break
+#                         except asyncio.TimeoutError:
+#                             await PcEm.remove_reaction("⬅️", DClient.user)
+#                             await PcEm.remove_reaction("❌", DClient.user)
+#                             await PcEm.remove_reaction("➡️", DClient.user)
+#                             os.remove(f'{NfIRa}.jpg')
+#                             os.remove(f'{NfIRa}.pdf')
+#                             break
+#             except requests.exceptions.MissingSchema:
+#                 pass
+#     else:
+#         await ctx.message.channel.send("No or too many attachments :woozy_face:")
 
 @DClient.command(name = "stats")
 @commands.check(ChBot)
