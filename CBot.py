@@ -19,6 +19,8 @@ import mal
 import malclient
 import COVID19Py
 import datetime
+from pdf2image import convert_from_path
+import imgur_uploader
 
 Mdb = "mongodb+srv://Kappa:85699658@cbotdb.exsit.mongodb.net/CBot?retryWrites=true&w=majority"
 Cls = MongoClient(Mdb)
@@ -42,6 +44,8 @@ MClient.init(access_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImY5OWN
 MClient.refresh_bearer_token(client_id = "2b701d366971fa1f182bfd50d15172ae", client_secret = "e01505a84d5e611e2e59b66f0dc245888656104b1529e1a25954d8ff51780f5c", refresh_token = "def50200b66cd79fef2e2b550556891e5d1a4c7774d4db62ff64a49900570a29f94680d1a93ba950d8af2f3b98a4b8af587e2fd939cb94f5a8ce5fc4498a26469da1973224c916e11ed3fbb73d7cfca981c865c3cd9d611674d113159746a6759cfcf4a646132332007b3228f7c83a761ef1226693a7b9e27c6d6b621602943c690ce1351f993088872976c25fa680f1622e7bbf38000fdc00a0e7557f4ef70e3cc4af93ea213ef090c155a9deb37a7c3db56fcabaef4a13783bb5d2a22cf100e5928292df6cb468b63497ad74b4a93fe3d2d086043bf51c9a58fd5341f519fa3a6946cd8ada2c554fffce8d59e35380ddbfb341d7777056e4c0da0a87a1e2cd5d0944ccc54f6593f2ccb5345cb827e0587cb07e66ae931d0e74d14f1a295110f5a4b402ab9a53b244168d629bc21925fb4aefc9aa201d48ccdff77d36557fb49bd5e89ce979aeb0c22972f6cdc5bc1dc2dcceb38b137a305b647bc1ccd3c18eac108cb5159e1c64ef17dd4059d64dd1b53c2000a74f8b4013a90e9325be2cc30ded29d8b72907c7")
 
 Cov = COVID19Py.COVID19(data_source = "jhu")
+
+Imgur = imgur_uploader.ImgurClient(client_id = "272a225589de547", client_secret = "421db91b32fe790c71a710f8bb48e6035f4fd365")
 
 GClient = "ZH1xoGH0XUffrtqFKdj3kD4YrVoZvb8i"
 GApi = giphy_client.DefaultApi()
@@ -134,6 +138,7 @@ async def SendH(ctx, *args):
         HEm = discord.Embed(title = "**ZBot Misc. Help**", description = "\u200b", color = 0x0af531)
         HEm.add_field(name = "zfry (Image Attachment/Image Url): ", value = "Deep fries the image", inline = False)
         HEm.add_field(name = "zfry profile (@): ", value = "Deep fries the avatar", inline = False)
+        HEm.add_field(name = "zpdf (PDF Attachment/PDF Url): ", value = "Views the PDF's first 40 pages", inline = False)
         HEm.add_field(name = "zcalc (Input): ", value = "Calculates and returns", inline = False)
         HEm.add_field(name = "zcovid: ", value = "Returns the worldwide status of Covid-19", inline = False)
         HEm.add_field(name = "zcovid (Country): ", value = "Returns the status of Covid-19 in country", inline = False)
@@ -1109,6 +1114,105 @@ async def TMsg(ctx, *args):
     else:
         await ctx.message.channel.send("That word doesnt exist yet :confused:")
 
+@DClient.command(name = "pdf")
+@commands.check(ChBot)
+@commands.cooldown(1, 5, commands.BucketType.user)
+async def PdSwtOI(ctx, *args):
+    def EmbTI(NfIRa, ImGCns, NpIMg, SImAUp):
+        try:
+            ImFA = SImAUp[NpIMg]
+            print("Cached...")
+            SEco = False
+        except IndexError:
+            print("Uploading...")
+            ImGCns[NpIMg].save(f'{NfIRa}.jpg', "JPEG")
+            ImFA = Imgur.upload_from_path(f'{NfIRa}.jpg')["link"]
+            SEco = True
+        PcEmE = discord.Embed(title = "PDF Viewer")
+        PcEmE.set_image(url = ImFA)
+        PcEmE.add_field(name = f'```{NpIMg+1}/{len(ImGCns)}```', value = "\u200b")
+        PcEmE.set_footer(text = "Make sure to close the PDF once you are done .\n\n*PDF closes automatically after 2mins of inactivity.*")
+        return SEco, ImFA, PcEmE
+
+    def ChCHEm(RcM, RuS):
+        return RuS.bot == False and RcM.message == PcEm and str(RcM.emoji) in ["⬅️","❌","➡️"]
+    if (len(ctx.message.attachments) == 1 and len(args) == 0) or (len(ctx.message.attachments) == 0 and len(args) == 1):
+        AttLi = []
+        ArC = " ".join(args).split(" ")
+        if len(ctx.message.attachments) == 1:
+            for AtT in ctx.message.attachments:
+                AttLi.append(AtT.url)
+        else:
+            try:
+                for Lin in ArC:
+                    AttLi.append(Lin)
+            except TypeError:
+                pass
+
+        for DoPdRd in AttLi:
+            try:
+                TyPaT = requests.head(DoPdRd).headers.get("content-type").split("/")[1]
+                if TyPaT == "pdf":
+                    ChLeT = "ioewsahkzcldnpq"
+                    NfIRa = "".join((random.choice(ChLeT) for i in range(10)))
+                    rETyP = requests.get(DoPdRd, allow_redirects = True)
+                    open(f'{NfIRa}.pdf', "wb").write(rETyP.content)
+                    ImGCns = convert_from_path(f'{NfIRa}.pdf', 500, last_page = 40, poppler_path = r"poppler-20.11.0\bin") 
+                    NpIMg = 0   
+                    SImAUp = [] 
+                    SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp)
+                    if SEco:
+                        SImAUp.append(ImFA)
+                    PcEm = await ctx.message.channel.send(embed = PcEmE)
+                    await PcEm.add_reaction("⬅️")
+                    await PcEm.add_reaction("❌")
+                    await PcEm.add_reaction("➡️")
+                    while True:
+                        try:
+                            ReaEm = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 120) 
+                            await PcEm.remove_reaction(ReaEm[0].emoji, ReaEm[1])
+                            if ReaEm[0].emoji == "⬅️" and NpIMg != 0:
+                                NpIMg -= 1
+                                SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp)
+                                if SEco:
+                                    SImAUp.append(ImFA)
+                                await PcEm.edit(embed = PcEmE)
+
+                            elif ReaEm[0].emoji == "➡️":
+                                if NpIMg < len(ImGCns)-1:
+                                    NpIMg += 1
+                                    SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp)
+                                    if SEco:
+                                        SImAUp.append(ImFA)
+                                    await PcEm.edit(embed = PcEmE)
+                                else:
+                                    await PcEm.remove_reaction("⬅️", DClient.user)
+                                    await PcEm.remove_reaction("❌", DClient.user)
+                                    await PcEm.remove_reaction("➡️", DClient.user)
+                                    os.remove(f'{NfIRa}.jpg')
+                                    os.remove(f'{NfIRa}.pdf')
+                                    break
+
+                            elif ReaEm[0].emoji == "❌":
+                                await PcEm.remove_reaction("⬅️", DClient.user)
+                                await PcEm.remove_reaction("❌", DClient.user)
+                                await PcEm.remove_reaction("➡️", DClient.user)
+                                os.remove(f'{NfIRa}.jpg')
+                                os.remove(f'{NfIRa}.pdf')
+                                break
+                        except asyncio.TimeoutError:
+                            await PcEm.remove_reaction("⬅️", DClient.user)
+                            await PcEm.remove_reaction("❌", DClient.user)
+                            await PcEm.remove_reaction("➡️", DClient.user)
+                            os.remove(f'{NfIRa}.jpg')
+                            os.remove(f'{NfIRa}.pdf')
+                            break
+            except requests.exceptions.MissingSchema:
+                pass
+    else:
+        await ctx.message.channel.send("No or too many attachments :woozy_face:")
+
+
 @DClient.command(name = "stats")
 @commands.check(ChBot)
 @commands.check(ChSer)
@@ -1197,7 +1301,7 @@ async def CMsend(ctx, *args):
         C = 0
         for file in AttLi:
             try:
-                if requests.head(file).headers.get('content-type').split("/")[0] == "image":
+                if requests.head(file).headers.get("content-type").split("/")[0] == "image":
                     C += 1
                     r = requests.get(file, allow_redirects = True)
                     open("NsRndo.jpg", "wb").write(r.content)
