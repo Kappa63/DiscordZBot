@@ -5,3 +5,5 @@ libice6
 libgl1
 libGL
 libgl1-mesa-glx
+libpng-dev
+poppler-utils
