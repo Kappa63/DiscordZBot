@@ -8,10 +8,6 @@ libGL
 matplotlib
 libpng-dev
 Poppler-utils
-libpng-dev
-libpng-dev
-Poppler-utils
-libGL1
 libgl1-mesa-glx
 mesa-libGL.x86_64
 libgl1
