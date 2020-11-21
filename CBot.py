@@ -1157,7 +1157,7 @@ async def PdSwtOI(ctx, *args):
                     NfIRa = "".join((random.choice(ChLeT) for i in range(10)))
                     rETyP = requests.get(DoPdRd, allow_redirects = True)
                     open(f'{NfIRa}.pdf', "wb").write(rETyP.content)
-                    ImGCns = convert_from_path(f'{NfIRa}.pdf', 500, last_page = 40, poppler_path = r"poppler-20.11.0\bin") 
+                    ImGCns = convert_from_path(f'{NfIRa}.pdf', 500, last_page = 40, poppler_path = "Poppler/bin") 
                     NpIMg = 0   
                     SImAUp = [] 
                     SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp)
