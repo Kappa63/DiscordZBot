@@ -5,6 +5,8 @@ libfontconfig1
 libxrender1
 libssl1.0.0
 libice6
+libpng120
+libpng16
 libgl1
 libGL
 matplotlib
