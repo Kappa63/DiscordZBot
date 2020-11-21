@@ -162,8 +162,8 @@ async def SendH(ctx, *args):
 async def RetVer(ctx):
     VEm = discord.Embed(title = "Active Version", description = "ZBot build version and info", color = 0xf59542)
     VEm.add_field(name = "Dev: ", value = "Kappa", inline = True)
-    VEm.add_field(name = "Version: ", value = "0.4b", inline = True)
-    VEm.add_field(name = "Release: ", value = "Null", inline = True)
+    VEm.add_field(name = "Version: ", value = "1.1a", inline = True)
+    VEm.add_field(name = "Release: ", value = "21/11/2020", inline = True)
     await ctx.message.channel.send(embed = VEm)
 
 @DClient.command(name = "setup")
