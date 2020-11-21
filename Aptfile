@@ -3,5 +3,6 @@ libc6
 libgl1
 libGL
 libpng-dev
+poppler-utils
 libice6
 libgl1
