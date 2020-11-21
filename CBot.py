@@ -1211,6 +1211,10 @@ async def PdSwtOI(ctx, *args):
                 pass
     else:
         await ctx.message.channel.send("No or too many attachments :woozy_face:")
+<<<<<<< HEAD
+=======
+
+>>>>>>> parent of 5443d43... ewdsxa
 
 @DClient.command(name = "stats")
 @commands.check(ChBot)
