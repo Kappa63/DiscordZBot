@@ -1,10 +1,11 @@
+poppler-utils
 libsm6
 libxrender1
 libfontconfig1
 libice6
 libgl1
 libGL
+matplotlib
 libGL1
 libgl1-mesa-glx
 libpng-dev
-poppler-utils
