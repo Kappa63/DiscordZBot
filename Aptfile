@@ -1,16 +1,14 @@
-  
 poppler-utils
 libxrender1
 libfontconfig1
 libc6
 libxrender1
 libssl1.0.0
-libpng120
 libgl1
 libGL
 matplotlib
 libpng-dev
-libpng12-0
 libgl1-mesa-glx
 libice6
+libpng12-0
 libgl1
