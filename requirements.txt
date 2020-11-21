@@ -1,3 +1,4 @@
+conda==4.3.16
 discord.py==1.5.1
 dnspython==2.0.0
 pymongo==3.11.0
