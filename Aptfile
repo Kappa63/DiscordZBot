@@ -10,3 +10,4 @@ libGL1
 libgl1-mesa-glx
 mesa-libGL.x86_64
 libpng-dev
+libgl1
