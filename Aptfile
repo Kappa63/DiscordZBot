@@ -1,7 +1,7 @@
+  
 poppler-utils
 libxrender1
 libfontconfig1
-<<<<<<< HEAD
 libc6
 libxrender1
 libssl1.0.0
@@ -12,9 +12,5 @@ matplotlib
 libpng-dev
 libpng12-0
 libgl1-mesa-glx
-libgl1
-=======
 libice6
 libgl1
-poppler-utils
->>>>>>> parent of 5443d43... ewdsxa
