@@ -19,8 +19,8 @@ import mal
 import malclient
 import COVID19Py
 import datetime
-from pdf2image import convert_from_path
-import imgur_uploader
+# from pdf2image import convert_from_path
+# import imgur_uploader
 
 Mdb = "mongodb+srv://Kappa:85699658@cbotdb.exsit.mongodb.net/CBot?retryWrites=true&w=majority"
 Cls = MongoClient(Mdb)
@@ -45,7 +45,7 @@ MClient.refresh_bearer_token(client_id = "2b701d366971fa1f182bfd50d15172ae", cli
 
 Cov = COVID19Py.COVID19(data_source = "jhu")
 
-Imgur = imgur_uploader.ImgurClient(client_id = "272a225589de547", client_secret = "421db91b32fe790c71a710f8bb48e6035f4fd365")
+# Imgur = imgur_uploader.ImgurClient(client_id = "272a225589de547", client_secret = "421db91b32fe790c71a710f8bb48e6035f4fd365")
 
 GClient = "ZH1xoGH0XUffrtqFKdj3kD4YrVoZvb8i"
 GApi = giphy_client.DefaultApi()
