@@ -1160,7 +1160,7 @@ async def PdSwtOI(ctx, *args):
                     print(ImGCns)
                     NpIMg = 0   
                     SImAUp = [] 
-                    PcEm = ctx.message.channel.send(embed = discord.Embed(title = "Uploading Page...", description = "After upload a page will no longer be uploaded again (Faster navigation to page)"))
+                    PcEm = await ctx.message.channel.send(embed = discord.Embed(title = "Uploading Page...", description = "After upload a page will no longer be uploaded again (Faster navigation to page)"))
                     SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp)
                     if SEco:
                         SImAUp.append(ImFA)
