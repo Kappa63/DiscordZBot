@@ -137,7 +137,7 @@ async def SendH(ctx, *args):
         HEm = discord.Embed(title = "**ZBot Misc. Help**", description = "\u200b", color = 0x0af531)
         HEm.add_field(name = "zfry (Image Attachment/Image Url): ", value = "Deep fries the image", inline = False)
         HEm.add_field(name = "zfry profile (@): ", value = "Deep fries the avatar", inline = False)
-        HEm.add_field(name = "zpdf (PDF Attachment/PDF Url): ", value = "Views the PDF's first 40 pages", inline = False)
+        # HEm.add_field(name = "zpdf (PDF Attachment/PDF Url): ", value = "Views the PDF's first 40 pages", inline = False)
         HEm.add_field(name = "zcalc (Input): ", value = "Calculates and returns", inline = False)
         HEm.add_field(name = "zcovid: ", value = "Returns the worldwide status of Covid-19", inline = False)
         HEm.add_field(name = "zcovid (Country): ", value = "Returns the status of Covid-19 in country", inline = False)
