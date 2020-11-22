@@ -137,7 +137,7 @@ async def SendH(ctx, *args):
         HEm = discord.Embed(title = "**ZBot Misc. Help**", description = "\u200b", color = 0x0af531)
         HEm.add_field(name = "zfry (Image Attachment/Image Url): ", value = "Deep fries the image", inline = False)
         HEm.add_field(name = "zfry profile (@): ", value = "Deep fries the avatar", inline = False)
-        # HEm.add_field(name = "zpdf (PDF Attachment/PDF Url): ", value = "Views the PDF's first 40 pages", inline = False)
+        HEm.add_field(name = "zpdf (PDF Attachment/PDF Url): ", value = "Views the PDF's first 40 pages", inline = False)
         HEm.add_field(name = "zcalc (Input): ", value = "Calculates and returns", inline = False)
         HEm.add_field(name = "zcovid: ", value = "Returns the worldwide status of Covid-19", inline = False)
         HEm.add_field(name = "zcovid (Country): ", value = "Returns the status of Covid-19 in country", inline = False)
@@ -1160,10 +1160,11 @@ async def PdSwtOI(ctx, *args):
                     print(ImGCns)
                     NpIMg = 0   
                     SImAUp = [] 
+                    PcEm = ctx.message.channel.send(embed = discord.Embed(title = "Uploading Page...", description = "After upload a page will no longer be uploaded again (Faster navigation to page)"))
                     SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp)
                     if SEco:
                         SImAUp.append(ImFA)
-                    PcEm = await ctx.message.channel.send(embed = PcEmE)
+                    await PcEm.edit(embed = PcEmE)
                     await PcEm.add_reaction("⬅️")
                     await PcEm.add_reaction("❌")
                     await PcEm.add_reaction("➡️")
@@ -1172,7 +1173,7 @@ async def PdSwtOI(ctx, *args):
                             ReaEm = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 120) 
                             await PcEm.remove_reaction(ReaEm[0].emoji, ReaEm[1])
                             if ReaEm[0].emoji == "⬅️" and NpIMg != 0:
-                                NpIMg -= 1
+                                NpIMg -= 1     
                                 SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp)
                                 if SEco:
                                     SImAUp.append(ImFA)
@@ -1360,15 +1361,16 @@ async def on_message(message):
 @DClient.event
 async def on_ready():
     await DClient.change_presence(activity = discord.Game(random.choice(Doing)))
-    print("Online...")
+    print(f'Online in {len(DClient.guilds)}...')
 
 @DClient.event
 async def on_member_join(member):
     Pid = member
     if Pid.bot == False:
-        if (Col.count_documents({}) == 0) or (Col.count_documents({"IDd":str(Pid.id),"IDg":str(member.guild.id)}) == 0):
+        if Col.count_documents({"IDd":str(Pid.id),"IDg":str(member.guild.id)}) == 0 and Col.count_documents({"IDd":"GuildInfo","IDg":str(member.guild.id),"Setup":"Done"}) == 1:
             Col.insert_one({"IDd":str(Pid.id),"IDg":str(member.guild.id)})
-            DbB = Col.find({"IDd":"GuildInfo","IDg":str(member.guild.id)})
+            DbB = Col.find({"IDd":"GuildInfo","IDg":str(member.guild.id),"Setup":"Done"})
+            print("Adding (join)")
             for i in DbB:
                 Kyes = i.keys()
             for Wp in Kyes:
