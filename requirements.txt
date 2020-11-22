@@ -1,7 +1,7 @@
 discord.py==1.5.1
 dnspython==2.0.0
 pymongo==3.11.1
-Pillow==8.0.1
+pillow==8.0.1
 deeppyer==1.0.1
 async-timeout==3.0.1
 requests==2.25.0
