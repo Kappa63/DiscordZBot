@@ -1403,7 +1403,7 @@ async def on_command_error(ctx, error):
     elif isinstance(error, IsAdmin):
         await ctx.message.channel.send("Non-admins are not allowed to use this command :face_with_raised_eyebrow:")
     elif isinstance(error, ProfSer):
-        await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetupserver')! Check all server commands with 'zhelp server' :point_left:")   
+        await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup')! Check all server commands with 'zhelp server' :point_left:")   
     else:
         raise error
 
