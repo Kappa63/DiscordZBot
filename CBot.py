@@ -51,6 +51,8 @@ GApi = giphy_client.DefaultApi()
 
 Doing = ["Calculations", "Flipping", "REEEEEEEEE", "Griffin", "Getting Tortured", "Crying", "Still Counting", "Telescopes", "In Pain", "Aerodynamics", "Not A Robot", "Astrology", "Quantum Physics"]
 
+PrMUsI = []
+
 def removeExtraS(listRm, val):
    return [value for value in listRm if value != val]
 
@@ -712,8 +714,19 @@ async def nHen(ctx, *args):
                 RsT = True
         return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
 
-    def ChCHan(MSg):
-        return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id
+    def ChCHEm(RcM, RuS):
+        return RuS.bot == False and RcM.message == DmSent and str(RcM.emoji) in ["⬅️","❌","➡️","#️⃣"]
+
+    def ChCHEmFN(MSg):
+        MesS = MSg.content.lower()
+        RsT = False
+        try:
+            if int(MSg.content):
+                RsT = True
+        except ValueError:
+            if (MesS == "cancel") or (MesS == "c"):
+                RsT = True
+        return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
 
     def EmbedMaker(DentAi,Page, State):
         DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
@@ -722,6 +735,15 @@ async def nHen(ctx, *args):
         DEmE.set_image(url = DentAi.image_urls[Page])
         DEmE.add_field(name = "Doujin ID", value = DentAi.id, inline = False)
         DEmE.add_field(name = "\u200b", value = f'**Doujin {State}**\n\n`Page: {(Page+1)}/{len(DentAi.image_urls)}`', inline = False)
+        return DEmE
+
+    def EmbedMakerfORNum(DentAi,Page, State):
+        DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
+        DEmE.set_thumbnail(url = DentAi.image_urls[0])
+        DEmE.set_image(url = DentAi.image_urls[Page])
+        DEmE.add_field(name = "Doujin ID", value = str(DentAi.id), inline = False)
+        DEmE.add_field(name = "\u200b", value = "**Doujin " + State +"** \n\n `Page: " + str(Page+1) + "/" + str(len(DentAi.image_urls)) + "`", inline = False)
+        DEmE.set_footer(text = 'Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n*The Navigation closes automatically after 10sec of inactivity.*')
         return DEmE
 
     if args:
@@ -795,57 +817,58 @@ async def nHen(ctx, *args):
                         DEm.add_field(name = "\u200b", value = f'**Doujin OPEN**\n\n`Page: {(Page+1)}/{len(DentAi.image_urls)}`', inline = False)
                         await ctx.message.channel.send("**WARNING:** ALL messages sent after the embed will be deleted until doujin is closed. This is to ensure a proper reading experience.")
                         DmSent = await ctx.message.channel.send(embed = DEm)
-                        while True:
-                            try:
-                                Res = await DClient.wait_for("message", check = ChCHan, timeout = 120)
-                                LRes = (Res.content).lower()
-                                Rese = (Res.content.lower()).split(" ")
-                                if (LRes != "close") and (LRes != "c") and (LRes != "zhentai") and (Rese[0] != "zhentai"):
-                                    await Res.delete()
-                                if len(Rese) == 1:
-                                    if LRes == "n" or LRes == "next":
-                                        if Page < len(DentAi.image_urls)-1:
-                                            Page += 1
-                                            await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
-                                        else:
-                                            await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
-                                            break
-                                    elif LRes == "b" or LRes == "back":
-                                        if Page != 0:
-                                            Page -= 1
-                                            await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
-                                        else:
-                                            pass
-                                    elif LRes == "c" or LRes == "close" or LRes == "zhentai":
-                                        await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
-                                        break
-                                elif len(Rese) == 2:
-                                    if Rese[0] == "go":
-                                        try:
-                                            pG = int(Rese[1])
-                                            if 0 < pG <= len(DentAi.image_urls)-1:
-                                                Page = pG-1
-                                                await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
-                                            elif pG < 1:
-                                                Page = 0
-                                                await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
-                                                pass
-                                            else:
-                                                Page = len(DentAi.image_urls)-1
-                                                await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
-                                        except ValueError:
-                                            pass
-                                    elif Rese[0] == "zhentai":
-                                        await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
-                                        break
-                            except asyncio.TimeoutError:
+                await DmSent.add_reaction("⬅️")
+                await DmSent.add_reaction("❌")
+                await DmSent.add_reaction("➡️")
+                await DmSent.add_reaction("#️⃣")
+                while True:
+                    try:
+                        Res = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 120) 
+                        await DmSent.remove_reaction(Res[0].emoji, Res[1])
+                        if Res[0].emoji == "⬅️" and Page != 0:
+                            Page -= 1
+                            await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
+                        elif Res[0].emoji == "➡️":
+                            if Page < len(DentAi.image_urls)-1:
+                                Page += 1
+                                await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
+                            else:
                                 await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
+                                await DmSent.remove_reaction("⬅️", DClient.user)
+                                await DmSent.remove_reaction("❌", DClient.user)
+                                await DmSent.remove_reaction("➡️", DClient.user)
+                                await DmSent.remove_reaction("#️⃣", DClient.user)
                                 break
-                        await ctx.message.channel.send(":newspaper2: Doujin Closed :newspaper2:")
-                    else:
-                        await ctx.message.channel.send("This isn't an NSFW channel. No NSFW allowed here. :confused:")
-                else:
-                    await ctx.message.channel.send("Doujin contains prohibited terms. :zipper_mouth:")
+                        elif Res[0].emoji == "#️⃣":
+                            await DmSent.edit(embed = EmbedMakerfORNum(DentAi, Page, "CHOOSE A PAGE"))
+                            ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
+                            await ResE.delete()
+                            try:
+                                try:
+                                    pG = int(ResE.content)
+                                    if 0 < pG <= len(DentAi.image_urls)-1:
+                                        Page = pG-1
+                                    elif pG < 1:
+                                        Page = 0
+                                        pass
+                                    else:
+                                        Page = len(DentAi.image_urls)-1 
+                                except TypeError:
+                                    pass
+                            except ValueError:
+                                pass
+                            await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
+                        elif Res[0].emoji == "❌":
+                            await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
+                            await DmSent.remove_reaction("⬅️", DClient.user)
+                            await DmSent.remove_reaction("❌", DClient.user)
+                            await DmSent.remove_reaction("➡️", DClient.user)
+                            await DmSent.remove_reaction("#️⃣", DClient.user)
+                            break
+                    except asyncio.TimeoutError:
+                        await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
+                        break
+                await ctx.message.channel.send(":newspaper2: Doujin Closed :newspaper2:")
             else:
                 await ctx.message.channel.send("That Doujin doesn't exist :expressionless:")
         except UnboundLocalError:
@@ -1377,6 +1400,19 @@ async def on_member_join(member):
                 FuncMon.DbAdd(Col, {"IDd":str(Pid.id),"IDg":str(member.guild.id)}, Wp, 0)
 
 @DClient.event
+async def on_dbl_vote(Dt):
+    print(f'{Dt.user.id} voted')
+    try:
+        PrMUsI.remove(Dt.user.id)
+    except ValueError:
+        pass
+    PrMUsI.append(Dt.user.id)
+    print(PrMUsI)
+    await asyncio.sleep(60*60*12)
+    print("gone")
+    PrMUsI.remove(Dt.user.id)
+
+@DClient.event
 async def on_member_remove(member):
     Pid = member
     if Pid.bot == False:
@@ -1406,6 +1442,8 @@ async def on_command_error(ctx, error):
         await ctx.message.channel.send("Non-admins are not allowed to use this command :face_with_raised_eyebrow:")
     elif isinstance(error, ProfSer):
         await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup')! Check all server commands with 'zhelp server' :point_left:")   
+    elif isinstance(error, commands.CommandNotFound):
+        pass 
     else:
         raise error
 
