@@ -632,6 +632,17 @@ async def TwttMsSur(ctx, *args):
     def ChCHEm(RcM, RuS):
         return RuS.bot == False and RcM.message == TwTsL and str(RcM.emoji) in ["⬅️","❌","➡️","#️⃣"]
 
+    def ChCHEmFN(MSg):
+        MesS = MSg.content.lower()
+        RsT = False
+        try:
+            if int(MSg.content):
+                RsT = True
+        except ValueError:
+            if (MesS == "cancel") or (MesS == "c"):
+                RsT = True
+        return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
+
     def MakEmTwt(TwTp, VrMa, TwTYPE, TwExt, TwTNum, TwTtot, Extra = "Make sure to close the tweet once you are done.\n\nReact with :hash: then type in a page number to instantly navigate to it (voters only).\n\n*Tweet closes automatically after 20sec of inactivity.*"):
         TEmE = discord.Embed(title = f'@{TwTp.screen_name} / {TwTp.name} {VrMa}',  description = TwTYPE, color = 0x0384fc)
         TEmE.set_thumbnail(url = TwTp.profile_image_url_https)
@@ -766,8 +777,8 @@ async def TwttMsSur(ctx, *args):
                         await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt)))
                     elif ReaEm[0].emoji == "#️⃣":
                         if ReaEm[1].id in PrMUsI:
-                            await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt), '**CHOOSE A NUMBER** or type anything else to cancel'))
-                            ResE = await DClient.wait_for("message", check = ChCHanS, timeout = 10)
+                            await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt), "**CHOOSE A NUMBER** or type anything else to cancel"))
+                            ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
                             await ResE.delete()
                             try:
                                 try:
@@ -785,7 +796,7 @@ async def TwttMsSur(ctx, *args):
                                 pass
                             await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt)))
                         else:
-                            TemS = await ctx.message.channel.send("Instant navigation to page is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote).\n:robot: zvote to learn more. :robot:")
+                            TemS = await ctx.message.channel.send("Instant navigation to page is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
                             await asyncio.sleep(5)
                             await TemS.delete()
                     elif ReaEm[0].emoji == "➡️" and len(TwExt) == TwTNum+1:
@@ -973,7 +984,7 @@ async def nHen(ctx, *args):
                                     pass
                                 await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
                             else:
-                                TemS = await ctx.message.channel.send("Instant navigation to page is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote).\n:robot: zvote to learn more. :robot:")
+                                TemS = await ctx.message.channel.send("Instant navigation to page is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
                                 await asyncio.sleep(5)
                                 await TemS.delete()
                         elif Res[0].emoji == "❌":
@@ -1359,7 +1370,7 @@ async def TMsg(ctx, *args):
 @commands.check(ChBot)
 @commands.cooldown(1, 5, commands.BucketType.user)
 async def PdSwtOI(ctx, *args):
-    def EmbTI(NfIRa, ImGCns, NpIMg, SImAUp):
+    def EmbTI(NfIRa, ImGCns, NpIMg, SImAUp, Extra = "Make sure to close the PDF once you are done .\n\n*PDF closes automatically after 2mins of inactivity.*"):
         try:
             ImFA = SImAUp[NpIMg]
             print("Cached...")
@@ -1372,11 +1383,23 @@ async def PdSwtOI(ctx, *args):
         PcEmE = discord.Embed(title = "PDF Viewer")
         PcEmE.set_image(url = ImFA)
         PcEmE.add_field(name = f'```{NpIMg+1}/{len(ImGCns)}```', value = "\u200b")
-        PcEmE.set_footer(text = "Make sure to close the PDF once you are done .\n\n*PDF closes automatically after 2mins of inactivity.*")
+        PcEmE.set_footer(text = "")
         return SEco, ImFA, PcEmE
 
     def ChCHEm(RcM, RuS):
-        return RuS.bot == False and RcM.message == PcEm and str(RcM.emoji) in ["⬅️","❌","➡️"]
+        return RuS.bot == False and RcM.message == PcEm and str(RcM.emoji) in ["⬅️","❌","➡️","#️⃣"]
+
+    def ChCHEmFN(MSg):
+        MesS = MSg.content.lower()
+        RsT = False
+        try:
+            if int(MSg.content):
+                RsT = True
+        except ValueError:
+            if (MesS == "cancel") or (MesS == "c"):
+                RsT = True
+        return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
+
     if (len(ctx.message.attachments) == 1 and len(args) == 0) or (len(ctx.message.attachments) == 0 and len(args) == 1):
         AttLi = []
         ArC = " ".join(args).split(" ")
@@ -1410,6 +1433,7 @@ async def PdSwtOI(ctx, *args):
                     await PcEm.add_reaction("⬅️")
                     await PcEm.add_reaction("❌")
                     await PcEm.add_reaction("➡️")
+                    await PcEm.add_reaction("#️⃣")
                     while True:
                         try:
                             ReaEm = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 120) 
@@ -1420,7 +1444,6 @@ async def PdSwtOI(ctx, *args):
                                 if SEco:
                                     SImAUp.append(ImFA)
                                 await PcEm.edit(embed = PcEmE)
-
                             elif ReaEm[0].emoji == "➡️":
                                 if NpIMg < len(ImGCns)-1:
                                     NpIMg += 1
@@ -1432,14 +1455,43 @@ async def PdSwtOI(ctx, *args):
                                     await PcEm.remove_reaction("⬅️", DClient.user)
                                     await PcEm.remove_reaction("❌", DClient.user)
                                     await PcEm.remove_reaction("➡️", DClient.user)
+                                    await PcEm.remove_reaction("#️⃣", DClient.user)
                                     os.remove(f'{NfIRa}.jpg')
                                     os.remove(f'{NfIRa}.pdf')
                                     break
-
+                            elif ReaEm[0].emoji == "#️⃣":
+                                if ReaEm[1].id in PrMUsI:
+                                    SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp,"**CHOOSE A NUMBER** or type anything else to cancel")
+                                    await PcEm.edit(embed = PcEmE)
+                                    ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
+                                    await ResE.delete()
+                                    try:
+                                        try:
+                                            pG = int(ResE.content)
+                                            if 0 < pG <= len(ImGCns)-1:
+                                                NpIMg = pG-1
+                                            elif pG < 1:
+                                                NpIMg = 0
+                                                pass
+                                            else:
+                                                NpIMg = len(ImGCns)-1 
+                                        except TypeError:
+                                            pass
+                                    except ValueError:
+                                        pass
+                                    SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp)
+                                    if SEco:
+                                        SImAUp.append(ImFA)
+                                    await PcEm.edit(embed = PcEmE)
+                                else:
+                                    TemS = await ctx.message.channel.send("Instant navigation to page is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
+                                    await asyncio.sleep(5)
+                                    await TemS.delete()
                             elif ReaEm[0].emoji == "❌":
                                 await PcEm.remove_reaction("⬅️", DClient.user)
                                 await PcEm.remove_reaction("❌", DClient.user)
                                 await PcEm.remove_reaction("➡️", DClient.user)
+                                await PcEm.remove_reaction("#️⃣", DClient.user)
                                 os.remove(f'{NfIRa}.jpg')
                                 os.remove(f'{NfIRa}.pdf')
                                 break
@@ -1447,6 +1499,7 @@ async def PdSwtOI(ctx, *args):
                             await PcEm.remove_reaction("⬅️", DClient.user)
                             await PcEm.remove_reaction("❌", DClient.user)
                             await PcEm.remove_reaction("➡️", DClient.user)
+                            await PcEm.remove_reaction("#️⃣", DClient.user)
                             os.remove(f'{NfIRa}.jpg')
                             os.remove(f'{NfIRa}.pdf')
                             break
