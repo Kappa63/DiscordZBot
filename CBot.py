@@ -1166,16 +1166,18 @@ async def RmdAtDMY(ctx, *args):
                 await RemTmm.add_reaction("✅")
                 try:
                     ReaEm = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 10)
-                    await ReaEm.delete()
                     if ReaEm[0].emoji == "✅":
+                        await RemTmm.edit(content = f'You will be pinged in {StrTSTM(TToTm)} :thumbsup:')
+                        await asyncio.sleep(2)
+                        await RemTmm.delete()
                         await asyncio.sleep(TToTm)
                         await ctx.message.channel.send(f':timer: Its been {StrTSTM(TToTm)} {ctx.message.author.mention} :timer:') 
-                    else:
-                        await RemTmm.edit("Request Cancelled :thumbsup:")
+                    elif  ReaEm[0].emoji == "❌":
+                        await RemTmm.edit(content = "Request Cancelled :thumbsup:")
                         await asyncio.sleep(2)
                         await RemTmm.delete()
                 except asyncio.TimeoutError:
-                    await RemTmm.edit("Request Timeout :alarm_clock:")
+                    await RemTmm.edit(content = "Request Timeout :alarm_clock:")
                     await asyncio.sleep(2)
                     await RemTmm.delete()
             else:
