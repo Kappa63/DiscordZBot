@@ -177,7 +177,7 @@ async def SendH(ctx, *args):
         HEm.add_field(name = "zhentai random: ", value = "Gets a random doujin from nhentai", inline = False)
         HEm.add_field(name = "zhentai search (Doujin Name): ", value = "Searches for the 10 most popular doujin", inline = False)
         HEm.add_field(name = "zgiphy (Phrase/Word to search for): ", value = "Returns a RANDOM gif from top 50 results on giphy", inline = False)
-        HEm.set_footer(text = "Notes: -zremind is limited to 6days\n-During testing recovered data from zcovid was extremely inaccurate\n-Some hentai are not available. This is to abide by the discord TOS")
+        HEm.set_footer(text = "Notes: -zremind is limited to 1day max.\n-zremind could sometimes fail to notify you due to the bot going down. So dont rely on it entirely.\n-During testing recovered data from zcovid was extremely inaccurate.\n-Some hentai are not available. This is to abide by the discord TOS.")
         await ctx.message.channel.send(embed = HEm)
     else:
         await ctx.message.channel.send("That help category doesn't exist.")
@@ -630,9 +630,9 @@ async def TwttMsSur(ctx, *args):
         return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
 
     def ChCHEm(RcM, RuS):
-        return RuS.bot == False and RcM.message == TwTsL and str(RcM.emoji) in ["⬅️","❌","➡️"]
+        return RuS.bot == False and RcM.message == TwTsL and str(RcM.emoji) in ["⬅️","❌","➡️","#️⃣"]
 
-    def MakEmTwt(TwTp, VrMa, TwTYPE, TwExt, TwTNum, TwTtot):
+    def MakEmTwt(TwTp, VrMa, TwTYPE, TwExt, TwTNum, TwTtot, Extra = "Make sure to close the tweet once you are done.\n\nReact with :hash: then type in a page number to instantly navigate to it (voters only).\n\n*Tweet closes automatically after 20sec of inactivity.*"):
         TEmE = discord.Embed(title = f'@{TwTp.screen_name} / {TwTp.name} {VrMa}',  description = TwTYPE, color = 0x0384fc)
         TEmE.set_thumbnail(url = TwTp.profile_image_url_https)
         TEmE.add_field(name = f'{TwTYPE} on: ', value = TwExt.created_at, inline = False)
@@ -668,7 +668,7 @@ async def TwttMsSur(ctx, *args):
             except tweepy.error.TweepError:
                 TEmE.add_field(name = "On (By: --Deleted--): ", value = "--Deleted--", inline = False)
             
-        TEmE.set_footer(text = f'{"-"*10}\n\nMake sure to close the tweet once you are done .\n\n*Tweet closes automatically after 20sec of inactivity.*')
+        TEmE.set_footer(text = f'{"-"*10}\n\n{Extra}')
         return TEmE
 
     def ChTwTp(TwExt):
@@ -696,7 +696,7 @@ async def TwttMsSur(ctx, *args):
                     VrMa = ":ballot_box_with_check: "
                 STEm.add_field(name = "\u200b", value = f'{C}. `@{TwU.screen_name} / {TwU.name}` {VrMa}', inline = False)
                 SrchTw.append(TwU)
-            STEm.set_footer(text = 'Choose a number to open doujin. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
+            STEm.set_footer(text = 'Choose a number to open Twitter User Profile. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
             TwSent = await ctx.message.channel.send(embed = STEm)
             try:
                 ResS = await DClient.wait_for('message', check = ChCHanS, timeout = 20)
@@ -746,6 +746,7 @@ async def TwttMsSur(ctx, *args):
             await TwTsL.add_reaction("⬅️")
             await TwTsL.add_reaction("❌")
             await TwTsL.add_reaction("➡️")
+            await TwTsL.add_reaction("#️⃣")
             while True:
                 try:
                     ReaEm = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 20) 
@@ -763,20 +764,47 @@ async def TwttMsSur(ctx, *args):
                     elif ReaEm[0].emoji == "➡️" and len(TwExt) > TwTNum+1 and TwTNum >= 0:
                         TwTNum += 1
                         await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt)))
+                    elif ReaEm[0].emoji == "#️⃣":
+                        if ReaEm[1].id in PrMUsI:
+                            await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt), '**CHOOSE A NUMBER** or type anything else to cancel'))
+                            ResE = await DClient.wait_for("message", check = ChCHanS, timeout = 10)
+                            await ResE.delete()
+                            try:
+                                try:
+                                    pG = int(ResE.content)
+                                    if 0 < pG <= len(TwExt)-1:
+                                        TwTNum = pG-1
+                                    elif pG < 1:
+                                        TwTNum = 0
+                                        pass
+                                    else:
+                                        TwTNum = len(TwExt)-1 
+                                except TypeError:
+                                    pass
+                            except ValueError:
+                                pass
+                            await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt)))
+                        else:
+                            TemS = await ctx.message.channel.send("Instant navigation to page is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote).\n:robot: zvote to learn more. :robot:")
+                            await asyncio.sleep(5)
+                            await TemS.delete()
                     elif ReaEm[0].emoji == "➡️" and len(TwExt) == TwTNum+1:
                         await TwTsL.remove_reaction("⬅️", DClient.user)
                         await TwTsL.remove_reaction("❌", DClient.user)
                         await TwTsL.remove_reaction("➡️", DClient.user)
+                        await TwTsL.remove_reaction("#️⃣", DClient.user)
                         break
                     elif ReaEm[0].emoji == "❌":
                         await TwTsL.remove_reaction("⬅️", DClient.user)
                         await TwTsL.remove_reaction("❌", DClient.user)
                         await TwTsL.remove_reaction("➡️", DClient.user)
+                        await TwTsL.remove_reaction("#️⃣", DClient.user)
                         break
                 except asyncio.TimeoutError:
                     await TwTsL.remove_reaction("⬅️", DClient.user)
                     await TwTsL.remove_reaction("❌", DClient.user)
                     await TwTsL.remove_reaction("➡️", DClient.user)
+                    await TwTsL.remove_reaction("#️⃣", DClient.user)
                     break
         except tweepy.error.TweepError:
             await ctx.message.channel.send("Not Found :expressionless:")
@@ -896,7 +924,7 @@ async def nHen(ctx, *args):
                         Page = 0
                         DEm = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
                         DEm.set_thumbnail(url = DentAi.image_urls[0])
-                        DEm.set_footer(text = f'Released on {DentAi.upload_date}\n\n"n" or "next" for next page. "b"" or "back" for previous page. "go (page n#)" for a specific page. "c" or "close" to end reading.\n\n*The Doujin closes automatically after 2mins of inactivity.*')
+                        DEm.set_footer(text = f'Released on {DentAi.upload_date}\n\n React with :hash: then type in a page number to instantly navigate to it (voters only).\n\n*The Doujin closes automatically after 2mins of inactivity.*')
                         DEm.set_image(url = DentAi.image_urls[0])
                         DEm.add_field(name = "Doujin ID", value = str(DentAi.id), inline = False)
                         DEm.add_field(name = "\u200b", value = f'**Doujin OPEN**\n\n`Page: {(Page+1)}/{len(DentAi.image_urls)}`', inline = False)
@@ -926,7 +954,7 @@ async def nHen(ctx, *args):
                                 break
                         elif Res[0].emoji == "#️⃣":
                             if Res[1].id in PrMUsI:
-                                await DmSent.edit(embed = EmbedMakerfORNum(DentAi, Page, "CHOOSE A PAGE"))
+                                await DmSent.edit(embed = EmbedMakerfORNum(DentAi, Page, "CHOOSE A PAGE or type anything else to cancel"))
                                 ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
                                 await ResE.delete()
                                 try:
@@ -1185,7 +1213,7 @@ async def RmdAtDMY(ctx, *args):
                 else:
                     raise ValueError
             TToTm = TtWaT(D,H,M,S)
-            if TToTm <= 518400:
+            if TToTm <= 86400:
                 RemTmm = await ctx.message.channel.send(f':timer: Are you sure you want to be reminded in {StrTSTM(TToTm)}? :timer:')
                 await RemTmm.add_reaction("❌")
                 await RemTmm.add_reaction("✅")
@@ -1206,7 +1234,7 @@ async def RmdAtDMY(ctx, *args):
                     await asyncio.sleep(2)
                     await RemTmm.delete()
             else:
-                await ctx.message.channel.send("zremind is limited to waiting for 6days. :cry:")      
+                await ctx.message.channel.send("zremind is limited to waiting for 1day max. :cry:")      
         except ValueError:
             await ctx.message.channel.send('Argument was improper. Check "zhelp misc" to check how to use it. :no_mouth:')    
     else:
