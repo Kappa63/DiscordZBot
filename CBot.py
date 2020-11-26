@@ -53,6 +53,8 @@ Doing = ["Playing with the laws of physics", "Torture", "Just Vibin'", "With my 
 
 PrMUsI = []
 
+BoDowNFn = False
+
 def removeExtraS(listRm, val):
    return [value for value in listRm if value != val]
 
@@ -107,10 +109,17 @@ def ChVote(ctx):
         raise IsVote("No Vote")
     return True
 
+class Ignore(commands.CheckFailure):
+    pass
+@DClient.check
+async def ChAdMonD(ctx):
+    if BoDowNFn and ctx.author.id != 443986051371892746:
+        raise Ignore("Ignore")
+    return True 
 def ChAdMo(ctx):
     if ctx.author.id == 443986051371892746:
         return True
-    return False
+    raise Ignore("Ignore")
 
 class IsAdmin(commands.CheckFailure):
     pass
@@ -181,6 +190,22 @@ async def BotSttSF(ctx):
     SEm.add_field(name = "Latency: ", value = DClient.latency * 100, inline = False)
     SEm.add_field(name = "ShardCount: ", value = DClient.shard_count, inline = False)
     await ctx.message.channel.send(embed = SEm)
+
+@DClient.command(name = "makedown")
+@commands.check(ChAdMo)
+@commands.cooldown(1, 1, commands.BucketType.user)
+async def DfManiT(ctx, *args):
+    global BoDowNFn
+    await DClient.change_presence(status = discord.Status.invisible)
+    BoDowNFn = True
+
+@DClient.command(name = "makeup")
+@commands.check(ChAdMo)
+@commands.cooldown(1, 1, commands.BucketType.user)
+async def UfManiT(ctx, *args):
+    global BoDowNFn
+    await DClient.change_presence(status = discord.Status.online, activity = discord.Game(random.choice(Doing)))
+    BoDowNFn = False
 
 @DClient.command(name = "vote")
 @commands.check(ChBot)
@@ -1161,7 +1186,7 @@ async def RmdAtDMY(ctx, *args):
                     raise ValueError
             TToTm = TtWaT(D,H,M,S)
             if TToTm <= 518400:
-                RemTmm = await ctx.message.channel.send(f':timer: Are you sure you want to me reminded in {StrTSTM(TToTm)}? :timer:')
+                RemTmm = await ctx.message.channel.send(f':timer: Are you sure you want to be reminded in {StrTSTM(TToTm)}? :timer:')
                 await RemTmm.add_reaction("❌")
                 await RemTmm.add_reaction("✅")
                 try:
@@ -1610,7 +1635,7 @@ async def on_command_error(ctx, error):
         await ctx.message.channel.send("This command is only for voters! You can vote [here](https://top.gg/bot/768397640140062721/vote) :no_mouth:")
     elif isinstance(error, ProfSer):
         await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup')! Check all server commands with 'zhelp server' :point_left:")   
-    elif isinstance(error, commands.CommandNotFound):
+    elif isinstance(error, commands.CommandNotFound) or isinstance(error, Ignore):
         pass 
     else:
         raise error
