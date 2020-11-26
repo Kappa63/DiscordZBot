@@ -71,11 +71,11 @@ def PosType(Pty):
         TextB = True
     return TextB
 
-def StrCool(ErrorCoolSec):
+def StrTSTM(SecGiN):
     Day = 0
     Hour = 0
     Min = 0
-    while ErrorCoolSec >= 60:
+    while SecGiN >= 60:
         Min += 1
         if Min == 60:
             Hour += 1
@@ -83,21 +83,28 @@ def StrCool(ErrorCoolSec):
         if Hour == 24:
             Day += 1
             Hour -= 24
-        ErrorCoolSec -= 60
+        SecGiN -= 60
     if Day != 0:
-        return f'{Day}Day(s) {Hour}Hour(s) {Min}Min(s) {ErrorCoolSec}Sec(s)'
+        return f'{Day}Day(s) {Hour}Hour(s) {Min}Min(s) {SecGiN}Sec(s)'
     elif Hour != 0:
-        return f'{Hour}Hour(s) {Min}Min(s) {ErrorCoolSec}Sec(s)'
+        return f'{Hour}Hour(s) {Min}Min(s) {SecGiN}Sec(s)'
     elif Min != 0:
-        return f'{Min}Min(s) {ErrorCoolSec}Sec(s)'
+        return f'{Min}Min(s) {SecGiN}Sec(s)'
     else:
-        return f'{ErrorCoolSec}Sec(s)'
+        return f'{SecGiN}Sec(s)'
 
 class IsBot(commands.CheckFailure):
     pass
 def ChBot(ctx):
     if ctx.author.bot:
         raise IsBot("Bot")
+    return True
+
+class IsVote(commands.CheckFailure):
+    pass
+def ChVote(ctx):
+    if ctx.author.id in PrMUsI:
+        raise IsVote("No Vote")
     return True
 
 def ChAdMo(ctx):
@@ -145,6 +152,7 @@ async def SendH(ctx, *args):
         await ctx.message.channel.send(embed = HEm)
     elif "".join(args).lower() == "misc" or "".join(args).lower() == "misc." or "".join(args).lower() == "miscellaneous":
         HEm = discord.Embed(title = "**ZBot Misc. Help**", description = "\u200b", color = 0x0af531)
+        HEm.add_field(name = "zremind (Arguments): ", value = 'Pings you after time is over. Arguments are a number followed by d, h, m, or s for days, hours, minutes, seconds respectively.(Ex. "zremind 2d 3h 52m 14s" is a remind after 2days 3hours 52minutes and 14seconds)', inline = False)
         HEm.add_field(name = "zfry (Image Attachment/Image Url): ", value = "Deep fries the image", inline = False)
         HEm.add_field(name = "zfry profile (@): ", value = "Deep fries the avatar", inline = False)
         HEm.add_field(name = "zpdf (PDF Attachment/PDF Url): ", value = "Views the PDF's first 40 pages", inline = False)
@@ -1125,6 +1133,58 @@ async def LWord(ctx):
             LEm.add_field(name = Wp, value =  "\u200b", inline = True)
     await ctx.message.channel.send(embed = LEm)     
 
+@DClient.command(name = "remind")
+@commands.check(ChBot)
+@commands.cooldown(1, 1, commands.BucketType.user)
+async def RmdAtDMY(ctx, *args):
+    def TtWaT(Day, Hour, Min, Sec):
+        return (Day*86400) + (Hour*3600) + (Min*60) + (Sec)
+    def ChCHEm(RcM, RuS):
+        return RuS.bot == False and RcM.message == RemTmm and str(RcM.emoji) in ["✅","❌"]
+    if args:
+        try:
+            EnPerT = (" ".join(args)).split(" ")
+            D = 0
+            H = 0
+            M = 0
+            S = 0
+            for TimSE in EnPerT:
+                if TimSE[-1].lower() == "d":
+                    D += int(TimSE[:-1])
+                elif TimSE[-1].lower() == "h":
+                    H += int(TimSE[:-1])
+                elif TimSE[-1].lower() == "m":
+                    M += int(TimSE[:-1])
+                elif TimSE[-1].lower() == "s":
+                    S += int(TimSE[:-1])
+                else:
+                    raise ValueError
+            TToTm = TtWaT(D,H,M,S)
+            if TToTm <= 518400:
+                RemTmm = await ctx.message.channel.send(f':timer: Are you sure you want to me reminded in {StrTSTM(TToTm)}? :timer:')
+                await RemTmm.add_reaction("❌")
+                await RemTmm.add_reaction("✅")
+                try:
+                    ReaEm = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 10)
+                    await ReaEm.delete()
+                    if ReaEm[0].emoji == "✅":
+                        await asyncio.sleep(TToTm)
+                        await ctx.message.channel.send(f':timer: Its been {StrTSTM(TToTm)} {ctx.message.author.mention} :timer:') 
+                    else:
+                        await RemTmm.edit("Request Cancelled :thumbsup:")
+                        await asyncio.sleep(2)
+                        await RemTmm.delete()
+                except asyncio.TimeoutError:
+                    await RemTmm.edit("Request Timeout :alarm_clock:")
+                    await asyncio.sleep(2)
+                    await RemTmm.delete()
+            else:
+                await ctx.message.channel.send("zremind is limited to waiting for 6days. :cry:")      
+        except ValueError:
+            await ctx.message.channel.send('Argument was improper. Check "zhelp misc" to check how to use it. :no_mouth:')    
+    else:
+        await ctx.message.channel.send("No arguments given :no_mouth:")
+
 @DClient.command(name = "reset")
 @commands.check(ChBot)
 @commands.check(ChAdmin)
@@ -1154,7 +1214,7 @@ async def ReAll(ctx):
     except asyncio.TimeoutError:
         await ReSConF.remove_reaction("❌", DClient.user)
         await ReSConF.remove_reaction("✅", DClient.user)
-        await ReSConF.edit(embed = discord.Embed(title = "Timeout :thumbsup:", description = "Nothing was removed", color = 0xf59542))
+        await ReSConF.edit(embed = discord.Embed(title = "Timeout :alarm_clock:", description = "Nothing was removed", color = 0xf59542))
 
 @DClient.command(name = "top")
 @commands.check(ChBot)
@@ -1539,11 +1599,13 @@ async def eCalCeRror(ctx, error):
 @DClient.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
-        await ctx.message.channel.send(f'Hold the spam. Wait atleast {StrCool(round(error.retry_after, 2))}')
+        await ctx.message.channel.send(f'Hold the spam. Wait atleast {StrTSTM(round(error.retry_after, 2))}')
     elif isinstance(error, IsBot):
         await ctx.message.channel.send("Bots can't use commands :pensive:")
     elif isinstance(error, IsAdmin):
         await ctx.message.channel.send("Non-admins are not allowed to use this command :face_with_raised_eyebrow:")
+    elif isinstance(error, IsVote):
+        await ctx.message.channel.send("This command is only for voters! You can vote [here](https://top.gg/bot/768397640140062721/vote) :no_mouth:")
     elif isinstance(error, ProfSer):
         await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup')! Check all server commands with 'zhelp server' :point_left:")   
     elif isinstance(error, commands.CommandNotFound):
