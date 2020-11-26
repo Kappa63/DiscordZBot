@@ -126,17 +126,20 @@ async def SendH(ctx, *args):
     if "".join(args) == "" or "".join(args) == " ":
         HEm = discord.Embed(title = "**ZBot Help**", description = "\u200b", color = 0x0af531)
         HEm.add_field(name = "zversion: ", value = "Checks the current running version of CBot", inline = False)
-        HEm.add_field(name = "zsetup: ", value = "Sets up the bot for the first time for counting/tracking", inline = False)
+        HEm.add_field(name = "zvote: ", value = "To vote for ZBot", inline = False)
         HEm.add_field(name = "zhelp server: ", value = "Provides all the server commands (including word track commands)", inline = False) 
         HEm.add_field(name = "zhelp misc: ", value = "Miscellaneous commands", inline = False)   
         await ctx.message.channel.send(embed = HEm)
     elif "".join(args).lower()  == "server":
         HEm = discord.Embed(title = "**ZBot Server Help**", description = "\u200b", color = 0x0af531)
+        HEm.add_field(name = "zsetup: ", value = "Sets up the bot for the first time for counting/tracking", inline = False)
+        HEm.add_field(name = "zupdate: ", value = "This is used to add members that join when the bot is down.", inline = False)
         HEm.add_field(name = "zadd: ", value = "Adds a word/phrase to keep track of", inline = False)
         HEm.add_field(name = "zremove: ", value = "Removes an existing word/phrase being tracked", inline = False)
         HEm.add_field(name = "zlist: ", value = "Returns all added words/phrases", inline = False)
         HEm.add_field(name = "zstats (@) (Word): ", value = "Returns stats for word(s)/phrase(s)", inline = False)
         HEm.add_field(name = "ztotal (Word): ", value = "Returns the total number of times word(s)/phrase(s) have been said on server", inline = False)
+        HEm.add_field(name = "ztop (Word): ", value = "Returns the top 3 number of times word(s)/phrase(s) have been said on server", inline = False)
         HEm.add_field(name = "zreset: ", value = "Reset everything (this is irreversable)", inline = False)
         HEm.set_footer(text = "Note: Counting is limited to 10 per Message to reduce spam incentives")
         await ctx.message.channel.send(embed = HEm)
@@ -177,7 +180,7 @@ async def BotSttSF(ctx):
 async def BotVotF(ctx):
     SEm = discord.Embed(title = "Voting for ZBot", url = "https://top.gg/bot/768397640140062721/vote", description = "**You can vote once every 12 hours for the following perks**", color = 0x000000)
     SEm.add_field(name = "\u200b", value = "*Using instant navigation to page*\n\n", inline = False)
-    SEm.set_footer(text = "These perks will remain active for 12hrs after voting")
+    SEm.set_footer(text = "These perks will remain active for 12hrs after voting\n\n***`More perks will be added soon`***")
     await ctx.message.channel.send(embed = SEm)
 
 @DClient.command(aliases = ["ver","version"])
@@ -209,6 +212,32 @@ async def SMsg(ctx):
         await ctx.message.channel.send(":partying_face: Setup complete, you can now use tracking commands :partying_face:")
     else:
         await ctx.message.channel.send(":partying_face: This server is already setup :partying_face:")
+
+@DClient.command(name = "update")
+@commands.check(ChBot)
+@commands.check(ChSer)
+@commands.check(ChAdmin)
+@commands.cooldown(1, 1, commands.BucketType.user)
+async def SUmsg(ctx):
+    xNumP = 0
+    for i in ctx.guild.members:
+        if not i.bot:
+            xNumP += 1
+    NumAdD = 0
+    if xNumP+1 != Col.count_documents({"IDg":str(ctx.guild.id)}):
+        for Pid in ctx.guild.members:
+            if Pid.bot == False:
+                if Col.count_documents({"IDd":str(Pid.id),"IDg":str(ctx.guild.id)}) == 0:
+                    Col.insert_one({"IDd":str(Pid.id),"IDg":str(ctx.guild.id)})
+                    NumAdD += 1
+                    DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
+                    for i in DbB:
+                        Kyes = i.keys()    
+                    for Wp in Kyes:
+                        FuncMon.DbAdd(Col, {"IDd":str(Pid.id),"IDg":str(ctx.guild.id)}, Wp, 0)
+        await ctx.message.channel.send(f':partying_face: The server info has been updated (added {NumAdD} members) :partying_face:')
+    else:
+        await ctx.message.channel.send(":partying_face: This server is already up to date :partying_face:")
 
 @DClient.command(aliases = ["calculate","calc"])
 @commands.check(ChBot)
@@ -1158,7 +1187,7 @@ async def ToTMsg(ctx, *args):
         Top = sorted(Top,key = GetNVa)
         for i in range(1,4):
             x = int(list(Top[-i].keys())[0])
-            IEm.add_field(name = f'**`{i}. {(await DClient.fetch_user(x)).display_name}:`** {GetNVa(Top[-i], 1)} = {GetNVa(Top[-i]):,}', value = "\u200b", inline = False)
+            IEm.add_field(name = f'**`{i}. {(ctx.guild.get_member(x)).nick}:`** {GetNVa(Top[-i], 1)} = {GetNVa(Top[-i]):,}', value = "\u200b", inline = False)
         await SrtI.edit(embed = IEm)
     elif Enput in Kyes:
         IEm = discord.Embed(title = ctx.guild.name, description = f'Leaderboard for {Enput}', color = 0x3252a8)
@@ -1169,7 +1198,7 @@ async def ToTMsg(ctx, *args):
         Top = sorted(Top,key = GetNVa)
         for i in range(1,4):
             x = int(list(Top[-i].keys())[0])
-            IEm.add_field(name = f'**`{i}. {(await DClient.fetch_user(x)).display_name}:`** {GetNVa(Top[-i], 1)} = {GetNVa(Top[-i]):,}', value = "\u200b", inline = False)
+            IEm.add_field(name = f'**`{i}. {(ctx.guild.get_member(x)).nick}:`** {GetNVa(Top[-i], 1)} = {GetNVa(Top[-i]):,}', value = "\u200b", inline = False)
         await SrtI.edit(embed = IEm)
     else:
         await SrtI.edit(embed = discord.Embed(title = "That word doesnt exist yet :confused:",  description = "\u200b", color = 0x3252a8))
