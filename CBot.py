@@ -14,7 +14,7 @@ from hentai import Utils, Sort, Hentai, Format
 import asyncio
 import giphy_client
 import tweepy
-from mal import manga, manga_search, anime, anime_search
+import mal
 import malclient
 import COVID19Py
 import datetime
@@ -49,7 +49,7 @@ Imgur = imgurpython.ImgurClient(client_id = "272a225589de547", client_secret = "
 GClient = "ZH1xoGH0XUffrtqFKdj3kD4YrVoZvb8i"
 GApi = giphy_client.DefaultApi()
 
-Doing = ["Calculations", "Flipping", "REEEEEEEEE", "Griffin", "Getting Tortured", "Crying", "Still Counting", "Telescopes", "In Pain", "Aerodynamics", "Not A Robot", "Astrology", "Quantum Physics"]
+Doing = ["Playing with the laws of physics", "Torture", "Just Vibin'", "With my toes", "Chess with god", "With Leona"]
 
 PrMUsI = []
 
@@ -99,6 +99,11 @@ def ChBot(ctx):
     if ctx.author.bot:
         raise IsBot("Bot")
     return True
+
+def ChAdMo(ctx):
+    if ctx.author.id == 443986051371892746:
+        return True
+    return False
 
 class IsAdmin(commands.CheckFailure):
     pass
@@ -156,6 +161,24 @@ async def SendH(ctx, *args):
         await ctx.message.channel.send(embed = HEm)
     else:
         await ctx.message.channel.send("That help category doesn't exist.")
+
+@DClient.command(name = "checkzbot")
+@commands.check(ChAdMo)
+async def BotSttSF(ctx):
+    SEm = discord.Embed(title = "Current ZBot Status", color = 0x000000)
+    SEm.add_field(name = "Guilds in: ", value = len(DClient.guilds), inline = False)
+    SEm.add_field(name = "Latency: ", value = DClient.latency * 100, inline = False)
+    SEm.add_field(name = "ShardCount: ", value = DClient.shard_count, inline = False)
+    await ctx.message.channel.send(embed = SEm)
+
+@DClient.command(name = "vote")
+@commands.check(ChBot)
+@commands.cooldown(1, 1, commands.BucketType.user)
+async def BotVotF(ctx):
+    SEm = discord.Embed(title = "Voting for ZBot", url = "https://top.gg/bot/768397640140062721/vote", description = "**You can vote once every 12 hours for the following perks**", color = 0x000000)
+    SEm.add_field(name = "\u200b", value = "*Using instant navigation to page*\n\n", inline = False)
+    SEm.set_footer(text = "These perks will remain active for 12hrs after voting")
+    await ctx.message.channel.send(embed = SEm)
 
 @DClient.command(aliases = ["ver","version"])
 @commands.check(ChBot)
@@ -229,7 +252,7 @@ async def MagMa(ctx, *args):
             SrchMag = []
             MnSrS = await ctx.message.channel.send(embed = discord.Embed(title = ":mag: Searching...",  description = "\u200b", color = 0xa49cff))
             SAEm = discord.Embed(title = f":mag: Results for '{Srks}'",  description = "\u200b", color = 0xa49cff)
-            for MagRes in manga_search.MangaSearch(Srks).results:
+            for MagRes in mal.MangaSearch(Srks).results:
                 C += 1
                 SAEm.add_field(name = "\u200b", value = f'{C}. `{MagRes.title}` **({MagRes.type})**', inline = False)
                 SrchMag.append(MagRes)
@@ -257,7 +280,7 @@ async def MagMa(ctx, *args):
 
         try:
             MagF = MClient.get_manga_details(MagI)
-            MagFmal = manga.Manga(MagI)
+            MagFmal = mal.Manga(MagI)
             MagG = []
             for TMagG in MagF.genres:
                 MagG.append(TMagG.name)
@@ -380,7 +403,7 @@ async def AniMa(ctx, *args):
             SrchAni = []
             AnSrS = await ctx.message.channel.send(embed = discord.Embed(title = ":mag: Searching...",  description = "\u200b", color = 0xa49cff))
             SAEm = discord.Embed(title = f':mag: Results for "{Srks}"',  description = "\u200b", color = 0xa49cff)
-            for AniRes in anime_search.AnimeSearch(Srks).results:
+            for AniRes in mal.AnimeSearch(Srks).results:
                 C += 1
                 SAEm.add_field(name = "\u200b", value = f"{C}. `{AniRes.title}` **({AniRes.type})**", inline = False)
                 SrchAni.append(AniRes)
@@ -407,7 +430,7 @@ async def AniMa(ctx, *args):
 
         try:
             AniF = MClient.get_anime_details(AniI)
-            AniFmal = anime.Anime(AniI)
+            AniFmal = mal.Anime(AniI)
             AniG = []
             for TAniG in AniF.genres:
                 AniG.append(TAniG.name)
@@ -840,24 +863,29 @@ async def nHen(ctx, *args):
                                 await DmSent.remove_reaction("#️⃣", DClient.user)
                                 break
                         elif Res[0].emoji == "#️⃣":
-                            await DmSent.edit(embed = EmbedMakerfORNum(DentAi, Page, "CHOOSE A PAGE"))
-                            ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
-                            await ResE.delete()
-                            try:
+                            if Res[1].id in PrMUsI:
+                                await DmSent.edit(embed = EmbedMakerfORNum(DentAi, Page, "CHOOSE A PAGE"))
+                                ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
+                                await ResE.delete()
                                 try:
-                                    pG = int(ResE.content)
-                                    if 0 < pG <= len(DentAi.image_urls)-1:
-                                        Page = pG-1
-                                    elif pG < 1:
-                                        Page = 0
+                                    try:
+                                        pG = int(ResE.content)
+                                        if 0 < pG <= len(DentAi.image_urls)-1:
+                                            Page = pG-1
+                                        elif pG < 1:
+                                            Page = 0
+                                            pass
+                                        else:
+                                            Page = len(DentAi.image_urls)-1 
+                                    except TypeError:
                                         pass
-                                    else:
-                                        Page = len(DentAi.image_urls)-1 
-                                except TypeError:
+                                except ValueError:
                                     pass
-                            except ValueError:
-                                pass
-                            await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
+                                await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
+                            else:
+                                TemS = await ctx.message.channel.send("Instant navigation to page is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote).\n:robot: zvote to learn more. :robot:")
+                                await asyncio.sleep(5)
+                                await TemS.delete()
                         elif Res[0].emoji == "❌":
                             await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
                             await DmSent.remove_reaction("⬅️", DClient.user)
@@ -1099,6 +1127,53 @@ async def ReAll(ctx):
         await ReSConF.remove_reaction("✅", DClient.user)
         await ReSConF.edit(embed = discord.Embed(title = "Timeout :thumbsup:", description = "Nothing was removed", color = 0xf59542))
 
+@DClient.command(name = "top")
+@commands.check(ChBot)
+@commands.check(ChSer)
+@commands.cooldown(1, 1, commands.BucketType.user)
+async def ToTMsg(ctx, *args):
+    def GetNVa(DiDIV, WtRt = 0):
+        for Mks in DiDIV:
+            for MjsD in DiDIV[Mks]:
+                if WtRt == 1:
+                    return MjsD
+                else:
+                    return DiDIV[Mks][MjsD]
+    Top = []
+    Enput = " ".join(args)
+    DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
+    SrtI = await ctx.message.channel.send(embed = discord.Embed(title = ":mag: Fetching...",  description = "\u200b", color = 0x3252a8))
+    for i in DbB:
+        Kyes = i.keys()
+    if not args:
+        IEm = discord.Embed(title = ctx.guild.name, description = "Leaderboard", color = 0x3252a8)
+        for Wp in Kyes:
+            OSfDb = Col.find({"IDg":str(ctx.guild.id)})
+            if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
+                pass
+            else:
+                for j in OSfDb:
+                    if j["IDd"] != "GuildInfo":
+                        Top.append({j["IDd"]:{Wp:j[Wp]}})
+        Top = sorted(Top,key = GetNVa)
+        for i in range(1,4):
+            x = int(list(Top[-i].keys())[0])
+            IEm.add_field(name = f'**`{i}. {(await DClient.fetch_user(x)).display_name}:`** {GetNVa(Top[-i], 1)} = {GetNVa(Top[-i]):,}', value = "\u200b", inline = False)
+        await SrtI.edit(embed = IEm)
+    elif Enput in Kyes:
+        IEm = discord.Embed(title = ctx.guild.name, description = f'Leaderboard for {Enput}', color = 0x3252a8)
+        OSfDb = Col.find({"IDg":str(ctx.guild.id)})
+        for j in OSfDb:
+            if j["IDd"] != "GuildInfo":
+                Top.append({j["IDd"]:{Enput:j[Enput]}})
+        Top = sorted(Top,key = GetNVa)
+        for i in range(1,4):
+            x = int(list(Top[-i].keys())[0])
+            IEm.add_field(name = f'**`{i}. {(await DClient.fetch_user(x)).display_name}:`** {GetNVa(Top[-i], 1)} = {GetNVa(Top[-i]):,}', value = "\u200b", inline = False)
+        await SrtI.edit(embed = IEm)
+    else:
+        await SrtI.edit(embed = discord.Embed(title = "That word doesnt exist yet :confused:",  description = "\u200b", color = 0x3252a8))
+
 @DClient.command(name = "total")
 @commands.check(ChBot)
 @commands.check(ChSer)
@@ -1112,7 +1187,7 @@ async def TMsg(ctx, *args):
         Kyes = i.keys()
 
     if (Enput == "") or (Enput == " "):
-        IEm = discord.Embed(title = ctx.guild.name, description = "Total times word/phrase was repeated", color = 0x3252a8)
+        IEm = discord.Embed(title = ctx.guild.name, description = "Total times repeated", color = 0x3252a8)
         for Wp in Kyes:
             Num = 0
             OSfDb = Col.find({"IDg":str(ctx.guild.id)})
@@ -1126,7 +1201,7 @@ async def TMsg(ctx, *args):
         await ctx.message.channel.send(embed = IEm)
 
     elif Enput in Kyes:
-        IEm = discord.Embed(title = ctx.guild.name, description = "Total times word/phrase was repeated", color = 0x3252a8)
+        IEm = discord.Embed(title = ctx.guild.name, description = f'Total times {Enput} was repeated', color = 0x3252a8)
         for j in OSfDb:
             Num += j[Enput]
 
@@ -1264,7 +1339,7 @@ async def IMsg(ctx, *args):
             Kyes = i.keys()
 
         if (Enput == "") or (Enput == " "):
-            IEm = discord.Embed(title = AUmN.name, description = "All stats", color = 0x3252a8)
+            IEm = discord.Embed(title = AUmN.display_name, description = "All stats", color = 0x3252a8)
             for Wp in Kyes:
                 OSfDb = Col.find({"IDd":str(AUmN.id),"IDg":str(ctx.guild.id)})
                 if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
@@ -1276,7 +1351,7 @@ async def IMsg(ctx, *args):
             await ctx.message.channel.send(embed = IEm)
 
         elif Enput in Kyes:
-            IEm = discord.Embed(title = AUmN.name, description = "Word stats", color = 0x3252a8)
+            IEm = discord.Embed(title = AUmN.display_name, description = "Word stats", color = 0x3252a8)
             for j in OSfDb:
                 Num = j[Enput]
             IEm.add_field(name = Enput, value = Num, inline = True)
