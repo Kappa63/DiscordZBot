@@ -55,3 +55,34 @@ def AddTo(Datab, Stf, ItV, Num):
         Datab.update_one(i,{"$set":{ItV:i[ItV]+Num}})
         return True
     return False
+
+def ChangeTo(Datab, Stf, ItV, Num):
+    DbB = Datab.find(Stf)
+    for i in DbB:
+        KMeys = i.keys()
+    if (ItV in KMeys) and (ItV != "IDd") and (ItV != "IDg") and (ItV != "Setup") and (ItV != "_id"):
+        Datab.update_one(i,{"$set":{ItV:Num}})
+        return True
+    return False
+
+def CheckIf(Datab, Stf, ItV, Sub, IFEq, Case):
+    DbB = Datab.find(Stf)
+    for i in DbB:
+        KMeys = i.keys()
+    if (ItV in KMeys) and (ItV != "IDd") and (ItV != "IDg") and (ItV != "Setup") and (ItV != "_id"):
+        if Case == "G":
+            if (i[ItV] - Sub) > IFEq:
+                return True 
+        elif Case == "L":
+            if (i[ItV] - Sub) < IFEq:
+                return True
+        elif Case == "E":
+            if (i[ItV] - Sub) == IFEq:
+                return True
+        elif Case == "GE":
+            if (i[ItV] - Sub) >= IFEq:
+                return True
+        elif Case == "LE":
+            if (i[ItV] - Sub) <= IFEq:
+                return True
+        return False

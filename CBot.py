@@ -2,6 +2,7 @@ import discord
 import praw
 import random
 from discord.ext import commands
+import dbl
 import pymongo
 from pymongo import MongoClient
 import FuncMon
@@ -18,6 +19,7 @@ import mal
 import malclient
 import COVID19Py
 import datetime
+import time
 from pdf2image import convert_from_path
 import imgurpython
 
@@ -25,12 +27,14 @@ Mdb = "mongodb+srv://Kappa:85699658@cbotdb.exsit.mongodb.net/CBot?retryWrites=tr
 Cls = MongoClient(Mdb)
 DbM = Cls["CBot"]
 Col = DbM["Ser"]
-TraEco = DbM["Ind"]
+Colvt = DbM["Vts"]
 
 REqInt = discord.Intents.default()
 REqInt.members = True
 
 DClient = commands.Bot(case_insensitive = True, command_prefix = ["z","Z"], help_command = None, intents = REqInt)
+
+dbl.DBLClient(DClient, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc2ODM5NzY0MDE0MDA2MjcyMSIsImJvdCI6dHJ1ZSwiaWF0IjoxNjA2NTg0NjkzfQ.fszwxjbcWspZP51n_QmWzCT66SGLV09c4FAMZRBq2Zg")
 
 twitter = tweepy.OAuthHandler("2lv4MgQDREClbQxjeWOQU5aGf", "4vq5UjqJetyLm37YhQtpc6htb0WPimFJVV088TL0LDMXHUdYTA")
 twitter.set_access_token("1297802233841623040-rYG0sXCKz0PSDUNAhUPx9hecf507LY", "02dNbliU0EJOfUzGx8UVmrbaqZTlYOmwwKAWqnkecWzgd")
@@ -776,7 +780,7 @@ async def TwttMsSur(ctx, *args):
                         TwTNum += 1
                         await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt)))
                     elif ReaEm[0].emoji == "#️⃣":
-                        if ReaEm[1].id in PrMUsI:
+                        if FuncMon.CheckIf(Colvt, {"IDd":str(ReaEm[1])}, "TimeVote", time.time, 43200, "LE"):
                             await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt), "**CHOOSE A NUMBER** or type anything else to cancel"))
                             ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
                             await ResE.delete()
@@ -796,6 +800,9 @@ async def TwttMsSur(ctx, *args):
                                 pass
                             await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt)))
                         else:
+                            DbB = Colvt.find({"IDd":str(ReaEm[1])})
+                            for DbG in DbB:
+                                Colvt.delete_one(DbG)
                             TemS = await ctx.message.channel.send("Instant navigation to page is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
                             await asyncio.sleep(5)
                             await TemS.delete()
@@ -964,7 +971,7 @@ async def nHen(ctx, *args):
                                 await DmSent.remove_reaction("#️⃣", DClient.user)
                                 break
                         elif Res[0].emoji == "#️⃣":
-                            if Res[1].id in PrMUsI:
+                            if FuncMon.CheckIf(Colvt, {"IDd":str(Res[1])}, "TimeVote", time.time, 43200, "LE"):
                                 await DmSent.edit(embed = EmbedMakerfORNum(DentAi, Page, "CHOOSE A PAGE or type anything else to cancel"))
                                 ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
                                 await ResE.delete()
@@ -984,6 +991,9 @@ async def nHen(ctx, *args):
                                     pass
                                 await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
                             else:
+                                DbB = Colvt.find({"IDd":str(Res[1])})
+                                for DbG in DbB:
+                                    Colvt.delete_one(DbG)
                                 TemS = await ctx.message.channel.send("Instant navigation to page is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
                                 await asyncio.sleep(5)
                                 await TemS.delete()
@@ -1673,16 +1683,11 @@ async def on_member_join(member):
 
 @DClient.event
 async def on_dbl_vote(Dt):
-    print(f'{Dt.user.id} voted')
-    try:
-        PrMUsI.remove(Dt.user.id)
-    except ValueError:
-        pass
-    PrMUsI.append(Dt.user.id)
-    print(PrMUsI)
-    await asyncio.sleep(60*60*12)
-    print("gone")
-    PrMUsI.remove(Dt.user.id)
+    print(f'{Dt.user} voted on {time.time}')
+    if Colvt.count_documents({"IDd":str(Dt.user)}) == 0:
+        Colvt.insert_one({"IDd":str(Dt.user),"TimeVote":time.time})
+    else:
+        FuncMon.ChangeTo(Colvt, {"IDd":str(Dt.user)}, "TimeVote", time.time)
 
 @DClient.event
 async def on_member_remove(member):
