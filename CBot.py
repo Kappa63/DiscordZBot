@@ -1064,6 +1064,7 @@ async def SrSub(ctx, *args):
         REm.add_field(name = "\u200b", value = f'The original post is a {Type} [click here]({SubCpoS.url}) to view the original', inline = False)
         REm.set_image(url = SubCpoS.preview["images"][-1]["source"]["url"])
         return REm
+        
     def GetMaSPos(SubCpoS, ConTtE, Type = "R", CRposNum = 0, CPosTo = 0):
         if len(SubCpoS.title) > 253:
             FtiTle = SubCpoS.title[0:253]
