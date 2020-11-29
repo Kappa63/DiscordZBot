@@ -10,4 +10,3 @@ ADDED instant navigate to page on twitter.
 IMPROVED random reddit post logic.
 CHANGED bot presence texts
 NEW up, down, and bot check commands for mods.
-	
