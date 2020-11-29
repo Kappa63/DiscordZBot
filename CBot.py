@@ -808,9 +808,12 @@ async def TwttMsSur(ctx, *args):
                                 await asyncio.sleep(5)
                                 await TemTw.delete()
                         else:
-                            DbB = Colvt.find({"IDd":str(ReaEm[1])})
-                            for DbG in DbB:
-                                Colvt.delete_one(DbG)
+                            try:
+                                DbB = Colvt.find({"IDd":str(ReaEm[1])})
+                                for DbG in DbB:
+                                    Colvt.delete_one(DbG)
+                            except UnboundLocalError:
+                                pass
                             TemS = await ctx.message.channel.send("Instant navigation to page is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
                             await asyncio.sleep(5)
                             await TemS.delete()
@@ -996,9 +999,12 @@ async def nHen(ctx, *args):
                                     await asyncio.sleep(5)
                                     await TempNG.delete()
                             else:
-                                DbB = Colvt.find({"IDd":str(Res[1])})
-                                for DbG in DbB:
-                                    Colvt.delete_one(DbG)
+                                try:
+                                    DbB = Colvt.find({"IDd":str(Res[1])})
+                                    for DbG in DbB:
+                                        Colvt.delete_one(DbG)
+                                except UnboundLocalError:
+                                    pass
                                 TemS = await ctx.message.channel.send("Instant navigation to page is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
                                 await asyncio.sleep(5)
                                 await TemS.delete()
@@ -1064,7 +1070,7 @@ async def SrSub(ctx, *args):
         REm.add_field(name = "\u200b", value = f'The original post is a {Type} [click here]({SubCpoS.url}) to view the original', inline = False)
         REm.set_image(url = SubCpoS.preview["images"][-1]["source"]["url"])
         return REm
-        
+
     def GetMaSPos(SubCpoS, ConTtE, Type = "R", CRposNum = 0, CPosTo = 0):
         if len(SubCpoS.title) > 253:
             FtiTle = SubCpoS.title[0:253]
@@ -1309,9 +1315,12 @@ async def SrSub(ctx, *args):
                                         await asyncio.sleep(5)
                                         await TemTw.delete()
                                 else:
-                                    DbB = Colvt.find({"IDd":str(Res[1])})
-                                    for DbG in DbB:
-                                        Colvt.delete_one(DbG)
+                                    try:
+                                        DbB = Colvt.find({"IDd":str(Res[1])})
+                                        for DbG in DbB:
+                                            Colvt.delete_one(DbG)
+                                    except UnboundLocalError:
+                                        pass
                                     TemS = await ctx.message.channel.send("Instant navigation to CRposNum is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
                                     await asyncio.sleep(5)
                                     await TemS.delete()
@@ -1332,9 +1341,12 @@ async def SrSub(ctx, *args):
                 else:
                     await ctx.message.channel.send("Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)")
             else:
-                DbB = Colvt.find({"IDd":str(Res[1])})
-                for DbG in DbB:
-                    Colvt.delete_one(DbG)
+                try:
+                    DbB = Colvt.find({"IDd":str(Res[1])})
+                    for DbG in DbB:
+                        Colvt.delete_one(DbG)
+                except UnboundLocalError:
+                    pass
                 TemS = await ctx.message.channel.send("Instant navigation to CRposNum is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
                 await asyncio.sleep(5)
                 await TemS.delete()
