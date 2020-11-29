@@ -34,7 +34,7 @@ REqInt.members = True
 
 DClient = commands.Bot(case_insensitive = True, command_prefix = ["z","Z"], help_command = None, intents = REqInt)
 
-dbl.DBLClient(DClient, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc2ODM5NzY0MDE0MDA2MjcyMSIsImJvdCI6dHJ1ZSwiaWF0IjoxNjA2NTg0NjkzfQ.fszwxjbcWspZP51n_QmWzCT66SGLV09c4FAMZRBq2Zg")
+# TClient = dbl.DBLClient(bot = DClient, token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc2ODM5NzY0MDE0MDA2MjcyMSIsImJvdCI6dHJ1ZSwiaWF0IjoxNjA2NjU3OTMwfQ.kdocPKBJMXoyKXnroUrb0KaP0lRFfxDRqLNLe3H_FXA", webhook_auth = "AvadaKadavra", webhook_path = "193.27.233.166:5000/Users/Kappa/Python/")
 
 twitter = tweepy.OAuthHandler("2lv4MgQDREClbQxjeWOQU5aGf", "4vq5UjqJetyLm37YhQtpc6htb0WPimFJVV088TL0LDMXHUdYTA")
 twitter.set_access_token("1297802233841623040-rYG0sXCKz0PSDUNAhUPx9hecf507LY", "02dNbliU0EJOfUzGx8UVmrbaqZTlYOmwwKAWqnkecWzgd")
@@ -173,7 +173,7 @@ async def SendH(ctx, *args):
         HEm.add_field(name = "zcovid: ", value = "Returns the worldwide status of Covid-19", inline = False)
         HEm.add_field(name = "zcovid (Country): ", value = "Returns the status of Covid-19 in country", inline = False)
         HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a RANDOM post from the top 100 posts in hot from any subreddit", inline = False)
-        HEm.add_field(name = "zreddit surf (Subreddit Name): ", value = "Returns the 100 posts of subreddit sorted in any format (voters command)", inline = False)
+        HEm.add_field(name = "zreddit surf (Subreddit Name): ", value = "Returns the 100 posts of subreddit sorted in any format (This feature WILL become for voters only next week)", inline = False)
         HEm.add_field(name = "ztwitter (User @): ", value = "Returns the user profile and 20 of their latest tweets", inline = False)
         HEm.add_field(name = "ztwitter search (Username): ", value = "Searches for 10 users related to search argument", inline = False)
         HEm.add_field(name = "zanime (Anime Name): ", value = "Searches for anime and returns all the info about chosen one", inline = False)
@@ -782,41 +782,41 @@ async def TwttMsSur(ctx, *args):
                         TwTNum += 1
                         await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt)))
                     elif ReaEm[0].emoji == "#️⃣":
-                        if FuncMon.CheckIf(Colvt, {"IDd":str(ReaEm[1])}, "TimeVote", time.time, 43200, "LE"):
-                            TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n*The Navigation closes automatically after 10sec of inactivity.*')
+                        # if FuncMon.CheckIf(Colvt, {"IDd":str(ReaEm[1])}, "TimeVote", time.time, 43200, "LE"):
+                        TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n(This feature WILL become for voters only next week)\n\n*The Navigation closes automatically after 10sec of inactivity.*')
+                        try:
+                            ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
+                            await ResE.delete()
+                            await TemTw.delete()
                             try:
-                                ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
-                                await ResE.delete()
-                                await TemTw.delete()
                                 try:
-                                    try:
-                                        pG = int(ResE.content)
-                                        if 0 < pG <= len(TwExt)-1:
-                                            TwTNum = pG-1
-                                        elif pG < 1:
-                                            TwTNum = 0
-                                            pass
-                                        else:
-                                            TwTNum = len(TwExt)-1 
-                                    except TypeError:
+                                    pG = int(ResE.content)
+                                    if 0 < pG <= len(TwExt)-1:
+                                        TwTNum = pG-1
+                                    elif pG < 1:
+                                        TwTNum = 0
                                         pass
-                                except ValueError:
+                                    else:
+                                        TwTNum = len(TwExt)-1 
+                                except TypeError:
                                     pass
-                                await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt)))
-                            except asyncio.TimeoutError:
-                                await TemTw.edit("Request Timeout")
-                                await asyncio.sleep(5)
-                                await TemTw.delete()
-                        else:
-                            try:
-                                DbB = Colvt.find({"IDd":str(ReaEm[1])})
-                                for DbG in DbB:
-                                    Colvt.delete_one(DbG)
-                            except UnboundLocalError:
+                            except ValueError:
                                 pass
-                            TemS = await ctx.message.channel.send("Instant navigation to page is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
+                            await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt)))
+                        except asyncio.TimeoutError:
+                            await TemTw.edit("Request Timeout")
                             await asyncio.sleep(5)
-                            await TemS.delete()
+                            await TemTw.delete()
+                        # else:
+                        #     try:
+                        #         DbB = Colvt.find({"IDd":str(ReaEm[1])})
+                        #         for DbG in DbB:
+                        #             Colvt.delete_one(DbG)
+                            # except UnboundLocalError:
+                            #     pass
+                            # TemS = await ctx.message.channel.send("Instant navigation to page is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
+                            # await asyncio.sleep(5)
+                            # await TemS.delete()
                     elif ReaEm[0].emoji == "➡️" and len(TwExt) == TwTNum+1:
                         await TwTsL.remove_reaction("⬅️", DClient.user)
                         await TwTsL.remove_reaction("❌", DClient.user)
@@ -973,41 +973,41 @@ async def nHen(ctx, *args):
                                 await DmSent.remove_reaction("#️⃣", DClient.user)
                                 break
                         elif Res[0].emoji == "#️⃣":
-                            if FuncMon.CheckIf(Colvt, {"IDd":str(Res[1])}, "TimeVote", time.time, 43200, "LE"):
-                                TempNG = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n*The Navigation closes automatically after 10sec of inactivity.*')
+                            # if FuncMon.CheckIf(Colvt, {"IDd":str(Res[1])}, "TimeVote", time.time, 43200, "LE"):
+                            TempNG = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n(This feature WILL become for voters only next week)\n\n*The Navigation closes automatically after 10sec of inactivity.*')
+                            try:
+                                ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
+                                await TempNG.delete()
+                                await ResE.delete()
                                 try:
-                                    ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
-                                    await TempNG.delete()
-                                    await ResE.delete()
                                     try:
-                                        try:
-                                            pG = int(ResE.content)
-                                            if 0 < pG <= len(DentAi.image_urls)-1:
-                                                Page = pG-1
-                                            elif pG < 1:
-                                                Page = 0
-                                                pass
-                                            else:
-                                                Page = len(DentAi.image_urls)-1 
-                                        except TypeError:
+                                        pG = int(ResE.content)
+                                        if 0 < pG <= len(DentAi.image_urls)-1:
+                                            Page = pG-1
+                                        elif pG < 1:
+                                            Page = 0
                                             pass
-                                    except ValueError:
+                                        else:
+                                            Page = len(DentAi.image_urls)-1 
+                                    except TypeError:
                                         pass
-                                    await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
-                                except asyncio.TimeoutError:
-                                    await TempNG.edit("Request Timeout")
-                                    await asyncio.sleep(5)
-                                    await TempNG.delete()
-                            else:
-                                try:
-                                    DbB = Colvt.find({"IDd":str(Res[1])})
-                                    for DbG in DbB:
-                                        Colvt.delete_one(DbG)
-                                except UnboundLocalError:
+                                except ValueError:
                                     pass
-                                TemS = await ctx.message.channel.send("Instant navigation to page is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
+                                await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
+                            except asyncio.TimeoutError:
+                                await TempNG.edit("Request Timeout")
                                 await asyncio.sleep(5)
-                                await TemS.delete()
+                                await TempNG.delete()
+                            # else:
+                            #     try:
+                            #         DbB = Colvt.find({"IDd":str(Res[1])})
+                            #         for DbG in DbB:
+                            #             Colvt.delete_one(DbG)
+                            #     except UnboundLocalError:
+                            #         pass
+                            #     TemS = await ctx.message.channel.send("Instant navigation to page is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
+                            #     await asyncio.sleep(5)
+                            #     await TemS.delete()
                         elif Res[0].emoji == "❌":
                             await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
                             await DmSent.remove_reaction("⬅️", DClient.user)
@@ -1201,155 +1201,155 @@ async def SrSub(ctx, *args):
     elif len(args) == 2:
         ContT = (" ".join(args)).split(" ")
         if ContT[0].lower() == "surf":
-            if FuncMon.CheckIf(Colvt, {"IDd":str(ctx.author.id)}, "TimeVote", time.time, 43200, "LE"):
-                if CheckSub(ContT[1]): 
-                    KraPosS = await ctx.message.channel.send(embed = discord.Embed(title = "How would you like to sort the subreddit?", description = "🔝 to sort by top.\n📈 to sort by rising.\n🔥 to sort by hot.\n📝 to sort by new.\n❌ to cancel", footer = "This timesout in 10s"))
-                    await KraPosS.add_reaction("🔝")
-                    await KraPosS.add_reaction("📈")
-                    await KraPosS.add_reaction("🔥")
-                    await KraPosS.add_reaction("📝")
-                    await KraPosS.add_reaction("❌")
-                    try:
-                        ResIni = await DClient.wait_for("reaction_add", check = ChCHEmCH, timeout = 10)
-                        if ResIni[0].emoji != "🔝":
-                            await KraPosS.edit(embed = discord.Embed(title = "Getting Posts"))
-                            await KraPosS.remove_reaction("❌", DClient.user)
-                        await KraPosS.remove_reaction(ResIni[0].emoji, ResIni[1])
-                        await KraPosS.remove_reaction("🔝", DClient.user)
-                        await KraPosS.remove_reaction("📝", DClient.user)
-                        await KraPosS.remove_reaction("📈", DClient.user)
-                        await KraPosS.remove_reaction("🔥", DClient.user)
-                        
-                        if ResIni[0].emoji == "❌":
-                            await KraPosS.delete()
-                        elif ResIni[0].emoji == "📝":
-                            Post = Reddit.subreddit(ContT[1]).new()
-                        elif ResIni[0].emoji == "🔥":
-                            Post = Reddit.subreddit(ContT[1]).hot()
-                        elif ResIni[0].emoji == "📈":
-                            Post = Reddit.subreddit(ContT[1]).rising()
-                        elif ResIni[0].emoji == "🔝":
-                            await KraPosS.edit(embed = discord.Embed(title = "How would you like to sort by top?", description = "🌍 to sort by top all time.\n📅 to sort by top this month.\n🗓️ to sort by top today.\n❌ to cancel", footer = "This timesout in 10s"))
-                            await KraPosS.add_reaction("🌍")
-                            await KraPosS.add_reaction("📅")
-                            await KraPosS.add_reaction("🗓️")
-                            ResIniT = await DClient.wait_for("reaction_add", check = ChCHEmCHT, timeout = 10)
-                            await KraPosS.remove_reaction(ResIniT[0].emoji, ResIniT[1])
-                            await KraPosS.edit(embed = discord.Embed(title = "Getting Posts"))
-                            await KraPosS.remove_reaction("❌", DClient.user)
-                            await KraPosS.remove_reaction("🌍", DClient.user)
-                            await KraPosS.remove_reaction("📅", DClient.user)
-                            await KraPosS.remove_reaction("🗓️", DClient.user)
-                            if ResIniT[0].emoji == "❌":
-                                await KraPosS.delete()
-                                return
-                            elif ResIniT[0].emoji == "🌍":
-                                Post = Reddit.subreddit(ContT[1]).top("all")
-                            elif ResIniT[0].emoji == "📅":
-                                Post = Reddit.subreddit(ContT[1]).top("month")
-                            elif ResIniT[0].emoji == "🗓️":
-                                Post = Reddit.subreddit(ContT[1]).top("day")
-                    except asyncio.TimeoutError:
-                        await KraPosS.edit(embed = discord.Embed(title = "Timeout"))
-                        await asyncio.sleep(5)
+            # if FuncMon.CheckIf(Colvt, {"IDd":str(ctx.author.id)}, "TimeVote", time.time, 43200, "LE"):
+            if CheckSub(ContT[1]): 
+                KraPosS = await ctx.message.channel.send(embed = discord.Embed(title = "How would you like to sort the subreddit?", description = "🔝 to sort by top.\n📈 to sort by rising.\n🔥 to sort by hot.\n📝 to sort by new.\n❌ to cancel", footer = "This timesout in 10s"))
+                await KraPosS.add_reaction("🔝")
+                await KraPosS.add_reaction("📈")
+                await KraPosS.add_reaction("🔥")
+                await KraPosS.add_reaction("📝")
+                await KraPosS.add_reaction("❌")
+                try:
+                    ResIni = await DClient.wait_for("reaction_add", check = ChCHEmCH, timeout = 10)
+                    if ResIni[0].emoji != "🔝":
+                        await KraPosS.edit(embed = discord.Embed(title = "Getting Posts"))
+                        await KraPosS.remove_reaction("❌", DClient.user)
+                    await KraPosS.remove_reaction(ResIni[0].emoji, ResIni[1])
+                    await KraPosS.remove_reaction("🔝", DClient.user)
+                    await KraPosS.remove_reaction("📝", DClient.user)
+                    await KraPosS.remove_reaction("📈", DClient.user)
+                    await KraPosS.remove_reaction("🔥", DClient.user)
+                    
+                    if ResIni[0].emoji == "❌":
                         await KraPosS.delete()
-                        return
-                                    
-                    SubCpoS = []
-                    CPosTo = 0
-                    for SuTPos in Post:
-                        CPosTo += 1
-                        if not SuTPos.stickied:
-                            SubCpoS.append(SuTPos)
-                    if CPosTo == 0:
-                        await ctx.message.channel.send("No posts on that subreddit :no_mouth:")
-                        return              
-                    KraPosS = await ctx.message.channel.send(embed = GetMaSPos(SubCpoS[0], ContT[1], "S", 0, CPosTo))
-                    CRposNum = 0
-                    await KraPosS.add_reaction("⬅️")
-                    await KraPosS.add_reaction("❌")
-                    await KraPosS.add_reaction("➡️")
-                    await KraPosS.add_reaction("#️⃣")
-                    while True:
-                        try:
-                            Res = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 120) 
-                            await KraPosS.remove_reaction(Res[0].emoji, Res[1])
-                            if Res[0].emoji == "⬅️" and CRposNum != 0:
-                                CRposNum -= 1
+                    elif ResIni[0].emoji == "📝":
+                        Post = Reddit.subreddit(ContT[1]).new()
+                    elif ResIni[0].emoji == "🔥":
+                        Post = Reddit.subreddit(ContT[1]).hot()
+                    elif ResIni[0].emoji == "📈":
+                        Post = Reddit.subreddit(ContT[1]).rising()
+                    elif ResIni[0].emoji == "🔝":
+                        await KraPosS.edit(embed = discord.Embed(title = "How would you like to sort by top?", description = "🌍 to sort by top all time.\n📅 to sort by top this month.\n🗓️ to sort by top today.\n❌ to cancel", footer = "This timesout in 10s"))
+                        await KraPosS.add_reaction("🌍")
+                        await KraPosS.add_reaction("📅")
+                        await KraPosS.add_reaction("🗓️")
+                        ResIniT = await DClient.wait_for("reaction_add", check = ChCHEmCHT, timeout = 10)
+                        await KraPosS.remove_reaction(ResIniT[0].emoji, ResIniT[1])
+                        await KraPosS.edit(embed = discord.Embed(title = "Getting Posts"))
+                        await KraPosS.remove_reaction("❌", DClient.user)
+                        await KraPosS.remove_reaction("🌍", DClient.user)
+                        await KraPosS.remove_reaction("📅", DClient.user)
+                        await KraPosS.remove_reaction("🗓️", DClient.user)
+                        if ResIniT[0].emoji == "❌":
+                            await KraPosS.delete()
+                            return
+                        elif ResIniT[0].emoji == "🌍":
+                            Post = Reddit.subreddit(ContT[1]).top("all")
+                        elif ResIniT[0].emoji == "📅":
+                            Post = Reddit.subreddit(ContT[1]).top("month")
+                        elif ResIniT[0].emoji == "🗓️":
+                            Post = Reddit.subreddit(ContT[1]).top("day")
+                except asyncio.TimeoutError:
+                    await KraPosS.edit(embed = discord.Embed(title = "Timeout"))
+                    await asyncio.sleep(5)
+                    await KraPosS.delete()
+                    return
+                                
+                SubCpoS = []
+                CPosTo = 0
+                for SuTPos in Post:
+                    CPosTo += 1
+                    if not SuTPos.stickied:
+                        SubCpoS.append(SuTPos)
+                if CPosTo == 0:
+                    await ctx.message.channel.send("No posts on that subreddit :no_mouth:")
+                    return              
+                KraPosS = await ctx.message.channel.send(embed = GetMaSPos(SubCpoS[0], ContT[1], "S", 0, CPosTo))
+                CRposNum = 0
+                await KraPosS.add_reaction("⬅️")
+                await KraPosS.add_reaction("❌")
+                await KraPosS.add_reaction("➡️")
+                await KraPosS.add_reaction("#️⃣")
+                while True:
+                    try:
+                        Res = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 120) 
+                        await KraPosS.remove_reaction(Res[0].emoji, Res[1])
+                        if Res[0].emoji == "⬅️" and CRposNum != 0:
+                            CRposNum -= 1
+                            await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
+                        elif Res[0].emoji == "➡️":
+                            if CRposNum < CPosTo-1:
+                                CRposNum += 1
                                 await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
-                            elif Res[0].emoji == "➡️":
-                                if CRposNum < CPosTo-1:
-                                    CRposNum += 1
-                                    await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
-                                else:
-                                    await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
-                                    await KraPosS.remove_reaction("⬅️", DClient.user)
-                                    await KraPosS.remove_reaction("❌", DClient.user)
-                                    await KraPosS.remove_reaction("➡️", DClient.user)
-                                    await KraPosS.remove_reaction("#️⃣", DClient.user)
-                                    break
-                            elif Res[0].emoji == "#️⃣":
-                                if FuncMon.CheckIf(Colvt, {"IDd":str(Res[1])}, "TimeVote", time.time, 43200, "LE"):
-                                    TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n*The Navigation closes automatically after 10sec of inactivity.*')
-                                    try:
-                                        ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
-                                        await TemTw.delete()
-                                        await ResE.delete()
-                                        try:
-                                            try:
-                                                pG = int(ResE.content)
-                                                if 0 < pG <= CPosTo-1:
-                                                    CRposNum = pG-1
-                                                elif pG < 1:
-                                                    CRposNum = 0
-                                                    pass
-                                                else:
-                                                    CRposNum = CPosTo-1 
-                                            except TypeError:
-                                                pass
-                                        except ValueError:
-                                            pass
-                                        await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
-                                    except asyncio.exceptions.TimeoutError:
-                                        await TemTw.edit("Request Timeout")
-                                        await asyncio.sleep(5)
-                                        await TemTw.delete()
-                                else:
-                                    try:
-                                        DbB = Colvt.find({"IDd":str(Res[1])})
-                                        for DbG in DbB:
-                                            Colvt.delete_one(DbG)
-                                    except UnboundLocalError:
-                                        pass
-                                    TemS = await ctx.message.channel.send("Instant navigation to CRposNum is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
-                                    await asyncio.sleep(5)
-                                    await TemS.delete()
-                            elif Res[0].emoji == "❌":
+                            else:
                                 await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
                                 await KraPosS.remove_reaction("⬅️", DClient.user)
                                 await KraPosS.remove_reaction("❌", DClient.user)
                                 await KraPosS.remove_reaction("➡️", DClient.user)
                                 await KraPosS.remove_reaction("#️⃣", DClient.user)
                                 break
-                        except asyncio.TimeoutError:
+                        elif Res[0].emoji == "#️⃣":
+                            # if FuncMon.CheckIf(Colvt, {"IDd":str(Res[1])}, "TimeVote", time.time, 43200, "LE"):
+                            TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n(This feature WILL become for voters only next week)\n\n*The Navigation closes automatically after 10sec of inactivity.*')
+                            try:
+                                ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
+                                await TemTw.delete()
+                                await ResE.delete()
+                                try:
+                                    try:
+                                        pG = int(ResE.content)
+                                        if 0 < pG <= CPosTo-1:
+                                            CRposNum = pG-1
+                                        elif pG < 1:
+                                            CRposNum = 0
+                                            pass
+                                        else:
+                                            CRposNum = CPosTo-1 
+                                    except TypeError:
+                                        pass
+                                except ValueError:
+                                    pass
+                                await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
+                            except asyncio.exceptions.TimeoutError:
+                                await TemTw.edit("Request Timeout")
+                                await asyncio.sleep(5)
+                                await TemTw.delete()
+                            # else:
+                            #     try:
+                            #         DbB = Colvt.find({"IDd":str(Res[1])})
+                            #         for DbG in DbB:
+                            #             Colvt.delete_one(DbG)
+                            #     except UnboundLocalError:
+                            #         pass
+                            #     TemS = await ctx.message.channel.send("Instant navigation to CRposNum is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
+                            #     await asyncio.sleep(5)
+                            #     await TemS.delete()
+                        elif Res[0].emoji == "❌":
                             await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
                             await KraPosS.remove_reaction("⬅️", DClient.user)
                             await KraPosS.remove_reaction("❌", DClient.user)
                             await KraPosS.remove_reaction("➡️", DClient.user)
                             await KraPosS.remove_reaction("#️⃣", DClient.user)
                             break
-                else:
-                    await ctx.message.channel.send("Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)")
+                    except asyncio.TimeoutError:
+                        await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
+                        await KraPosS.remove_reaction("⬅️", DClient.user)
+                        await KraPosS.remove_reaction("❌", DClient.user)
+                        await KraPosS.remove_reaction("➡️", DClient.user)
+                        await KraPosS.remove_reaction("#️⃣", DClient.user)
+                        break
             else:
-                try:
-                    DbB = Colvt.find({"IDd":str(Res[1])})
-                    for DbG in DbB:
-                        Colvt.delete_one(DbG)
-                except UnboundLocalError:
-                    pass
-                TemS = await ctx.message.channel.send("Instant navigation to CRposNum is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
-                await asyncio.sleep(5)
-                await TemS.delete()
+                await ctx.message.channel.send("Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)")
+            # else:
+            #     try:
+            #         DbB = Colvt.find({"IDd":str(Res[1])})
+            #         for DbG in DbB:
+            #             Colvt.delete_one(DbG)
+            #     except UnboundLocalError:
+            #         pass
+            #     TemS = await ctx.message.channel.send("Instant navigation to CRposNum is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
+            #     await asyncio.sleep(5)
+            #     await TemS.delete()
         else:
             await ctx.message.channel.send("Too many arguments or not surf command :no_mouth:")
     elif len(args) == 0:
@@ -1878,13 +1878,10 @@ async def on_member_join(member):
             for Wp in Kyes:
                 FuncMon.DbAdd(Col, {"IDd":str(Pid.id),"IDg":str(member.guild.id)}, Wp, 0)
 
-@DClient.event
-async def on_dbl_vote(Dt):
-    print('voted')
-    if Colvt.count_documents({"IDd":str(Dt.user)}) == 0:
-        Colvt.insert_one({"IDd":str(Dt.user),"TimeVote":time.time})
-    else:
-        FuncMon.ChangeTo(Colvt, {"IDd":str(Dt.user)}, "TimeVote", time.time)
+# @DClient.command(name = "nigger")
+# async def wdGfin(ctx):
+#     print("hi")
+#     print(await TClient.get_user_vote(ctx.author.id))
 
 @DClient.event
 async def on_member_remove(member):
