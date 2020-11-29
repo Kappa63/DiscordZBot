@@ -1520,7 +1520,11 @@ async def ToTMsg(ctx, *args):
         Top = sorted(Top,key = GetNVa)
         for i in range(1,4):
             x = int(list(Top[-i].keys())[0])
-            IEm.add_field(name = f'**`{i}. {(ctx.guild.get_member(x)).nick}:`** {GetNVa(Top[-i], 1)} = {GetNVa(Top[-i]):,}', value = "\u200b", inline = False)
+            if (ctx.guild.get_member(x)).nick:
+                Cr = (ctx.guild.get_member(x)).nick
+            else:
+                Cr = (ctx.guild.get_member(x)).name
+            IEm.add_field(name = f'**`{i}. {Cr}:`** {GetNVa(Top[-i], 1)} = {GetNVa(Top[-i]):,}', value = "\u200b", inline = False)
         await SrtI.edit(embed = IEm)
     elif Enput in Kyes:
         IEm = discord.Embed(title = ctx.guild.name, description = f'Leaderboard for {Enput}', color = 0x3252a8)
@@ -1531,7 +1535,11 @@ async def ToTMsg(ctx, *args):
         Top = sorted(Top,key = GetNVa)
         for i in range(1,4):
             x = int(list(Top[-i].keys())[0])
-            IEm.add_field(name = f'**`{i}. {(ctx.guild.get_member(x)).nick}:`** {GetNVa(Top[-i], 1)} = {GetNVa(Top[-i]):,}', value = "\u200b", inline = False)
+            if (ctx.guild.get_member(x)).nick:
+                Cr = (ctx.guild.get_member(x)).nick
+            else:
+                Cr = (ctx.guild.get_member(x)).name
+            IEm.add_field(name = f'**`{i}. {Cr}:`** {GetNVa(Top[-i], 1)} = {GetNVa(Top[-i]):,}', value = "\u200b", inline = False)
         await SrtI.edit(embed = IEm)
     else:
         await SrtI.edit(embed = discord.Embed(title = "That word doesnt exist yet :confused:",  description = "\u200b", color = 0x3252a8))
