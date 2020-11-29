@@ -1194,7 +1194,7 @@ async def SrSub(ctx, *args):
     elif len(args) == 2:
         ContT = (" ".join(args)).split(" ")
         if ContT[0].lower() == "surf":
-            if FuncMon.CheckIf(Colvt, {"IDd":str(Res[1])}, "TimeVote", time.time, 43200, "LE"):
+            if FuncMon.CheckIf(Colvt, {"IDd":str(ctx.author.id)}, "TimeVote", time.time, 43200, "LE"):
                 if CheckSub(ContT[1]): 
                     KraPosS = await ctx.message.channel.send(embed = discord.Embed(title = "How would you like to sort the subreddit?", description = "🔝 to sort by top.\n📈 to sort by rising.\n🔥 to sort by hot.\n📝 to sort by new.\n❌ to cancel", footer = "This timesout in 10s"))
                     await KraPosS.add_reaction("🔝")
