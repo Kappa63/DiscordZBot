@@ -1880,7 +1880,7 @@ async def on_member_join(member):
 
 @DClient.event
 async def on_dbl_vote(Dt):
-    print(f'{Dt.user} voted on {time.time}')
+    print(f'{Dt.user} voted')
     if Colvt.count_documents({"IDd":str(Dt.user)}) == 0:
         Colvt.insert_one({"IDd":str(Dt.user),"TimeVote":time.time})
     else:
