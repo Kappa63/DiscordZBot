@@ -202,6 +202,7 @@ async def UpdLog(ctx):
     LogUps = open("UpdateLog.txt")
     LOggLin = LogUps.read().splitlines()
     SEm = discord.Embed(title = LOggLin[0], color = 0x000000)
+    LOggLin.pop(0)
     for Logs in LOggLin:
         LogTem = Logs.split(" ")
         SEm.add_field(name = LogTem[0], value = " ".join(LogTem[1:]), inline = False)
