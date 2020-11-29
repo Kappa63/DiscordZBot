@@ -147,6 +147,7 @@ async def SendH(ctx, *args):
         HEm = discord.Embed(title = "**ZBot Help**", description = "\u200b", color = 0x0af531)
         HEm.add_field(name = "zversion: ", value = "Checks the current running version of CBot", inline = False)
         HEm.add_field(name = "zvote: ", value = "To vote for ZBot", inline = False)
+        HEm.add_field(name = "zlog: ", value = "Shows the latest update's update log", inline = False)
         HEm.add_field(name = "zhelp server: ", value = "Provides all the server commands (including word track commands)", inline = False) 
         HEm.add_field(name = "zhelp misc: ", value = "Miscellaneous commands", inline = False)   
         await ctx.message.channel.send(embed = HEm)
@@ -196,6 +197,16 @@ async def BotSttSF(ctx):
     SEm.add_field(name = "ShardCount: ", value = DClient.shard_count, inline = False)
     await ctx.message.channel.send(embed = SEm)
 
+@DClient.command(name = "log")
+async def UpdLog(ctx):
+    LogUps = open("UpdateLog.txt")
+    LOggLin = LogUps.read().splitlines()
+    SEm = discord.Embed(title = LOggLin[0], color = 0x000000)
+    for Logs in LOggLin:
+        LogTem = Logs.split(" ")
+        SEm.add_field(name = LogTem[0], value = " ".join(LogTem[1:]), inline = False)
+    await ctx.message.channel.send(embed = SEm)
+
 @DClient.command(name = "makedown")
 @commands.check(ChAdMo)
 @commands.cooldown(1, 1, commands.BucketType.user)
@@ -217,9 +228,8 @@ async def UfManiT(ctx, *args):
 @commands.cooldown(1, 1, commands.BucketType.user)
 async def BotVotF(ctx):
     SEm = discord.Embed(title = "Voting for ZBot", url = "https://top.gg/bot/768397640140062721/vote", description = "**You can vote once every 12 hours for the following perks**", color = 0x000000)
-    SEm.add_field(name = "\u200b", value = "*Using instant navigation to page*\n\n", inline = False)
-    SEm.add_field(name = "\u200b", value = "*Surfing Reddit and using all sorting formats*\n\n", inline = False)
-    SEm.set_footer(text = "These perks will remain active for 12hrs after voting\n\n***`More perks will be added soon`***")
+    SEm.add_field(name = "*Using instant navigation to page*\n\n*Surfing Reddit and using all sorting formats*\n\n", value = "\u200b", inline = False)
+    SEm.set_footer(text = "THESE PERKS ARE CURRENTLY USEABLE FOR EVERYONE(PERKS WILL BE GIVEN STARTING NEXT WEEK)\n\nThese perks will remain active for 12hrs after voting\n\n**More perks will be added soon**")
     await ctx.message.channel.send(embed = SEm)
 
 @DClient.command(aliases = ["ver","version"])

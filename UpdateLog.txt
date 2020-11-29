@@ -1,0 +1,13 @@
+Whats new in 1.2a:
+NEW reddit surf command. 
+NEW remind command.
+NEW top command.
+NEW update command.
+NEW navigation for hentai.
+NEW vote command.
+NEW log command.
+ADDED instant navigate to page on twitter.
+IMPROVED random reddit post logic.
+CHANGED bot presence texts
+NEW up, down, and bot check commands for mods.
+	
