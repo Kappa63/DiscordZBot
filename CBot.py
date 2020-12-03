@@ -303,7 +303,7 @@ async def UfManiT(ctx):
 @DClient.command(name = "vote")
 @commands.cooldown(1, 1, commands.BucketType.user)
 async def BotVotF(ctx):
-    SEm = discord.Embed(title = "ZBot Patreon", url = "https://top.gg/bot/768397640140062721/vote", description = "**You can vote once every 12 hours for the following perks**", color = 0x000000)
+    SEm = discord.Embed(title = "Vote For ZBot", url = "https://top.gg/bot/768397640140062721/vote", description = "**You can vote once every 12 hours for the following perks**", color = 0x000000)
     SEm.add_field(name = "*-Using instant navigation to page/image/post/tweet*\n*-Surfing Reddit and using all sorting formats*\n*-Using zapod (Astronomy Picture of the Day)*\n\n", value = "\u200b", inline = False)
     await ctx.message.channel.send(embed = SEm)
 
