@@ -195,7 +195,7 @@ async def SendH(ctx, *args):
         HEm.add_field(name = "zhelp anime: ", value = "The Anime Commands", inline = False)
         HEm.add_field(name = "zhelp covid: ", value = "The Covid-19 Commands", inline = False)   
         HEm.add_field(name = "zhelp misc: ", value = "The Miscellaneous Commands", inline = False)
-        HEm.add_field(name = "Links: ", value = "[Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/ZBotDiscord) / [Vote](https://top.gg/bot/768397640140062721/vote)")   
+        HEm.add_field(name = "Links: ", value = "[Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord) / [Vote](https://top.gg/bot/768397640140062721/vote)")   
         await ctx.message.channel.send(embed = HEm)
     elif "".join(args).lower()  == "server":
         HEm = discord.Embed(title = "**ZBot Server Help**", description = "\u200b", color = 0x0af531)
@@ -316,7 +316,7 @@ async def BotVotF(ctx):
 @DClient.command(name = "patreon")
 @commands.cooldown(1, 1, commands.BucketType.user)
 async def BotPatrF(ctx):
-    SEm = discord.Embed(title = "Voting for ZBot", url = "https://www.patreon.com/ZBotDiscord", description = "**Want to support ZBot's development?**", color = 0x000000)
+    SEm = discord.Embed(title = "Join Patreon", url = "https://www.patreon.com/join/ZBotDiscord", description = "**Want to support ZBot's development?**", color = 0x000000)
     await ctx.message.channel.send(embed = SEm)
 
 @DClient.command(aliases = ["ver","version"])
@@ -356,7 +356,7 @@ async def GeNAapod(ctx):
         DEm.set_image(url = MaNaSapodJ["hdurl"])
         await ctx.message.channel.send(embed = DEm)
     else:
-        TemS = await ctx.message.channel.send("This command is reserved for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
+        TemS = await ctx.message.channel.send("This command is reserved for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/join/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
         await asyncio.sleep(5)
         await TemS.delete()
 
@@ -416,7 +416,7 @@ async def BGteNasCur(ctx):
                     break
             elif Res[0].emoji == "#️⃣":
                 if ChPatreonFu(ctx) or (await TClient.get_user_vote(ctx.author.id)):
-                    TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n(This feature WILL become for voters only next week)\n\n*The Navigation closes automatically after 10sec of inactivity.*')
+                    TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n*The Navigation closes automatically after 10sec of inactivity.*')
                     try:
                         ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
                         await TemTw.delete()
@@ -441,7 +441,7 @@ async def BGteNasCur(ctx):
                         await asyncio.sleep(5)
                         await TemTw.delete()
                 else:
-                    TemS = await ctx.message.channel.send("Instant navigation to image is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
+                    TemS = await ctx.message.channel.send("Instant navigation to image is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/join/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
                     await asyncio.sleep(5)
                     await TemS.delete()
             elif Res[0].emoji == "❌":
@@ -1021,7 +1021,7 @@ async def TwttMsSur(ctx, *args):
                         await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt)))
                     elif ReaEm[0].emoji == "#️⃣":
                         if ChPatreonFu(ctx) or (await TClient.get_user_vote(ctx.author.id)):
-                            TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n(This feature WILL become for voters only next week)\n\n*The Navigation closes automatically after 10sec of inactivity.*')
+                            TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n*The Navigation closes automatically after 10sec of inactivity.*')
                             try:
                                 ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
                                 await ResE.delete()
@@ -1046,7 +1046,7 @@ async def TwttMsSur(ctx, *args):
                                 await asyncio.sleep(5)
                                 await TemTw.delete()
                         else:
-                            TemS = await ctx.message.channel.send("Instant navigation to tweet is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
+                            TemS = await ctx.message.channel.send("Instant navigation to tweet is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/join/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
                             await asyncio.sleep(5)
                             await TemS.delete()
 
@@ -1206,7 +1206,7 @@ async def nHen(ctx, *args):
                                 break
                         elif Res[0].emoji == "#️⃣":
                             if ChPatreonFu(ctx) or (await TClient.get_user_vote(ctx.author.id)):
-                                TempNG = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n(This feature WILL become for voters only next week)\n\n*The Navigation closes automatically after 10sec of inactivity.*')
+                                TempNG = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n*The Navigation closes automatically after 10sec of inactivity.*')
                                 try:
                                     ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
                                     await TempNG.delete()
@@ -1231,7 +1231,7 @@ async def nHen(ctx, *args):
                                     await asyncio.sleep(5)
                                     await TempNG.delete()
                             else:
-                                TemS = await ctx.message.channel.send("Instant navigation to page is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
+                                TemS = await ctx.message.channel.send("Instant navigation to page is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/join/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
                                 await asyncio.sleep(5)
                                 await TemS.delete()
                         elif Res[0].emoji == "❌":
@@ -1515,7 +1515,7 @@ async def SrSub(ctx, *args):
                                     break
                             elif Res[0].emoji == "#️⃣":
                                 if ChPatreonFu(ctx) or (await TClient.get_user_vote(ctx.author.id)):
-                                    TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n(This feature WILL become for voters only next week)\n\n*The Navigation closes automatically after 10sec of inactivity.*')
+                                    TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n*The Navigation closes automatically after 10sec of inactivity.*')
                                     try:
                                         ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
                                         await TemTw.delete()
@@ -1540,7 +1540,7 @@ async def SrSub(ctx, *args):
                                         await asyncio.sleep(5)
                                         await TemTw.delete()
                                 else:
-                                    TemS = await ctx.message.channel.send("Instant navigation to post is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
+                                    TemS = await ctx.message.channel.send("Instant navigation to post is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/join/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
                                     await asyncio.sleep(5)
                                     await TemS.delete()
                             elif Res[0].emoji == "❌":
@@ -1560,7 +1560,7 @@ async def SrSub(ctx, *args):
                 else:
                     await ctx.message.channel.send("Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)")
             else:
-                TemS = await ctx.message.channel.send("This command is reserved for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
+                TemS = await ctx.message.channel.send("This command is reserved for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/join/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
                 await asyncio.sleep(5)
                 await TemS.delete()
         else:
@@ -1904,7 +1904,7 @@ async def PdSwtOI(ctx, *args):
                                         SImAUp.append(ImFA)
                                     await PcEm.edit(embed = PcEmE)
                                 else:
-                                    TemS = await ctx.message.channel.send("Instant navigation to page is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
+                                    TemS = await ctx.message.channel.send("Instant navigation to page is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/join/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
                                     await asyncio.sleep(5)
                                     await TemS.delete()
                             elif ReaEm[0].emoji == "❌":

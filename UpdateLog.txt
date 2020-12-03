@@ -8,7 +8,7 @@ NEW astronomy picture of the day (zapod) [For Voters and patreon].
 CREATED support server.
 NEW support command (zsupport).
 NEW bug command (zbug) [support server].
-New patreon command (zpatreon) [Thanks].
+NEW patreon command (zpatreon) [Thanks].
 REDESIGNED vote command.
 REDESIGNED help command.     
 IMPLENTED vote and patreon commands.                                                                                                                        
