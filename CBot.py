@@ -439,7 +439,7 @@ async def BGteNasCur(ctx):
                         await asyncio.sleep(5)
                         await TemTw.delete()
                 else:
-                    TemS = await ctx.message.channel.send("Instant navigation to image is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/join/ZBotDiscord) .\n:robot: zvote to learn more. :robot:")
+                    TemS = await ctx.message.channel.send("Instant navigation to image is only for voters or Patreon Supporters. \n:robot: zvote or zpatreon to learn more. :robot:")
                     await asyncio.sleep(5)
                     await TemS.delete()
             elif Res[0].emoji == "❌":
@@ -1103,7 +1103,7 @@ async def nHen(ctx, *args):
     def EmbedMaker(DentAi,Page, State):
         DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
         DEmE.set_thumbnail(url = DentAi.image_urls[0])
-        DEmE.set_footer(text = f'Released on {DentAi.upload_date}\n\n"n" or "next" for next page. "b"" or "back" for previous page. "go (page n#)" for a specific page. "c" or "close" to end reading.\n\n*The Doujin closes automatically after 2mins of inactivity.*')
+        DEmE.set_footer(text = f'Released on {DentAi.upload_date}\n\n.\n\n*The Doujin closes automatically after 2mins of inactivity.*')
         DEmE.set_image(url = DentAi.image_urls[Page])
         DEmE.add_field(name = "Doujin ID", value = DentAi.id, inline = False)
         DEmE.add_field(name = "\u200b", value = f'**Doujin {State}**\n\n`Page: {(Page+1)}/{len(DentAi.image_urls)}`', inline = False)
