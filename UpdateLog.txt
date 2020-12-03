@@ -1,12 +1,14 @@
-Whats new in 1.2a:
-NEW reddit surf command. 
-NEW remind command.
-NEW top command.
-NEW update command.
-NEW navigation for hentai.
-NEW vote command.
-NEW log command.
-ADDED instant navigate to page on twitter.
-IMPROVED random reddit post logic.
-CHANGED bot presence texts
-NEW up, down, and bot check commands for mods.
+Whats new in 1.3a:
+NEW random color command (zcolor). 
+NEW random fact command (zfact).
+NEW dice roll command (zroll).
+NEW random dad joke command (zdadjoke).
+NEW random mars images by NASA's Curiosity rover (znasa).  
+NEW astronomy picture of the day (zapod) [For Voters and patreon].  
+CREATED support server.
+NEW support command (zsupport).
+NEW bug command (zbug) [support server].
+New patreon command (zpatreon) [Thanks].
+REDESIGNED vote command.
+REDESIGNED help command.     
+IMPLENTED vote and patreon commands.                                                                                                                        

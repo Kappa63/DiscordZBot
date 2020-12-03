@@ -2,13 +2,15 @@ import discord
 import praw
 import random
 from discord.ext import commands
-import dbl
 import pymongo
 from pymongo import MongoClient
 import FuncMon
 import os  
 import deeppyer
 from PIL import Image
+import numpy
+import cv2
+import dbl
 import requests
 from prawcore import NotFound, Forbidden
 from hentai import Utils, Sort, Hentai, Format
@@ -20,6 +22,7 @@ import malclient
 import COVID19Py
 import datetime
 import time
+import randfacts
 from pdf2image import convert_from_path
 import imgurpython
 
@@ -34,7 +37,7 @@ REqInt.members = True
 
 DClient = commands.Bot(case_insensitive = True, command_prefix = ["z","Z"], help_command = None, intents = REqInt)
 
-# TClient = dbl.DBLClient(bot = DClient, token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc2ODM5NzY0MDE0MDA2MjcyMSIsImJvdCI6dHJ1ZSwiaWF0IjoxNjA2NjU3OTMwfQ.kdocPKBJMXoyKXnroUrb0KaP0lRFfxDRqLNLe3H_FXA", webhook_auth = "AvadaKadavra", webhook_path = "193.27.233.166:5000/Users/Kappa/Python/")
+TClient = dbl.client.DBLClient(bot = DClient, token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc2ODM5NzY0MDE0MDA2MjcyMSIsImJvdCI6dHJ1ZSwiaWF0IjoxNjA2NjU3OTMwfQ.kdocPKBJMXoyKXnroUrb0KaP0lRFfxDRqLNLe3H_FXA")
 
 twitter = tweepy.OAuthHandler("2lv4MgQDREClbQxjeWOQU5aGf", "4vq5UjqJetyLm37YhQtpc6htb0WPimFJVV088TL0LDMXHUdYTA")
 twitter.set_access_token("1297802233841623040-rYG0sXCKz0PSDUNAhUPx9hecf507LY", "02dNbliU0EJOfUzGx8UVmrbaqZTlYOmwwKAWqnkecWzgd")
@@ -99,19 +102,58 @@ def StrTSTM(SecGiN):
     else:
         return f'{SecGiN}Sec(s)'
 
+def GeRoP(user):
+    SuPServ = DClient.get_guild(783250489843384341)
+    
 class IsBot(commands.CheckFailure):
     pass
-def ChBot(ctx):
+@DClient.check
+async def ChBot(ctx):
     if ctx.author.bot:
         raise IsBot("Bot")
     return True
 
 class IsVote(commands.CheckFailure):
     pass
-def ChVote(ctx):
-    if ctx.author.id in PrMUsI:
+async def ChVote(ctx):
+    if await TClient.get_user_vote(ctx.author.id):
+        return True 
+    else:
         raise IsVote("No Vote")
-    return True
+
+async def ChVoteFu(ctx):
+    if await TClient.get_user_vote(ctx.author.id):
+        return True 
+    else:
+        return False
+
+class IsPatreon(commands.CheckFailure):
+    pass
+def ChPatreon(ctx):
+    SuPServ = DClient.get_guild(783250489843384341)
+    SuPuS = SuPServ.get_member(ctx.author.id)
+    SuRo = []
+    SuRo.append(discord.utils.get(SuPServ.roles, id = 783250729686532126))
+    SuRo.append(discord.utils.get(SuPServ.roles, id = 783256987655340043))
+    SuRo.append(discord.utils.get(SuPServ.roles, id = 784123230372757515))
+    SuRo.append(discord.utils.get(SuPServ.roles, id = 784124034559377409))
+    for i in SuRo:
+        if i in SuPuS.roles:
+            return True
+    raise IsPatreon("Not Patreon")
+
+def ChPatreonFu(ctx):
+    SuPServ = DClient.get_guild(783250489843384341)
+    SuPuS = SuPServ.get_member(ctx.author.id)
+    SuRo = []
+    SuRo.append(discord.utils.get(SuPServ.roles, id = 783250729686532126))
+    SuRo.append(discord.utils.get(SuPServ.roles, id = 783256987655340043))
+    SuRo.append(discord.utils.get(SuPServ.roles, id = 784123230372757515))
+    SuRo.append(discord.utils.get(SuPServ.roles, id = 784124034559377409))
+    for i in SuRo:
+        if i in SuPuS.roles:
+            return True
+    return False
 
 class Ignore(commands.CheckFailure):
     pass
@@ -140,16 +182,20 @@ def ChSer(ctx):
     raise ProfSer("Unready")
 
 @DClient.command(name = "help")
-@commands.check(ChBot)
 @commands.cooldown(1, 1, commands.BucketType.user)
 async def SendH(ctx, *args):
     if "".join(args) == "" or "".join(args) == " ":
         HEm = discord.Embed(title = "**ZBot Help**", description = "\u200b", color = 0x0af531)
-        HEm.add_field(name = "zversion: ", value = "Checks the current running version of CBot", inline = False)
+        HEm.add_field(name = "zversion: ", value = "Checks the current running version of ZBot", inline = False)
         HEm.add_field(name = "zvote: ", value = "To vote for ZBot", inline = False)
         HEm.add_field(name = "zlog: ", value = "Shows the latest update's update log", inline = False)
         HEm.add_field(name = "zhelp server: ", value = "Provides all the server commands (including word track commands)", inline = False) 
-        HEm.add_field(name = "zhelp misc: ", value = "Miscellaneous commands", inline = False)   
+        HEm.add_field(name = "zhelp reddit: ", value = "The Reddit Commands", inline = False)  
+        HEm.add_field(name = "zhelp twitter: ", value = "The Twitter Commands", inline = False)   
+        HEm.add_field(name = "zhelp anime: ", value = "The Anime Commands", inline = False)
+        HEm.add_field(name = "zhelp covid: ", value = "The Covid-19 Commands", inline = False)   
+        HEm.add_field(name = "zhelp misc: ", value = "The Miscellaneous Commands", inline = False)
+        HEm.add_field(name = "Links: ", value = "[Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/ZBotDiscord) / [Vote](https://top.gg/bot/768397640140062721/vote)")   
         await ctx.message.channel.send(embed = HEm)
     elif "".join(args).lower()  == "server":
         HEm = discord.Embed(title = "**ZBot Server Help**", description = "\u200b", color = 0x0af531)
@@ -161,8 +207,31 @@ async def SendH(ctx, *args):
         HEm.add_field(name = "zstats (@) (Word): ", value = "Returns stats for word(s)/phrase(s)", inline = False)
         HEm.add_field(name = "ztotal (Word): ", value = "Returns the total number of times word(s)/phrase(s) have been said on server", inline = False)
         HEm.add_field(name = "ztop (Word): ", value = "Returns the top 3 number of times word(s)/phrase(s) have been said on server", inline = False)
-        HEm.add_field(name = "zreset: ", value = "Reset everything (this is irreversable)", inline = False)
+        HEm.add_field(name = "zreset: ", value = "Reset everything, AKA remove ALL info(this is irreversable)", inline = False)
         HEm.set_footer(text = "Note: Counting is limited to 10 per Message to reduce spam incentives")
+        await ctx.message.channel.send(embed = HEm)
+    elif "".join(args).lower() == "reddit":
+        HEm = discord.Embed(title = "**ZBot Reddit Help**", description = "\u200b", color = 0x0af531)
+        HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a RANDOM post from the top 100 posts in hot from any subreddit", inline = False)
+        HEm.add_field(name = "zreddit surf (Subreddit Name): ", value = "Returns the 100 posts of a subreddit sorted in any format (Voters and Patreons ONLY)", inline = False)
+        await ctx.message.channel.send(embed = HEm)
+    elif "".join(args).lower() == "covid":
+        HEm = discord.Embed(title = "**ZBot Covid-19 Help**", description = "\u200b", color = 0x0af531)
+        HEm.add_field(name = "zcovid: ", value = "Returns the worldwide status of Covid-19", inline = False)
+        HEm.add_field(name = "zcovid (Country): ", value = "Returns the status of Covid-19 in country", inline = False)
+        await ctx.message.channel.send(embed = HEm)
+    elif "".join(args).lower() == "twitter":
+        HEm = discord.Embed(title = "**ZBot Twitter Help**", description = "\u200b", color = 0x0af531)
+        HEm.add_field(name = "ztwitter (User @): ", value = "Returns the user profile and 20 of their latest tweets", inline = False)
+        HEm.add_field(name = "ztwitter search (Username): ", value = "Searches for 10 users related to search argument", inline = False)
+        await ctx.message.channel.send(embed = HEm)
+    elif "".join(args).lower() == "anime":
+        HEm = discord.Embed(title = "**ZBot Anime Help**", description = "\u200b", color = 0x0af531)
+        HEm.add_field(name = "zanime (Anime Name): ", value = "Searches for anime and returns all the info about chosen one", inline = False)
+        HEm.add_field(name = "zmanga (Manga Name): ", value = "Searches for manga and returns all the info about chosen one", inline = False)
+        HEm.add_field(name = "zhentai (Magic Numbers): ", value = "Gets doujin from nhentai using magic numbers (NSFW)", inline = False)
+        HEm.add_field(name = "zhentai random: ", value = "Gets a random doujin from nhentai (NSFW)", inline = False)
+        HEm.add_field(name = "zhentai search (Doujin Name): ", value = "Searches for the 10 most popular doujin (NSFW)", inline = False)
         await ctx.message.channel.send(embed = HEm)
     elif "".join(args).lower() == "misc" or "".join(args).lower() == "misc." or "".join(args).lower() == "miscellaneous":
         HEm = discord.Embed(title = "**ZBot Misc. Help**", description = "\u200b", color = 0x0af531)
@@ -171,17 +240,12 @@ async def SendH(ctx, *args):
         HEm.add_field(name = "zfry profile (@): ", value = "Deep fries the avatar", inline = False)
         HEm.add_field(name = "zpdf (PDF Attachment/PDF Url): ", value = "Views the PDF's first 40 pages", inline = False)
         HEm.add_field(name = "zcalc (Input): ", value = "Calculates and returns", inline = False)
-        HEm.add_field(name = "zcovid: ", value = "Returns the worldwide status of Covid-19", inline = False)
-        HEm.add_field(name = "zcovid (Country): ", value = "Returns the status of Covid-19 in country", inline = False)
-        HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a RANDOM post from the top 100 posts in hot from any subreddit", inline = False)
-        HEm.add_field(name = "zreddit surf (Subreddit Name): ", value = "Returns the 100 posts of subreddit sorted in any format (This feature WILL become for voters only next week)", inline = False)
-        HEm.add_field(name = "ztwitter (User @): ", value = "Returns the user profile and 20 of their latest tweets", inline = False)
-        HEm.add_field(name = "ztwitter search (Username): ", value = "Searches for 10 users related to search argument", inline = False)
-        HEm.add_field(name = "zanime (Anime Name): ", value = "Searches for anime and returns all the info about chosen one", inline = False)
-        HEm.add_field(name = "zmanga (Manga Name): ", value = "Searches for manga and returns all the info about chosen one", inline = False)
-        HEm.add_field(name = "zhentai (Magic Numbers): ", value = "Gets doujin from nhentai using magic numbers", inline = False)
-        HEm.add_field(name = "zhentai random: ", value = "Gets a random doujin from nhentai", inline = False)
-        HEm.add_field(name = "zhentai search (Doujin Name): ", value = "Searches for the 10 most popular doujin", inline = False)
+        HEm.add_field(name = "zcolor: ", value = "Returns a RANDOM color with its HEX and RGB color codes", inline = False)
+        HEm.add_field(name = "zfact: ", value = "Returns a random fun fact", inline = False)
+        HEm.add_field(name = "zapod: ", value = "Astronomy Picture of the Day (Voters and Patreons ONLY)", inline = False)
+        HEm.add_field(name = "znasa: ", value = "Random mars images by NASA's Curiosity rover", inline = False)
+        HEm.add_field(name = "zdadjoke: ", value = "Returns a random dad joke", inline = False)
+        HEm.add_field(name = "zroll: ", value = "Rolls a dice", inline = False)
         HEm.add_field(name = "zgiphy (Phrase/Word to search for): ", value = "Returns a RANDOM gif from top 50 results on giphy", inline = False)
         HEm.set_footer(text = "Notes: -zremind is limited to 1day max.\n-zremind could sometimes fail to notify you due to the bot going down. So dont rely on it entirely.\n-During testing recovered data from zcovid was extremely inaccurate.\n-Some hentai are not available. This is to abide by the discord TOS.")
         await ctx.message.channel.send(embed = HEm)
@@ -197,11 +261,21 @@ async def BotSttSF(ctx):
     SEm.add_field(name = "ShardCount: ", value = DClient.shard_count, inline = False)
     await ctx.message.channel.send(embed = SEm)
 
+@DClient.command(name = "roll")
+@commands.cooldown(1, 1, commands.BucketType.user)
+async def GivRaFac(ctx):
+    ChORoDi = {1:"https://i.imgur.com/A3winYh.png", 2:"https://i.imgur.com/JFuawqi.png", 3:"https://i.imgur.com/2tufStP.png", 4:"https://i.imgur.com/GdtEPw4.png", 5:"https://i.imgur.com/7hgCUOq.png", 6:"https://i.imgur.com/5iyDeF1.png"}
+    NuToLe = {1:"One", 2:"Two", 3:"Three", 4:"Four", 5:"Five", 6:"Six"}
+    RoDiRe = random.randint(1,6)
+    DEm = discord.Embed(title = "Dice Roll", description = f'**The Dice Rolled a:** *{RoDiRe} ({NuToLe[RoDiRe]})*', color = 0xfac62d)
+    DEm.set_thumbnail(url = ChORoDi[RoDiRe])
+    await ctx.message.channel.send(embed = DEm)
+
 @DClient.command(name = "log")
 async def UpdLog(ctx):
     LogUps = open("UpdateLog.txt")
     LOggLin = LogUps.read().splitlines()
-    SEm = discord.Embed(title = LOggLin[0], color = 0x000000)
+    SEm = discord.Embed(title = LOggLin[0], color = 0x1f002a)
     LOggLin.pop(0)
     for Logs in LOggLin:
         LogTem = Logs.split(" ")
@@ -211,40 +285,198 @@ async def UpdLog(ctx):
 @DClient.command(name = "makedown")
 @commands.check(ChAdMo)
 @commands.cooldown(1, 1, commands.BucketType.user)
-async def DfManiT(ctx, *args):
+async def DfManiT(ctx):
     global BoDowNFn
     await DClient.change_presence(status = discord.Status.invisible)
     BoDowNFn = True
+    await ctx.message.channel.send("Bot Invisible (Down)")
 
 @DClient.command(name = "makeup")
 @commands.check(ChAdMo)
 @commands.cooldown(1, 1, commands.BucketType.user)
-async def UfManiT(ctx, *args):
+async def UfManiT(ctx):
     global BoDowNFn
     await DClient.change_presence(status = discord.Status.online, activity = discord.Game(random.choice(Doing)))
     BoDowNFn = False
+    await ctx.message.channel.send("Bot Visible (Up)")
 
 @DClient.command(name = "vote")
-@commands.check(ChBot)
 @commands.cooldown(1, 1, commands.BucketType.user)
 async def BotVotF(ctx):
-    SEm = discord.Embed(title = "Voting for ZBot", url = "https://top.gg/bot/768397640140062721/vote", description = "**You can vote once every 12 hours for the following perks**", color = 0x000000)
-    SEm.add_field(name = "*Using instant navigation to page*\n\n*Surfing Reddit and using all sorting formats*\n\n", value = "\u200b", inline = False)
-    SEm.set_footer(text = "THESE PERKS ARE CURRENTLY USEABLE FOR EVERYONE(PERKS WILL BE GIVEN STARTING NEXT WEEK)\n\nThese perks will remain active for 12hrs after voting\n\n**More perks will be added soon**")
+    SEm = discord.Embed(title = "ZBot Patreon", url = "https://top.gg/bot/768397640140062721/vote", description = "**You can vote once every 12 hours for the following perks**", color = 0x000000)
+    SEm.add_field(name = "*-Using instant navigation to page/image/post/tweet*\n*-Surfing Reddit and using all sorting formats*\n*-Using zapod (Astronomy Picture of the Day)*\n\n", value = "\u200b", inline = False)
+    await ctx.message.channel.send(embed = SEm)
+
+@DClient.command(aliases = ["support","bug"])
+@commands.cooldown(1, 1, commands.BucketType.user)
+async def BotVotF(ctx):
+    SEm = discord.Embed(title = "ZBot Official Server", url = "https://discord.gg/V6E6prUBPv", description = "**Report Bugs, Get Support, and Join the Community**", color = 0x000000)
+    await ctx.message.channel.send(embed = SEm)
+
+@DClient.command(name = "patreon")
+@commands.cooldown(1, 1, commands.BucketType.user)
+async def BotPatrF(ctx):
+    SEm = discord.Embed(title = "Voting for ZBot", url = "https://www.patreon.com/ZBotDiscord", description = "**Want to support ZBot's development?**", color = 0x000000)
     await ctx.message.channel.send(embed = SEm)
 
 @DClient.command(aliases = ["ver","version"])
-@commands.check(ChBot)
 @commands.cooldown(1, 1, commands.BucketType.user)
 async def RetVer(ctx):
-    VEm = discord.Embed(title = "Active Version", description = "ZBot build version and info", color = 0xf59542)
+    VEm = discord.Embed(title = "Active Version", description = "ZBot build version and info", color = 0x3695ba)
     VEm.add_field(name = "Dev: ", value = "Kappa", inline = False)
-    VEm.add_field(name = "Version: ", value = "1.2a", inline = False)
+    VEm.add_field(name = "Version: ", value = "1.3a", inline = False)
     VEm.add_field(name = "Release: ", value = "21/11/2020", inline = True)
     await ctx.message.channel.send(embed = VEm)
 
+@DClient.command(name = "fact")
+@commands.cooldown(1, 1, commands.BucketType.user)
+async def GivRaFac(ctx):
+    await ctx.message.channel.send(embed = discord.Embed(title = "Random Fact", description = randfacts.getFact(), color = 0x1f002a))
+
+@DClient.command(name = "dadjoke")
+@commands.cooldown(1, 1, commands.BucketType.user)
+async def GivRaDaJokE(ctx):
+    rEqAla = requests.get("https://icanhazdadjoke.com/", headers = {"Accept": "application/json"})
+    TraTOjS = rEqAla.json()
+    await ctx.message.channel.send(embed = discord.Embed(title = "Random Dad Joke", description = TraTOjS["joke"], color = 0x11d999))
+
+@DClient.command(name = "apod")
+@commands.cooldown(1, 1, commands.BucketType.user)
+async def GeNAapod(ctx):
+    if ChPatreonFu(ctx) or (await TClient.get_user_vote(ctx.author.id)):
+        NaSapod = requests.get("https://api.nasa.gov/planetary/apod?api_key=0dsw3SiQmYCeNnwKZROSQIyrcZqjoDzMBo4ggCwS", headers = {"Accept": "application/json"})
+        MaNaSapodJ = NaSapod.json()
+        if len(MaNaSapodJ["explanation"]) > 1021:
+            NapodteXt = MaNaSapodJ["explanation"][0:1021]
+            NapodteXt = NapodteXt + "..."
+        else:
+            NapodteXt = MaNaSapodJ["explanation"]
+        DEm = discord.Embed(title = MaNaSapodJ["title"], description = f'Date {MaNaSapodJ["date"]}', color = 0xa9775a)
+        DEm.add_field(name = "Explanation:", value = NapodteXt, inline = False)
+        DEm.set_image(url = MaNaSapodJ["hdurl"])
+        await ctx.message.channel.send(embed = DEm)
+    else:
+        TemS = await ctx.message.channel.send("This command is reserved for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
+        await asyncio.sleep(5)
+        await TemS.delete()
+
+@DClient.command(name = "nasa")
+@commands.cooldown(1, 1, commands.BucketType.user)
+async def BGteNasCur(ctx):
+    def MaANasEm(ChImNaCr, IMNuNa, IMgAllT):
+        NEm = discord.Embed(title = "Mars", description = "By: Curiosity Rover (NASA)", color = 0xcd5d2e)
+        NEm.set_thumbnail(url = "https://i.imgur.com/xmSmG0f.jpeg")
+        NEm.add_field(name = "Camera:", value = ChImNaCr[IMNuNa]["camera"]["full_name"], inline = True)
+        NEm.add_field(name = "Taken on:", value = ChImNaCr[IMNuNa]["earth_date"], inline = True)
+        NEm.add_field(name = f'`Image: {IMNuNa+1}/{IMgAllT}`', value = "\u200b", inline = False)
+        NEm.set_image(url = ChImNaCr[IMNuNa]["img_src"])
+        return NEm
+
+    def ChCHEm(RcM, RuS):
+        return RuS.bot == False and RcM.message == NAimSu and str(RcM.emoji) in ["⬅️","❌","➡️","#️⃣"]
+
+    def ChCHEmFN(MSg):
+        MesS = MSg.content.lower()
+        RsT = False
+        try:
+            if int(MSg.content):
+                RsT = True
+        except ValueError:
+            if (MesS == "cancel") or (MesS == "c"):
+                RsT = True
+        return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
+
+    NaSiCr = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=1000&api_key=0dsw3SiQmYCeNnwKZROSQIyrcZqjoDzMBo4ggCwS", headers = {"Accept": "application/json"})
+    MaNasCrJ = NaSiCr.json()
+    ChImNaCr = random.sample(MaNasCrJ["photos"], k = 25)
+    IMgAllT = len(ChImNaCr)
+    IMNuNa = 0
+    NAimSu = await ctx.message.channel.send(embed = MaANasEm(ChImNaCr, IMNuNa, IMgAllT))
+    await NAimSu.add_reaction("⬅️")
+    await NAimSu.add_reaction("❌")
+    await NAimSu.add_reaction("➡️")
+    await NAimSu.add_reaction("#️⃣")
+    while True:
+        try:
+            Res = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 120) 
+            await NAimSu.remove_reaction(Res[0].emoji, Res[1])
+            if Res[0].emoji == "⬅️" and IMNuNa != 0:
+                IMNuNa -= 1
+                await NAimSu.edit(embed = MaANasEm(ChImNaCr, IMNuNa, IMgAllT))
+            elif Res[0].emoji == "➡️":
+                if IMNuNa < IMgAllT-1:
+                    IMNuNa += 1
+                    await NAimSu.edit(embed = MaANasEm(ChImNaCr, IMNuNa, IMgAllT))
+                else:
+                    await NAimSu.edit(embed = MaANasEm(ChImNaCr, IMNuNa, IMgAllT))
+                    await NAimSu.remove_reaction("⬅️", DClient.user)
+                    await NAimSu.remove_reaction("❌", DClient.user)
+                    await NAimSu.remove_reaction("➡️", DClient.user)
+                    await NAimSu.remove_reaction("#️⃣", DClient.user)
+                    break
+            elif Res[0].emoji == "#️⃣":
+                if ChPatreonFu(ctx) or (await TClient.get_user_vote(ctx.author.id)):
+                    TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n(This feature WILL become for voters only next week)\n\n*The Navigation closes automatically after 10sec of inactivity.*')
+                    try:
+                        ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
+                        await TemTw.delete()
+                        await ResE.delete()
+                        try:
+                            try:
+                                pG = int(ResE.content)
+                                if 0 < pG <= IMgAllT-1:
+                                    IMNuNa = pG-1
+                                elif pG < 1:
+                                    IMNuNa = 0
+                                    pass
+                                else:
+                                    IMNuNa = IMgAllT-1 
+                            except TypeError:
+                                pass
+                        except ValueError:
+                            pass
+                        await NAimSu.edit(embed = MaANasEm(ChImNaCr, IMNuNa, IMgAllT))
+                    except asyncio.exceptions.TimeoutError:
+                        await TemTw.edit("Request Timeout")
+                        await asyncio.sleep(5)
+                        await TemTw.delete()
+                else:
+                    TemS = await ctx.message.channel.send("Instant navigation to image is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
+                    await asyncio.sleep(5)
+                    await TemS.delete()
+            elif Res[0].emoji == "❌":
+                await NAimSu.edit(embed = MaANasEm(ChImNaCr, IMNuNa, IMgAllT))
+                await NAimSu.remove_reaction("⬅️", DClient.user)
+                await NAimSu.remove_reaction("❌", DClient.user)
+                await NAimSu.remove_reaction("➡️", DClient.user)
+                await NAimSu.remove_reaction("#️⃣", DClient.user)
+                break
+        except asyncio.TimeoutError:
+            await NAimSu.edit(embed = MaANasEm(ChImNaCr, IMNuNa, IMgAllT))
+            await NAimSu.remove_reaction("⬅️", DClient.user)
+            await NAimSu.remove_reaction("❌", DClient.user)
+            await NAimSu.remove_reaction("➡️", DClient.user)
+            await NAimSu.remove_reaction("#️⃣", DClient.user)
+            break
+
+@DClient.command(aliases = ["color","colour"])
+@commands.cooldown(1, 1, commands.BucketType.user)
+async def MaRaColr(ctx):
+    CrMakImG = numpy.zeros((360, 360, 3), numpy.uint8)
+    R = random.randint(0,255)
+    G = random.randint(0,255)
+    B = random.randint(0,255)
+    CrMakImG[:,0:360] = (B, G, R)  
+    RGhEC = "%02x%02x%02x" % (R,G,B)
+    cv2.imwrite("Color.png", CrMakImG)
+    LiImCo = Imgur.upload_from_path("Color.png")["link"]
+    os.remove("Color.png")
+    ColTEm = discord.Color(value = int(RGhEC, 16))
+    CEm = discord.Embed(title = "Random Color", description = f'```-Hex: #{RGhEC}\n-RGB: ({R},{G},{B})```', color = ColTEm)
+    CEm.set_thumbnail(url = LiImCo)
+    await ctx.message.channel.send(embed = CEm)
+
 @DClient.command(name = "setup")
-@commands.check(ChBot)
 @commands.check(ChAdmin)
 @commands.cooldown(1, 1, commands.BucketType.user)
 async def SMsg(ctx):
@@ -264,7 +496,6 @@ async def SMsg(ctx):
         await ctx.message.channel.send(":partying_face: This server is already setup :partying_face:")
 
 @DClient.command(name = "update")
-@commands.check(ChBot)
 @commands.check(ChSer)
 @commands.check(ChAdmin)
 @commands.cooldown(1, 1, commands.BucketType.user)
@@ -290,7 +521,6 @@ async def SUmsg(ctx):
         await ctx.message.channel.send(":partying_face: This server is already up to date :partying_face:")
 
 @DClient.command(aliases = ["calculate","calc"])
-@commands.check(ChBot)
 @commands.cooldown(1, 1, commands.BucketType.user)
 async def CalCeR(ctx, *args):
     ToCalO = "".join(args)
@@ -311,7 +541,6 @@ async def CalCeR(ctx, *args):
     await ctx.message.channel.send(AnSrsOErAl)
 
 @DClient.command(name = "manga")
-@commands.check(ChBot)
 @commands.cooldown(1, 10, commands.BucketType.guild)
 async def MagMa(ctx, *args):
     def ChCHanS(MSg):
@@ -329,8 +558,8 @@ async def MagMa(ctx, *args):
             Srks = " ".join(args)
             C = 0
             SrchMag = []
-            MnSrS = await ctx.message.channel.send(embed = discord.Embed(title = ":mag: Searching...",  description = "\u200b", color = 0xa49cff))
-            SAEm = discord.Embed(title = f":mag: Results for '{Srks}'",  description = "\u200b", color = 0xa49cff)
+            MnSrS = await ctx.message.channel.send(embed = discord.Embed(title = ":mag: Searching...",  description = "\u200b", color = 0x3695ba))
+            SAEm = discord.Embed(title = f":mag: Results for '{Srks}'",  description = "\u200b", color = 0x3695ba)
             for MagRes in mal.MangaSearch(Srks).results:
                 C += 1
                 SAEm.add_field(name = "\u200b", value = f'{C}. `{MagRes.title}` **({MagRes.type})**', inline = False)
@@ -346,14 +575,14 @@ async def MagMa(ctx, *args):
                 try:
                     if int(ResS.content) <= 10:
                         MagI = SrchMag[int(ResS.content)-1].mal_id
-                        await MnSrS.edit(embed = discord.Embed(title = ":calling: Finding...",  description = f'{SrchMag[int(ResS.content)-1].title} **({SrchMag[int(ResS.content)-1].type})**', color = 0xa49cff)) 
+                        await MnSrS.edit(embed = discord.Embed(title = ":calling: Finding...",  description = f'{SrchMag[int(ResS.content)-1].title} **({SrchMag[int(ResS.content)-1].type})**', color = 0x3695ba)) 
                 except ValueError:
                     if (LResS == "cancel") or (LResS == "c"):
-                        await MnSrS.edit(embed = discord.Embed(title = ":x: Search Cancelled",  description = "\u200b", color = 0xa49cff))
+                        await MnSrS.edit(embed = discord.Embed(title = ":x: Search Cancelled",  description = "\u200b", color = 0x3695ba))
             except asyncio.TimeoutError:
-                await MnSrS.edit(embed = discord.Embed(title = ":hourglass: Search Timeout...",  description = "\u200b", color = 0xa49cff))
+                await MnSrS.edit(embed = discord.Embed(title = ":hourglass: Search Timeout...",  description = "\u200b", color = 0x3695ba))
         except UnboundLocalError:
-            SAEm = discord.Embed(title = f':mag: Search for "{Srks}"',  description = "\u200b", color = 0xa49cff)
+            SAEm = discord.Embed(title = f':mag: Search for "{Srks}"',  description = "\u200b", color = 0x3695ba)
             SAEm.add_field(name = "\u200b", value = "No Results found :woozy_face:", inline = False)
             await MnSrS.edit(embed = SAEm)
 
@@ -363,7 +592,7 @@ async def MagMa(ctx, *args):
             MagG = []
             for TMagG in MagF.genres:
                 MagG.append(TMagG.name)
-            AEm = discord.Embed(title = f'{MagF.title} / {MagF.alternative_titles.ja} **({MagFmal.type})**',  description = f'{", ".join(MagG)}\n[Mal Page]({MagFmal.url})', color = 0xa49cff)
+            AEm = discord.Embed(title = f'{MagF.title} / {MagF.alternative_titles.ja} **({MagFmal.type})**',  description = f'{", ".join(MagG)}\n[Mal Page]({MagFmal.url})', color = 0x3695ba)
             AEm.set_thumbnail(url = MagF.main_picture.large)
             if len(MagF.synopsis) > 1021:
                 MagSyn = MagF.synopsis[0:1021]
@@ -462,7 +691,6 @@ async def MagMa(ctx, *args):
         await ctx.message.channel.send("No Arguments :no_mouth:")
 
 @DClient.command(name = "anime")
-@commands.check(ChBot)
 @commands.cooldown(1, 10, commands.BucketType.guild)
 async def AniMa(ctx, *args):
     def ChCHanS(MSg):
@@ -480,8 +708,8 @@ async def AniMa(ctx, *args):
             Srks = " ".join(args)
             C = 0
             SrchAni = []
-            AnSrS = await ctx.message.channel.send(embed = discord.Embed(title = ":mag: Searching...",  description = "\u200b", color = 0xa49cff))
-            SAEm = discord.Embed(title = f':mag: Results for "{Srks}"',  description = "\u200b", color = 0xa49cff)
+            AnSrS = await ctx.message.channel.send(embed = discord.Embed(title = ":mag: Searching...",  description = "\u200b", color = 0x3fc0ff))
+            SAEm = discord.Embed(title = f':mag: Results for "{Srks}"',  description = "\u200b", color = 0x3fc0ff)
             for AniRes in mal.AnimeSearch(Srks).results:
                 C += 1
                 SAEm.add_field(name = "\u200b", value = f"{C}. `{AniRes.title}` **({AniRes.type})**", inline = False)
@@ -496,14 +724,14 @@ async def AniMa(ctx, *args):
                 try:
                     if int(ResS.content) <= 10:
                         AniI = SrchAni[int(ResS.content)-1].mal_id
-                        await AnSrS.edit(embed = discord.Embed(title = ":calling: Finding...",  description = f'{SrchAni[int(ResS.content)-1].title} **({SrchAni[int(ResS.content)-1].type})**', color = 0xa49cff)) 
+                        await AnSrS.edit(embed = discord.Embed(title = ":calling: Finding...",  description = f'{SrchAni[int(ResS.content)-1].title} **({SrchAni[int(ResS.content)-1].type})**', color = 0x3fc0ff)) 
                 except ValueError:
                     if (LResS == "cancel") or (LResS == "c"):
-                        await AnSrS.edit(embed = discord.Embed(title = ":x: Search Cancelled",  description = "\u200b", color = 0xa49cff))
+                        await AnSrS.edit(embed = discord.Embed(title = ":x: Search Cancelled",  description = "\u200b", color = 0x3fc0ff))
             except asyncio.TimeoutError:
-                await AnSrS.edit(embed = discord.Embed(title = ":hourglass: Search Timeout...",  description = "\u200b", color = 0xa49cff))
+                await AnSrS.edit(embed = discord.Embed(title = ":hourglass: Search Timeout...",  description = "\u200b", color = 0x3fc0ff))
         except UnboundLocalError:
-            SAEm = discord.Embed(title = f':mag: Search for "{Srks}"',  description = "\u200b", color = 0xa49cff)
+            SAEm = discord.Embed(title = f':mag: Search for "{Srks}"',  description = "\u200b", color = 0x3fc0ff)
             SAEm.add_field(name = "\u200b", value = "No Results found :woozy_face:", inline = False)
             await AnSrS.edit(embed = SAEm)
 
@@ -513,7 +741,7 @@ async def AniMa(ctx, *args):
             AniG = []
             for TAniG in AniF.genres:
                 AniG.append(TAniG.name)
-            AEm = discord.Embed(title = f'{AniF.title} / {AniF.alternative_titles.ja} **({AniFmal.type})**',  description = f'{", ".join(AniG)}\n[Mal Page]({AniFmal.url})', color = 0xa49cff)
+            AEm = discord.Embed(title = f'{AniF.title} / {AniF.alternative_titles.ja} **({AniFmal.type})**',  description = f'{", ".join(AniG)}\n[Mal Page]({AniFmal.url})', color = 0x3fc0ff)
             AEm.set_thumbnail(url = AniF.main_picture.large)
             if len(AniF.synopsis) > 1021:
                 AniSyn = AniF.synopsis[0:1021]
@@ -632,7 +860,6 @@ async def AniMa(ctx, *args):
         await ctx.message.channel.send("No Arguments :no_mouth:")
 
 @DClient.command(name = "twitter")
-@commands.check(ChBot)
 @commands.cooldown(1, 5, commands.BucketType.user)
 async def TwttMsSur(ctx, *args):
     def ChCHanS(MSg):
@@ -696,7 +923,7 @@ async def TwttMsSur(ctx, *args):
             except tweepy.error.TweepError:
                 TEmE.add_field(name = "On (By: --Deleted--): ", value = "--Deleted--", inline = False)
             
-        TEmE.set_footer(text = f'{"-"*10}\n\n"Make sure to close the tweet once you are done.\n\nReact with :hash: then type in a page number to instantly navigate to it (voters only).\n\n*Tweet closes automatically after 20sec of inactivity.*"')
+        TEmE.set_footer(text = f'{"-"*10}\n\n"Make sure to close the tweet (with :x:) once you are done.\n\nReact with :hash: then type in a page number to instantly navigate to it (voters only).\n\n*Tweet closes automatically after 20sec of inactivity.*"')
         return TEmE
 
     def ChTwTp(TwExt):
@@ -793,41 +1020,36 @@ async def TwttMsSur(ctx, *args):
                         TwTNum += 1
                         await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt)))
                     elif ReaEm[0].emoji == "#️⃣":
-                        # if FuncMon.CheckIf(Colvt, {"IDd":str(ReaEm[1])}, "TimeVote", time.time, 43200, "LE"):
-                        TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n(This feature WILL become for voters only next week)\n\n*The Navigation closes automatically after 10sec of inactivity.*')
-                        try:
-                            ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
-                            await ResE.delete()
-                            await TemTw.delete()
+                        if ChPatreonFu(ctx) or (await TClient.get_user_vote(ctx.author.id)):
+                            TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n(This feature WILL become for voters only next week)\n\n*The Navigation closes automatically after 10sec of inactivity.*')
                             try:
+                                ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
+                                await ResE.delete()
+                                await TemTw.delete()
                                 try:
-                                    pG = int(ResE.content)
-                                    if 0 < pG <= len(TwExt)-1:
-                                        TwTNum = pG-1
-                                    elif pG < 1:
-                                        TwTNum = 0
+                                    try:
+                                        pG = int(ResE.content)
+                                        if 0 < pG <= len(TwExt)-1:
+                                            TwTNum = pG-1
+                                        elif pG < 1:
+                                            TwTNum = 0
+                                            pass
+                                        else:
+                                            TwTNum = len(TwExt)-1 
+                                    except TypeError:
                                         pass
-                                    else:
-                                        TwTNum = len(TwExt)-1 
-                                except TypeError:
+                                except ValueError:
                                     pass
-                            except ValueError:
-                                pass
-                            await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt)))
-                        except asyncio.TimeoutError:
-                            await TemTw.edit("Request Timeout")
+                                await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt)))
+                            except asyncio.TimeoutError:
+                                await TemTw.edit("Request Timeout")
+                                await asyncio.sleep(5)
+                                await TemTw.delete()
+                        else:
+                            TemS = await ctx.message.channel.send("Instant navigation to tweet is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
                             await asyncio.sleep(5)
-                            await TemTw.delete()
-                        # else:
-                        #     try:
-                        #         DbB = Colvt.find({"IDd":str(ReaEm[1])})
-                        #         for DbG in DbB:
-                        #             Colvt.delete_one(DbG)
-                            # except UnboundLocalError:
-                            #     pass
-                            # TemS = await ctx.message.channel.send("Instant navigation to page is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
-                            # await asyncio.sleep(5)
-                            # await TemS.delete()
+                            await TemS.delete()
+
                     elif ReaEm[0].emoji == "➡️" and len(TwExt) == TwTNum+1:
                         await TwTsL.remove_reaction("⬅️", DClient.user)
                         await TwTsL.remove_reaction("❌", DClient.user)
@@ -852,7 +1074,6 @@ async def TwttMsSur(ctx, *args):
         pass
 
 @DClient.command(name = "hentai")
-@commands.check(ChBot)
 @commands.cooldown(1, 3, commands.BucketType.user)
 async def nHen(ctx, *args):  
     def ChCHanS(MSg):
@@ -984,41 +1205,35 @@ async def nHen(ctx, *args):
                                 await DmSent.remove_reaction("#️⃣", DClient.user)
                                 break
                         elif Res[0].emoji == "#️⃣":
-                            # if FuncMon.CheckIf(Colvt, {"IDd":str(Res[1])}, "TimeVote", time.time, 43200, "LE"):
-                            TempNG = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n(This feature WILL become for voters only next week)\n\n*The Navigation closes automatically after 10sec of inactivity.*')
-                            try:
-                                ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
-                                await TempNG.delete()
-                                await ResE.delete()
+                            if ChPatreonFu(ctx) or (await TClient.get_user_vote(ctx.author.id)):
+                                TempNG = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n(This feature WILL become for voters only next week)\n\n*The Navigation closes automatically after 10sec of inactivity.*')
                                 try:
+                                    ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
+                                    await TempNG.delete()
+                                    await ResE.delete()
                                     try:
-                                        pG = int(ResE.content)
-                                        if 0 < pG <= len(DentAi.image_urls)-1:
-                                            Page = pG-1
-                                        elif pG < 1:
-                                            Page = 0
+                                        try:
+                                            pG = int(ResE.content)
+                                            if 0 < pG <= len(DentAi.image_urls)-1:
+                                                Page = pG-1
+                                            elif pG < 1:
+                                                Page = 0
+                                                pass
+                                            else:
+                                                Page = len(DentAi.image_urls)-1 
+                                        except TypeError:
                                             pass
-                                        else:
-                                            Page = len(DentAi.image_urls)-1 
-                                    except TypeError:
+                                    except ValueError:
                                         pass
-                                except ValueError:
-                                    pass
-                                await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
-                            except asyncio.TimeoutError:
-                                await TempNG.edit("Request Timeout")
+                                    await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
+                                except asyncio.TimeoutError:
+                                    await TempNG.edit("Request Timeout")
+                                    await asyncio.sleep(5)
+                                    await TempNG.delete()
+                            else:
+                                TemS = await ctx.message.channel.send("Instant navigation to page is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
                                 await asyncio.sleep(5)
-                                await TempNG.delete()
-                            # else:
-                            #     try:
-                            #         DbB = Colvt.find({"IDd":str(Res[1])})
-                            #         for DbG in DbB:
-                            #             Colvt.delete_one(DbG)
-                            #     except UnboundLocalError:
-                            #         pass
-                            #     TemS = await ctx.message.channel.send("Instant navigation to page is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
-                            #     await asyncio.sleep(5)
-                            #     await TemS.delete()
+                                await TemS.delete()
                         elif Res[0].emoji == "❌":
                             await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
                             await DmSent.remove_reaction("⬅️", DClient.user)
@@ -1038,7 +1253,6 @@ async def nHen(ctx, *args):
         await ctx.message.channel.send("No arguments :no_mouth:")
 
 @DClient.command(name = "covid")
-@commands.check(ChBot)
 @commands.cooldown(1, 3, commands.BucketType.guild)
 async def CovSt(ctx, *args):
     if args:
@@ -1074,7 +1288,6 @@ async def CovSt(ctx, *args):
     await ctx.message.channel.send(embed = CEm)
 
 @DClient.command(name = "reddit")
-@commands.check(ChBot)
 @commands.cooldown(1, 3, commands.BucketType.user)
 async def SrSub(ctx, *args):
     def EmbOri(REm, Type, SubCpoS):
@@ -1121,11 +1334,11 @@ async def SrSub(ctx, *args):
                     REm = discord.Embed(title = "***NOT NSFW CHANNEL***",  description = "Post is NSFW", color = 0x8b0000)
                 NSfw = True
                 if Type == "S":
-                    REm.add_field(name = f'`Page: {CRposNum+1}/{CPosTo}`', value = "\u200b", inline = True)
+                    REm.add_field(name = f'`Post: {CRposNum+1}/{CPosTo}`', value = "\u200b", inline = True)
             else:
                 REm = discord.Embed(title = FtiTle, description = f'Upvote Ratio: {SubCpoS.upvote_ratio} // Post is Clean', color = 0x8b0000)
                 if Type == "S":
-                    REm.add_field(name = f'`Page: {CRposNum+1}/{CPosTo}`', value = "\u200b", inline = True)
+                    REm.add_field(name = f'`Post: {CRposNum+1}/{CPosTo}`', value = "\u200b", inline = True)
             C = 0
             if (NSfw and ctx.channel.is_nsfw()) or (NSfw == False):
                 try:
@@ -1164,7 +1377,7 @@ async def SrSub(ctx, *args):
                                 REm.add_field(name = "Media Preview Unavailable. Sorry!!", value = '\u200b')
             else:
                 REm.add_field(name = "NSFW: ", value = "This isn't an NSFW channel. No NSFW allowed here.", inline = False)
-        REm.set_footer(text = f'From r/{ConTtE}')
+        REm.set_footer(text = f'From r/{ConTtE}{"-"*10}\n{"-"*10}\n"Make sure to close the tweet (with :x:) once you are done.\n\nReact with :hash: then type in a page number to instantly navigate to it (voters only).\n\n*Tweet closes automatically after 20sec of inactivity.*')
         REm.set_author(name = f'*By u/{SubCpoS.author}*')
         return REm
 
@@ -1212,155 +1425,144 @@ async def SrSub(ctx, *args):
     elif len(args) == 2:
         ContT = (" ".join(args)).split(" ")
         if ContT[0].lower() == "surf":
-            # if FuncMon.CheckIf(Colvt, {"IDd":str(ctx.author.id)}, "TimeVote", time.time, 43200, "LE"):
-            if CheckSub(ContT[1]): 
-                KraPosS = await ctx.message.channel.send(embed = discord.Embed(title = "How would you like to sort the subreddit?", description = "🔝 to sort by top.\n📈 to sort by rising.\n🔥 to sort by hot.\n📝 to sort by new.\n❌ to cancel", footer = "This timesout in 10s"))
-                await KraPosS.add_reaction("🔝")
-                await KraPosS.add_reaction("📈")
-                await KraPosS.add_reaction("🔥")
-                await KraPosS.add_reaction("📝")
-                await KraPosS.add_reaction("❌")
-                try:
-                    ResIni = await DClient.wait_for("reaction_add", check = ChCHEmCH, timeout = 10)
-                    if ResIni[0].emoji != "🔝":
-                        await KraPosS.edit(embed = discord.Embed(title = "Getting Posts"))
-                        await KraPosS.remove_reaction("❌", DClient.user)
-                    await KraPosS.remove_reaction(ResIni[0].emoji, ResIni[1])
-                    await KraPosS.remove_reaction("🔝", DClient.user)
-                    await KraPosS.remove_reaction("📝", DClient.user)
-                    await KraPosS.remove_reaction("📈", DClient.user)
-                    await KraPosS.remove_reaction("🔥", DClient.user)
-                    
-                    if ResIni[0].emoji == "❌":
-                        await KraPosS.delete()
-                    elif ResIni[0].emoji == "📝":
-                        Post = Reddit.subreddit(ContT[1]).new()
-                    elif ResIni[0].emoji == "🔥":
-                        Post = Reddit.subreddit(ContT[1]).hot()
-                    elif ResIni[0].emoji == "📈":
-                        Post = Reddit.subreddit(ContT[1]).rising()
-                    elif ResIni[0].emoji == "🔝":
-                        await KraPosS.edit(embed = discord.Embed(title = "How would you like to sort by top?", description = "🌍 to sort by top all time.\n📅 to sort by top this month.\n🗓️ to sort by top today.\n❌ to cancel", footer = "This timesout in 10s"))
-                        await KraPosS.add_reaction("🌍")
-                        await KraPosS.add_reaction("📅")
-                        await KraPosS.add_reaction("🗓️")
-                        ResIniT = await DClient.wait_for("reaction_add", check = ChCHEmCHT, timeout = 10)
-                        await KraPosS.remove_reaction(ResIniT[0].emoji, ResIniT[1])
-                        await KraPosS.edit(embed = discord.Embed(title = "Getting Posts"))
-                        await KraPosS.remove_reaction("❌", DClient.user)
-                        await KraPosS.remove_reaction("🌍", DClient.user)
-                        await KraPosS.remove_reaction("📅", DClient.user)
-                        await KraPosS.remove_reaction("🗓️", DClient.user)
-                        if ResIniT[0].emoji == "❌":
+            if ChPatreonFu(ctx) or (await TClient.get_user_vote(ctx.author.id)):
+                if CheckSub(ContT[1]): 
+                    KraPosS = await ctx.message.channel.send(embed = discord.Embed(title = "How would you like to sort the subreddit?", description = "🔝 to sort by top.\n📈 to sort by rising.\n🔥 to sort by hot.\n📝 to sort by new.\n❌ to cancel", footer = "This timesout in 10s"))
+                    await KraPosS.add_reaction("🔝")
+                    await KraPosS.add_reaction("📈")
+                    await KraPosS.add_reaction("🔥")
+                    await KraPosS.add_reaction("📝")
+                    await KraPosS.add_reaction("❌")
+                    try:
+                        ResIni = await DClient.wait_for("reaction_add", check = ChCHEmCH, timeout = 10)
+                        if ResIni[0].emoji != "🔝":
+                            await KraPosS.edit(embed = discord.Embed(title = "Getting Posts"))
+                            await KraPosS.remove_reaction("❌", DClient.user)
+                        await KraPosS.remove_reaction(ResIni[0].emoji, ResIni[1])
+                        await KraPosS.remove_reaction("🔝", DClient.user)
+                        await KraPosS.remove_reaction("📝", DClient.user)
+                        await KraPosS.remove_reaction("📈", DClient.user)
+                        await KraPosS.remove_reaction("🔥", DClient.user)
+                        
+                        if ResIni[0].emoji == "❌":
                             await KraPosS.delete()
                             return
-                        elif ResIniT[0].emoji == "🌍":
-                            Post = Reddit.subreddit(ContT[1]).top("all")
-                        elif ResIniT[0].emoji == "📅":
-                            Post = Reddit.subreddit(ContT[1]).top("month")
-                        elif ResIniT[0].emoji == "🗓️":
-                            Post = Reddit.subreddit(ContT[1]).top("day")
-                except asyncio.TimeoutError:
-                    await KraPosS.edit(embed = discord.Embed(title = "Timeout"))
-                    await asyncio.sleep(5)
-                    await KraPosS.delete()
-                    return
-                                
-                SubCpoS = []
-                CPosTo = 0
-                for SuTPos in Post:
-                    CPosTo += 1
-                    if not SuTPos.stickied:
-                        SubCpoS.append(SuTPos)
-                if CPosTo == 0:
-                    await ctx.message.channel.send("No posts on that subreddit :no_mouth:")
-                    return              
-                KraPosS = await ctx.message.channel.send(embed = GetMaSPos(SubCpoS[0], ContT[1], "S", 0, CPosTo))
-                CRposNum = 0
-                await KraPosS.add_reaction("⬅️")
-                await KraPosS.add_reaction("❌")
-                await KraPosS.add_reaction("➡️")
-                await KraPosS.add_reaction("#️⃣")
-                while True:
-                    try:
-                        Res = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 120) 
-                        await KraPosS.remove_reaction(Res[0].emoji, Res[1])
-                        if Res[0].emoji == "⬅️" and CRposNum != 0:
-                            CRposNum -= 1
-                            await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
-                        elif Res[0].emoji == "➡️":
-                            if CRposNum < CPosTo-1:
-                                CRposNum += 1
+                        elif ResIni[0].emoji == "📝":
+                            Post = Reddit.subreddit(ContT[1]).new()
+                        elif ResIni[0].emoji == "🔥":
+                            Post = Reddit.subreddit(ContT[1]).hot()
+                        elif ResIni[0].emoji == "📈":
+                            Post = Reddit.subreddit(ContT[1]).rising()
+                        elif ResIni[0].emoji == "🔝":
+                            await KraPosS.edit(embed = discord.Embed(title = "How would you like to sort by top?", description = "🌍 to sort by top all time.\n📅 to sort by top this month.\n🗓️ to sort by top today.\n❌ to cancel", footer = "This timesout in 10s"))
+                            await KraPosS.add_reaction("🌍")
+                            await KraPosS.add_reaction("📅")
+                            await KraPosS.add_reaction("🗓️")
+                            ResIniT = await DClient.wait_for("reaction_add", check = ChCHEmCHT, timeout = 10)
+                            await KraPosS.remove_reaction(ResIniT[0].emoji, ResIniT[1])
+                            await KraPosS.edit(embed = discord.Embed(title = "Getting Posts"))
+                            await KraPosS.remove_reaction("❌", DClient.user)
+                            await KraPosS.remove_reaction("🌍", DClient.user)
+                            await KraPosS.remove_reaction("📅", DClient.user)
+                            await KraPosS.remove_reaction("🗓️", DClient.user)
+                            if ResIniT[0].emoji == "❌":
+                                await KraPosS.delete()
+                                return
+                            elif ResIniT[0].emoji == "🌍":
+                                Post = Reddit.subreddit(ContT[1]).top("all")
+                            elif ResIniT[0].emoji == "📅":
+                                Post = Reddit.subreddit(ContT[1]).top("month")
+                            elif ResIniT[0].emoji == "🗓️":
+                                Post = Reddit.subreddit(ContT[1]).top("day")
+                    except asyncio.TimeoutError:
+                        await KraPosS.edit(embed = discord.Embed(title = "Timeout"))
+                        await asyncio.sleep(5)
+                        await KraPosS.delete()
+                        return
+                                    
+                    SubCpoS = []
+                    CPosTo = 0
+                    for SuTPos in Post:
+                        CPosTo += 1
+                        if not SuTPos.stickied:
+                            SubCpoS.append(SuTPos)
+                    if CPosTo == 0:
+                        await ctx.message.channel.send("No posts on that subreddit :no_mouth:")
+                        return              
+                    KraPosS = await ctx.message.channel.send(embed = GetMaSPos(SubCpoS[0], ContT[1], "S", 0, CPosTo))
+                    CRposNum = 0
+                    await KraPosS.add_reaction("⬅️")
+                    await KraPosS.add_reaction("❌")
+                    await KraPosS.add_reaction("➡️")
+                    await KraPosS.add_reaction("#️⃣")
+                    while True:
+                        try:
+                            Res = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 120) 
+                            await KraPosS.remove_reaction(Res[0].emoji, Res[1])
+                            if Res[0].emoji == "⬅️" and CRposNum != 0:
+                                CRposNum -= 1
                                 await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
-                            else:
+                            elif Res[0].emoji == "➡️":
+                                if CRposNum < CPosTo-1:
+                                    CRposNum += 1
+                                    await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
+                                else:
+                                    await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
+                                    await KraPosS.remove_reaction("⬅️", DClient.user)
+                                    await KraPosS.remove_reaction("❌", DClient.user)
+                                    await KraPosS.remove_reaction("➡️", DClient.user)
+                                    await KraPosS.remove_reaction("#️⃣", DClient.user)
+                                    break
+                            elif Res[0].emoji == "#️⃣":
+                                if ChPatreonFu(ctx) or (await TClient.get_user_vote(ctx.author.id)):
+                                    TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n(This feature WILL become for voters only next week)\n\n*The Navigation closes automatically after 10sec of inactivity.*')
+                                    try:
+                                        ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
+                                        await TemTw.delete()
+                                        await ResE.delete()
+                                        try:
+                                            try:
+                                                pG = int(ResE.content)
+                                                if 0 < pG <= CPosTo-1:
+                                                    CRposNum = pG-1
+                                                elif pG < 1:
+                                                    CRposNum = 0
+                                                    pass
+                                                else:
+                                                    CRposNum = CPosTo-1 
+                                            except TypeError:
+                                                pass
+                                        except ValueError:
+                                            pass
+                                        await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
+                                    except asyncio.exceptions.TimeoutError:
+                                        await TemTw.edit("Request Timeout")
+                                        await asyncio.sleep(5)
+                                        await TemTw.delete()
+                                else:
+                                    TemS = await ctx.message.channel.send("Instant navigation to post is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
+                                    await asyncio.sleep(5)
+                                    await TemS.delete()
+                            elif Res[0].emoji == "❌":
                                 await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
                                 await KraPosS.remove_reaction("⬅️", DClient.user)
                                 await KraPosS.remove_reaction("❌", DClient.user)
                                 await KraPosS.remove_reaction("➡️", DClient.user)
                                 await KraPosS.remove_reaction("#️⃣", DClient.user)
                                 break
-                        elif Res[0].emoji == "#️⃣":
-                            # if FuncMon.CheckIf(Colvt, {"IDd":str(Res[1])}, "TimeVote", time.time, 43200, "LE"):
-                            TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n(This feature WILL become for voters only next week)\n\n*The Navigation closes automatically after 10sec of inactivity.*')
-                            try:
-                                ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
-                                await TemTw.delete()
-                                await ResE.delete()
-                                try:
-                                    try:
-                                        pG = int(ResE.content)
-                                        if 0 < pG <= CPosTo-1:
-                                            CRposNum = pG-1
-                                        elif pG < 1:
-                                            CRposNum = 0
-                                            pass
-                                        else:
-                                            CRposNum = CPosTo-1 
-                                    except TypeError:
-                                        pass
-                                except ValueError:
-                                    pass
-                                await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
-                            except asyncio.exceptions.TimeoutError:
-                                await TemTw.edit("Request Timeout")
-                                await asyncio.sleep(5)
-                                await TemTw.delete()
-                            # else:
-                            #     try:
-                            #         DbB = Colvt.find({"IDd":str(Res[1])})
-                            #         for DbG in DbB:
-                            #             Colvt.delete_one(DbG)
-                            #     except UnboundLocalError:
-                            #         pass
-                            #     TemS = await ctx.message.channel.send("Instant navigation to CRposNum is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
-                            #     await asyncio.sleep(5)
-                            #     await TemS.delete()
-                        elif Res[0].emoji == "❌":
+                        except asyncio.TimeoutError:
                             await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
                             await KraPosS.remove_reaction("⬅️", DClient.user)
                             await KraPosS.remove_reaction("❌", DClient.user)
                             await KraPosS.remove_reaction("➡️", DClient.user)
                             await KraPosS.remove_reaction("#️⃣", DClient.user)
                             break
-                    except asyncio.TimeoutError:
-                        await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
-                        await KraPosS.remove_reaction("⬅️", DClient.user)
-                        await KraPosS.remove_reaction("❌", DClient.user)
-                        await KraPosS.remove_reaction("➡️", DClient.user)
-                        await KraPosS.remove_reaction("#️⃣", DClient.user)
-                        break
+                else:
+                    await ctx.message.channel.send("Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)")
             else:
-                await ctx.message.channel.send("Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)")
-            # else:
-            #     try:
-            #         DbB = Colvt.find({"IDd":str(Res[1])})
-            #         for DbG in DbB:
-            #             Colvt.delete_one(DbG)
-            #     except UnboundLocalError:
-            #         pass
-            #     TemS = await ctx.message.channel.send("Instant navigation to CRposNum is only for voters. Vote [here](https://top.gg/bot/768397640140062721/vote) .\n:robot: zvote to learn more. :robot:")
-            #     await asyncio.sleep(5)
-            #     await TemS.delete()
+                TemS = await ctx.message.channel.send("This command is reserved for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
+                await asyncio.sleep(5)
+                await TemS.delete()
         else:
             await ctx.message.channel.send("Too many arguments or not surf command :no_mouth:")
     elif len(args) == 0:
@@ -1370,7 +1572,6 @@ async def SrSub(ctx, *args):
         await ctx.message.channel.send("Too many arguments :no_mouth:")
 
 @DClient.command(name = "add")
-@commands.check(ChBot)
 @commands.check(ChAdmin)
 @commands.check(ChSer)
 @commands.cooldown(1, 1, commands.BucketType.user)
@@ -1384,7 +1585,6 @@ async def AWord(ctx, *args):
     await ctx.message.channel.send(Msg)
 
 @DClient.command(aliases = ["rem","remove"])
-@commands.check(ChBot)
 @commands.check(ChAdmin)
 @commands.check(ChSer)
 @commands.cooldown(1, 1, commands.BucketType.user)
@@ -1398,7 +1598,6 @@ async def RWord(ctx, *args):
     await ctx.message.channel.send(Msg)  
 
 @DClient.command(name = "list")
-@commands.check(ChBot)
 @commands.check(ChSer)
 @commands.cooldown(1, 1, commands.BucketType.user)
 async def LWord(ctx):
@@ -1416,7 +1615,6 @@ async def LWord(ctx):
     await ctx.message.channel.send(embed = LEm)     
 
 @DClient.command(name = "remind")
-@commands.check(ChBot)
 @commands.cooldown(1, 1, commands.BucketType.user)
 async def RmdAtDMY(ctx, *args):
     def TtWaT(Day, Hour, Min, Sec):
@@ -1470,7 +1668,6 @@ async def RmdAtDMY(ctx, *args):
         await ctx.message.channel.send("No arguments given :no_mouth:")
 
 @DClient.command(name = "reset")
-@commands.check(ChBot)
 @commands.check(ChAdmin)
 @commands.check(ChSer)
 @commands.cooldown(1, 1, commands.BucketType.user)
@@ -1501,7 +1698,6 @@ async def ReAll(ctx):
         await ReSConF.edit(embed = discord.Embed(title = "Timeout :alarm_clock:", description = "Nothing was removed", color = 0xf59542))
 
 @DClient.command(name = "top")
-@commands.check(ChBot)
 @commands.check(ChSer)
 @commands.cooldown(1, 1, commands.BucketType.user)
 async def ToTMsg(ctx, *args):
@@ -1556,7 +1752,6 @@ async def ToTMsg(ctx, *args):
         await SrtI.edit(embed = discord.Embed(title = "That word doesnt exist yet :confused:",  description = "\u200b", color = 0x3252a8))
 
 @DClient.command(name = "total")
-@commands.check(ChBot)
 @commands.check(ChSer)
 @commands.cooldown(1, 1, commands.BucketType.user)
 async def TMsg(ctx, *args):
@@ -1593,7 +1788,6 @@ async def TMsg(ctx, *args):
         await ctx.message.channel.send("That word doesnt exist yet :confused:")
 
 @DClient.command(name = "pdf")
-@commands.check(ChBot)
 @commands.cooldown(1, 5, commands.BucketType.user)
 async def PdSwtOI(ctx, *args):
     def EmbTI(NfIRa, ImGCns, NpIMg, SImAUp, Extra = "Make sure to close the PDF once you are done .\n\n*PDF closes automatically after 2mins of inactivity.*"):
@@ -1735,7 +1929,6 @@ async def PdSwtOI(ctx, *args):
         await ctx.message.channel.send("No or too many attachments :woozy_face:")
 
 @DClient.command(name = "stats")
-@commands.check(ChBot)
 @commands.check(ChSer)
 @commands.cooldown(1, 1, commands.BucketType.user)
 async def IMsg(ctx, *args): 
@@ -1747,8 +1940,6 @@ async def IMsg(ctx, *args):
             aRGu.pop(0)
         elif ctx.message.mentions[0].bot == True:
             isBot = True
-        else:
-            pass
     else:
         AUmN = ctx.author
         aRGu = list(args)
@@ -1798,7 +1989,6 @@ async def Gfin(ctx, *args):
         await ctx.message.channel.send("No search term given :confused:")
 
 @DClient.command(name = "fry")
-@commands.check(ChBot)
 @commands.cooldown(1, 1, commands.BucketType.user)
 async def CMsend(ctx, *args):
     if len(ctx.message.attachments) > 0 or args:
@@ -1896,11 +2086,6 @@ async def on_member_join(member):
                 Kyes = i.keys()
             for Wp in Kyes:
                 FuncMon.DbAdd(Col, {"IDd":str(Pid.id),"IDg":str(member.guild.id)}, Wp, 0)
-
-# @DClient.command(name = "nigger")
-# async def wdGfin(ctx):
-#     print("hi")
-#     print(await TClient.get_user_vote(ctx.author.id))
 
 @DClient.event
 async def on_member_remove(member):
