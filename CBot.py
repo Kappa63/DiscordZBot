@@ -356,9 +356,7 @@ async def GeNAapod(ctx):
         DEm.set_image(url = MaNaSapodJ["hdurl"])
         await ctx.message.channel.send(embed = DEm)
     else:
-        TemS = await ctx.message.channel.send("This command is reserved for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/join/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
-        await asyncio.sleep(5)
-        await TemS.delete()
+        TemS = await ctx.message.channel.send("This command is reserved for voters or Patreon Supporters. \n:robot: zvote or zpatreon to learn more. :robot:")
 
 @DClient.command(name = "nasa")
 @commands.cooldown(1, 1, commands.BucketType.user)
@@ -441,7 +439,7 @@ async def BGteNasCur(ctx):
                         await asyncio.sleep(5)
                         await TemTw.delete()
                 else:
-                    TemS = await ctx.message.channel.send("Instant navigation to image is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/join/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
+                    TemS = await ctx.message.channel.send("Instant navigation to image is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/join/ZBotDiscord) .\n:robot: zvote to learn more. :robot:")
                     await asyncio.sleep(5)
                     await TemS.delete()
             elif Res[0].emoji == "❌":
@@ -1046,7 +1044,7 @@ async def TwttMsSur(ctx, *args):
                                 await asyncio.sleep(5)
                                 await TemTw.delete()
                         else:
-                            TemS = await ctx.message.channel.send("Instant navigation to tweet is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/join/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
+                            TemS = await ctx.message.channel.send("Instant navigation to tweet is only for voters or Patreon Supporters. \n:robot: zvote or zpatreon to learn more. :robot:")
                             await asyncio.sleep(5)
                             await TemS.delete()
 
@@ -1231,7 +1229,7 @@ async def nHen(ctx, *args):
                                     await asyncio.sleep(5)
                                     await TempNG.delete()
                             else:
-                                TemS = await ctx.message.channel.send("Instant navigation to page is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/join/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
+                                TemS = await ctx.message.channel.send("Instant navigation to page is only for voters or Patreon Supporters. \n:robot: zvote or zpatreon to learn more. :robot:")
                                 await asyncio.sleep(5)
                                 await TemS.delete()
                         elif Res[0].emoji == "❌":
@@ -1540,7 +1538,7 @@ async def SrSub(ctx, *args):
                                         await asyncio.sleep(5)
                                         await TemTw.delete()
                                 else:
-                                    TemS = await ctx.message.channel.send("Instant navigation to post is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/join/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
+                                    TemS = await ctx.message.channel.send("Instant navigation to post is only for voters or Patreon Supporters. \n:robot: zvote or zpatreon to learn more. :robot:")
                                     await asyncio.sleep(5)
                                     await TemS.delete()
                             elif Res[0].emoji == "❌":
@@ -1560,7 +1558,7 @@ async def SrSub(ctx, *args):
                 else:
                     await ctx.message.channel.send("Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)")
             else:
-                TemS = await ctx.message.channel.send("This command is reserved for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/join/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
+                TemS = await ctx.message.channel.send("This command is reserved for voters or Patreon Supporters. \n:robot: zvote or zpatreon to learn more. :robot:")
                 await asyncio.sleep(5)
                 await TemS.delete()
         else:
@@ -1904,7 +1902,7 @@ async def PdSwtOI(ctx, *args):
                                         SImAUp.append(ImFA)
                                     await PcEm.edit(embed = PcEmE)
                                 else:
-                                    TemS = await ctx.message.channel.send("Instant navigation to page is only for voters or Patreon Supporters. Vote [here](https://top.gg/bot/768397640140062721/vote) or become a patreon and never vote again [here](https://www.patreon.com/join/ZBotDiscord).\n:robot: zvote to learn more. :robot:")
+                                    TemS = await ctx.message.channel.send("Instant navigation to page is only for voters or Patreon Supporters. \n:robot: zvote or zpatreon to learn more. :robot:")
                                     await asyncio.sleep(5)
                                     await TemS.delete()
                             elif ReaEm[0].emoji == "❌":
