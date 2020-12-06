@@ -113,6 +113,12 @@ async def ChBot(ctx):
         raise IsBot("Bot")
     return True
 
+class ProfSer(commands.CheckFailure):
+    pass
+
+class IsAdmin(commands.CheckFailure):
+    pass
+
 class IsVote(commands.CheckFailure):
     pass
 async def ChVote(ctx):
@@ -166,92 +172,7 @@ def ChAdMo(ctx):
     if ctx.author.id == 443986051371892746:
         return True
     raise Ignore("Ignore")
-
-class IsAdmin(commands.CheckFailure):
-    pass
-def ChAdmin(ctx):
-    if ctx.author.guild_permissions.administrator:
-        return True
-    raise IsAdmin("Normie")
-
-class ProfSer(commands.CheckFailure):
-    pass
-def ChSer(ctx):
-    if (Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) != 0):
-        return True
-    raise ProfSer("Unready")
-
-@DClient.command(name = "help")
-@commands.cooldown(1, 1, commands.BucketType.user)
-async def SendH(ctx, *args):
-    if "".join(args) == "" or "".join(args) == " ":
-        HEm = discord.Embed(title = "**ZBot Help**", description = "\u200b", color = 0x0af531)
-        HEm.add_field(name = "zversion: ", value = "Checks the current running version of ZBot", inline = False)
-        HEm.add_field(name = "zvote: ", value = "To vote for ZBot", inline = False)
-        HEm.add_field(name = "zlog: ", value = "Shows the latest update's update log", inline = False)
-        HEm.add_field(name = "zhelp server: ", value = "Provides all the server commands (including word track commands)", inline = False) 
-        HEm.add_field(name = "zhelp reddit: ", value = "The Reddit Commands", inline = False)  
-        HEm.add_field(name = "zhelp twitter: ", value = "The Twitter Commands", inline = False)   
-        HEm.add_field(name = "zhelp anime: ", value = "The Anime Commands", inline = False)
-        HEm.add_field(name = "zhelp covid: ", value = "The Covid-19 Commands", inline = False)   
-        HEm.add_field(name = "zhelp misc: ", value = "The Miscellaneous Commands", inline = False)
-        HEm.add_field(name = "Links: ", value = "[Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord) / [Vote](https://top.gg/bot/768397640140062721/vote)")   
-        await ctx.message.channel.send(embed = HEm)
-    elif "".join(args).lower()  == "server":
-        HEm = discord.Embed(title = "**ZBot Server Help**", description = "\u200b", color = 0x0af531)
-        HEm.add_field(name = "zsetup: ", value = "Sets up the bot for the first time for counting/tracking", inline = False)
-        HEm.add_field(name = "zupdate: ", value = "This is used to add members that join when the bot is down.", inline = False)
-        HEm.add_field(name = "zadd: ", value = "Adds a word/phrase to keep track of", inline = False)
-        HEm.add_field(name = "zremove: ", value = "Removes an existing word/phrase being tracked", inline = False)
-        HEm.add_field(name = "zlist: ", value = "Returns all added words/phrases", inline = False)
-        HEm.add_field(name = "zstats (@) (Word): ", value = "Returns stats for word(s)/phrase(s)", inline = False)
-        HEm.add_field(name = "ztotal (Word): ", value = "Returns the total number of times word(s)/phrase(s) have been said on server", inline = False)
-        HEm.add_field(name = "ztop (Word): ", value = "Returns the top 3 number of times word(s)/phrase(s) have been said on server", inline = False)
-        HEm.add_field(name = "zreset: ", value = "Reset everything, AKA remove ALL info(this is irreversable)", inline = False)
-        HEm.set_footer(text = "Note: Counting is limited to 10 per Message to reduce spam incentives")
-        await ctx.message.channel.send(embed = HEm)
-    elif "".join(args).lower() == "reddit":
-        HEm = discord.Embed(title = "**ZBot Reddit Help**", description = "\u200b", color = 0x0af531)
-        HEm.add_field(name = "zreddit (Subreddit Name): ", value = "Returns a RANDOM post from the top 100 posts in hot from any subreddit", inline = False)
-        HEm.add_field(name = "zreddit surf (Subreddit Name): ", value = "Returns the 100 posts of a subreddit sorted in any format (Voters and Patreons ONLY)", inline = False)
-        await ctx.message.channel.send(embed = HEm)
-    elif "".join(args).lower() == "covid":
-        HEm = discord.Embed(title = "**ZBot Covid-19 Help**", description = "\u200b", color = 0x0af531)
-        HEm.add_field(name = "zcovid: ", value = "Returns the worldwide status of Covid-19", inline = False)
-        HEm.add_field(name = "zcovid (Country): ", value = "Returns the status of Covid-19 in country", inline = False)
-        await ctx.message.channel.send(embed = HEm)
-    elif "".join(args).lower() == "twitter":
-        HEm = discord.Embed(title = "**ZBot Twitter Help**", description = "\u200b", color = 0x0af531)
-        HEm.add_field(name = "ztwitter (User @): ", value = "Returns the user profile and 20 of their latest tweets", inline = False)
-        HEm.add_field(name = "ztwitter search (Username): ", value = "Searches for 10 users related to search argument", inline = False)
-        await ctx.message.channel.send(embed = HEm)
-    elif "".join(args).lower() == "anime":
-        HEm = discord.Embed(title = "**ZBot Anime Help**", description = "\u200b", color = 0x0af531)
-        HEm.add_field(name = "zanime (Anime Name): ", value = "Searches for anime and returns all the info about chosen one", inline = False)
-        HEm.add_field(name = "zmanga (Manga Name): ", value = "Searches for manga and returns all the info about chosen one", inline = False)
-        HEm.add_field(name = "zhentai (Magic Numbers): ", value = "Gets doujin from nhentai using magic numbers (NSFW)", inline = False)
-        HEm.add_field(name = "zhentai random: ", value = "Gets a random doujin from nhentai (NSFW)", inline = False)
-        HEm.add_field(name = "zhentai search (Doujin Name): ", value = "Searches for the 10 most popular doujin (NSFW)", inline = False)
-        await ctx.message.channel.send(embed = HEm)
-    elif "".join(args).lower() == "misc" or "".join(args).lower() == "misc." or "".join(args).lower() == "miscellaneous":
-        HEm = discord.Embed(title = "**ZBot Misc. Help**", description = "\u200b", color = 0x0af531)
-        HEm.add_field(name = "zremind (Arguments): ", value = 'Pings you after time is over. Arguments are a number followed by d, h, m, or s for days, hours, minutes, seconds respectively.(Ex. "zremind 2d 3h 52m 14s" is a remind after 2days 3hours 52minutes and 14seconds)', inline = False)
-        HEm.add_field(name = "zfry (Image Attachment/Image Url): ", value = "Deep fries the image", inline = False)
-        HEm.add_field(name = "zfry profile (@): ", value = "Deep fries the avatar", inline = False)
-        HEm.add_field(name = "zpdf (PDF Attachment/PDF Url): ", value = "Views the PDF's first 40 pages", inline = False)
-        HEm.add_field(name = "zcalc (Input): ", value = "Calculates and returns", inline = False)
-        HEm.add_field(name = "zcolor: ", value = "Returns a RANDOM color with its HEX and RGB color codes", inline = False)
-        HEm.add_field(name = "zfact: ", value = "Returns a random fun fact", inline = False)
-        HEm.add_field(name = "zapod: ", value = "Astronomy Picture of the Day (Voters and Patreons ONLY)", inline = False)
-        HEm.add_field(name = "znasa: ", value = "Random mars images by NASA's Curiosity rover", inline = False)
-        HEm.add_field(name = "zdadjoke: ", value = "Returns a random dad joke", inline = False)
-        HEm.add_field(name = "zroll: ", value = "Rolls a dice", inline = False)
-        HEm.add_field(name = "zgiphy (Phrase/Word to search for): ", value = "Returns a RANDOM gif from top 50 results on giphy", inline = False)
-        HEm.set_footer(text = "Notes: -zremind is limited to 1day max.\n-zremind could sometimes fail to notify you due to the bot going down. So dont rely on it entirely.\n-During testing recovered data from zcovid was extremely inaccurate.\n-Some hentai are not available. This is to abide by the discord TOS.")
-        await ctx.message.channel.send(embed = HEm)
-    else:
-        await ctx.message.channel.send("That help category doesn't exist.")
-
+    
 @DClient.command(name = "checkzbot")
 @commands.check(ChAdMo)
 async def BotSttSF(ctx):
@@ -473,50 +394,6 @@ async def MaRaColr(ctx):
     CEm = discord.Embed(title = "Random Color", description = f'```-Hex: #{RGhEC}\n-RGB: ({R},{G},{B})```', color = ColTEm)
     CEm.set_thumbnail(url = LiImCo)
     await ctx.message.channel.send(embed = CEm)
-
-@DClient.command(name = "setup")
-@commands.check(ChAdmin)
-@commands.cooldown(1, 1, commands.BucketType.user)
-async def SMsg(ctx):
-    if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) == 0:
-        Col.insert_one({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"})
-        for Pid in ctx.guild.members:
-            if Pid.bot == False:
-                if Col.count_documents({"IDd":str(Pid.id),"IDg":str(ctx.guild.id)}) == 0:
-                    Col.insert_one({"IDd":str(Pid.id),"IDg":str(ctx.guild.id)})
-                    DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
-                    for i in DbB:
-                        Kyes = i.keys()    
-                    for Wp in Kyes:
-                        FuncMon.DbAdd(Col, {"IDd":str(Pid.id),"IDg":str(ctx.guild.id)}, Wp, 0)
-        await ctx.message.channel.send(":partying_face: Setup complete, you can now use tracking commands :partying_face:")
-    else:
-        await ctx.message.channel.send(":partying_face: This server is already setup :partying_face:")
-
-@DClient.command(name = "update")
-@commands.check(ChSer)
-@commands.check(ChAdmin)
-@commands.cooldown(1, 1, commands.BucketType.user)
-async def SUmsg(ctx):
-    xNumP = 0
-    for i in ctx.guild.members:
-        if not i.bot:
-            xNumP += 1
-    NumAdD = 0
-    if xNumP+1 != Col.count_documents({"IDg":str(ctx.guild.id)}):
-        for Pid in ctx.guild.members:
-            if Pid.bot == False:
-                if Col.count_documents({"IDd":str(Pid.id),"IDg":str(ctx.guild.id)}) == 0:
-                    Col.insert_one({"IDd":str(Pid.id),"IDg":str(ctx.guild.id)})
-                    NumAdD += 1
-                    DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
-                    for i in DbB:
-                        Kyes = i.keys()    
-                    for Wp in Kyes:
-                        FuncMon.DbAdd(Col, {"IDd":str(Pid.id),"IDg":str(ctx.guild.id)}, Wp, 0)
-        await ctx.message.channel.send(f':partying_face: The server info has been updated (added {NumAdD} members) :partying_face:')
-    else:
-        await ctx.message.channel.send(":partying_face: This server is already up to date :partying_face:")
 
 @DClient.command(aliases = ["calculate","calc"])
 @commands.cooldown(1, 1, commands.BucketType.user)
@@ -1569,49 +1446,6 @@ async def SrSub(ctx, *args):
     else:
         await ctx.message.channel.send("Too many arguments :no_mouth:")
 
-@DClient.command(name = "add")
-@commands.check(ChAdmin)
-@commands.check(ChSer)
-@commands.cooldown(1, 1, commands.BucketType.user)
-async def AWord(ctx, *args): 
-    WorA = " ".join(args)
-    if FuncMon.DbAdd(Col, {"IDd":"GuildInfo","IDg":str(ctx.guild.id)}, WorA, 0):
-        Msg = f'"{WorA}" ADDED :thumbsup:' 
-        FuncMon.DbAppendRest(Col, {"IDg":str(ctx.guild.id)}, {"IDd":"GuildInfo","IDg":str(ctx.guild.id)}, WorA, 0, "a")
-    else:
-        Msg = f'"{WorA}" ALREADY EXIST :confused:'
-    await ctx.message.channel.send(Msg)
-
-@DClient.command(aliases = ["rem","remove"])
-@commands.check(ChAdmin)
-@commands.check(ChSer)
-@commands.cooldown(1, 1, commands.BucketType.user)
-async def RWord(ctx, *args):
-    WorA = " ".join(args)
-    if FuncMon.DbRem(Col, {"IDd":"GuildInfo", "IDg":str(ctx.guild.id)}, WorA):
-        Msg = f'"{WorA}" REMOVED :thumbsup:'
-        FuncMon.DbAppendRest(Col, {"IDg":str(ctx.guild.id)}, {"IDd":"GuildInfo","IDg":str(ctx.guild.id)}, WorA, 0, "r")
-    else:
-        Msg = f'"{WorA}" DOESNT EXIST :confused:'
-    await ctx.message.channel.send(Msg)  
-
-@DClient.command(name = "list")
-@commands.check(ChSer)
-@commands.cooldown(1, 1, commands.BucketType.user)
-async def LWord(ctx):
-    LEm = discord.Embed(title = "Server List", description = "Words/Phrases being tracked", color = 0xf59542) 
-
-    DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
-    for i in DbB:
-        Kyes = i.keys()
-
-    for Wp in Kyes:
-        if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
-            pass
-        else:
-            LEm.add_field(name = Wp, value =  "\u200b", inline = True)
-    await ctx.message.channel.send(embed = LEm)     
-
 @DClient.command(name = "remind")
 @commands.cooldown(1, 1, commands.BucketType.user)
 async def RmdAtDMY(ctx, *args):
@@ -1664,126 +1498,6 @@ async def RmdAtDMY(ctx, *args):
             await ctx.message.channel.send('Argument was improper. Check "zhelp misc" to check how to use it. :no_mouth:')    
     else:
         await ctx.message.channel.send("No arguments given :no_mouth:")
-
-@DClient.command(name = "reset")
-@commands.check(ChAdmin)
-@commands.check(ChSer)
-@commands.cooldown(1, 1, commands.BucketType.user)
-async def ReAll(ctx):
-    def ChCHEm(RcM, RuS):
-        return RuS.bot == False and RcM.message == ReSConF and str(RcM.emoji) in ["✅","❌"]
-        
-    ResEmF = discord.Embed(title = "Delete ALL server data?", description = "This is ```IRREVERSIBLE```", color = 0xf59542)
-    ResEmF.set_footer(text = "*The reset request timesout in 10secs.*")
-    ReSConF = await ctx.message.channel.send(embed = ResEmF)
-    await ReSConF.add_reaction("❌")
-    await ReSConF.add_reaction("✅")
-    try:
-        ReaEm = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 10) 
-        await ReSConF.remove_reaction("❌", DClient.user)
-        await ReSConF.remove_reaction("✅", DClient.user)
-        if ReaEm[0].emoji == "❌":
-            await ReSConF.edit(embed = discord.Embed(title = "Cancelled :thumbsup:", description = "Nothing was removed", color = 0xf59542))
-        elif ReaEm[0].emoji == "✅":
-            if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) > 0:
-                DbB = Col.find({"IDg":str(ctx.guild.id)})
-                for DbG in DbB:
-                    Col.delete_one(DbG)
-                await ReSConF.edit(embed = discord.Embed(title = "Success :thumbsup:", description = "All info was cleared", color = 0xf59542))
-    except asyncio.TimeoutError:
-        await ReSConF.remove_reaction("❌", DClient.user)
-        await ReSConF.remove_reaction("✅", DClient.user)
-        await ReSConF.edit(embed = discord.Embed(title = "Timeout :alarm_clock:", description = "Nothing was removed", color = 0xf59542))
-
-@DClient.command(name = "top")
-@commands.check(ChSer)
-@commands.cooldown(1, 1, commands.BucketType.user)
-async def ToTMsg(ctx, *args):
-    def GetNVa(DiDIV, WtRt = 0):
-        for Mks in DiDIV:
-            for MjsD in DiDIV[Mks]:
-                if WtRt == 1:
-                    return MjsD
-                else:
-                    return DiDIV[Mks][MjsD]
-    Top = []
-    Enput = " ".join(args)
-    DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
-    SrtI = await ctx.message.channel.send(embed = discord.Embed(title = ":mag: Fetching...",  description = "\u200b", color = 0x3252a8))
-    for i in DbB:
-        Kyes = i.keys()
-    if not args:
-        IEm = discord.Embed(title = ctx.guild.name, description = "Leaderboard", color = 0x3252a8)
-        for Wp in Kyes:
-            OSfDb = Col.find({"IDg":str(ctx.guild.id)})
-            if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
-                pass
-            else:
-                for j in OSfDb:
-                    if j["IDd"] != "GuildInfo":
-                        Top.append({j["IDd"]:{Wp:j[Wp]}})
-        Top = sorted(Top,key = GetNVa)
-        for i in range(1,4):
-            x = int(list(Top[-i].keys())[0])
-            if (ctx.guild.get_member(x)).nick:
-                Cr = (ctx.guild.get_member(x)).nick
-            else:
-                Cr = (ctx.guild.get_member(x)).name
-            IEm.add_field(name = f'**`{i}. {Cr}:`** {GetNVa(Top[-i], 1)} = {GetNVa(Top[-i]):,}', value = "\u200b", inline = False)
-        await SrtI.edit(embed = IEm)
-    elif Enput in Kyes:
-        IEm = discord.Embed(title = ctx.guild.name, description = f'Leaderboard for {Enput}', color = 0x3252a8)
-        OSfDb = Col.find({"IDg":str(ctx.guild.id)})
-        for j in OSfDb:
-            if j["IDd"] != "GuildInfo":
-                Top.append({j["IDd"]:{Enput:j[Enput]}})
-        Top = sorted(Top,key = GetNVa)
-        for i in range(1,4):
-            x = int(list(Top[-i].keys())[0])
-            if (ctx.guild.get_member(x)).nick:
-                Cr = (ctx.guild.get_member(x)).nick
-            else:
-                Cr = (ctx.guild.get_member(x)).name
-            IEm.add_field(name = f'**`{i}. {Cr}:`** {GetNVa(Top[-i], 1)} = {GetNVa(Top[-i]):,}', value = "\u200b", inline = False)
-        await SrtI.edit(embed = IEm)
-    else:
-        await SrtI.edit(embed = discord.Embed(title = "That word doesnt exist yet :confused:",  description = "\u200b", color = 0x3252a8))
-
-@DClient.command(name = "total")
-@commands.check(ChSer)
-@commands.cooldown(1, 1, commands.BucketType.user)
-async def TMsg(ctx, *args):
-    Num = 0
-    Enput = " ".join(args)
-    DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
-    OSfDb = Col.find({"IDg":str(ctx.guild.id)})
-    for i in DbB:
-        Kyes = i.keys()
-
-    if (Enput == "") or (Enput == " "):
-        IEm = discord.Embed(title = ctx.guild.name, description = "Total times repeated", color = 0x3252a8)
-        for Wp in Kyes:
-            Num = 0
-            OSfDb = Col.find({"IDg":str(ctx.guild.id)})
-            if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
-                pass
-            else:
-                for j in OSfDb:
-                    Num += j[Wp]
-                    
-                IEm.add_field(name = Wp, value = Num, inline = True)
-        await ctx.message.channel.send(embed = IEm)
-
-    elif Enput in Kyes:
-        IEm = discord.Embed(title = ctx.guild.name, description = f'Total times {Enput} was repeated', color = 0x3252a8)
-        for j in OSfDb:
-            Num += j[Enput]
-
-        IEm.add_field(name = Enput, value = Num, inline = True)
-        await ctx.message.channel.send(embed = IEm)
-    
-    else:
-        await ctx.message.channel.send("That word doesnt exist yet :confused:")
 
 @DClient.command(name = "pdf")
 @commands.cooldown(1, 5, commands.BucketType.user)
@@ -1926,53 +1640,6 @@ async def PdSwtOI(ctx, *args):
     else:
         await ctx.message.channel.send("No or too many attachments :woozy_face:")
 
-@DClient.command(name = "stats")
-@commands.check(ChSer)
-@commands.cooldown(1, 1, commands.BucketType.user)
-async def IMsg(ctx, *args): 
-    isBot = False
-    if len(ctx.message.mentions) > 0:
-        if ctx.message.mentions[0].bot == False and (f'<@!{ctx.message.mentions[0].id}>') == args[0]:
-            AUmN = ctx.message.mentions[0]
-            aRGu = list(args)
-            aRGu.pop(0)
-        elif ctx.message.mentions[0].bot == True:
-            isBot = True
-    else:
-        AUmN = ctx.author
-        aRGu = list(args)
-
-    if isBot == False:
-        Num = 0
-        Enput = " ".join(aRGu)
-        DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
-        OSfDb = Col.find({"IDd":str(AUmN.id),"IDg":str(ctx.guild.id)})
-        for i in DbB:
-            Kyes = i.keys()
-
-        if (Enput == "") or (Enput == " "):
-            IEm = discord.Embed(title = AUmN.display_name, description = "All stats", color = 0x3252a8)
-            for Wp in Kyes:
-                OSfDb = Col.find({"IDd":str(AUmN.id),"IDg":str(ctx.guild.id)})
-                if Wp == "_id" or Wp == "IDd" or Wp == "IDg" or Wp == "Setup":
-                    pass
-                else:
-                    for j in OSfDb:
-                        Num = j[Wp]
-                    IEm.add_field(name = Wp, value = Num, inline = True)
-            await ctx.message.channel.send(embed = IEm)
-
-        elif Enput in Kyes:
-            IEm = discord.Embed(title = AUmN.display_name, description = "Word stats", color = 0x3252a8)
-            for j in OSfDb:
-                Num = j[Enput]
-            IEm.add_field(name = Enput, value = Num, inline = True)
-            await ctx.message.channel.send(embed = IEm)    
-        else:
-            await ctx.message.channel.send("That word doesnt exist yet! :confused:")
-    elif isBot == True:
-        await ctx.message.channel.send("Cannot check a bot's stats :confused:")
-
 @DClient.command(name = "giphy")
 async def Gfin(ctx, *args):
     if args:
@@ -2029,97 +1696,14 @@ async def CMsend(ctx, *args):
         await ctx.message.channel.send("No image(s) or link(s) were attached :woozy_face:")
 
 @DClient.event
-async def on_message(message):
-    CmSLim = 0
-    if Col.count_documents({"IDd":"GuildInfo","IDg":str(message.guild.id),"Setup":"Done"}) != 0:
-        DbB = Col.find({"IDd":"GuildInfo","IDg":str(message.guild.id),"Setup":"Done"})
-        for i in DbB:
-            KMeys = i.keys()
-        Remove = '*_'
-        PhMsRase = ((message.content.lower()).strip(Remove)).split(" ")
-        PhMsRase = removeExtraS(PhMsRase, "")
-        LoKmeys = 1
-        for Ph in KMeys:
-            if len(Ph.split(" ")) > LoKmeys:
-                LoKmeys = len(Ph.split(" "))        
-        if message.author.bot == False:
-            for _ in range(len(PhMsRase)):
-                if CmSLim >= 10:
-                    print("Broke count")
-                    break
-                Temp = []
-                for MMmsg in PhMsRase:
-                    if CmSLim >= 10:
-                        break
-                    Temp.append(MMmsg)
-                    CTemp = " ".join(Temp)
-                    if LoKmeys >= len(Temp) > 0:
-                        if FuncMon.AddTo(Col, {"IDd":str(message.author.id),"IDg":str(message.guild.id)}, CTemp, 1):
-                            print("Added")
-                            CmSLim += 1
-                    else:
-                        break
-                try:
-                    PhMsRase.pop(0)
-                except IndexError:
-                    pass
-    else:
-        pass
-    await DClient.process_commands(message)
-
-@DClient.event
 async def on_ready():
     await DClient.change_presence(activity = discord.Game(random.choice(Doing)))
     print(f'Online in {len(DClient.guilds)}...')
-
-@DClient.event
-async def on_member_join(member):
-    Pid = member
-    if Pid.bot == False:
-        if Col.count_documents({"IDd":str(Pid.id),"IDg":str(member.guild.id)}) == 0 and Col.count_documents({"IDd":"GuildInfo","IDg":str(member.guild.id),"Setup":"Done"}) == 1:
-            Col.insert_one({"IDd":str(Pid.id),"IDg":str(member.guild.id)})
-            DbB = Col.find({"IDd":"GuildInfo","IDg":str(member.guild.id),"Setup":"Done"})
-            print("Adding (join)")
-            for i in DbB:
-                Kyes = i.keys()
-            for Wp in Kyes:
-                FuncMon.DbAdd(Col, {"IDd":str(Pid.id),"IDg":str(member.guild.id)}, Wp, 0)
-
-@DClient.event
-async def on_member_remove(member):
-    Pid = member
-    if Pid.bot == False:
-        if (Col.count_documents({"IDd":str(Pid.id),"IDg":str(member.guild.id)}) != 0):
-            Col.delete_one({"IDd":str(Pid.id),"IDg":str(member.guild.id)})
-
-@DClient.event
-async def on_guild_remove(guild):
-    if Col.count_documents({"IDd":"GuildInfo","IDg":str(guild.id),"Setup":"Done"}) > 0:
-        DbB = Col.find({"IDg":str(guild.id)})
-        for DbG in DbB:
-            Col.delete_one(DbG)
 
 @CalCeR.error
 async def eCalCeRror(ctx, error):
     if isinstance(error, commands.UnexpectedQuoteError):
         await ctx.message.channel.send("Failed to calculate :confused:")
     raise error
-
-@DClient.event
-async def on_command_error(ctx, error):
-    if isinstance(error, commands.CommandOnCooldown):
-        await ctx.message.channel.send(f'Hold the spam. Wait atleast {StrTSTM(round(error.retry_after, 2))}')
-    elif isinstance(error, IsBot):
-        await ctx.message.channel.send("Bots can't use commands :pensive:")
-    elif isinstance(error, IsAdmin):
-        await ctx.message.channel.send("Non-admins are not allowed to use this command :face_with_raised_eyebrow:")
-    elif isinstance(error, IsVote):
-        await ctx.message.channel.send("This command is only for voters! You can vote [here](https://top.gg/bot/768397640140062721/vote) :no_mouth:")
-    elif isinstance(error, ProfSer):
-        await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup')! Check all server commands with 'zhelp server' :point_left:")   
-    elif isinstance(error, commands.CommandNotFound) or isinstance(error, Ignore):
-        pass 
-    else:
-        raise error
 
 DClient.run("NzY4Mzk3NjQwMTQwMDYyNzIx.X4_4EQ.mpWIl074jvRs0X-ceDoKdwv4H_E")
