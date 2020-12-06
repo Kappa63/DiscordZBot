@@ -1,6 +1,7 @@
 from discord.ext import commands
 import discord
 import pymongo
+import FuncMon
 from pymongo import MongoClient
 from CBot import ProfSer, IsAdmin
 
@@ -10,6 +11,8 @@ DbM = Cls["CBot"]
 Col = DbM["Ser"]
 Colvt = DbM["Vts"]
 
+def removeExtraS(listRm, val):
+   return [value for value in listRm if value != val]
 
 def ChAdmin(ctx):
     if ctx.author.guild_permissions.administrator:
@@ -22,13 +25,13 @@ def ChSer(ctx):
     raise ProfSer("Unready")
 
 class MongoDB(commands.Cog):
-    def __init__(self, bot):
-       self.bot = bot
+    def __init__(self, DClient):
+       self.DClient = DClient
 
     @commands.command(name = "setup")
     @commands.check(ChAdmin)
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def SMsg(ctx):
+    async def SMsg(self, ctx):
         if Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) == 0:
             Col.insert_one({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"})
             for Pid in ctx.guild.members:
@@ -48,7 +51,7 @@ class MongoDB(commands.Cog):
     @commands.check(ChSer)
     @commands.check(ChAdmin)
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def SUmsg(ctx):
+    async def SUmsg(self, ctx):
         xNumP = 0
         for i in ctx.guild.members:
             if not i.bot:
@@ -73,7 +76,7 @@ class MongoDB(commands.Cog):
     @commands.check(ChAdmin)
     @commands.check(ChSer)
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def AWord(ctx, *args): 
+    async def AWord(self, ctx, *args): 
         WorA = " ".join(args)
         if FuncMon.DbAdd(Col, {"IDd":"GuildInfo","IDg":str(ctx.guild.id)}, WorA, 0):
             Msg = f'"{WorA}" ADDED :thumbsup:' 
@@ -86,7 +89,7 @@ class MongoDB(commands.Cog):
     @commands.check(ChAdmin)
     @commands.check(ChSer)
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def RWord(ctx, *args):
+    async def RWord(self, ctx, *args):
         WorA = " ".join(args)
         if FuncMon.DbRem(Col, {"IDd":"GuildInfo", "IDg":str(ctx.guild.id)}, WorA):
             Msg = f'"{WorA}" REMOVED :thumbsup:'
@@ -98,7 +101,7 @@ class MongoDB(commands.Cog):
     @commands.command(name = "list")
     @commands.check(ChSer)
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def LWord(ctx):
+    async def LWord(self, ctx):
         LEm = discord.Embed(title = "Server List", description = "Words/Phrases being tracked", color = 0xf59542) 
 
         DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
@@ -116,7 +119,7 @@ class MongoDB(commands.Cog):
     @commands.check(ChAdmin)
     @commands.check(ChSer)
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def ReAll(ctx):
+    async def ReAll(self, ctx):
         def ChCHEm(RcM, RuS):
             return RuS.bot == False and RcM.message == ReSConF and str(RcM.emoji) in ["✅","❌"]
             
@@ -126,9 +129,9 @@ class MongoDB(commands.Cog):
         await ReSConF.add_reaction("❌")
         await ReSConF.add_reaction("✅")
         try:
-            ReaEm = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 10) 
-            await ReSConF.remove_reaction("❌", DClient.user)
-            await ReSConF.remove_reaction("✅", DClient.user)
+            ReaEm = await self.DClient.wait_for("reaction_add", check = ChCHEm, timeout = 10) 
+            await ReSConF.remove_reaction("❌", self.DClient.user)
+            await ReSConF.remove_reaction("✅", self.DClient.user)
             if ReaEm[0].emoji == "❌":
                 await ReSConF.edit(embed = discord.Embed(title = "Cancelled :thumbsup:", description = "Nothing was removed", color = 0xf59542))
             elif ReaEm[0].emoji == "✅":
@@ -138,14 +141,14 @@ class MongoDB(commands.Cog):
                         Col.delete_one(DbG)
                     await ReSConF.edit(embed = discord.Embed(title = "Success :thumbsup:", description = "All info was cleared", color = 0xf59542))
         except asyncio.TimeoutError:
-            await ReSConF.remove_reaction("❌", DClient.user)
-            await ReSConF.remove_reaction("✅", DClient.user)
+            await ReSConF.remove_reaction("❌", self.DClient.user)
+            await ReSConF.remove_reaction("✅", self.DClient.user)
             await ReSConF.edit(embed = discord.Embed(title = "Timeout :alarm_clock:", description = "Nothing was removed", color = 0xf59542))
 
     @commands.command(name = "stats")
     @commands.check(ChSer)
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def IMsg(ctx, *args): 
+    async def IMsg(self, ctx, *args): 
         isBot = False
         if len(ctx.message.mentions) > 0:
             if ctx.message.mentions[0].bot == False and (f'<@!{ctx.message.mentions[0].id}>') == args[0]:
@@ -192,7 +195,7 @@ class MongoDB(commands.Cog):
     @commands.command(name = "top")
     @commands.check(ChSer)
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def ToTMsg(ctx, *args):
+    async def ToTMsg(self, ctx, *args):
         def GetNVa(DiDIV, WtRt = 0):
             for Mks in DiDIV:
                 for MjsD in DiDIV[Mks]:
@@ -246,7 +249,7 @@ class MongoDB(commands.Cog):
     @commands.command(name = "total")
     @commands.check(ChSer)
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def TMsg(ctx, *args):
+    async def TMsg(self, ctx, *args):
         Num = 0
         Enput = " ".join(args)
         DbB = Col.find({"IDd":"GuildInfo","IDg":str(ctx.guild.id)})
@@ -280,7 +283,7 @@ class MongoDB(commands.Cog):
             await ctx.message.channel.send("That word doesnt exist yet :confused:")
 
     @commands.Cog.listener()
-    async def on_message(message):
+    async def on_message(self, message):
         CmSLim = 0
         if Col.count_documents({"IDd":"GuildInfo","IDg":str(message.guild.id),"Setup":"Done"}) != 0:
             DbB = Col.find({"IDd":"GuildInfo","IDg":str(message.guild.id),"Setup":"Done"})
@@ -316,7 +319,7 @@ class MongoDB(commands.Cog):
                         pass
         else:
             pass
-        await DClient.process_commands(message)
+        await self.DClient.process_commands(message)
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -345,5 +348,5 @@ class MongoDB(commands.Cog):
             for DbG in DbB:
                 Col.delete_one(DbG)
 
-def setup(bot):
-    bot.add_cog(MongoDB(bot))
+def setup(DClient):
+    DClient.add_cog(MongoDB(DClient))

@@ -1,6 +1,7 @@
 from discord.ext import commands
 from CBot import IsBot, IsVote, IsPatreon, Ignore
 
+Doing = ["Playing with the laws of physics", "Torture", "Just Vibin'", "With my toes", "Chess with god", "With Leona"]
 
 def StrTSTM(SecGiN):
     Day = 0
@@ -25,8 +26,13 @@ def StrTSTM(SecGiN):
         return f'{SecGiN}Sec(s)'
 
 class MainEvents(commands.Cog):
-    def __init__(self, bot):
-       self.bot = bot
+    def __init__(self, DClient):
+       self.DClient = DClient
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        await self.DClient.change_presence(activity = discord.Game(random.choice(Doing)))
+        print(f'Online in {len(self.DClient.guilds)}...')
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -45,5 +51,5 @@ class MainEvents(commands.Cog):
         else:
             raise error
 
-def setup(bot):
-    bot.add_cog(MainEvents(bot))
+def setup(DClient):
+    DClient.add_cog(MainEvents(DClient))

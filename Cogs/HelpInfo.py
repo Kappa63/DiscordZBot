@@ -1,9 +1,9 @@
 import discord
 from discord.ext import commands
 
-class Help(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+class HelpInfo(commands.Cog):
+    def __init__(self, DClient):
+        self.DClient = DClient
 
     @commands.group(name = "help", invoke_without_command = True)
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -91,5 +91,44 @@ class Help(commands.Cog):
         HEm.set_footer(text = "Notes: -zremind is limited to 1day max.\n-zremind could sometimes fail to notify you due to the bot going down. So dont rely on it entirely.\n-During testing recovered data from zcovid was extremely inaccurate.\n-Some hentai are not available. This is to abide by the discord TOS.")
         await ctx.message.channel.send(embed = HEm)
 
-def setup(bot):
-    bot.add_cog(Help(bot))
+    @DClient.command(aliases = ["ver","version"])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def RetVer(self, ctx):
+        VEm = discord.Embed(title = "Active Version", description = "ZBot build version and info", color = 0x3695ba)
+        VEm.add_field(name = "Dev: ", value = "Kappa#5173", inline = False)
+        VEm.add_field(name = "Version: ", value = "1.3a", inline = False)
+        VEm.add_field(name = "Release: ", value = "21/11/2020", inline = True)
+        await ctx.message.channel.send(embed = VEm)
+
+    @commands.command(name = "log")
+    async def UpdLog(self, ctx):
+        LogUps = open("UpdateLog.txt")
+        LOggLin = LogUps.read().splitlines()
+        SEm = discord.Embed(title = LOggLin[0], color = 0x1f002a)
+        LOggLin.pop(0)
+        for Logs in LOggLin:
+            LogTem = Logs.split(" ")
+            SEm.add_field(name = LogTem[0], value = " ".join(LogTem[1:]), inline = False)
+        await ctx.message.channel.send(embed = SEm)
+
+    @commands.command(name = "vote")
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def BotVotF(self, ctx):
+        SEm = discord.Embed(title = "Vote For ZBot", url = "https://top.gg/bot/768397640140062721/vote", description = "**You can vote once every 12 hours for the following perks**", color = 0x000000)
+        SEm.add_field(name = "*-Using instant navigation to page/image/post/tweet*\n*-Surfing Reddit and using all sorting formats*\n*-Using zapod (Astronomy Picture of the Day)*\n\n", value = "\u200b", inline = False)
+        await ctx.message.channel.send(embed = SEm)
+
+    @commands.command(name = "patreon")
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def BotPatrF(self, ctx):
+        SEm = discord.Embed(title = "Join Patreon", url = "https://www.patreon.com/join/ZBotDiscord", description = "**Want to support ZBot's development?**", color = 0x000000)
+        await ctx.message.channel.send(embed = SEm)
+
+    @commands.command(aliases = ["support","bug"])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def BotVotF(self, ctx):
+        SEm = discord.Embed(title = "ZBot Official Server", url = "https://discord.gg/V6E6prUBPv", description = "**Report Bugs, Get Support, and Join the Community**", color = 0x000000)
+        await ctx.message.channel.send(embed = SEm)
+
+def setup(DClient):
+    DClient.add_cog(HelpInfo(DClient))
