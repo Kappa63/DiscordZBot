@@ -7,50 +7,52 @@ from CBot import Reddit
 from CBot import ChVote
 import asyncio
 
-def GetMaSPos(SubCpoS, ConTtE, Type = "R", CRposNum = 0, CPosTo = 0):
+def EmbedMaker(SubCpoS, Subname, Type = "R", PostNum = 0, TotalPosts = 0):
     if len(SubCpoS.title) > 253:
-        FtiTle = SubCpoS.title[0:253]
-        FtiTle = FtiTle + "..."
+        PostTitle = SubCpoS.title[0:253]
+        PostTitle = PostTitle + "..."
     else:
-        FtiTle = SubCpoS.title
+        PostTitle = SubCpoS.title
 
     if len(SubCpoS.selftext) > 1021:
-        FteXt = SubCpoS.selftext[0:1021]
-        FteXt = FteXt + "..."
+        PostText = SubCpoS.selftext[0:1021]
+        PostText = PostText + "..."
     else:
-        FteXt = SubCpoS.selftext
+        PostText = SubCpoS.selftext
 
     if PosType(SubCpoS):
-        NSfw = False
-        if SubCpoS.over_18 and ctx.channel.is_nsfw():
-            REm = discord.Embed(title = FtiTle,  description = f'Upvote Ratio: {SubCpoS.upvote_ratio} // Post is NSFW', color = 0x8b0000)
-            if Type == "S":
-                REm.add_field(name = f'`Page: {CRposNum+1}/{CPosTo}`', value = "\u200b", inline = True)
-            NSfw = True
+        if SubCpoS.over_18:
+            if ctx.channel.is_nsfw():
+                REm = discord.Embed(title = PostTitle,  description = f'Upvote Ratio: {SubCpoS.upvote_ratio} // Post is NSFW', color = 0x8b0000)
+                if Type == "S":
+                    REm.add_field(name = f'`Page: {PostNum+1}/{TotalPosts}`', value = "\u200b", inline = True)
+                if SubCpoS.selftext != "":
+                    REm.add_field(name = "Body", value = PostText, inline = False)
+                REm.add_field(name = "Post: ", value = SubCpoS.url, inline = True)
+            else:
+                REm = discord.Embed(title = "***NOT NSFW CHANNEL***",  description = "Post is NSFW", color = 0x8b0000)
+                REm.add_field(name = "NSFW: ", value = "This channel isn't NSFW. No NSFW here", inline = False)
         else:
-            REm = discord.Embed(title = FtiTle, description = f'Upvote Ratio: {SubCpoS.upvote_ratio} // Post is Clean', color = 0x8b0000)
+            REm = discord.Embed(title = PostTitle, description = f'Upvote Ratio: {SubCpoS.upvote_ratio} // Post is Clean', color = 0x8b0000)
             if Type == "S":
-                REm.add_field(name = f'`Page: {CRposNum+1}/{CPosTo}`', value = "\u200b", inline = True)
-        if (NSfw and ctx.channel.is_nsfw()) or (NSfw == False):
+                REm.add_field(name = f'`Page: {PostNum+1}/{TotalPosts}`', value = "\u200b", inline = True)
             if SubCpoS.selftext != "":
-                REm.add_field(name = "Body", value = FteXt, inline = False)
+                REm.add_field(name = "Body", value = PostText, inline = False)
             REm.add_field(name = "Post: ", value = SubCpoS.url, inline = True)
-        else:
-            REm.add_field(name = "NSFW: ", value = "This channel isn't NSFW. No NSFW here", inline = False)
     else:
         NSfw = False
         if SubCpoS.over_18:
             if ctx.channel.is_nsfw():
-                REm = discord.Embed(title = FtiTle,  description = f'Upvote Ratio: {SubCpoS.upvote_ratio} // Post is NSFW', color = 0x8b0000)
+                REm = discord.Embed(title = PostTitle,  description = f'Upvote Ratio: {SubCpoS.upvote_ratio} // Post is NSFW', color = 0x8b0000)
             else:
                 REm = discord.Embed(title = "***NOT NSFW CHANNEL***",  description = "Post is NSFW", color = 0x8b0000)
             NSfw = True
             if Type == "S":
-                REm.add_field(name = f'`Post: {CRposNum+1}/{CPosTo}`', value = "\u200b", inline = True)
+                REm.add_field(name = f'`Post: {PostNum+1}/{TotalPosts}`', value = "\u200b", inline = True)
         else:
-            REm = discord.Embed(title = FtiTle, description = f'Upvote Ratio: {SubCpoS.upvote_ratio} // Post is Clean', color = 0x8b0000)
+            REm = discord.Embed(title = PostTitle, description = f'Upvote Ratio: {SubCpoS.upvote_ratio} // Post is Clean', color = 0x8b0000)
             if Type == "S":
-                REm.add_field(name = f'`Post: {CRposNum+1}/{CPosTo}`', value = "\u200b", inline = True)
+                REm.add_field(name = f'`Post: {PostNum+1}/{TotalPosts}`', value = "\u200b", inline = True)
         C = 0
         if (NSfw and ctx.channel.is_nsfw()) or (NSfw == False):
             try:
@@ -89,7 +91,7 @@ def GetMaSPos(SubCpoS, ConTtE, Type = "R", CRposNum = 0, CPosTo = 0):
                             REm.add_field(name = "Media Preview Unavailable. Sorry!!", value = '\u200b')
         else:
             REm.add_field(name = "NSFW: ", value = "This isn't an NSFW channel. No NSFW allowed here.", inline = False)
-    REm.set_footer(text = f'From r/{ConTtE}{"-"*10}\n{"-"*10}\n"Make sure to close the tweet (with :x:) once you are done.\n\nReact with :hash: then type in a page number to instantly navigate to it (voters only).\n\n*Tweet closes automatically after 20sec of inactivity.*')
+    REm.set_footer(text = f'From r/{Subname}')
     REm.set_author(name = f'*By u/{SubCpoS.author}*')
     return REm
 
@@ -143,20 +145,20 @@ class RedditCmds(commands.Cog):
             if CheckSub("".join(args)): 
                 try:                   
                     Post = Reddit.subreddit("".join(args)).hot()             
-                    CPosTo = 0
+                    TotalPosts = 0
                     for _ in Post:
-                        CPosTo += 1
+                        TotalPosts += 1
                     Post = Reddit.subreddit("".join(args)).hot()
-                    if CPosTo == 0:
+                    if TotalPosts == 0:
                         await ctx.message.channel.send("No posts on that subreddit :no_mouth:")
                         return
-                    ChoicePosts = random.randint(1, CPosTo)
+                    ChoicePosts = random.randint(1, TotalPosts)
                     for _ in range(0, ChoicePosts):
                         SubCpoS = next(Sub for Sub in Post if not Sub.stickied)                
                 except StopIteration:
                     await ctx.message.channel.send("No posts on that subreddit :no_mouth:")
                     return
-                await ctx.message.channel.send(embed = GetMaSPos(SubCpoS, "".join(args)))
+                await ctx.message.channel.send(embed = EmbedMaker(SubCpoS, "".join(args)))
             else:
                 await ctx.message.channel.send("Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)")
         else:
@@ -222,16 +224,16 @@ class RedditCmds(commands.Cog):
                     return
                                 
                 SubCpoS = []
-                CPosTo = 0
+                TotalPosts = 0
                 for SuTPos in Post:
-                    CPosTo += 1
+                    TotalPosts += 1
                     if not SuTPos.stickied:
                         SubCpoS.append(SuTPos)
-                if CPosTo == 0:
+                if TotalPosts == 0:
                     await ctx.message.channel.send("No posts on that subreddit :no_mouth:")
                     return              
-                KraPosS = await ctx.message.channel.send(embed = GetMaSPos(SubCpoS[0], ContT[1], "S", 0, CPosTo))
-                CRposNum = 0
+                KraPosS = await ctx.message.channel.send(embed = EmbedMaker(SubCpoS[0], ContT[1], "S", 0, TotalPosts))
+                PostNum = 0
                 await KraPosS.add_reaction("⬅️")
                 await KraPosS.add_reaction("❌")
                 await KraPosS.add_reaction("➡️")
@@ -240,15 +242,15 @@ class RedditCmds(commands.Cog):
                     try:
                         Res = await self.DClient.wait_for("reaction_add", check = ChCHEm, timeout = 120) 
                         await KraPosS.remove_reaction(Res[0].emoji, Res[1])
-                        if Res[0].emoji == "⬅️" and CRposNum != 0:
-                            CRposNum -= 1
-                            await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
+                        if Res[0].emoji == "⬅️" and PostNum != 0:
+                            PostNum -= 1
+                            await KraPosS.edit(embed = EmbedMaker(SubCpoS[PostNum], ContT[1], "S", PostNum, TotalPosts))
                         elif Res[0].emoji == "➡️":
-                            if CRposNum < CPosTo-1:
-                                CRposNum += 1
-                                await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
+                            if PostNum < TotalPosts-1:
+                                PostNum += 1
+                                await KraPosS.edit(embed = EmbedMaker(SubCpoS[PostNum], ContT[1], "S", PostNum, TotalPosts))
                             else:
-                                await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
+                                await KraPosS.edit(embed = EmbedMaker(SubCpoS[PostNum], ContT[1], "S", PostNum, TotalPosts))
                                 await KraPosS.remove_reaction("⬅️", self.DClient.user)
                                 await KraPosS.remove_reaction("❌", self.DClient.user)
                                 await KraPosS.remove_reaction("➡️", self.DClient.user)
@@ -264,31 +266,31 @@ class RedditCmds(commands.Cog):
                                     try:
                                         try:
                                             pG = int(ResE.content)
-                                            if 0 < pG <= CPosTo-1:
-                                                CRposNum = pG-1
+                                            if 0 < pG <= TotalPosts-1:
+                                                PostNum = pG-1
                                             elif pG < 1:
-                                                CRposNum = 0
+                                                PostNum = 0
                                                 pass
                                             else:
-                                                CRposNum = CPosTo-1 
+                                                PostNum = TotalPosts-1 
                                         except TypeError:
                                             pass
                                     except ValueError:
                                         pass
-                                    await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
+                                    await KraPosS.edit(embed = EmbedMaker(SubCpoS[PostNum], ContT[1], "S", PostNum, TotalPosts))
                                 except asyncio.exceptions.TimeoutError:
                                     await TemTw.edit("Request Timeout")
                                     await asyncio.sleep(5)
                                     await TemTw.delete()
                         elif Res[0].emoji == "❌":
-                            await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
+                            await KraPosS.edit(embed = EmbedMaker(SubCpoS[PostNum], ContT[1], "S", PostNum, TotalPosts))
                             await KraPosS.remove_reaction("⬅️", self.DClient.user)
                             await KraPosS.remove_reaction("❌", self.DClient.user)
                             await KraPosS.remove_reaction("➡️", self.DClient.user)
                             await KraPosS.remove_reaction("#️⃣", self.DClient.user)
                             break
                     except asyncio.TimeoutError:
-                        await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
+                        await KraPosS.edit(embed = EmbedMaker(SubCpoS[PostNum], ContT[1], "S", PostNum, TotalPosts))
                         await KraPosS.remove_reaction("⬅️", self.DClient.user)
                         await KraPosS.remove_reaction("❌", self.DClient.user)
                         await KraPosS.remove_reaction("➡️", self.DClient.user)

@@ -22,6 +22,7 @@ class Nasa(commands.Cog):
         DEm = discord.Embed(title = JSONapod["title"], description = f'Date {JSONapod["date"]}', color = 0xa9775a)
         DEm.add_field(name = "Explanation:", value = Explanation, inline = False)
         DEm.set_image(url = JSONapod["hdurl"])
+        DEm.set_footer(text = f'Copyright: {JSONapod["copyright"]}')
         await ctx.message.channel.send(embed = DEm)
 
     @DClient.command(name = "nasa")

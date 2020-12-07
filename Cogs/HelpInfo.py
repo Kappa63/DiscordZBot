@@ -91,7 +91,18 @@ class HelpInfo(commands.Cog):
         HEm.set_footer(text = "Notes: -zremind is limited to 1day max.\n-zremind could sometimes fail to notify you due to the bot going down. So dont rely on it entirely.\n-During testing recovered data from zcovid was extremely inaccurate.\n-Some hentai are not available. This is to abide by the discord TOS.")
         await ctx.message.channel.send(embed = HEm)
 
-    @DClient.command(aliases = ["ver","version"])
+    @sendH.command(aliases = ["nav", "navigation"])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def SendN(self, ctx):
+        HEm = discord.Embed(title = "**ZBot Navigation Help**", description = "\u200b", color = 0x0af531)
+        HEm.add_field(name = "zanime (Anime Name): ", value = "Searches for anime and returns all the info about chosen one", inline = False)
+        HEm.add_field(name = "zmanga (Manga Name): ", value = "Searches for manga and returns all the info about chosen one", inline = False)
+        HEm.add_field(name = "zhentai (Magic Numbers): ", value = "Gets doujin from nhentai using magic numbers (NSFW)", inline = False)
+        HEm.add_field(name = "zhentai random: ", value = "Gets a random doujin from nhentai (NSFW)", inline = False)
+        HEm.add_field(name = "zhentai search (Doujin Name): ", value = "Searches for the 10 most popular doujin (NSFW)", inline = False)
+        await ctx.message.channel.send(embed = HEm)
+
+    @commands.command(aliases = ["ver","version"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RetVer(self, ctx):
         VEm = discord.Embed(title = "Active Version", description = "ZBot build version and info", color = 0x3695ba)
