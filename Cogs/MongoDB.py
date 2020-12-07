@@ -1,7 +1,6 @@
 from discord.ext import commands
 import discord
 import FuncMon
-from CBot import ProfSer, IsAdmin
 from CBot import Col, Colvt
 from CBot import ChAdmin, ChSer, removeExtraS
 

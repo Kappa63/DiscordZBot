@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from CBot import Ignore
 from CBot import ChAdMo
 
 class OnlyMods(commands.Cog):

@@ -4,6 +4,7 @@ from prawcore import NotFound, Forbidden
 import requests
 import os 
 from CBot import Reddit
+from CBot import ChVote
 import asyncio
 
 def GetMaSPos(SubCpoS, ConTtE, Type = "R", CRposNum = 0, CPosTo = 0):
@@ -147,147 +148,143 @@ class RedditCmds(commands.Cog):
             await ctx.message.channel.send("No arguments :no_mouth:")
 
     @SrSub.command(name = "surf")
+    @commands.check(ChVote)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def SrSub(self, ctx, *args):
         if args:
-            if ChPatreonFu(ctx) or (await TClient.get_user_vote(ctx.author.id)):
-                if CheckSub("".join(args)): 
-                    KraPosS = await ctx.message.channel.send(embed = discord.Embed(title = "How would you like to sort the subreddit?", description = "🔝 to sort by top.\n📈 to sort by rising.\n🔥 to sort by hot.\n📝 to sort by new.\n❌ to cancel", footer = "This timesout in 10s"))
-                    await KraPosS.add_reaction("🔝")
-                    await KraPosS.add_reaction("📈")
-                    await KraPosS.add_reaction("🔥")
-                    await KraPosS.add_reaction("📝")
-                    await KraPosS.add_reaction("❌")
-                    try:
-                        ResIni = await self.DClient.wait_for("reaction_add", check = ChCHEmCH, timeout = 10)
-                        if ResIni[0].emoji != "🔝":
-                            await KraPosS.edit(embed = discord.Embed(title = "Getting Posts"))
-                            await KraPosS.remove_reaction("❌", self.DClient.user)
-                        await KraPosS.remove_reaction(ResIni[0].emoji, ResIni[1])
-                        await KraPosS.remove_reaction("🔝", self.DClient.user)
-                        await KraPosS.remove_reaction("📝", self.DClient.user)
-                        await KraPosS.remove_reaction("📈", self.DClient.user)
-                        await KraPosS.remove_reaction("🔥", self.DClient.user)
-                        
-                        if ResIni[0].emoji == "❌":
-                            await KraPosS.delete()
-                            return
-                        elif ResIni[0].emoji == "📝":
-                            Post = Reddit.subreddit("".join(args)).new()
-                        elif ResIni[0].emoji == "🔥":
-                            Post = Reddit.subreddit("".join(args)).hot()
-                        elif ResIni[0].emoji == "📈":
-                            Post = Reddit.subreddit("".join(args)).rising()
-                        elif ResIni[0].emoji == "🔝":
-                            await KraPosS.edit(embed = discord.Embed(title = "How would you like to sort by top?", description = "🌍 to sort by top all time.\n📅 to sort by top this month.\n🗓️ to sort by top today.\n❌ to cancel", footer = "This timesout in 10s"))
-                            await KraPosS.add_reaction("🌍")
-                            await KraPosS.add_reaction("📅")
-                            await KraPosS.add_reaction("🗓️")
-                            ResIniT = await self.DClient.wait_for("reaction_add", check = ChCHEmCHT, timeout = 10)
-                            await KraPosS.remove_reaction(ResIniT[0].emoji, ResIniT[1])
-                            await KraPosS.edit(embed = discord.Embed(title = "Getting Posts"))
-                            await KraPosS.remove_reaction("❌", self.DClient.user)
-                            await KraPosS.remove_reaction("🌍", self.DClient.user)
-                            await KraPosS.remove_reaction("📅", self.DClient.user)
-                            await KraPosS.remove_reaction("🗓️", self.DClient.user)
-                            if ResIniT[0].emoji == "❌":
-                                await KraPosS.delete()
-                                return
-                            elif ResIniT[0].emoji == "🌍":
-                                Post = Reddit.subreddit("".join(args)).top("all")
-                            elif ResIniT[0].emoji == "📅":
-                                Post = Reddit.subreddit("".join(args)).top("month")
-                            elif ResIniT[0].emoji == "🗓️":
-                                Post = Reddit.subreddit("".join(args)).top("day")
-                    except asyncio.TimeoutError:
-                        await KraPosS.edit(embed = discord.Embed(title = "Timeout"))
-                        await asyncio.sleep(5)
+            if CheckSub("".join(args)): 
+                KraPosS = await ctx.message.channel.send(embed = discord.Embed(title = "How would you like to sort the subreddit?", description = "🔝 to sort by top.\n📈 to sort by rising.\n🔥 to sort by hot.\n📝 to sort by new.\n❌ to cancel", footer = "This timesout in 10s"))
+                await KraPosS.add_reaction("🔝")
+                await KraPosS.add_reaction("📈")
+                await KraPosS.add_reaction("🔥")
+                await KraPosS.add_reaction("📝")
+                await KraPosS.add_reaction("❌")
+                try:
+                    ResIni = await self.DClient.wait_for("reaction_add", check = ChCHEmCH, timeout = 10)
+                    if ResIni[0].emoji != "🔝":
+                        await KraPosS.edit(embed = discord.Embed(title = "Getting Posts"))
+                        await KraPosS.remove_reaction("❌", self.DClient.user)
+                    await KraPosS.remove_reaction(ResIni[0].emoji, ResIni[1])
+                    await KraPosS.remove_reaction("🔝", self.DClient.user)
+                    await KraPosS.remove_reaction("📝", self.DClient.user)
+                    await KraPosS.remove_reaction("📈", self.DClient.user)
+                    await KraPosS.remove_reaction("🔥", self.DClient.user)
+                    
+                    if ResIni[0].emoji == "❌":
                         await KraPosS.delete()
                         return
-                                    
-                    SubCpoS = []
-                    CPosTo = 0
-                    for SuTPos in Post:
-                        CPosTo += 1
-                        if not SuTPos.stickied:
-                            SubCpoS.append(SuTPos)
-                    if CPosTo == 0:
-                        await ctx.message.channel.send("No posts on that subreddit :no_mouth:")
-                        return              
-                    KraPosS = await ctx.message.channel.send(embed = GetMaSPos(SubCpoS[0], ContT[1], "S", 0, CPosTo))
-                    CRposNum = 0
-                    await KraPosS.add_reaction("⬅️")
-                    await KraPosS.add_reaction("❌")
-                    await KraPosS.add_reaction("➡️")
-                    await KraPosS.add_reaction("#️⃣")
-                    while True:
-                        try:
-                            Res = await self.DClient.wait_for("reaction_add", check = ChCHEm, timeout = 120) 
-                            await KraPosS.remove_reaction(Res[0].emoji, Res[1])
-                            if Res[0].emoji == "⬅️" and CRposNum != 0:
-                                CRposNum -= 1
+                    elif ResIni[0].emoji == "📝":
+                        Post = Reddit.subreddit("".join(args)).new()
+                    elif ResIni[0].emoji == "🔥":
+                        Post = Reddit.subreddit("".join(args)).hot()
+                    elif ResIni[0].emoji == "📈":
+                        Post = Reddit.subreddit("".join(args)).rising()
+                    elif ResIni[0].emoji == "🔝":
+                        await KraPosS.edit(embed = discord.Embed(title = "How would you like to sort by top?", description = "🌍 to sort by top all time.\n📅 to sort by top this month.\n🗓️ to sort by top today.\n❌ to cancel", footer = "This timesout in 10s"))
+                        await KraPosS.add_reaction("🌍")
+                        await KraPosS.add_reaction("📅")
+                        await KraPosS.add_reaction("🗓️")
+                        ResIniT = await self.DClient.wait_for("reaction_add", check = ChCHEmCHT, timeout = 10)
+                        await KraPosS.remove_reaction(ResIniT[0].emoji, ResIniT[1])
+                        await KraPosS.edit(embed = discord.Embed(title = "Getting Posts"))
+                        await KraPosS.remove_reaction("❌", self.DClient.user)
+                        await KraPosS.remove_reaction("🌍", self.DClient.user)
+                        await KraPosS.remove_reaction("📅", self.DClient.user)
+                        await KraPosS.remove_reaction("🗓️", self.DClient.user)
+                        if ResIniT[0].emoji == "❌":
+                            await KraPosS.delete()
+                            return
+                        elif ResIniT[0].emoji == "🌍":
+                            Post = Reddit.subreddit("".join(args)).top("all")
+                        elif ResIniT[0].emoji == "📅":
+                            Post = Reddit.subreddit("".join(args)).top("month")
+                        elif ResIniT[0].emoji == "🗓️":
+                            Post = Reddit.subreddit("".join(args)).top("day")
+                except asyncio.TimeoutError:
+                    await KraPosS.edit(embed = discord.Embed(title = "Timeout"))
+                    await asyncio.sleep(5)
+                    await KraPosS.delete()
+                    return
+                                
+                SubCpoS = []
+                CPosTo = 0
+                for SuTPos in Post:
+                    CPosTo += 1
+                    if not SuTPos.stickied:
+                        SubCpoS.append(SuTPos)
+                if CPosTo == 0:
+                    await ctx.message.channel.send("No posts on that subreddit :no_mouth:")
+                    return              
+                KraPosS = await ctx.message.channel.send(embed = GetMaSPos(SubCpoS[0], ContT[1], "S", 0, CPosTo))
+                CRposNum = 0
+                await KraPosS.add_reaction("⬅️")
+                await KraPosS.add_reaction("❌")
+                await KraPosS.add_reaction("➡️")
+                await KraPosS.add_reaction("#️⃣")
+                while True:
+                    try:
+                        Res = await self.DClient.wait_for("reaction_add", check = ChCHEm, timeout = 120) 
+                        await KraPosS.remove_reaction(Res[0].emoji, Res[1])
+                        if Res[0].emoji == "⬅️" and CRposNum != 0:
+                            CRposNum -= 1
+                            await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
+                        elif Res[0].emoji == "➡️":
+                            if CRposNum < CPosTo-1:
+                                CRposNum += 1
                                 await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
-                            elif Res[0].emoji == "➡️":
-                                if CRposNum < CPosTo-1:
-                                    CRposNum += 1
-                                    await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
-                                else:
-                                    await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
-                                    await KraPosS.remove_reaction("⬅️", self.DClient.user)
-                                    await KraPosS.remove_reaction("❌", self.DClient.user)
-                                    await KraPosS.remove_reaction("➡️", self.DClient.user)
-                                    await KraPosS.remove_reaction("#️⃣", self.DClient.user)
-                                    break
-                            elif Res[0].emoji == "#️⃣":
-                                if ChPatreonFu(ctx) or (await TClient.get_user_vote(ctx.author.id)):
-                                    TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n*The Navigation closes automatically after 10sec of inactivity.*')
-                                    try:
-                                        ResE = await self.DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
-                                        await TemTw.delete()
-                                        await ResE.delete()
-                                        try:
-                                            try:
-                                                pG = int(ResE.content)
-                                                if 0 < pG <= CPosTo-1:
-                                                    CRposNum = pG-1
-                                                elif pG < 1:
-                                                    CRposNum = 0
-                                                    pass
-                                                else:
-                                                    CRposNum = CPosTo-1 
-                                            except TypeError:
-                                                pass
-                                        except ValueError:
-                                            pass
-                                        await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
-                                    except asyncio.exceptions.TimeoutError:
-                                        await TemTw.edit("Request Timeout")
-                                        await asyncio.sleep(5)
-                                        await TemTw.delete()
-                                else:
-                                    TemS = await ctx.message.channel.send("Instant navigation to post is only for voters or Patreon Supporters. \n:robot: zvote or zpatreon to learn more. :robot:")
-                                    await asyncio.sleep(5)
-                                    await TemS.delete()
-                            elif Res[0].emoji == "❌":
+                            else:
                                 await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
                                 await KraPosS.remove_reaction("⬅️", self.DClient.user)
                                 await KraPosS.remove_reaction("❌", self.DClient.user)
                                 await KraPosS.remove_reaction("➡️", self.DClient.user)
                                 await KraPosS.remove_reaction("#️⃣", self.DClient.user)
                                 break
-                        except asyncio.TimeoutError:
+                        elif Res[0].emoji == "#️⃣":
+                            if ChPatreonFu(ctx) or (await TClient.get_user_vote(ctx.author.id)):
+                                TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n*The Navigation closes automatically after 10sec of inactivity.*')
+                                try:
+                                    ResE = await self.DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
+                                    await TemTw.delete()
+                                    await ResE.delete()
+                                    try:
+                                        try:
+                                            pG = int(ResE.content)
+                                            if 0 < pG <= CPosTo-1:
+                                                CRposNum = pG-1
+                                            elif pG < 1:
+                                                CRposNum = 0
+                                                pass
+                                            else:
+                                                CRposNum = CPosTo-1 
+                                        except TypeError:
+                                            pass
+                                    except ValueError:
+                                        pass
+                                    await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
+                                except asyncio.exceptions.TimeoutError:
+                                    await TemTw.edit("Request Timeout")
+                                    await asyncio.sleep(5)
+                                    await TemTw.delete()
+                            else:
+                                TemS = await ctx.message.channel.send("Instant navigation to post is only for voters or Patreon Supporters. \n:robot: zvote or zpatreon to learn more. :robot:")
+                                await asyncio.sleep(5)
+                                await TemS.delete()
+                        elif Res[0].emoji == "❌":
                             await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
                             await KraPosS.remove_reaction("⬅️", self.DClient.user)
                             await KraPosS.remove_reaction("❌", self.DClient.user)
                             await KraPosS.remove_reaction("➡️", self.DClient.user)
                             await KraPosS.remove_reaction("#️⃣", self.DClient.user)
                             break
-                else:
-                    await ctx.message.channel.send("Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)")
+                    except asyncio.TimeoutError:
+                        await KraPosS.edit(embed = GetMaSPos(SubCpoS[CRposNum], ContT[1], "S", CRposNum, CPosTo))
+                        await KraPosS.remove_reaction("⬅️", self.DClient.user)
+                        await KraPosS.remove_reaction("❌", self.DClient.user)
+                        await KraPosS.remove_reaction("➡️", self.DClient.user)
+                        await KraPosS.remove_reaction("#️⃣", self.DClient.user)
+                        break
             else:
-                TemS = await ctx.message.channel.send("This command is reserved for voters or Patreon Supporters. \n:robot: zvote or zpatreon to learn more. :robot:")
-                await asyncio.sleep(5)
-                await TemS.delete()
+                await ctx.message.channel.send("Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)")
         else:
             await ctx.message.channel.send("No arguments :no_mouth:")
 
