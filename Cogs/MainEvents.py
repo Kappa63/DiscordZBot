@@ -1,29 +1,8 @@
 from discord.ext import commands
-from CBot import IsBot, IsVote, IsPatreon, Ignore
+from CBot import IsBot, IsVote, IsPatreon, Ignore, IsAdmin, ProfSer
+from CBot import StrTSTM
 
 Doing = ["Playing with the laws of physics", "Torture", "Just Vibin'", "With my toes", "Chess with god", "With Leona"]
-
-def StrTSTM(SecGiN):
-    Day = 0
-    Hour = 0
-    Min = 0
-    while SecGiN >= 60:
-        Min += 1
-        if Min == 60:
-            Hour += 1
-            Min -= 60
-        if Hour == 24:
-            Day += 1
-            Hour -= 24
-        SecGiN -= 60
-    if Day != 0:
-        return f'{Day}Day(s) {Hour}Hour(s) {Min}Min(s) {SecGiN}Sec(s)'
-    elif Hour != 0:
-        return f'{Hour}Hour(s) {Min}Min(s) {SecGiN}Sec(s)'
-    elif Min != 0:
-        return f'{Min}Min(s) {SecGiN}Sec(s)'
-    else:
-        return f'{SecGiN}Sec(s)'
 
 class MainEvents(commands.Cog):
     def __init__(self, DClient):

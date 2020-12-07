@@ -4,15 +4,12 @@ import random
 import randfacts
 import cv2
 import numpy
-import giphy_client
 import requests
 import os
-
-GClient = "ZH1xoGH0XUffrtqFKdj3kD4YrVoZvb8i"
-GApi = giphy_client.DefaultApi()
+from CBot import GClient, GApi
 
 class Randomizers(commands.Cog):
-    def __init__(Self, DClient):
+    def __init__(self, DClient):
         self.DClient = DClient
 
     @commands.command(name = "roll")

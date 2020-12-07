@@ -1,28 +1,9 @@
 from discord.ext import commands
 import discord
-import pymongo
 import FuncMon
-from pymongo import MongoClient
 from CBot import ProfSer, IsAdmin
-
-Mdb = "mongodb+srv://Kappa:85699658@cbotdb.exsit.mongodb.net/CBot?retryWrites=true&w=majority"
-Cls = MongoClient(Mdb)
-DbM = Cls["CBot"]
-Col = DbM["Ser"]
-Colvt = DbM["Vts"]
-
-def removeExtraS(listRm, val):
-   return [value for value in listRm if value != val]
-
-def ChAdmin(ctx):
-    if ctx.author.guild_permissions.administrator:
-        return True
-    raise IsAdmin("Normie")
-
-def ChSer(ctx):
-    if (Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) != 0):
-        return True
-    raise ProfSer("Unready")
+from CBot import Col, Colvt
+from CBot import ChAdmin, ChSer, removeExtraS
 
 class MongoDB(commands.Cog):
     def __init__(self, DClient):

@@ -1,11 +1,7 @@
 import discord
 from discord.ext import commands
 from CBot import Ignore
-
-def ChAdMo(ctx):
-    if ctx.author.id == 443986051371892746:
-        return True
-    raise Ignore("Ignore")
+from CBot import ChAdMo
 
 class OnlyMods(commands.Cog):
     def __init__(self, DClient):
