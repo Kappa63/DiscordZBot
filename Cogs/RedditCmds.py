@@ -98,6 +98,21 @@ def EmbOri(REm, Type, SubCpoS):
     REm.set_image(url = SubCpoS.preview["images"][-1]["source"]["url"])
     return REm
 
+def CheckSub(Sub):
+    Valid = True
+    try:
+        Reddit.subreddits.search_by_name(Sub, exact = True)
+        Reddit.subreddit(Sub).subreddit_type
+    except (NotFound, Forbidden):
+        Valid = False
+    return Valid
+    
+def PosType(Sub):
+    TextB = False
+    if Sub.is_self:
+        TextB = True
+    return TextB
+
 class RedditCmds(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient

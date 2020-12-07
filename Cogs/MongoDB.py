@@ -2,7 +2,7 @@ from discord.ext import commands
 import discord
 import FuncMon
 from CBot import Col, Colvt
-from CBot import ChAdmin, ChSer, removeExtraS
+from CBot import ChAdmin, ChSer, RemoveExtra
 
 class MongoDB(commands.Cog):
     def __init__(self, DClient):
@@ -271,7 +271,7 @@ class MongoDB(commands.Cog):
                 KMeys = i.keys()
             Remove = '*_'
             PhMsRase = ((message.content.lower()).strip(Remove)).split(" ")
-            PhMsRase = removeExtraS(PhMsRase, "")
+            PhMsRase = RemoveExtra(PhMsRase, "")
             LoKmeys = 1
             for Ph in KMeys:
                 if len(Ph.split(" ")) > LoKmeys:

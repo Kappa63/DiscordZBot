@@ -6,23 +6,21 @@ import pymongo
 from pymongo import MongoClient
 # import FuncMon
 # import os  
-import deeppyer
-from PIL import Image
 # import numpy
 # import cv2
-import dbl
-# import requests
 # from prawcore import NotFound, Forbidden
 # from hentai import Utils, Sort, Hentai, Format
+# import mal
+import deeppyer
+from PIL import Image
+import dbl
+import requests
 import asyncio
 import giphy_client
 import tweepy
-# import mal
 import malclient
 import COVID19Py
 import datetime
-import time
-import randfacts
 from pdf2image import convert_from_path
 import imgurpython
 
@@ -56,9 +54,7 @@ Cov = COVID19Py.COVID19(data_source = "jhu")
 
 Imgur = imgurpython.ImgurClient(client_id = "272a225589de547", client_secret = "421db91b32fe790c71a710f8bb48e6035f4fd365")
 
-BoDowNFn = False
-
-def removeExtraS(listRm, val):
+def RemoveExtra(listRm, val):
    return [value for value in listRm if value != val]
 
 def ChAdmin(ctx):
@@ -69,18 +65,18 @@ def ChAdmin(ctx):
 def ChSer(ctx):
     if (Col.count_documents({"IDd":"GuildInfo","IDg":str(ctx.guild.id),"Setup":"Done"}) != 0):
         return True
-    raise ProfSer("Unready")
+    raise IsSetup("Unready")
 
-def ChAdMo(ctx):
+def ChDev(ctx):
     if ctx.author.id == 443986051371892746:
         return True
     raise Ignore("Ignore")
 
-def StrTSTM(SecGiN):
+def FormatTime(SecondsFormat):
     Day = 0
     Hour = 0
     Min = 0
-    while SecGiN >= 60:
+    while SecondsFormat >= 60:
         Min += 1
         if Min == 60:
             Hour += 1
@@ -88,55 +84,15 @@ def StrTSTM(SecGiN):
         if Hour == 24:
             Day += 1
             Hour -= 24
-        SecGiN -= 60
+        SecondsFormat -= 60
     if Day != 0:
-        return f'{Day}Day(s) {Hour}Hour(s) {Min}Min(s) {SecGiN}Sec(s)'
+        return f'{Day}Day(s) {Hour}Hour(s) {Min}Min(s) {SecondsFormat}Sec(s)'
     elif Hour != 0:
-        return f'{Hour}Hour(s) {Min}Min(s) {SecGiN}Sec(s)'
+        return f'{Hour}Hour(s) {Min}Min(s) {SecondsFormat}Sec(s)'
     elif Min != 0:
-        return f'{Min}Min(s) {SecGiN}Sec(s)'
+        return f'{Min}Min(s) {SecondsFormat}Sec(s)'
     else:
-        return f'{SecGiN}Sec(s)'
-
-def CheckSub(Sub):
-    Valid = True
-    try:
-        Reddit.subreddits.search_by_name(Sub, exact = True)
-        Reddit.subreddit(Sub).subreddit_type
-    except (NotFound, Forbidden):
-        Valid = False
-    return Valid
-    
-def PosType(Pty):
-    TextB = False
-    if Pty.is_self:
-        TextB = True
-    return TextB
-
-def StrTSTM(SecGiN):
-    Day = 0
-    Hour = 0
-    Min = 0
-    while SecGiN >= 60:
-        Min += 1
-        if Min == 60:
-            Hour += 1
-            Min -= 60
-        if Hour == 24:
-            Day += 1
-            Hour -= 24
-        SecGiN -= 60
-    if Day != 0:
-        return f'{Day}Day(s) {Hour}Hour(s) {Min}Min(s) {SecGiN}Sec(s)'
-    elif Hour != 0:
-        return f'{Hour}Hour(s) {Min}Min(s) {SecGiN}Sec(s)'
-    elif Min != 0:
-        return f'{Min}Min(s) {SecGiN}Sec(s)'
-    else:
-        return f'{SecGiN}Sec(s)'
-
-def GeRoP(user):
-    SuPServ = DClient.get_guild(783250489843384341)
+        return f'{SecondsFormat}Sec(s)'
     
 class IsBot(commands.CheckFailure):
     pass
@@ -146,7 +102,7 @@ async def ChBot(ctx):
         raise IsBot("Bot")
     return True
 
-class ProfSer(commands.CheckFailure):
+class IsSetup(commands.CheckFailure):
     pass
 
 class IsAdmin(commands.CheckFailure):
@@ -158,259 +114,142 @@ async def ChVote(ctx):
     if await TClient.get_user_vote(ctx.author.id):
         return True 
     else:
-        SuPServ = DClient.get_guild(783250489843384341)
-        SuPuS = SuPServ.get_member(ctx.author.id)
-        SuRo = []
-        SuRo.append(discord.utils.get(SuPServ.roles, id = 783250729686532126))
-        SuRo.append(discord.utils.get(SuPServ.roles, id = 783256987655340043))
-        SuRo.append(discord.utils.get(SuPServ.roles, id = 784123230372757515))
-        SuRo.append(discord.utils.get(SuPServ.roles, id = 784124034559377409))
-        for i in SuRo:
-            if i in SuPuS.roles:
+        MemGuild = DClient.get_guild(783250489843384341)
+        Mem = MemGuild.get_member(ctx.author.id)
+        Roles = []
+        Roles.append(discord.utils.get(MemGuild.roles, id = 783250729686532126))
+        Roles.append(discord.utils.get(MemGuild.roles, id = 783256987655340043))
+        Roles.append(discord.utils.get(MemGuild.roles, id = 784123230372757515))
+        Roles.append(discord.utils.get(MemGuild.roles, id = 784124034559377409))
+        for Role in Roles:
+            if Role in Mem.roles:
                 return True
         raise IsVote("No Vote")
 
 class IsPatreon(commands.CheckFailure):
     pass
 def ChPatreon(ctx):
-    SuPServ = DClient.get_guild(783250489843384341)
-    SuPuS = SuPServ.get_member(ctx.author.id)
-    SuRo = []
-    SuRo.append(discord.utils.get(SuPServ.roles, id = 783250729686532126))
-    SuRo.append(discord.utils.get(SuPServ.roles, id = 783256987655340043))
-    SuRo.append(discord.utils.get(SuPServ.roles, id = 784123230372757515))
-    SuRo.append(discord.utils.get(SuPServ.roles, id = 784124034559377409))
-    for i in SuRo:
-        if i in SuPuS.roles:
+    MemGuild = DClient.get_guild(783250489843384341)
+    Mem = MemGuild.get_member(ctx.author.id)
+    Roles = []
+    Roles.append(discord.utils.get(MemGuild.roles, id = 783250729686532126))
+    Roles.append(discord.utils.get(MemGuild.roles, id = 783256987655340043))
+    Roles.append(discord.utils.get(MemGuild.roles, id = 784123230372757515))
+    Roles.append(discord.utils.get(MemGuild.roles, id = 784124034559377409))
+    for Role in Roles:
+        if Role in Mem.roles:
             return True
     raise IsPatreon("Not Patreon")
 
 class Ignore(commands.CheckFailure):
     pass
 @DClient.check
-async def ChAdMonD(ctx):
-    if BoDowNFn and ctx.guild.id != 586940644153622550:
+async def ChModDown(ctx):
+    if ("".join(open("OpenState.txt").read().splitlines()) == "Down") and ctx.author.id not in [507212584634548254,443986051371892746,224809178793771009]:
         raise Ignore("Ignore")
     return True 
 
-@DClient.command(name = "apod")
-@commands.cooldown(1, 1, commands.BucketType.user)
-async def GeNAapod(ctx):
-    if ChPatreonFu(ctx) or (await TClient.get_user_vote(ctx.author.id)):
-        NaSapod = requests.get("https://api.nasa.gov/planetary/apod?api_key=0dsw3SiQmYCeNnwKZROSQIyrcZqjoDzMBo4ggCwS", headers = {"Accept": "application/json"})
-        MaNaSapodJ = NaSapod.json()
-        if len(MaNaSapodJ["explanation"]) > 1021:
-            NapodteXt = MaNaSapodJ["explanation"][0:1021]
-            NapodteXt = NapodteXt + "..."
-        else:
-            NapodteXt = MaNaSapodJ["explanation"]
-        DEm = discord.Embed(title = MaNaSapodJ["title"], description = f'Date {MaNaSapodJ["date"]}', color = 0xa9775a)
-        DEm.add_field(name = "Explanation:", value = NapodteXt, inline = False)
-        DEm.set_image(url = MaNaSapodJ["hdurl"])
-        await ctx.message.channel.send(embed = DEm)
-    else:
-        TemS = await ctx.message.channel.send("This command is reserved for voters or Patreon Supporters. \n:robot: zvote or zpatreon to learn more. :robot:")
-
-@DClient.command(name = "nasa")
-@commands.cooldown(1, 1, commands.BucketType.user)
-async def BGteNasCur(ctx):
-    def MaANasEm(ChImNaCr, IMNuNa, IMgAllT):
-        NEm = discord.Embed(title = "Mars", description = "By: Curiosity Rover (NASA)", color = 0xcd5d2e)
-        NEm.set_thumbnail(url = "https://i.imgur.com/xmSmG0f.jpeg")
-        NEm.add_field(name = "Camera:", value = ChImNaCr[IMNuNa]["camera"]["full_name"], inline = True)
-        NEm.add_field(name = "Taken on:", value = ChImNaCr[IMNuNa]["earth_date"], inline = True)
-        NEm.add_field(name = f'`Image: {IMNuNa+1}/{IMgAllT}`', value = "\u200b", inline = False)
-        NEm.set_image(url = ChImNaCr[IMNuNa]["img_src"])
-        return NEm
-
-    def ChCHEm(RcM, RuS):
-        return RuS.bot == False and RcM.message == NAimSu and str(RcM.emoji) in ["⬅️","❌","➡️","#️⃣"]
-
-    def ChCHEmFN(MSg):
-        MesS = MSg.content.lower()
-        RsT = False
-        try:
-            if int(MSg.content):
-                RsT = True
-        except ValueError:
-            if (MesS == "cancel") or (MesS == "c"):
-                RsT = True
-        return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
-
-    NaSiCr = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=1000&api_key=0dsw3SiQmYCeNnwKZROSQIyrcZqjoDzMBo4ggCwS", headers = {"Accept": "application/json"})
-    MaNasCrJ = NaSiCr.json()
-    ChImNaCr = random.sample(MaNasCrJ["photos"], k = 25)
-    IMgAllT = len(ChImNaCr)
-    IMNuNa = 0
-    NAimSu = await ctx.message.channel.send(embed = MaANasEm(ChImNaCr, IMNuNa, IMgAllT))
-    await NAimSu.add_reaction("⬅️")
-    await NAimSu.add_reaction("❌")
-    await NAimSu.add_reaction("➡️")
-    await NAimSu.add_reaction("#️⃣")
-    while True:
-        try:
-            Res = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 120) 
-            await NAimSu.remove_reaction(Res[0].emoji, Res[1])
-            if Res[0].emoji == "⬅️" and IMNuNa != 0:
-                IMNuNa -= 1
-                await NAimSu.edit(embed = MaANasEm(ChImNaCr, IMNuNa, IMgAllT))
-            elif Res[0].emoji == "➡️":
-                if IMNuNa < IMgAllT-1:
-                    IMNuNa += 1
-                    await NAimSu.edit(embed = MaANasEm(ChImNaCr, IMNuNa, IMgAllT))
-                else:
-                    await NAimSu.edit(embed = MaANasEm(ChImNaCr, IMNuNa, IMgAllT))
-                    await NAimSu.remove_reaction("⬅️", DClient.user)
-                    await NAimSu.remove_reaction("❌", DClient.user)
-                    await NAimSu.remove_reaction("➡️", DClient.user)
-                    await NAimSu.remove_reaction("#️⃣", DClient.user)
-                    break
-            elif Res[0].emoji == "#️⃣":
-                if ChPatreonFu(ctx) or (await TClient.get_user_vote(ctx.author.id)):
-                    TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n*The Navigation closes automatically after 10sec of inactivity.*')
-                    try:
-                        ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
-                        await TemTw.delete()
-                        await ResE.delete()
-                        try:
-                            try:
-                                pG = int(ResE.content)
-                                if 0 < pG <= IMgAllT-1:
-                                    IMNuNa = pG-1
-                                elif pG < 1:
-                                    IMNuNa = 0
-                                    pass
-                                else:
-                                    IMNuNa = IMgAllT-1 
-                            except TypeError:
-                                pass
-                        except ValueError:
-                            pass
-                        await NAimSu.edit(embed = MaANasEm(ChImNaCr, IMNuNa, IMgAllT))
-                    except asyncio.exceptions.TimeoutError:
-                        await TemTw.edit("Request Timeout")
-                        await asyncio.sleep(5)
-                        await TemTw.delete()
-                else:
-                    TemS = await ctx.message.channel.send("Instant navigation to image is only for voters or Patreon Supporters. \n:robot: zvote or zpatreon to learn more. :robot:")
-                    await asyncio.sleep(5)
-                    await TemS.delete()
-            elif Res[0].emoji == "❌":
-                await NAimSu.edit(embed = MaANasEm(ChImNaCr, IMNuNa, IMgAllT))
-                await NAimSu.remove_reaction("⬅️", DClient.user)
-                await NAimSu.remove_reaction("❌", DClient.user)
-                await NAimSu.remove_reaction("➡️", DClient.user)
-                await NAimSu.remove_reaction("#️⃣", DClient.user)
-                break
-        except asyncio.TimeoutError:
-            await NAimSu.edit(embed = MaANasEm(ChImNaCr, IMNuNa, IMgAllT))
-            await NAimSu.remove_reaction("⬅️", DClient.user)
-            await NAimSu.remove_reaction("❌", DClient.user)
-            await NAimSu.remove_reaction("➡️", DClient.user)
-            await NAimSu.remove_reaction("#️⃣", DClient.user)
-            break
-
 @DClient.command(aliases = ["calculate","calc"])
 @commands.cooldown(1, 1, commands.BucketType.user)
-async def CalCeR(ctx, *args):
-    ToCalO = "".join(args)
-    def CalcST(NumE):
-        SaFTSen = True
-        for i in NumE:
+async def Calculate(ctx, *args):
+    ToCalc = "".join(args)
+    def Calc(Nums):
+        ChSafe = True
+        for Num in Nums:
             try:
-                int(i)
+                int(Num)
             except ValueError:
-                if i not in ["(",")","*","/","+","-","**"]:
-                    SaFTSen = False 
+                if Num not in ["(",")","*","/","+","-","**"]:
+                    ChSafe = False 
                     break
-        if SaFTSen:
-            return f'Answer is: {round(eval(NumE),4)}'
+        if ChSafe:
+            return f'Answer is: {round(eval(Nums),4)}'
         else:
             return "Failed to calculate :confused:"
-    AnSrsOErAl = CalcST(ToCalO)
-    await ctx.message.channel.send(AnSrsOErAl)
+    Calculated = Calc(ToCalc)
+    await ctx.message.channel.send(Calculated)
 
 @DClient.command(name = "covid")
 @commands.cooldown(1, 3, commands.BucketType.guild)
-async def CovSt(ctx, *args):
+async def Covid19(ctx, *args):
     if args:
-        CovDLoc = Cov.getLocations()
-        ConFC = 0
-        DeaFC = 0
-        RecFC = 0
-        FounCon = False
-        for TCov in CovDLoc:
-            if TCov["country"].lower() == " ".join(args).lower() or TCov["country_code"].lower() == " ".join(args).lower():
-                FounCon = True
-                ConT = TCov["country"]
-                PopT = TCov["country_population"]
-                ConFC += TCov["latest"]["confirmed"]
-                DeaFC += TCov["latest"]["deaths"]
-                RecFC += TCov["latest"]["recovered"]
-        if FounCon:
+        CovidLocs = Cov.getLocations()
+        LocConfirmed = 0
+        LocDeaths = 0
+        LocRecovered = 0
+        LocDiscovered = False
+        for Loc in CovidLocs:
+            if Loc["country"].lower() == " ".join(args).lower() or Loc["country_code"].lower() == " ".join(args).lower():
+                LocDiscovered = True
+                LocF = Loc["country"]
+                LocPop = Loc["country_population"]
+                LocConfirmed += Loc["latest"]["confirmed"]
+                LocDeaths += Loc["latest"]["deaths"]
+                LocRecovered += Loc["latest"]["recovered"]
+        if LocDiscovered:
             CEm = discord.Embed(title = f'{ConT} Covid-19 Status', description = f'This data was requested on {datetime.date.today()}', color = 0xbd9400)
-            CEm.add_field(name = "Population: ", value = f'{PopT:,}', inline = False)
-            CEm.add_field(name = "Confirmed: ", value = f'{ConFC:,}', inline = False)
-            CEm.add_field(name = "Deaths: ", value = f'{DeaFC:,}', inline = False)
-            CEm.add_field(name = "Recovered: ", value = f'{RecFC:,}', inline = False)
+            CEm.add_field(name = "Population: ", value = f'{LocPop:,}', inline = False)
+            CEm.add_field(name = "Confirmed: ", value = f'{LocConfirmed:,}', inline = False)
+            CEm.add_field(name = "Deaths: ", value = f'{LocDeaths:,}', inline = False)
+            CEm.add_field(name = "Recovered: ", value = f'{LocRecovered:,}', inline = False)
             CEm.set_footer(text = "Note: Data may not be completely accurate")
         else:
             await ctx.message.channel.send("Country not found :pensive:")
     else: 
-        CovDWW = Cov.getLatest()
+        CovidWorld = Cov.getLatest()
         CEm = discord.Embed(title = "Worldwide Covid-19 Status", description = f'This data was requested on {datetime.date.today()}', color = 0xbd9400)
-        CEm.add_field(name = "Confirmed: ", value = f'{CovDWW["confirmed"]:,}', inline = False)
-        CEm.add_field(name = "Deaths: ", value = f'{CovDWW["deaths"]:,}', inline = False)
-        CEm.add_field(name = "Recovered: ", value = f'{CovDWW["recovered"]:,}', inline = False)
+        CEm.add_field(name = "Confirmed: ", value = f'{CovidWorld["confirmed"]:,}', inline = False)
+        CEm.add_field(name = "Deaths: ", value = f'{CovidWorld["deaths"]:,}', inline = False)
+        CEm.add_field(name = "Recovered: ", value = f'{CovidWorld["recovered"]:,}', inline = False)
         CEm.set_footer(text = "Note: Data may not be completely accurate")
     await ctx.message.channel.send(embed = CEm)
 
 @DClient.command(name = "remind")
 @commands.cooldown(1, 1, commands.BucketType.user)
-async def RmdAtDMY(ctx, *args):
-    def TtWaT(Day, Hour, Min, Sec):
+async def RemindAfter(ctx, *args):
+    def TotalWait(Day, Hour, Min, Sec):
         return (Day*86400) + (Hour*3600) + (Min*60) + (Sec)
     def ChCHEm(RcM, RuS):
-        return RuS.bot == False and RcM.message == RemTmm and str(RcM.emoji) in ["✅","❌"]
+        return RuS.bot == False and RcM.message == ConfirmAwait and str(RcM.emoji) in ["✅","❌"]
     if args:
         try:
-            EnPerT = (" ".join(args)).split(" ")
+            TimeInputs = (" ".join(args)).split(" ")
             D = 0
             H = 0
             M = 0
             S = 0
-            for TimSE in EnPerT:
-                if TimSE[-1].lower() == "d":
-                    D += int(TimSE[:-1])
-                elif TimSE[-1].lower() == "h":
-                    H += int(TimSE[:-1])
-                elif TimSE[-1].lower() == "m":
-                    M += int(TimSE[:-1])
-                elif TimSE[-1].lower() == "s":
-                    S += int(TimSE[:-1])
+            for Times in TimeInputs:
+                if Times[-1].lower() == "d":
+                    D += int(Times[:-1])
+                elif Times[-1].lower() == "h":
+                    H += int(Times[:-1])
+                elif Times[-1].lower() == "m":
+                    M += int(Times[:-1])
+                elif Times[-1].lower() == "s":
+                    S += int(Times[:-1])
                 else:
                     raise ValueError
-            TToTm = TtWaT(D,H,M,S)
-            if TToTm <= 86400:
-                RemTmm = await ctx.message.channel.send(f':timer: Are you sure you want to be reminded in {StrTSTM(TToTm)}? :timer:')
-                await RemTmm.add_reaction("❌")
-                await RemTmm.add_reaction("✅")
+            AwaitTime = TotalWait(D,H,M,S)
+            if AwaitTime <= 86400:
+                ConfirmAwait = await ctx.message.channel.send(f':timer: Are you sure you want to be reminded in {FormatTime(AwaitTime)}? :timer:')
+                await ConfirmAwait.add_reaction("❌")
+                await ConfirmAwait.add_reaction("✅")
                 try:
                     ReaEm = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 10)
                     if ReaEm[0].emoji == "✅":
-                        await RemTmm.edit(content = f'You will be pinged in {StrTSTM(TToTm)} :thumbsup:')
+                        await ConfirmAwait.edit(content = f'You will be pinged in {FormatTime(AwaitTime)} :thumbsup:')
                         await asyncio.sleep(2)
-                        await RemTmm.delete()
-                        await asyncio.sleep(TToTm)
-                        await ctx.message.channel.send(f':timer: Its been {StrTSTM(TToTm)} {ctx.message.author.mention} :timer:') 
+                        await ConfirmAwait.delete()
+                        await asyncio.sleep(AwaitTime)
+                        await ctx.message.channel.send(f':timer: Its been {FormatTime(AwaitTime)} {ctx.message.author.mention} :timer:') 
                     elif  ReaEm[0].emoji == "❌":
-                        await RemTmm.edit(content = "Request Cancelled :thumbsup:")
+                        await ConfirmAwait.edit(content = "Request Cancelled :thumbsup:")
                         await asyncio.sleep(2)
-                        await RemTmm.delete()
+                        await ConfirmAwait.delete()
                 except asyncio.TimeoutError:
-                    await RemTmm.edit(content = "Request Timeout :alarm_clock:")
+                    await ConfirmAwait.edit(content = "Request Timeout :alarm_clock:")
                     await asyncio.sleep(2)
-                    await RemTmm.delete()
+                    await ConfirmAwait.delete()
             else:
                 await ctx.message.channel.send("zremind is limited to waiting for 1day max. :cry:")      
         except ValueError:
@@ -420,25 +259,25 @@ async def RmdAtDMY(ctx, *args):
 
 @DClient.command(name = "pdf")
 @commands.cooldown(1, 5, commands.BucketType.user)
-async def PdSwtOI(ctx, *args):
-    def EmbTI(NfIRa, ImGCns, NpIMg, SImAUp, Extra = "Make sure to close the PDF once you are done .\n\n*PDF closes automatically after 2mins of inactivity.*"):
+async def PDFreader(ctx, *args):
+    def EmbTI(PDFname, PDFimages, PDFpage, PDFcache, Extra = "Make sure to close the PDF once you are done .\n\n*PDF closes automatically after 2mins of inactivity.*"):
         try:
-            ImFA = SImAUp[NpIMg]
+            ImgurLink = PDFcache[PDFpage]
             print("Cached...")
-            SEco = False
+            CHcache = False
         except IndexError:
             print("Uploading...")
-            ImGCns[NpIMg].save(f'{NfIRa}.jpg', "JPEG")
-            ImFA = Imgur.upload_from_path(f'{NfIRa}.jpg')["link"]
-            SEco = True
-        PcEmE = discord.Embed(title = "PDF Viewer")
-        PcEmE.set_image(url = ImFA)
-        PcEmE.add_field(name = f'```{NpIMg+1}/{len(ImGCns)}```', value = "\u200b")
-        PcEmE.set_footer(text = "")
-        return SEco, ImFA, PcEmE
+            PDFimages[PDFpage].save(f'{PDFname}.jpg', "JPEG")
+            ImgurLink = Imgur.upload_from_path(f'{PDFname}.jpg')["link"]
+            CHcache = True
+        PEm = discord.Embed(title = "PDF Viewer")
+        PEm.set_image(url = ImgurLink)
+        PEm.add_field(name = f'```{PDFpage+1}/{len(PDFimages)}```', value = "\u200b")
+        PEm.set_footer(text = "")
+        return CHcache, ImgurLink, PEm
 
     def ChCHEm(RcM, RuS):
-        return RuS.bot == False and RcM.message == PcEm and str(RcM.emoji) in ["⬅️","❌","➡️","#️⃣"]
+        return RuS.bot == False and RcM.message == PTEm and str(RcM.emoji) in ["⬅️","❌","➡️","#️⃣"]
 
     def ChCHEmFN(MSg):
         MesS = MSg.content.lower()
@@ -452,157 +291,172 @@ async def PdSwtOI(ctx, *args):
         return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
 
     if (len(ctx.message.attachments) == 1 and len(args) == 0) or (len(ctx.message.attachments) == 0 and len(args) == 1):
-        AttLi = []
-        ArC = " ".join(args).split(" ")
+        PDFattach = []
+        URLargs = " ".join(args).split(" ")
         if len(ctx.message.attachments) == 1:
             for AtT in ctx.message.attachments:
-                AttLi.append(AtT.url)
+                PDFattach.append(AtT.url)
         else:
             try:
-                for Lin in ArC:
-                    AttLi.append(Lin)
+                for Lin in URLargs:
+                    PDFattach.append(Lin)
             except TypeError:
                 pass
 
-        for DoPdRd in AttLi:
+        for GetPDF in PDFattach:
             try:
-                TyPaT = requests.head(DoPdRd).headers.get("content-type").split("/")[1]
-                if TyPaT == "pdf":
-                    ChLeT = "ioewsahkzcldnpq"
-                    NfIRa = "".join((random.choice(ChLeT) for i in range(10)))
-                    rETyP = requests.get(DoPdRd, allow_redirects = True)
-                    open(f'{NfIRa}.pdf', "wb").write(rETyP.content)
-                    ImGCns = convert_from_path(f'{NfIRa}.pdf', 500, last_page = 40) 
-                    print(ImGCns)
-                    NpIMg = 0   
-                    SImAUp = [] 
-                    PcEm = await ctx.message.channel.send(embed = discord.Embed(title = "Uploading Page...", description = "After upload a page will no longer be uploaded again (Faster navigation to page)"))
-                    SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp)
-                    if SEco:
-                        SImAUp.append(ImFA)
-                    await PcEm.edit(embed = PcEmE)
-                    await PcEm.add_reaction("⬅️")
-                    await PcEm.add_reaction("❌")
-                    await PcEm.add_reaction("➡️")
-                    await PcEm.add_reaction("#️⃣")
+                ChPDF = requests.head(GetPDF).headers.get("content-type").split("/")[1]
+                if ChPDF == "pdf":
+                    RanLetters = "ioewsahkzcldnpq"
+                    PDFname = "".join((random.choice(RanLetters) for i in range(10)))
+                    PDFcontent = requests.get(GetPDF, allow_redirects = True)
+                    open(f'{PDFname}.pdf', "wb").write(PDFcontent.content)
+                    PDFimages = convert_from_path(f'{PDFname}.pdf', 500, last_page = 40) 
+                    print(PDFimages)
+                    PDFpage = 0   
+                    PDFcache = [] 
+                    PTEm = await ctx.message.channel.send(embed = discord.Embed(title = "Uploading Page...", description = "After upload a page will no longer be uploaded again (Faster navigation to page)"))
+                    CHcache, ImgurLink, PEm = EmbTI(PDFname, PDFimages, PDFpage, PDFcache)
+                    if CHcache:
+                        PDFcache.append(ImgurLink)
+                    await PTEm.edit(embed = PEm)
+                    await PTEm.add_reaction("⬅️")
+                    await PTEm.add_reaction("❌")
+                    await PTEm.add_reaction("➡️")
+                    await PTEm.add_reaction("#️⃣")
                     while True:
                         try:
                             ReaEm = await DClient.wait_for("reaction_add", check = ChCHEm, timeout = 120) 
-                            await PcEm.remove_reaction(ReaEm[0].emoji, ReaEm[1])
-                            if ReaEm[0].emoji == "⬅️" and NpIMg != 0:
-                                NpIMg -= 1     
-                                SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp)
-                                if SEco:
-                                    SImAUp.append(ImFA)
-                                await PcEm.edit(embed = PcEmE)
+                            await PTEm.remove_reaction(ReaEm[0].emoji, ReaEm[1])
+                            if ReaEm[0].emoji == "⬅️" and PDFpage != 0:
+                                PDFpage -= 1     
+                                CHcache, ImgurLink, PEm = EmbTI(PDFname, PDFimages, PDFpage, PDFcache)
+                                if CHcache:
+                                    PDFcache.append(ImgurLink)
+                                await PTEm.edit(embed = PEm)
                             elif ReaEm[0].emoji == "➡️":
-                                if NpIMg < len(ImGCns)-1:
-                                    NpIMg += 1
-                                    SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp)
-                                    if SEco:
-                                        SImAUp.append(ImFA)
-                                    await PcEm.edit(embed = PcEmE)
+                                if PDFpage < len(PDFimages)-1:
+                                    PDFpage += 1
+                                    CHcache, ImgurLink, PEm = EmbTI(PDFname, PDFimages, PDFpage, PDFcache)
+                                    if CHcache:
+                                        PDFcache.append(ImgurLink)
+                                    await PTEm.edit(embed = PEm)
                                 else:
-                                    await PcEm.remove_reaction("⬅️", DClient.user)
-                                    await PcEm.remove_reaction("❌", DClient.user)
-                                    await PcEm.remove_reaction("➡️", DClient.user)
-                                    await PcEm.remove_reaction("#️⃣", DClient.user)
-                                    os.remove(f'{NfIRa}.jpg')
-                                    os.remove(f'{NfIRa}.pdf')
+                                    await PTEm.remove_reaction("⬅️", DClient.user)
+                                    await PTEm.remove_reaction("❌", DClient.user)
+                                    await PTEm.remove_reaction("➡️", DClient.user)
+                                    await PTEm.remove_reaction("#️⃣", DClient.user)
+                                    os.remove(f'{PDFname}.jpg')
+                                    os.remove(f'{PDFname}.pdf')
                                     break
                             elif ReaEm[0].emoji == "#️⃣":
-                                if ChPatreonFu(ctx) or (await TClient.get_user_vote(ctx.author.id)):
-                                    SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp,"**CHOOSE A NUMBER** or type anything else to cancel")
-                                    await PcEm.edit(embed = PcEmE)
+                                if ChVote(ctx):
+                                    CHcache, ImgurLink, PEm = EmbTI(PDFname, PDFimages, PDFpage, PDFcache,"**CHOOSE A NUMBER** or type anything else to cancel")
+                                    await PTEm.edit(embed = PEm)
                                     ResE = await DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
                                     await ResE.delete()
                                     try:
                                         try:
                                             pG = int(ResE.content)
-                                            if 0 < pG <= len(ImGCns)-1:
-                                                NpIMg = pG-1
+                                            if 0 < pG <= len(PDFimages)-1:
+                                                PDFpage = pG-1
                                             elif pG < 1:
-                                                NpIMg = 0
+                                                PDFpage = 0
                                                 pass
                                             else:
-                                                NpIMg = len(ImGCns)-1 
+                                                PDFpage = len(PDFimages)-1 
                                         except TypeError:
                                             pass
                                     except ValueError:
                                         pass
-                                    SEco, ImFA, PcEmE = EmbTI(NfIRa, ImGCns, NpIMg, SImAUp)
-                                    if SEco:
-                                        SImAUp.append(ImFA)
-                                    await PcEm.edit(embed = PcEmE)
-                                else:
-                                    TemS = await ctx.message.channel.send("Instant navigation to page is only for voters or Patreon Supporters. \n:robot: zvote or zpatreon to learn more. :robot:")
-                                    await asyncio.sleep(5)
-                                    await TemS.delete()
+                                    CHcache, ImgurLink, PEm = EmbTI(PDFname, PDFimages, PDFpage, PDFcache)
+                                    if CHcache:
+                                        PDFcache.append(ImgurLink)
+                                    await PTEm.edit(embed = PEm)
                             elif ReaEm[0].emoji == "❌":
-                                await PcEm.remove_reaction("⬅️", DClient.user)
-                                await PcEm.remove_reaction("❌", DClient.user)
-                                await PcEm.remove_reaction("➡️", DClient.user)
-                                await PcEm.remove_reaction("#️⃣", DClient.user)
-                                os.remove(f'{NfIRa}.jpg')
-                                os.remove(f'{NfIRa}.pdf')
+                                await PTEm.remove_reaction("⬅️", DClient.user)
+                                await PTEm.remove_reaction("❌", DClient.user)
+                                await PTEm.remove_reaction("➡️", DClient.user)
+                                await PTEm.remove_reaction("#️⃣", DClient.user)
+                                os.remove(f'{PDFname}.jpg')
+                                os.remove(f'{PDFname}.pdf')
                                 break
                         except asyncio.TimeoutError:
-                            await PcEm.remove_reaction("⬅️", DClient.user)
-                            await PcEm.remove_reaction("❌", DClient.user)
-                            await PcEm.remove_reaction("➡️", DClient.user)
-                            await PcEm.remove_reaction("#️⃣", DClient.user)
-                            os.remove(f'{NfIRa}.jpg')
-                            os.remove(f'{NfIRa}.pdf')
+                            await PTEm.remove_reaction("⬅️", DClient.user)
+                            await PTEm.remove_reaction("❌", DClient.user)
+                            await PTEm.remove_reaction("➡️", DClient.user)
+                            await PTEm.remove_reaction("#️⃣", DClient.user)
+                            os.remove(f'{PDFname}.jpg')
+                            os.remove(f'{PDFname}.pdf')
                             break
             except requests.exceptions.MissingSchema:
                 await ctx.message.channel.send("Not a PDF :woozy_face:")
     else:
         await ctx.message.channel.send("No or too many attachments :woozy_face:")
 
-@DClient.command(name = "fry")
+@DClient.group(name = "fry", invoke_without_command = True)
 @commands.cooldown(1, 1, commands.BucketType.user)
-async def CMsend(ctx, *args):
-    if len(ctx.message.attachments) > 0 or args:
-        ArC = " ".join(args).split(" ")
-        AttLi = []
-        if ArC[0] == "profile":
-            ArC.pop(0)
-            if len(ctx.message.mentions) > 0 and (f'<@!{ctx.message.mentions[0].id}>') == ArC[0]:
-                AttLi.append(str((ctx.message.mentions[0]).avatar_url))
-                ArC.pop(0)
-            else:
-                AttLi.append(str(ctx.author.avatar_url))
+async def ImageFrier(ctx, *args):
+    if args:
+        URLargs = " ".join(args).split(" ")
+        Attached = []
         try:
-            for Lin in ArC:
-                AttLi.append(Lin)
+            for url in URLargs:
+                Attached.append(url)
         except TypeError:
             pass
         for AtT in ctx.message.attachments:
-            AttLi.append(AtT.url)
-        files = []
+            Attached.append(AtT.url)
+        Files = []
         C = 0
-        for file in AttLi:
+        for File in Attached:
             try:
-                if requests.head(file).headers.get("content-type").split("/")[0] == "image":
+                if requests.head(File).headers.get("content-type").split("/")[0] == "image":
                     C += 1
-                    r = requests.get(file, allow_redirects = True)
-                    open("NsRndo.jpg", "wb").write(r.content)
-                    img = Image.open("NsRndo.jpg")
-                    img = await deeppyer.deepfry(img, flares = False)
-                    img.save("NsRndo.jpg")
-                    files.append(discord.File("NsRndo.jpg"))
-                    await ctx.message.channel.send(files = files)
-                    files.pop(0)
+                    GetURLimg = requests.get(File, allow_redirects = True)
+                    open("NsRndo.jpg", "wb").write(GetURLimg.content)
+                    Img = Image.open("NsRndo.jpg")
+                    Img = await deeppyer.deepfry(Img, flares = False)
+                    Img.save("NsRndo.jpg")
+                    Files.append(discord.File("NsRndo.jpg"))
+                    await ctx.message.channel.send(files = Files)
+                    Files.pop(0)
                     os.remove("NsRndo.jpg")
                 else:
-                    await ctx.message.channel.send(f'file({C}) isnt a valid image type :sweat:')
+                    await ctx.message.channel.send(f'File({C}) isnt a valid image type :sweat:')
             except requests.exceptions.MissingSchema:
                 pass
     else:
         await ctx.message.channel.send("No image(s) or link(s) were attached :woozy_face:")
 
-@CalCeR.error
-async def eCalCeRror(ctx, error):
+@ImageFrier.command(name = "profile")
+@commands.cooldown(1, 1, commands.BucketType.user)
+async def ProfileFrier(ctx):
+    if len(ctx.message.mentions) > 0:
+        Profile = str((ctx.message.mentions[0]).avatar_url)
+    else:
+        Profile = str(ctx.author.avatar_url)
+    try:
+        Files = []
+        C = 0
+        if requests.head(Profile).headers.get("content-type").split("/")[0] == "image":
+            C += 1
+            GetURLimg = requests.get(Profile, allow_redirects = True)
+            open("NsRndo.jpg", "wb").write(GetURLimg.content)
+            Img = Image.open("NsRndo.jpg")
+            Img = await deeppyer.deepfry(Img, flares = False)
+            Img.save("NsRndo.jpg")
+            Files.append(discord.File("NsRndo.jpg"))
+            await ctx.message.channel.send(files = Files)
+            Files.pop(0)
+            os.remove("NsRndo.jpg")
+        else:
+            await ctx.message.channel.send(f'File({C}) isnt a valid image type :sweat:')
+    except requests.exceptions.MissingSchema:
+        pass
+
+@Calculate.error
+async def CalculateError(ctx, error):
     if isinstance(error, commands.UnexpectedQuoteError):
         await ctx.message.channel.send("Failed to calculate :confused:")
     raise error
