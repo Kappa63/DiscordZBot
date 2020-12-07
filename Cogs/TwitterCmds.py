@@ -171,7 +171,7 @@ class TwitterCmds(commands.Cog):
                             TwTNum += 1
                             await TwTsL.edit(embed = MakEmTwt(TwTp, VrMa, ChTwTp(TwExt[TwTNum]), TwExt[TwTNum], TwTNum, len(TwExt)))
                         elif ReaEm[0].emoji == "#️⃣":
-                            if ChPatreonFu(ctx) or (await TClient.get_user_vote(ctx.author.id)):
+                            if await ChVote(ctx):
                                 TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n*The Navigation closes automatically after 10sec of inactivity.*')
                                 try:
                                     ResE = await self.DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
@@ -196,11 +196,6 @@ class TwitterCmds(commands.Cog):
                                     await TemTw.edit("Request Timeout")
                                     await asyncio.sleep(5)
                                     await TemTw.delete()
-                            else:
-                                TemS = await ctx.message.channel.send("Instant navigation to tweet is only for voters or Patreon Supporters. \n:robot: zvote or zpatreon to learn more. :robot:")
-                                await asyncio.sleep(5)
-                                await TemS.delete()
-
                         elif ReaEm[0].emoji == "➡️" and len(TwExt) == TwTNum+1:
                             await TwTsL.remove_reaction("⬅️", self.DClient.user)
                             await TwTsL.remove_reaction("❌", self.DClient.user)

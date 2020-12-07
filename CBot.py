@@ -170,22 +170,6 @@ async def ChVote(ctx):
                 return True
         raise IsVote("No Vote")
 
-async def ChVoteFu(ctx):
-    if await TClient.get_user_vote(ctx.author.id):
-        return True 
-    else:
-        SuPServ = DClient.get_guild(783250489843384341)
-        SuPuS = SuPServ.get_member(ctx.author.id)
-        SuRo = []
-        SuRo.append(discord.utils.get(SuPServ.roles, id = 783250729686532126))
-        SuRo.append(discord.utils.get(SuPServ.roles, id = 783256987655340043))
-        SuRo.append(discord.utils.get(SuPServ.roles, id = 784123230372757515))
-        SuRo.append(discord.utils.get(SuPServ.roles, id = 784124034559377409))
-        for i in SuRo:
-            if i in SuPuS.roles:
-                return True
-        return False
-
 class IsPatreon(commands.CheckFailure):
     pass
 def ChPatreon(ctx):
@@ -200,19 +184,6 @@ def ChPatreon(ctx):
         if i in SuPuS.roles:
             return True
     raise IsPatreon("Not Patreon")
-
-def ChPatreonFu(ctx):
-    SuPServ = DClient.get_guild(783250489843384341)
-    SuPuS = SuPServ.get_member(ctx.author.id)
-    SuRo = []
-    SuRo.append(discord.utils.get(SuPServ.roles, id = 783250729686532126))
-    SuRo.append(discord.utils.get(SuPServ.roles, id = 783256987655340043))
-    SuRo.append(discord.utils.get(SuPServ.roles, id = 784123230372757515))
-    SuRo.append(discord.utils.get(SuPServ.roles, id = 784124034559377409))
-    for i in SuRo:
-        if i in SuPuS.roles:
-            return True
-    return False
 
 class Ignore(commands.CheckFailure):
     pass

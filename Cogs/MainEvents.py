@@ -1,4 +1,5 @@
 from discord.ext import commands
+import discord
 from CBot import IsBot, IsVote, IsPatreon, Ignore, IsAdmin, ProfSer
 from CBot import StrTSTM
 
@@ -22,7 +23,7 @@ class MainEvents(commands.Cog):
         elif isinstance(error, IsAdmin):
             await ctx.message.channel.send("Non-admins are not allowed to use this command :face_with_raised_eyebrow:")
         elif isinstance(error, IsVote):
-            await ctx.message.channel.send("This command is only for voters! You can vote [here](https://top.gg/bot/768397640140062721/vote) :no_mouth:")
+            await ctx.message.channel.send(embed = discord.Embed(title = "Oops", description = "This command is only for voters or patreon! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord) / [Vote](https://top.gg/bot/768397640140062721/vote)"))
         elif isinstance(error, ProfSer):
             await ctx.message.channel.send(":point_right: Please setup your server first (with 'zsetup')! Check all server commands with 'zhelp server' :point_left:")   
         elif isinstance(error, commands.CommandNotFound) or isinstance(error, Ignore):

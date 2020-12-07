@@ -460,7 +460,7 @@ class AnimeManga(commands.Cog):
                                     await DmSent.remove_reaction("#️⃣", self.DClient.user)
                                     break
                             elif Res[0].emoji == "#️⃣":
-                                if ChPatreonFu(ctx) or (await TClient.get_user_vote(ctx.author.id)):
+                                if await ChVote(ctx):
                                     TempNG = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n*The Navigation closes automatically after 10sec of inactivity.*')
                                     try:
                                         ResE = await self.DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
@@ -485,10 +485,6 @@ class AnimeManga(commands.Cog):
                                         await TempNG.edit("Request Timeout")
                                         await asyncio.sleep(5)
                                         await TempNG.delete()
-                                else:
-                                    TemS = await ctx.message.channel.send("Instant navigation to page is only for voters or Patreon Supporters. \n:robot: zvote or zpatreon to learn more. :robot:")
-                                    await asyncio.sleep(5)
-                                    await TemS.delete()
                             elif Res[0].emoji == "❌":
                                 await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
                                 await DmSent.remove_reaction("⬅️", self.DClient.user)
