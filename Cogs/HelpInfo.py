@@ -95,11 +95,11 @@ class HelpInfo(commands.Cog):
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendN(self, ctx):
         HEm = discord.Embed(title = "**ZBot Navigation Help**", description = "\u200b", color = 0x0af531)
-        HEm.add_field(name = "zanime (Anime Name): ", value = "Searches for anime and returns all the info about chosen one", inline = False)
-        HEm.add_field(name = "zmanga (Manga Name): ", value = "Searches for manga and returns all the info about chosen one", inline = False)
-        HEm.add_field(name = "zhentai (Magic Numbers): ", value = "Gets doujin from nhentai using magic numbers (NSFW)", inline = False)
-        HEm.add_field(name = "zhentai random: ", value = "Gets a random doujin from nhentai (NSFW)", inline = False)
-        HEm.add_field(name = "zhentai search (Doujin Name): ", value = "Searches for the 10 most popular doujin (NSFW)", inline = False)
+        HEm.add_field(name = "Right Arrow (-->): ", value = "Flips to the next image", inline = False)
+        HEm.add_field(name = "Left Arrow (<--): ", value = "Flip to the previous image", inline = False)
+        HEm.add_field(name = "Red X: ", value = "Exits the embed. (No longer navigateable)", inline = False)
+        HEm.add_field(name = "Hashtag (#): ", value = 'After you click it you can input a number of an image to instantly go to it. You can type "c" or "cancel" to cancel(Only for voters/patreon)', inline = False)
+        HEm.add_field(name = "\nNotes: ", value = "-In instant navigation you have 10sec to make an input before its automatically cancelled.\n-Navigateables close automatically after 2mins of not using them.")
         await ctx.message.channel.send(embed = HEm)
 
     @commands.command(aliases = ["ver","version"])
@@ -107,7 +107,7 @@ class HelpInfo(commands.Cog):
     async def RetVer(self, ctx):
         VEm = discord.Embed(title = "Active Version", description = "ZBot build version and info", color = 0x3695ba)
         VEm.add_field(name = "Dev: ", value = "Kappa#5173", inline = False)
-        VEm.add_field(name = "Version: ", value = "1.3a", inline = False)
+        VEm.add_field(name = "Version: ", value = "1.4a", inline = False)
         VEm.add_field(name = "Release: ", value = "21/11/2020", inline = True)
         await ctx.message.channel.send(embed = VEm)
 

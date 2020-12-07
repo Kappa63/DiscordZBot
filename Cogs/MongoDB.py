@@ -3,6 +3,7 @@ import discord
 import FuncMon
 from CBot import Col, Colvt
 from CBot import ChAdmin, ChSer, RemoveExtra
+import asyncio
 
 class MongoDB(commands.Cog):
     def __init__(self, DClient):

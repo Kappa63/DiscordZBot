@@ -3,6 +3,7 @@ from discord.ext import commands
 import mal
 from hentai import Utils, Sort, Hentai, Format
 from CBot import MClient
+from CBot import ChVote
 import asyncio
 
 class AnimeManga(commands.Cog):
@@ -11,7 +12,7 @@ class AnimeManga(commands.Cog):
 
     @commands.command(name = "manga")
     @commands.cooldown(1, 10, commands.BucketType.guild)
-    async def MagMa(self, ctx, *args):
+    async def MangaInfo(self, ctx, *args):
         def ChCHanS(MSg):
             MesS = MSg.content.lower()
             RsT = False
@@ -24,17 +25,17 @@ class AnimeManga(commands.Cog):
             return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
         if args:
             try:
-                Srks = " ".join(args)
+                MangaInput = " ".join(args)
                 C = 0
-                SrchMag = []
+                SrchManga = []
                 MnSrS = await ctx.message.channel.send(embed = discord.Embed(title = ":mag: Searching...",  description = "\u200b", color = 0x3695ba))
-                SAEm = discord.Embed(title = f":mag: Results for '{Srks}'",  description = "\u200b", color = 0x3695ba)
-                for MagRes in mal.MangaSearch(Srks).results:
+                SAEm = discord.Embed(title = f":mag: Results for '{MangaInput}'",  description = "\u200b", color = 0x3695ba)
+                for MangaResult in mal.MangaSearch(MangaInput).results:
                     C += 1
-                    SAEm.add_field(name = "\u200b", value = f'{C}. `{MagRes.title}` **({MagRes.type})**', inline = False)
-                    SrchMag.append(MagRes)
+                    SAEm.add_field(name = "\u200b", value = f'{C}. `{MangaResult.title}` **({MangaResult.type})**', inline = False)
+                    SrchManga.append(MangaResult)
                     if C == 10:
-                        print(MagRes)
+                        print(MangaResult)
                         break
                 SAEm.set_footer(text = 'Choose a number to view MAL entry. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
                 await MnSrS.edit(embed = SAEm)
@@ -43,116 +44,116 @@ class AnimeManga(commands.Cog):
                     LResS = ResS.content.lower()
                     try:
                         if int(ResS.content) <= 10:
-                            MagI = SrchMag[int(ResS.content)-1].mal_id
-                            await MnSrS.edit(embed = discord.Embed(title = ":calling: Finding...",  description = f'{SrchMag[int(ResS.content)-1].title} **({SrchMag[int(ResS.content)-1].type})**', color = 0x3695ba)) 
+                            MangaID = SrchManga[int(ResS.content)-1].mal_id
+                            await MnSrS.edit(embed = discord.Embed(title = ":calling: Finding...",  description = f'{SrchManga[int(ResS.content)-1].title} **({SrchManga[int(ResS.content)-1].type})**', color = 0x3695ba)) 
                     except ValueError:
                         if (LResS == "cancel") or (LResS == "c"):
                             await MnSrS.edit(embed = discord.Embed(title = ":x: Search Cancelled",  description = "\u200b", color = 0x3695ba))
                 except asyncio.TimeoutError:
                     await MnSrS.edit(embed = discord.Embed(title = ":hourglass: Search Timeout...",  description = "\u200b", color = 0x3695ba))
             except UnboundLocalError:
-                SAEm = discord.Embed(title = f':mag: Search for "{Srks}"',  description = "\u200b", color = 0x3695ba)
+                SAEm = discord.Embed(title = f':mag: Search for "{MangaInput}"',  description = "\u200b", color = 0x3695ba)
                 SAEm.add_field(name = "\u200b", value = "No Results found :woozy_face:", inline = False)
                 await MnSrS.edit(embed = SAEm)
 
             try:
-                MagF = MClient.get_manga_details(MagI)
-                MagFmal = mal.Manga(MagI)
-                MagG = []
-                for TMagG in MagF.genres:
-                    MagG.append(TMagG.name)
-                AEm = discord.Embed(title = f'{MagF.title} / {MagF.alternative_titles.ja} **({MagFmal.type})**',  description = f'{", ".join(MagG)}\n[Mal Page]({MagFmal.url})', color = 0x3695ba)
-                AEm.set_thumbnail(url = MagF.main_picture.large)
-                if len(MagF.synopsis) > 1021:
-                    MagSyn = MagF.synopsis[0:1021]
-                    MagSyn = MagSyn + "..."
+                MangaGet = MClient.get_manga_details(MangaID)
+                MangaGetmal = mal.Manga(MangaID)
+                MangaGenres = []
+                for Genre in MangaGet.genres:
+                    MangaGenres.append(Genre.name)
+                AEm = discord.Embed(title = f'{MangaGet.title} / {MangaGet.alternative_titles.ja} **({MangaGetmal.type})**',  description = f'{", ".join(MangaGenres)}\n[Mal Page]({MangaGetmal.url})', color = 0x3695ba)
+                AEm.set_thumbnail(url = MangaGet.main_picture.large)
+                if len(MangaGet.synopsis) > 1021:
+                    MangaSynopsis = MangaGet.synopsis[0:1021]
+                    MangaSynopsis = MangaSynopsis + "..."
                 else:
-                    MagSyn = MagF.synopsis
-                AEm.add_field(name = f'By: {", ".join(MagFmal.authors)}', value = "\u200b", inline = False)
-                AEm.add_field(name = "Synopsis:", value = MagSyn, inline = False)
+                    MangaSynopsis = MangaGet.synopsis
+                AEm.add_field(name = f'By: {", ".join(MangaGetmal.authors)}', value = "\u200b", inline = False)
+                AEm.add_field(name = "Synopsis:", value = MangaSynopsis, inline = False)
                 try:
-                    AEm.add_field(name = "Start Airing on:", value = MagF.start_date, inline = True)
+                    AEm.add_field(name = "Start Airing on:", value = MangaGet.start_date, inline = True)
                 except AttributeError:
                     pass
                 try:
-                    AEm.add_field(name = "Finish Airing on:", value = MagF.end_date, inline = True)
+                    AEm.add_field(name = "Finish Airing on:", value = MangaGet.end_date, inline = True)
                 except AttributeError:
                     pass
-                AEm.add_field(name = "Status:", value = MagFmal.status, inline = True)
-                AEm.add_field(name = "Score:", value = MagFmal.score, inline = True)
-                AEm.add_field(name = "Rank:", value = MagFmal.rank, inline = True)
-                AEm.add_field(name = "Popularity:", value = MagFmal.popularity, inline = True)
-                AEm.add_field(name = "No# Volumes:", value = MagFmal.volumes, inline = True)
-                AEm.add_field(name = "No# Chapters:", value = MagFmal.chapters, inline = True)
-                MagAdp = []
-                MagAlt = []
-                MagSum = []
-                MagSeq = []
-                MagSiSt = []
-                MagSpO = []
-                for TMagAdp in MagF.related_manga:
+                AEm.add_field(name = "Status:", value = MangaGetmal.status, inline = True)
+                AEm.add_field(name = "Score:", value = MangaGetmal.score, inline = True)
+                AEm.add_field(name = "Rank:", value = MangaGetmal.rank, inline = True)
+                AEm.add_field(name = "Popularity:", value = MangaGetmal.popularity, inline = True)
+                AEm.add_field(name = "No# Volumes:", value = MangaGetmal.volumes, inline = True)
+                AEm.add_field(name = "No# Chapters:", value = MangaGetmal.chapters, inline = True)
+                MangaAdaptation = []
+                MangaAlternate = []
+                MangaSummary = []
+                MangaSequel = []
+                MangaSide = []
+                MangaSpin = []
+                for TMagAdp in MangaGet.related_manga:
                     if TMagAdp.relation_type_formatted == "Adaptation":
-                        MagAdp.append(TMagAdp.node.title)
+                        MangaAdaptation.append(TMagAdp.node.title)
                     elif TMagAdp.relation_type_formatted == "Summary":
-                        MagSum.append(TMagAdp.node.title)
+                        MangaSummary.append(TMagAdp.node.title)
                     elif TMagAdp.relation_type_formatted == "Sequel":
-                        MagSeq.append(TMagAdp.node.title)
+                        MangaSequel.append(TMagAdp.node.title)
                     elif TMagAdp.relation_type_formatted == "Spin-off":
-                        MagSpO.append(TMagAdp.node.title)
+                        MangaSpin.append(TMagAdp.node.title)
                     elif TMagAdp.relation_type_formatted == "Alternative version":
-                        MagAlt.append(TMagAdp.node.title)
+                        MangaAlternate.append(TMagAdp.node.title)
                     elif TMagAdp.relation_type_formatted == "Side story":
-                        MagSiSt.append(TMagAdp.node.title)
+                        MangaSide.append(TMagAdp.node.title)
 
-                if len("\n".join(MagSeq)) > 950:
-                    MagSeqF = "\n".join(MagSeq)[0:950]
-                    MagSeqF = MagSeqF + "..."
+                if len("\n".join(MangaSequel)) > 950:
+                    MangaSequelC = "\n".join(MangaSequel)[0:950]
+                    MangaSequelC = MangaSequelC + "..."
                 else:
-                    MagSeqF = "\n".join(MagSeq)
+                    MangaSequelC = "\n".join(MangaSequel)
 
-                if len("\n".join(MagAdp)) > 950:
-                    MagAdpF = "\n".join(MagAdp)[0:950]
-                    MagAdpF = MagAdpF + "..."
+                if len("\n".join(MangaAdaptation)) > 950:
+                    MangaAdaptationC = "\n".join(MangaAdaptation)[0:950]
+                    MangaAdaptationC = MangaAdaptationC + "..."
                 else:
-                    MagAdpF = "\n".join(MagAdp)
+                    MangaAdaptationC = "\n".join(MangaAdaptation)
 
-                if len("\n".join(MagSum)) > 950:
-                    MagSumF = "\n".join(MagSum)[0:950]
-                    MagSumF = MagSumF + "..."
+                if len("\n".join(MangaSummary)) > 950:
+                    MangaSummaryC = "\n".join(MangaSummary)[0:950]
+                    MangaSummaryC = MangaSummaryC + "..."
                 else:
-                    MagSumF = "\n".join(MagSum)
+                    MangaSummaryC = "\n".join(MangaSummary)
 
-                if len("\n".join(MagAlt)) > 950:
-                    MagAltF = "\n".join(MagAlt)[0:950]
-                    MagAltF = MagAltF + "..."
+                if len("\n".join(MangaAlternate)) > 950:
+                    MangaAlternateC = "\n".join(MangaAlternate)[0:950]
+                    MangaAlternateC = MangaAlternateC + "..."
                 else:
-                    MagAltF = "\n".join(MagAlt)
+                    MangaAlternateC = "\n".join(MangaAlternate)
 
-                if len("\n".join(MagSpO)) > 950:
-                    MagSpOF = "\n".join(MagSpO)[0:950]
-                    MagSpOF = MagSpOF + "..."
+                if len("\n".join(MangaSpin)) > 950:
+                    MangaSpinC = "\n".join(MangaSpin)[0:950]
+                    MangaSpinC = MangaSpinC + "..."
                 else:
-                    MagSpOF = "\n".join(MagSpO)
+                    MangaSpinC = "\n".join(MangaSpin)
 
-                if len("\n".join(MagSiSt)) > 950:
-                    MagSiStF = "\n".join(MagSiSt)[0:950]
-                    MagSiStF = MagSiStF + "..."
+                if len("\n".join(MangaSide)) > 950:
+                    MangaSideC = "\n".join(MangaSide)[0:950]
+                    MangaSideC = MangaSideC + "..."
                 else:
-                    MagSiStF = "\n".join(MagSiSt)
-                if MagSeqF or MagAltF or MagAdpF or MagSiStF or MagSumF or MagSpOF:
+                    MangaSideC = "\n".join(MangaSide)
+                if MangaSequelC or MangaAlternateC or MangaAdaptationC or MangaSideC or MangaSummaryC or MangaSpinC:
                     AEm.add_field(name = "\u200b", value = "\u200b", inline = False)
-                if MagSeqF:
-                    AEm.add_field(name = "Sequel:", value = MagSeqF, inline = False)
-                if MagAltF:
-                    AEm.add_field(name = "Alternate Version:", value = MagAltF, inline = False)
-                if MagAdpF:
-                    AEm.add_field(name = "Adaptation:", value = MagAdpF, inline = False)
-                if MagSiStF:
-                    AEm.add_field(name = "Side Story:", value = MagSiStF, inline = False)
-                if MagSumF:
-                    AEm.add_field(name = "Summary:", value = MagSumF, inline = False)
-                if MagSpOF:
-                    AEm.add_field(name = "Spin Off:", value = MagSpOF, inline = False)
+                if MangaSequelC:
+                    AEm.add_field(name = "Sequel:", value = MangaSequelC, inline = False)
+                if MangaAlternateC:
+                    AEm.add_field(name = "Alternate Version:", value = MangaAlternateC, inline = False)
+                if MangaAdaptationC:
+                    AEm.add_field(name = "Adaptation:", value = MangaAdaptationC, inline = False)
+                if MangaSideC:
+                    AEm.add_field(name = "Side Story:", value = MangaSideC, inline = False)
+                if MangaSummaryC:
+                    AEm.add_field(name = "Summary:", value = MangaSummaryC, inline = False)
+                if MangaSpinC:
+                    AEm.add_field(name = "Spin Off:", value = MangaSpinC, inline = False)
                 await ctx.message.channel.send(embed = AEm)
             except UnboundLocalError:
                 pass
@@ -161,7 +162,7 @@ class AnimeManga(commands.Cog):
 
     @commands.command(name = "anime")
     @commands.cooldown(1, 10, commands.BucketType.guild)
-    async def AniMa(self, ctx, *args):
+    async def AnimeInfo(self, ctx, *args):
         def ChCHanS(MSg):
             MesS = MSg.content.lower()
             RsT = False
@@ -174,15 +175,15 @@ class AnimeManga(commands.Cog):
             return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
         if args:
             try:
-                Srks = " ".join(args)
+                AnimeInput = " ".join(args)
                 C = 0
-                SrchAni = []
+                SrchAnime = []
                 AnSrS = await ctx.message.channel.send(embed = discord.Embed(title = ":mag: Searching...",  description = "\u200b", color = 0x3fc0ff))
-                SAEm = discord.Embed(title = f':mag: Results for "{Srks}"',  description = "\u200b", color = 0x3fc0ff)
-                for AniRes in mal.AnimeSearch(Srks).results:
+                SAEm = discord.Embed(title = f':mag: Results for "{AnimeInput}"',  description = "\u200b", color = 0x3fc0ff)
+                for AnimeResult in mal.AnimeSearch(AnimeInput).results:
                     C += 1
-                    SAEm.add_field(name = "\u200b", value = f"{C}. `{AniRes.title}` **({AniRes.type})**", inline = False)
-                    SrchAni.append(AniRes)
+                    SAEm.add_field(name = "\u200b", value = f"{C}. `{AnimeResult.title}` **({AnimeResult.type})**", inline = False)
+                    SrchAnime.append(AnimeResult)
                     if C == 10:
                         break
                 SAEm.set_footer(text = 'Choose a number to view MAL entry. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
@@ -192,134 +193,134 @@ class AnimeManga(commands.Cog):
                     LResS = ResS.content.lower()
                     try:
                         if int(ResS.content) <= 10:
-                            AniI = SrchAni[int(ResS.content)-1].mal_id
-                            await AnSrS.edit(embed = discord.Embed(title = ":calling: Finding...",  description = f'{SrchAni[int(ResS.content)-1].title} **({SrchAni[int(ResS.content)-1].type})**', color = 0x3fc0ff)) 
+                            AnimeID = SrchAnime[int(ResS.content)-1].mal_id
+                            await AnSrS.edit(embed = discord.Embed(title = ":calling: Finding...",  description = f'{SrchAnime[int(ResS.content)-1].title} **({SrchAnime[int(ResS.content)-1].type})**', color = 0x3fc0ff)) 
                     except ValueError:
                         if (LResS == "cancel") or (LResS == "c"):
                             await AnSrS.edit(embed = discord.Embed(title = ":x: Search Cancelled",  description = "\u200b", color = 0x3fc0ff))
                 except asyncio.TimeoutError:
                     await AnSrS.edit(embed = discord.Embed(title = ":hourglass: Search Timeout...",  description = "\u200b", color = 0x3fc0ff))
             except UnboundLocalError:
-                SAEm = discord.Embed(title = f':mag: Search for "{Srks}"',  description = "\u200b", color = 0x3fc0ff)
+                SAEm = discord.Embed(title = f':mag: Search for "{AnimeInput}"',  description = "\u200b", color = 0x3fc0ff)
                 SAEm.add_field(name = "\u200b", value = "No Results found :woozy_face:", inline = False)
                 await AnSrS.edit(embed = SAEm)
 
             try:
-                AniF = MClient.get_anime_details(AniI)
-                AniFmal = mal.Anime(AniI)
-                AniG = []
-                for TAniG in AniF.genres:
-                    AniG.append(TAniG.name)
-                AEm = discord.Embed(title = f'{AniF.title} / {AniF.alternative_titles.ja} **({AniFmal.type})**',  description = f'{", ".join(AniG)}\n[Mal Page]({AniFmal.url})', color = 0x3fc0ff)
-                AEm.set_thumbnail(url = AniF.main_picture.large)
-                if len(AniF.synopsis) > 1021:
-                    AniSyn = AniF.synopsis[0:1021]
-                    AniSyn = AniSyn + "..."
+                AnimeGet = MClient.get_anime_details(AnimeID)
+                AnimeGetmal = mal.Anime(AnimeID)
+                AnimeGenres = []
+                for Genre in AnimeGet.genres:
+                    AnimeGenres.append(Genre.name)
+                AEm = discord.Embed(title = f'{AnimeGet.title} / {AnimeGet.alternative_titles.ja} **({AnimeGetmal.type})**',  description = f'{", ".join(AnimeGenres)}\n[Mal Page]({AnimeGetmal.url})', color = 0x3fc0ff)
+                AEm.set_thumbnail(url = AnimeGet.main_picture.large)
+                if len(AnimeGet.synopsis) > 1021:
+                    AnimeSynopsis = AnimeGet.synopsis[0:1021]
+                    AnimeSynopsis = AnimeSynopsis + "..."
                 else:
-                    AniSyn = AniF.synopsis
-                AEm.add_field(name = f'Studios: {", ".join(AniFmal.studios)}', value = "\u200b", inline = False)
-                AEm.add_field(name = "Synopsis:", value = AniSyn, inline = False)
+                    AnimeSynopsis = AnimeGet.synopsis
+                AEm.add_field(name = f'Studios: {", ".join(AnimeGetmal.studios)}', value = "\u200b", inline = False)
+                AEm.add_field(name = "Synopsis:", value = AnimeSynopsis, inline = False)
                 try:
-                    AEm.add_field(name = "Start Airing on:", value = AniF.start_date, inline = True)
+                    AEm.add_field(name = "Start Airing on:", value = AnimeGet.start_date, inline = True)
                 except AttributeError:
                     pass
                 try:
-                    AEm.add_field(name = "Finish Airing on:", value = AniF.end_date, inline = True)
+                    AEm.add_field(name = "Finish Airing on:", value = AnimeGet.end_date, inline = True)
                 except AttributeError:
                     pass
-                AEm.add_field(name = "Status:", value = AniFmal.status, inline = True)
-                AEm.add_field(name = "Rating:", value = AniFmal.rating, inline = False)
-                AEm.add_field(name = "Score:", value = AniFmal.score, inline = True)
-                AEm.add_field(name = "Rank:", value = AniFmal.rank, inline = True)
-                AEm.add_field(name = "Popularity:", value = AniFmal.popularity, inline = True)
-                AEm.add_field(name = "No# Episodes:", value = AniFmal.episodes, inline = True)
-                AEm.add_field(name = "Episode Duration:", value = AniFmal.duration, inline = True)
-                AniAdp = []
-                AniAlt = []
-                AniSum = []
-                AniSeq = []
-                AniSiSt = []
-                AniSpO = []
-                for TAniAdp in AniF.related_anime:
+                AEm.add_field(name = "Status:", value = AnimeGetmal.status, inline = True)
+                AEm.add_field(name = "Rating:", value = AnimeGetmal.rating, inline = False)
+                AEm.add_field(name = "Score:", value = AnimeGetmal.score, inline = True)
+                AEm.add_field(name = "Rank:", value = AnimeGetmal.rank, inline = True)
+                AEm.add_field(name = "Popularity:", value = AnimeGetmal.popularity, inline = True)
+                AEm.add_field(name = "No# Episodes:", value = AnimeGetmal.episodes, inline = True)
+                AEm.add_field(name = "Episode Duration:", value = AnimeGetmal.duration, inline = True)
+                AnimeAdaptation = []
+                AnimeAlternate = []
+                AnimeSummary = []
+                AnimeSequel = []
+                AnimeSide = []
+                AnimeSpin = []
+                for TAniAdp in AnimeGet.related_anime:
                     if TAniAdp.relation_type_formatted == "Adaptation":
-                        AniAdp.append(TAniAdp.node.title)
+                        AnimeAdaptation.append(TAniAdp.node.title)
                     elif TAniAdp.relation_type_formatted == "Summary":
-                        AniSum.append(TAniAdp.node.title)
+                        AnimeSummary.append(TAniAdp.node.title)
                     elif TAniAdp.relation_type_formatted == "Sequel":
-                        AniSeq.append(TAniAdp.node.title)
+                        AnimeSequel.append(TAniAdp.node.title)
                     elif TAniAdp.relation_type_formatted == "Spin-off":
-                        AniSpO.append(TAniAdp.node.title)
+                        AnimeSpin.append(TAniAdp.node.title)
                     elif TAniAdp.relation_type_formatted == "Alternative version":
-                        AniAlt.append(TAniAdp.node.title)
+                        AnimeAlternate.append(TAniAdp.node.title)
                     elif TAniAdp.relation_type_formatted == "Side story":
-                        AniSiSt.append(TAniAdp.node.title)
-                if len("\n".join(AniSeq)) > 950:
-                    AniSeqF = "\n".join(AniSeq)[0:950]
-                    AniSeqF = AniSeqF + "..."
+                        AnimeSide.append(TAniAdp.node.title)
+                if len("\n".join(AnimeSequel)) > 950:
+                    AnimeSequelC = "\n".join(AnimeSequel)[0:950]
+                    AnimeSequelC = AnimeSequelC + "..."
                 else:
-                    AniSeqF = "\n".join(AniSeq)
+                    AnimeSequelC = "\n".join(AnimeSequel)
 
-                if len("\n".join(AniAdp)) > 950:
-                    AniAdpF = "\n".join(AniAdp)[0:950]
-                    AniAdpF = AniAdpF + "..."
+                if len("\n".join(AnimeAdaptation)) > 950:
+                    AnimeAdaptationC = "\n".join(AnimeAdaptation)[0:950]
+                    AnimeAdaptationC = AnimeAdaptationC + "..."
                 else:
-                    AniAdpF = "\n".join(AniAdp)
+                    AnimeAdaptationC = "\n".join(AnimeAdaptation)
 
-                if len("\n".join(AniSum)) > 950:
-                    AniSumF = "\n".join(AniSum)[0:950]
-                    AniSumF = AniSumF + "..."
+                if len("\n".join(AnimeSummary)) > 950:
+                    AnimeSummaryC = "\n".join(AnimeSummary)[0:950]
+                    AnimeSummaryC = AnimeSummaryC + "..."
                 else:
-                    AniSumF = "\n".join(AniSum)
+                    AnimeSummaryC = "\n".join(AnimeSummary)
 
-                if len("\n".join(AniAlt)) > 950:
-                    AniAltF = "\n".join(AniAlt)[0:950]
-                    AniAltF = AniAltF + "..."
+                if len("\n".join(AnimeAlternate)) > 950:
+                    AnimeAlternateC = "\n".join(AnimeAlternate)[0:950]
+                    AnimeAlternateC = AnimeAlternateC + "..."
                 else:
-                    AniAltF = "\n".join(AniAlt)
+                    AnimeAlternateC = "\n".join(AnimeAlternate)
 
-                if len("\n".join(AniSpO)) > 950:
-                    AniSpOF = "\n".join(AniSpO)[0:950]
-                    AniSpOF = AniSpOF + "..."
+                if len("\n".join(AnimeSpin)) > 950:
+                    AnimeSpinC = "\n".join(AnimeSpin)[0:950]
+                    AnimeSpinC = AnimeSpinC + "..."
                 else:
-                    AniSpOF = "\n".join(AniSpO)
+                    AnimeSpinC = "\n".join(AnimeSpin)
 
-                if len("\n".join(AniSiSt)) > 950:
-                    AniSiStF = "\n".join(AniSiSt)[0:950]
-                    AniSiStF = AniSiStF + "..."
+                if len("\n".join(AnimeSide)) > 950:
+                    AnimeSideC = "\n".join(AnimeSide)[0:950]
+                    AnimeSideC = AnimeSideC + "..."
                 else:
-                    AniSiStF = "\n".join(AniSiSt)
-                if AniSeqF or AniAltF or AniAdpF or AniSiStF or AniSumF or AniSpOF:
+                    AnimeSideC = "\n".join(AnimeSide)
+                if AnimeSequelC or AnimeAlternateC or AnimeAdaptationC or AnimeSideC or AnimeSummaryC or AnimeSpinC:
                     AEm.add_field(name = "\u200b", value = "\u200b", inline = False)
-                if AniSeqF:
-                    AEm.add_field(name = "Sequel:", value = AniSeqF, inline = False)
-                if AniAltF:
-                    AEm.add_field(name = "Alternate Version:", value = AniAltF, inline = False)
-                if AniAdpF:
-                    AEm.add_field(name = "Adaptation:", value = AniAdpF, inline = False)
-                if AniSiStF:
-                    AEm.add_field(name = "Side Story:", value = AniSiStF, inline = False)
-                if AniSumF:
-                    AEm.add_field(name = "Summary:", value = AniSumF, inline = False)
-                if AniSpOF:
-                    AEm.add_field(name = "Spin Off:", value = AniSpOF, inline = False)
+                if AnimeSequelC:
+                    AEm.add_field(name = "Sequel:", value = AnimeSequelC, inline = False)
+                if AnimeAlternateC:
+                    AEm.add_field(name = "Alternate Version:", value = AnimeAlternateC, inline = False)
+                if AnimeAdaptationC:
+                    AEm.add_field(name = "Adaptation:", value = AnimeAdaptationC, inline = False)
+                if AnimeSideC:
+                    AEm.add_field(name = "Side Story:", value = AnimeSideC, inline = False)
+                if AnimeSummaryC:
+                    AEm.add_field(name = "Summary:", value = AnimeSummaryC, inline = False)
+                if AnimeSpinC:
+                    AEm.add_field(name = "Spin Off:", value = AnimeSpinC, inline = False)
                 AEm.add_field(name = "\u200b", value = "\u200b", inline = False)
                 try:
-                    if len("\n".join(AniFmal.opening_themes)) > 950:
-                        AniOT = ("\n".join(AniFmal.opening_themes))[0:950]
-                        AniOT = AniOT + "..."
+                    if len("\n".join(AnimeGetmal.opening_themes)) > 950:
+                        AnimeOpening = ("\n".join(AnimeGetmal.opening_themes))[0:950]
+                        AnimeOpening = AnimeOpening + "..."
                     else:
-                        AniOT = "\n".join(AniFmal.opening_themes)
-                    AEm.add_field(name = "Opening Theme(s):", value = AniOT, inline = False)
+                        AnimeOpening = "\n".join(AnimeGetmal.opening_themes)
+                    AEm.add_field(name = "Opening Theme(s):", value = AnimeOpening, inline = False)
                 except TypeError:
                     pass
 
                 try:
-                    if len("\n".join(AniFmal.ending_themes)) > 950:
-                        AniET = ("\n".join(AniFmal.ending_themes))[0:950]
-                        AniET = AniET + "..."
+                    if len("\n".join(AnimeGetmal.ending_themes)) > 950:
+                        AnimeEnding = ("\n".join(AnimeGetmal.ending_themes))[0:950]
+                        AnimeEnding = AnimeEnding + "..."
                     else:
-                        AniET = "\n".join(AniFmal.ending_themes)
-                    AEm.add_field(name = "Ending Theme(s):", value = AniET, inline = True)
+                        AnimeEnding = "\n".join(AnimeGetmal.ending_themes)
+                    AEm.add_field(name = "Ending Theme(s):", value = AnimeEnding, inline = True)
                 except TypeError:
                     pass
                 await ctx.message.channel.send(embed = AEm)
@@ -330,7 +331,7 @@ class AnimeManga(commands.Cog):
 
     @commands.command(name = "hentai")
     @commands.cooldown(1, 3, commands.BucketType.user)
-    async def nHen(self, ctx, *args):  
+    async def nHentaiReader(self, ctx, *args):  
         def ChCHanS(MSg):
             MesS = MSg.content.lower()
             MeseS = (MSg.content.lower()).split(" ")
@@ -360,7 +361,7 @@ class AnimeManga(commands.Cog):
         def EmbedMaker(DentAi,Page, State):
             DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
             DEmE.set_thumbnail(url = DentAi.image_urls[0])
-            DEmE.set_footer(text = f'Released on {DentAi.upload_date}\n\n.\n\n*The Doujin closes automatically after 2mins of inactivity.*')
+            DEmE.set_footer(text = f'Released on {DentAi.upload_date}\n\nNeed help navigating? zhelp navigation')
             DEmE.set_image(url = DentAi.image_urls[Page])
             DEmE.add_field(name = "Doujin ID", value = DentAi.id, inline = False)
             DEmE.add_field(name = "\u200b", value = f'**Doujin {State}**\n\n`Page: {(Page+1)}/{len(DentAi.image_urls)}`', inline = False)
@@ -431,11 +432,10 @@ class AnimeManga(commands.Cog):
                             Page = 0
                             DEm = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
                             DEm.set_thumbnail(url = DentAi.image_urls[0])
-                            DEm.set_footer(text = f'Released on {DentAi.upload_date}\n\n React with :hash: then type in a page number to instantly navigate to it (voters only).\n\n*The Doujin closes automatically after 2mins of inactivity.*')
+                            DEm.set_footer(text = f'Released on {DentAi.upload_date}\n\nNeed help navigating? zhelp navigation')
                             DEm.set_image(url = DentAi.image_urls[0])
                             DEm.add_field(name = "Doujin ID", value = str(DentAi.id), inline = False)
                             DEm.add_field(name = "\u200b", value = f'**Doujin OPEN**\n\n`Page: {(Page+1)}/{len(DentAi.image_urls)}`', inline = False)
-                            await ctx.message.channel.send("**WARNING:** ALL messages sent after the embed will be deleted until doujin is closed. This is to ensure a proper reading experience.")
                             DmSent = await ctx.message.channel.send(embed = DEm)
                     await DmSent.add_reaction("⬅️")
                     await DmSent.add_reaction("❌")
@@ -461,7 +461,7 @@ class AnimeManga(commands.Cog):
                                     break
                             elif Res[0].emoji == "#️⃣":
                                 if await ChVote(ctx):
-                                    TempNG = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n*The Navigation closes automatically after 10sec of inactivity.*')
+                                    TempNG = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.')
                                     try:
                                         ResE = await self.DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
                                         await TempNG.delete()

@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 from prawcore import NotFound, Forbidden
-import requests
 import os 
 from CBot import Reddit
 from CBot import ChVote
@@ -91,7 +90,10 @@ def EmbedMaker(SubCpoS, Subname, Type = "R", PostNum = 0, TotalPosts = 0):
                             REm.add_field(name = "Media Preview Unavailable. Sorry!!", value = '\u200b')
         else:
             REm.add_field(name = "NSFW: ", value = "This isn't an NSFW channel. No NSFW allowed here.", inline = False)
-    REm.set_footer(text = f'From r/{Subname}')
+    if Type == "S":
+        REm.set_footer(text = f'From r/{Subname}\n\nNeed help navigating? zhelp navigation')
+    else:
+        REm.set_footer(text = f'From r/{Subname}')
     REm.set_author(name = f'*By u/{SubCpoS.author}*')
     return REm
 
@@ -121,7 +123,7 @@ class RedditCmds(commands.Cog):
     
     @commands.group(name = "reddit", invoke_without_command = True)
     @commands.cooldown(1, 3, commands.BucketType.user)
-    async def SrSub(self, ctx, *args):
+    async def RedditRand(self, ctx, *args):
         def ChCHEmCH(RcM, RuS):
             return RuS.bot == False and RcM.message == KraPosS and str(RcM.emoji) in ["🔝","📈","🔥","📝","❌"]
 
@@ -164,10 +166,10 @@ class RedditCmds(commands.Cog):
         else:
             await ctx.message.channel.send("No arguments :no_mouth:")
 
-    @SrSub.command(name = "surf")
+    @RedditRand.command(name = "surf")
     @commands.check(ChVote)
     @commands.cooldown(1, 3, commands.BucketType.user)
-    async def SrSub(self, ctx, *args):
+    async def RedditNav(self, ctx, *args):
         if args:
             if CheckSub("".join(args)): 
                 KraPosS = await ctx.message.channel.send(embed = discord.Embed(title = "How would you like to sort the subreddit?", description = "🔝 to sort by top.\n📈 to sort by rising.\n🔥 to sort by hot.\n📝 to sort by new.\n❌ to cancel", footer = "This timesout in 10s"))
@@ -258,7 +260,7 @@ class RedditCmds(commands.Cog):
                                 break
                         elif Res[0].emoji == "#️⃣":
                             if await ChVote(ctx):
-                                TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n*The Navigation closes automatically after 10sec of inactivity.*')
+                                TemTw = await ctx.message.channel.send('Choose a number to open navigate to page. "c" or "cancel" to exit navigation.')
                                 try:
                                     ResE = await self.DClient.wait_for("message", check = ChCHEmFN, timeout = 10)
                                     await TemTw.delete()
