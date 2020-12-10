@@ -2,7 +2,7 @@ import discord
 import random
 import requests
 from discord.ext import commands
-from CBot import ChVote
+from Setup import ChVote
 import asyncio
 
 class Nasa(commands.Cog):
@@ -22,8 +22,14 @@ class Nasa(commands.Cog):
             Explanation = JSONapod["explanation"]
         DEm = discord.Embed(title = JSONapod["title"], description = f'Date {JSONapod["date"]}', color = 0xa9775a)
         DEm.add_field(name = "Explanation:", value = Explanation, inline = False)
-        DEm.set_image(url = JSONapod["hdurl"])
-        DEm.set_footer(text = f'Copyright: {JSONapod["copyright"]}')
+        try:
+            DEm.set_image(url = JSONapod["hdurl"])
+        except KeyError:
+            DEm.add_field(name = "\u200b", value = f'[Video Url]({JSONapod["url"]})', inline = False)
+        try:
+            DEm.set_footer(text = f'Copyright: {JSONapod["copyright"]}')
+        except KeyError:
+            pass
         await ctx.message.channel.send(embed = DEm)
 
     @commands.command(name = "nasa")

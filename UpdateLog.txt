@@ -1,14 +1,7 @@
-Whats new in 1.3a:
-NEW random color command (zcolor). 
-NEW random fact command (zfact).
-NEW dice roll command (zroll).
-NEW random dad joke command (zdadjoke).
-NEW random mars images by NASA's Curiosity rover (znasa).  
-NEW astronomy picture of the day (zapod) [For Voters and patreon].  
-CREATED support server.
-NEW support command (zsupport).
-NEW bug command (zbug) [support server].
-NEW patreon command (zpatreon) [Thanks].
-REDESIGNED vote command.
-REDESIGNED help command.     
-IMPLENTED vote and patreon commands.                                                                                                                        
+Whats new in 1.4a:
+NEW rule34 command (zrule34). 
+NEW rule34 surfing command for voters and patreon (zrule34 surf).
+NEW rule34 help (zhelp rule34).
+NEW navigation help (zhelp nav).
+FIXED plenty of bugs
+CHANGED many internal changes                                                                                                                       

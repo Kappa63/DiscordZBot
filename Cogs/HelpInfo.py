@@ -4,7 +4,7 @@ from discord.ext import commands
 class HelpInfo(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
-
+    
     @commands.group(name = "help", invoke_without_command = True)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendH(self, ctx):
@@ -18,6 +18,8 @@ class HelpInfo(commands.Cog):
         HEm.add_field(name = "zhelp anime: ", value = "The Anime Commands", inline = False)
         HEm.add_field(name = "zhelp covid: ", value = "The Covid-19 Commands", inline = False)   
         HEm.add_field(name = "zhelp misc: ", value = "The Miscellaneous Commands", inline = False)
+        HEm.add_field(name = "zhelp nav: ", value = "How to Navigate", inline = False)   
+        HEm.add_field(name = "zhelp rule34: ", value = "The Rule34 Commands", inline = False)
         HEm.add_field(name = "Links: ", value = "[Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord) / [Vote](https://top.gg/bot/768397640140062721/vote)")   
         await ctx.message.channel.send(embed = HEm)
 
@@ -61,7 +63,15 @@ class HelpInfo(commands.Cog):
         HEm.add_field(name = "ztwitter search (Username): ", value = "Searches for 10 users related to search argument", inline = False)
         await ctx.message.channel.send(embed = HEm)
 
-    @SendH.command(name = "anime")
+    @SendH.command(name = "rule34")
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def SendT(self, ctx):
+        HEm = discord.Embed(title = "**ZBot Rule34 Help**", description = "\u200b", color = 0x0af531)
+        HEm.add_field(name = "zrule34 (Search Term): ", value = "Returns a RANDOM rule34 image (NSFW)", inline = False)
+        HEm.add_field(name = "zrule34 surf (Search Term): ", value =  "Returns 100 rule34 images from a random page (Voters and Patreons ONLY) (NSFW)", inline = False)
+        await ctx.message.channel.send(embed = HEm)
+
+    @SendH.command(aliases = ["anime","manga","hentai","doujin"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendA(self, ctx):
         HEm = discord.Embed(title = "**ZBot Anime Help**", description = "\u200b", color = 0x0af531)
@@ -91,7 +101,7 @@ class HelpInfo(commands.Cog):
         HEm.set_footer(text = "Notes: -zremind is limited to 1day max.\n-zremind could sometimes fail to notify you due to the bot going down. So dont rely on it entirely.\n-During testing recovered data from zcovid was extremely inaccurate.\n-Some hentai are not available. This is to abide by the discord TOS.")
         await ctx.message.channel.send(embed = HEm)
 
-    @sendH.command(aliases = ["nav", "navigation"])
+    @SendH.command(aliases = ["nav", "navigation"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendN(self, ctx):
         HEm = discord.Embed(title = "**ZBot Navigation Help**", description = "\u200b", color = 0x0af531)
@@ -137,7 +147,7 @@ class HelpInfo(commands.Cog):
 
     @commands.command(aliases = ["support","bug"])
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def BotVotF(self, ctx):
+    async def SupportServer(self, ctx):
         SEm = discord.Embed(title = "ZBot Official Server", url = "https://discord.gg/V6E6prUBPv", description = "**Report Bugs, Get Support, and Join the Community**", color = 0x000000)
         await ctx.message.channel.send(embed = SEm)
 

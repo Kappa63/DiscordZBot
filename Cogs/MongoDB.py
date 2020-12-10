@@ -1,8 +1,8 @@
 from discord.ext import commands
 import discord
 import FuncMon
-from CBot import Col, Colvt
-from CBot import ChAdmin, ChSer, RemoveExtra
+from Setup import Col, Colvt
+from Setup import ChAdmin, ChSer, RemoveExtra
 import asyncio
 
 class MongoDB(commands.Cog):
@@ -300,7 +300,6 @@ class MongoDB(commands.Cog):
                         pass
         else:
             pass
-        await self.DClient.process_commands(message)
 
     @commands.Cog.listener()
     async def on_member_join(self, member):

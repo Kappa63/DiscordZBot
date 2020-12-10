@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from CBot import ChDev
+from Setup import ChDev
 
 class OnlyMods(commands.Cog):
     def __init__(self, DClient):
@@ -26,7 +26,7 @@ class OnlyMods(commands.Cog):
     @commands.command(name = "makeup")
     @commands.check(ChDev)
     @commands.cooldown(1, 1, commands.BucketType.user)
-        async def UfManiT(self, ctx):
+    async def UfManiT(self, ctx):
         await self.DClient.change_presence(status = discord.Status.online, activity = discord.Game(random.choice(Doing)))
         open("OpenState.txt").write("Up")
         await ctx.message.channel.send("Bot Visible (Up)")

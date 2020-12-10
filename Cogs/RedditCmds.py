@@ -2,8 +2,9 @@ import discord
 from discord.ext import commands
 from prawcore import NotFound, Forbidden
 import os 
-from CBot import Reddit
-from CBot import ChVote
+import random
+from Setup import Reddit
+from Setup import ChVote
 import asyncio
 
 def EmbedMaker(SubCpoS, Subname, Type = "R", PostNum = 0, TotalPosts = 0):
@@ -124,25 +125,6 @@ class RedditCmds(commands.Cog):
     @commands.group(name = "reddit", invoke_without_command = True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def RedditRand(self, ctx, *args):
-        def ChCHEmCH(RcM, RuS):
-            return RuS.bot == False and RcM.message == KraPosS and str(RcM.emoji) in ["🔝","📈","🔥","📝","❌"]
-
-        def ChCHEmCHT(RcM, RuS):
-            return RuS.bot == False and RcM.message == KraPosS and str(RcM.emoji) in ["🗓️","🌍","📅","❌"]
-
-        def ChCHEm(RcM, RuS):
-            return RuS.bot == False and RcM.message == KraPosS and str(RcM.emoji) in ["⬅️","❌","➡️","#️⃣"]
-
-        def ChCHEmFN(MSg):
-            MesS = MSg.content.lower()
-            RsT = False
-            try:
-                if int(MSg.content):
-                    RsT = True
-            except ValueError:
-                if (MesS == "cancel") or (MesS == "c"):
-                    RsT = True
-            return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
         if args:
             if CheckSub("".join(args)): 
                 try:                   
@@ -170,6 +152,26 @@ class RedditCmds(commands.Cog):
     @commands.check(ChVote)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def RedditNav(self, ctx, *args):
+        def ChCHEmCH(RcM, RuS):
+            return RuS.bot == False and RcM.message == KraPosS and str(RcM.emoji) in ["🔝","📈","🔥","📝","❌"]
+
+        def ChCHEmCHT(RcM, RuS):
+            return RuS.bot == False and RcM.message == KraPosS and str(RcM.emoji) in ["🗓️","🌍","📅","❌"]
+
+        def ChCHEm(RcM, RuS):
+            return RuS.bot == False and RcM.message == KraPosS and str(RcM.emoji) in ["⬅️","❌","➡️","#️⃣"]
+
+        def ChCHEmFN(MSg):
+            MesS = MSg.content.lower()
+            RsT = False
+            try:
+                if int(MSg.content):
+                    RsT = True
+            except ValueError:
+                if (MesS == "cancel") or (MesS == "c"):
+                    RsT = True
+            return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
+            
         if args:
             if CheckSub("".join(args)): 
                 KraPosS = await ctx.message.channel.send(embed = discord.Embed(title = "How would you like to sort the subreddit?", description = "🔝 to sort by top.\n📈 to sort by rising.\n🔥 to sort by hot.\n📝 to sort by new.\n❌ to cancel", footer = "This timesout in 10s"))

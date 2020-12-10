@@ -1,13 +1,14 @@
 import discord
 from discord.ext import commands
-from CBot import Imgur
-from CBot import FormatTime
-from CBot import ChVote
+from Setup import Imgur
+from Setup import FormatTime
+from Setup import ChVote
 from pdf2image import convert_from_path
 import requests
 from PIL import Image
 import deeppyer
 import asyncio
+import os
 
 class Misc(commands.Cog):
     def __init__(self, DClient):
@@ -15,7 +16,7 @@ class Misc(commands.Cog):
     
     @commands.command(aliases = ["calculate","calc"])
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def Calculate(self, ctx, *args):
+    async def Calculater(self, ctx, *args):
         ToCalc = "".join(args)
         def Calc(Nums):
             ChSafe = True
@@ -287,10 +288,10 @@ class Misc(commands.Cog):
             else:
                 await ctx.message.channel.send(f'File({C}) isnt a valid image type :sweat:')
         except requests.exceptions.MissingSchema:
-        pass
+            pass
 
-    @Calculate.error
-    async def CalculateError(ctx, error):
+    @Calculater.error
+    async def CalculateError(self, ctx, error):
         if isinstance(error, commands.UnexpectedQuoteError):
             await ctx.message.channel.send("Failed to calculate :confused:")
         raise error

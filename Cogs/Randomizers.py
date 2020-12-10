@@ -6,7 +6,7 @@ import cv2
 import numpy
 import requests
 import os
-from CBot import GClient, GApi, Imgur
+from Setup import GClient, GApi, Imgur
 
 class Randomizers(commands.Cog):
     def __init__(self, DClient):

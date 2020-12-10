@@ -2,8 +2,8 @@ import discord
 from discord.ext import commands
 import mal
 from hentai import Utils, Sort, Hentai, Format
-from CBot import MClient
-from CBot import ChVote
+from Setup import MClient
+from Setup import ChVote, ChNSFW
 import asyncio
 
 class AnimeManga(commands.Cog):
@@ -330,6 +330,7 @@ class AnimeManga(commands.Cog):
             await ctx.message.channel.send("No Arguments :no_mouth:")
 
     @commands.command(name = "hentai")
+    @commands.check(ChNSFW)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def nHentaiReader(self, ctx, *args):  
         def ChCHanS(MSg):
@@ -422,21 +423,20 @@ class AnimeManga(commands.Cog):
                 if (Hentai.exists(Srch)):
                     DentAi = Hentai(Srch)
                     if ("lolicon" not in [tag.name for tag in DentAi.tag]) and ("shotacon" not in [tag.name for tag in DentAi.tag]):
-                        if ctx.channel.is_nsfw(): 
-                            Tags = ", ".join([tag.name for tag in DentAi.tag])
-                            if len(Tags) > 253:
-                                FdesCtI = Tags[0:253]
-                                FdesCtI = FdesCtI + "..."
-                            else:
-                                FdesCtI = Tags
-                            Page = 0
-                            DEm = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
-                            DEm.set_thumbnail(url = DentAi.image_urls[0])
-                            DEm.set_footer(text = f'Released on {DentAi.upload_date}\n\nNeed help navigating? zhelp navigation')
-                            DEm.set_image(url = DentAi.image_urls[0])
-                            DEm.add_field(name = "Doujin ID", value = str(DentAi.id), inline = False)
-                            DEm.add_field(name = "\u200b", value = f'**Doujin OPEN**\n\n`Page: {(Page+1)}/{len(DentAi.image_urls)}`', inline = False)
-                            DmSent = await ctx.message.channel.send(embed = DEm)
+                        Tags = ", ".join([tag.name for tag in DentAi.tag])
+                        if len(Tags) > 253:
+                            FdesCtI = Tags[0:253]
+                            FdesCtI = FdesCtI + "..."
+                        else:
+                            FdesCtI = Tags
+                        Page = 0
+                        DEm = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
+                        DEm.set_thumbnail(url = DentAi.image_urls[0])
+                        DEm.set_footer(text = f'Released on {DentAi.upload_date}\n\nNeed help navigating? zhelp navigation')
+                        DEm.set_image(url = DentAi.image_urls[0])
+                        DEm.add_field(name = "Doujin ID", value = str(DentAi.id), inline = False)
+                        DEm.add_field(name = "\u200b", value = f'**Doujin OPEN**\n\n`Page: {(Page+1)}/{len(DentAi.image_urls)}`', inline = False)
+                        DmSent = await ctx.message.channel.send(embed = DEm)
                     await DmSent.add_reaction("⬅️")
                     await DmSent.add_reaction("❌")
                     await DmSent.add_reaction("➡️")

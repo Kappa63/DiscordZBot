@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from CBot import Covid
+from Setup import Covid
 import datetime
 
 class Covid(commands.Cog):

@@ -3,8 +3,8 @@ from discord.ext import commands
 import requests
 import os 
 import tweepy
-from CBot import Twitter
-from CBot import ChVote
+from Setup import Twitter
+from Setup import ChVote
 import asyncio
 
 def EmbedMaker(TWprofile, IsVerified, TwTtype, TWtimeline, TwTNum, TwTtotal):
