@@ -82,7 +82,7 @@ async def ChVote(ctx):
     if await CBot.TClient.get_user_vote(ctx.author.id):
         return True 
     else:
-        MemGuild = CBot.DClient.get_guild(662302127829418032)
+        MemGuild = CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(ctx.author.id)
         Roles = []
         Roles.append(discord.utils.get(MemGuild.roles, id = 783250729686532126))
@@ -97,7 +97,7 @@ async def ChVote(ctx):
 class IsPatreon(commands.CheckFailure):
     pass
 def ChPatreon(ctx):
-    MemGuild = CBot.DClient.get_guild(662302127829418032)
+    MemGuild = CBot.DClient.get_guild(783250489843384341)
     Mem = MemGuild.get_member(ctx.author.id)
     Roles = []
     Roles.append(discord.utils.get(MemGuild.roles, id = 783250729686532126))
