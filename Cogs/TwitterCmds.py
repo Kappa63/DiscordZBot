@@ -43,7 +43,7 @@ def EmbedMaker(TWprofile, IsVerified, TwTtype, TWtimeline, TwTNum, TwTtotal):
         except tweepy.error.TweepError:
             TEmE.add_field(name = "On (By: --Deleted--): ", value = "--Deleted--", inline = False)
         
-    TEmE.set_footer(text = f'{"-"*10}\n\n"Make sure to close the tweet (with :x:) once you are done.\n\nReact with :hash: then type in a page number to instantly navigate to it (voters only).\n\n*Tweet closes automatically after 20sec of inactivity.*"')
+    TEmE.set_footer(text = f'{"-"*10}\\n\nNeed help navigating? zhelp navigation')
     return TEmE
 
 def ChTwTp(TWtimeline):

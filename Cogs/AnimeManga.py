@@ -6,6 +6,15 @@ from Setup import MClient
 from Setup import ChVote, ChNSFW
 import asyncio
 
+def EmbedMaker(DentAi, Page, State):
+    DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, url = DentAi.url, color = 0x000000)
+    DEmE.set_thumbnail(url = DentAi.image_urls[0])
+    DEmE.set_footer(text = f'Released on {DentAi.upload_date}\n\nNeed help navigating? zhelp navigation')
+    DEmE.set_image(url = DentAi.image_urls[Page])
+    DEmE.add_field(name = "Doujin ID", value = DentAi.id, inline = False)
+    DEmE.add_field(name = "\u200b", value = f'**Doujin {State}**\n\n`Page: {(Page+1)}/{len(DentAi.image_urls)}`', inline = False)
+    return DEmE
+
 class AnimeManga(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
@@ -359,15 +368,6 @@ class AnimeManga(commands.Cog):
                     RsT = True
             return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
 
-        def EmbedMaker(DentAi,Page, State):
-            DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
-            DEmE.set_thumbnail(url = DentAi.image_urls[0])
-            DEmE.set_footer(text = f'Released on {DentAi.upload_date}\n\nNeed help navigating? zhelp navigation')
-            DEmE.set_image(url = DentAi.image_urls[Page])
-            DEmE.add_field(name = "Doujin ID", value = DentAi.id, inline = False)
-            DEmE.add_field(name = "\u200b", value = f'**Doujin {State}**\n\n`Page: {(Page+1)}/{len(DentAi.image_urls)}`', inline = False)
-            return DEmE
-
         if args:
             Chlks = " ".join(args).split(" ")
             if Chlks[0].lower() == "search":
@@ -380,7 +380,7 @@ class AnimeManga(commands.Cog):
                             C += 1
                             if C == 1:
                                 SEm = discord.Embed(title = f':mag: Search for "{" ".join(Chlks)}"',  description = "\u200b", color = 0x000000)
-                            SEm.add_field(name = "\u200b", value = f'{C}. `{DeOujin["title"]["english"]}`', inline = False)
+                            SEm.add_field(name = "\u200b", value = f'{C}. `{DeOujin.title(Format.Pretty)}`', inline = False)
                             SrchDen.append(DeOujin)
                             if C == 10:
                                 break
@@ -430,7 +430,7 @@ class AnimeManga(commands.Cog):
                         else:
                             FdesCtI = Tags
                         Page = 0
-                        DEm = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, color = 0x000000)
+                        DEm = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, url = DentAi.url, color = 0x000000)
                         DEm.set_thumbnail(url = DentAi.image_urls[0])
                         DEm.set_footer(text = f'Released on {DentAi.upload_date}\n\nNeed help navigating? zhelp navigation')
                         DEm.set_image(url = DentAi.image_urls[0])
