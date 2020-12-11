@@ -6,7 +6,7 @@ from Setup import MClient
 from Setup import ChVote, ChNSFW
 import asyncio
 
-def EmbedMaker(DentAi, Page, State):
+def EmbedMaker(DentAi, FdesCtI, Page, State):
     DEmE = discord.Embed(title = DentAi.title(Format.Pretty),  description = FdesCtI, url = DentAi.url, color = 0x000000)
     DEmE.set_thumbnail(url = DentAi.image_urls[0])
     DEmE.set_footer(text = f'Released on {DentAi.upload_date}\n\nNeed help navigating? zhelp navigation')
@@ -447,13 +447,13 @@ class AnimeManga(commands.Cog):
                             await DmSent.remove_reaction(Res[0].emoji, Res[1])
                             if Res[0].emoji == "⬅️" and Page != 0:
                                 Page -= 1
-                                await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
+                                await DmSent.edit(embed = EmbedMaker(DentAi, FdesCtI, Page, "OPEN"))
                             elif Res[0].emoji == "➡️":
                                 if Page < len(DentAi.image_urls)-1:
                                     Page += 1
-                                    await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
+                                    await DmSent.edit(embed = EmbedMaker(DentAi, FdesCtI, Page, "OPEN"))
                                 else:
-                                    await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
+                                    await DmSent.edit(embed = EmbedMaker(DentAi, FdesCtI, Page, "CLOSED"))
                                     await DmSent.remove_reaction("⬅️", self.DClient.user)
                                     await DmSent.remove_reaction("❌", self.DClient.user)
                                     await DmSent.remove_reaction("➡️", self.DClient.user)
@@ -480,20 +480,20 @@ class AnimeManga(commands.Cog):
                                                 pass
                                         except ValueError:
                                             pass
-                                        await DmSent.edit(embed = EmbedMaker(DentAi, Page, "OPEN"))
+                                        await DmSent.edit(embed = EmbedMaker(DentAi, FdesCtI, Page, "OPEN"))
                                     except asyncio.TimeoutError:
                                         await TempNG.edit("Request Timeout")
                                         await asyncio.sleep(5)
                                         await TempNG.delete()
                             elif Res[0].emoji == "❌":
-                                await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
+                                await DmSent.edit(embed = EmbedMaker(DentAi, FdesCtI, Page, "CLOSED"))
                                 await DmSent.remove_reaction("⬅️", self.DClient.user)
                                 await DmSent.remove_reaction("❌", self.DClient.user)
                                 await DmSent.remove_reaction("➡️", self.DClient.user)
                                 await DmSent.remove_reaction("#️⃣", self.DClient.user)
                                 break
                         except asyncio.TimeoutError:
-                            await DmSent.edit(embed = EmbedMaker(DentAi, Page, "CLOSED"))
+                            await DmSent.edit(embed = EmbedMaker(DentAi, FdesCtI, Page, "CLOSED"))
                             break
                     await ctx.message.channel.send(":newspaper2: Doujin Closed :newspaper2:")
                 else:
