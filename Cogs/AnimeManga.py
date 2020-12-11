@@ -393,7 +393,7 @@ class AnimeManga(commands.Cog):
 
                             try:
                                 if int(ResS.content) <= 10:
-                                    Srch = SrchDen[int(ResS.content)-1]["id"]
+                                    Srch = SrchDen[int(ResS.content)-1].id
                                     DentAi = Hentai(Srch)
                                     await DmSent.edit(embed = discord.Embed(title = ":newspaper: Opening...",  description = DentAi.title(Format.Pretty), color = 0x000000)) 
                             except ValueError:
