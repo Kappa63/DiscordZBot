@@ -92,6 +92,10 @@ class HelpInfo(commands.Cog):
         HEm.add_field(name = "zpdf (PDF Attachment/PDF Url): ", value = "Views the PDF's first 40 pages", inline = False)
         HEm.add_field(name = "zcalc (Input): ", value = "Calculates and returns", inline = False)
         HEm.add_field(name = "zcolor: ", value = "Returns a RANDOM color with its HEX and RGB color codes", inline = False)
+        HEm.add_field(name = "zcat: ", value = "Returns a RANDOM cat image", inline = False)
+        HEm.add_field(name = "zdog: ", value = "Returns a RANDOM dog image", inline = False)
+        HEm.add_field(name = "zfox: ", value = "Returns a RANDOM fox image", inline = False)
+        HEm.add_field(name = "zinsult: ", value = "Returns an insult", inline = False)
         HEm.add_field(name = "zfact: ", value = "Returns a random fun fact", inline = False)
         HEm.add_field(name = "zapod: ", value = "Astronomy Picture of the Day (Voters and Patreons ONLY)", inline = False)
         HEm.add_field(name = "znasa: ", value = "25 RANDOM mars images out of the 100s taken by NASA's Curiosity rover", inline = False)
@@ -117,7 +121,7 @@ class HelpInfo(commands.Cog):
     async def RetVer(self, ctx):
         VEm = discord.Embed(title = "Active Version", description = "ZBot build version and info", color = 0x3695ba)
         VEm.add_field(name = "Dev: ", value = "Kappa#5173", inline = False)
-        VEm.add_field(name = "Version: ", value = "1.4a", inline = False)
+        VEm.add_field(name = "Version: ", value = "1.4.5a", inline = False)
         VEm.add_field(name = "Release: ", value = "21/11/2020", inline = True)
         await ctx.message.channel.send(embed = VEm)
 
