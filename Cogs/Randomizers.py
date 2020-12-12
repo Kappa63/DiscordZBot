@@ -28,7 +28,7 @@ class Randomizers(commands.Cog):
         DoggoJSON = DoggoGot.json()
         DEm = discord.Embed(title = "Random Dog", color = 0xff3326)
         DEm.set_image(url = DoggoJSON["url"])
-        await ctx.message.channel.send(embed = CEm)
+        await ctx.message.channel.send(embed = DEm)
 
     @commands.command(name = "fox")
     @commands.cooldown(1, 1, commands.BucketType.user)
