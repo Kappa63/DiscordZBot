@@ -43,7 +43,7 @@ def EmbedMaker(TWprofile, IsVerified, TwTtype, TWtimeline, TwTNum, TwTtotal):
         except tweepy.error.TweepError:
             TEmE.add_field(name = "On (By: --Deleted--): ", value = "--Deleted--", inline = False)
         
-    TEmE.set_footer(text = f'{"-"*10}\\n\nNeed help navigating? zhelp navigation')
+    TEmE.set_footer(text = "Need help navigating? zhelp navigation")
     return TEmE
 
 def ChTwTp(TWtimeline):

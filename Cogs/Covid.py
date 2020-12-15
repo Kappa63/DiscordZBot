@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from Setup import Covid
+from Setup import Covid as CVd
 import datetime
 
 class Covid(commands.Cog):
@@ -11,7 +11,7 @@ class Covid(commands.Cog):
     @commands.cooldown(1, 3, commands.BucketType.guild)
     async def Covid19(self, ctx, *args):
         if args:
-            CovidLocs = Covid.getLocations()
+            CovidLocs = CVd.getLocations()
             LocConfirmed = 0
             LocDeaths = 0
             LocRecovered = 0
@@ -34,7 +34,7 @@ class Covid(commands.Cog):
             else:
                 await ctx.message.channel.send("Country not found :pensive:")
         else: 
-            CovidWorld = Covid.getLatest()
+            CovidWorld = CVd.getLatest()
             CEm = discord.Embed(title = "Worldwide Covid-19 Status", description = f'This data was requested on {datetime.date.today()}', color = 0xbd9400)
             CEm.add_field(name = "Confirmed: ", value = f'{CovidWorld["confirmed"]:,}', inline = False)
             CEm.add_field(name = "Deaths: ", value = f'{CovidWorld["deaths"]:,}', inline = False)

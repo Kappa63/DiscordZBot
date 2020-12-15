@@ -1,4 +1,4 @@
-import discord
+    import discord
 from discord.ext import commands
 from prawcore import NotFound, Forbidden
 import os 
@@ -236,7 +236,7 @@ class RedditCmds(commands.Cog):
                 if TotalPosts == 0:
                     await ctx.message.channel.send("No posts on that subreddit :no_mouth:")
                     return              
-                KraPosS = await ctx.message.channel.send(embed = EmbedMaker(SubCpoS[0], ContT[1], "S", 0, TotalPosts))
+                KraPosS = await ctx.message.channel.send(embed = EmbedMaker(SubCpoS[0], "".join(args), "S", 0, TotalPosts))
                 PostNum = 0
                 await KraPosS.add_reaction("⬅️")
                 await KraPosS.add_reaction("❌")
@@ -248,13 +248,13 @@ class RedditCmds(commands.Cog):
                         await KraPosS.remove_reaction(Res[0].emoji, Res[1])
                         if Res[0].emoji == "⬅️" and PostNum != 0:
                             PostNum -= 1
-                            await KraPosS.edit(embed = EmbedMaker(SubCpoS[PostNum], ContT[1], "S", PostNum, TotalPosts))
+                            await KraPosS.edit(embed = EmbedMaker(SubCpoS[PostNum], "".join(args), "S", PostNum, TotalPosts))
                         elif Res[0].emoji == "➡️":
                             if PostNum < TotalPosts-1:
                                 PostNum += 1
-                                await KraPosS.edit(embed = EmbedMaker(SubCpoS[PostNum], ContT[1], "S", PostNum, TotalPosts))
+                                await KraPosS.edit(embed = EmbedMaker(SubCpoS[PostNum], "".join(args), "S", PostNum, TotalPosts))
                             else:
-                                await KraPosS.edit(embed = EmbedMaker(SubCpoS[PostNum], ContT[1], "S", PostNum, TotalPosts))
+                                await KraPosS.edit(embed = EmbedMaker(SubCpoS[PostNum], "".join(args), "S", PostNum, TotalPosts))
                                 await KraPosS.remove_reaction("⬅️", self.DClient.user)
                                 await KraPosS.remove_reaction("❌", self.DClient.user)
                                 await KraPosS.remove_reaction("➡️", self.DClient.user)
@@ -281,20 +281,20 @@ class RedditCmds(commands.Cog):
                                             pass
                                     except ValueError:
                                         pass
-                                    await KraPosS.edit(embed = EmbedMaker(SubCpoS[PostNum], ContT[1], "S", PostNum, TotalPosts))
+                                    await KraPosS.edit(embed = EmbedMaker(SubCpoS[PostNum], "".join(args), "S", PostNum, TotalPosts))
                                 except asyncio.exceptions.TimeoutError:
                                     await TemTw.edit("Request Timeout")
                                     await asyncio.sleep(5)
                                     await TemTw.delete()
                         elif Res[0].emoji == "❌":
-                            await KraPosS.edit(embed = EmbedMaker(SubCpoS[PostNum], ContT[1], "S", PostNum, TotalPosts))
+                            await KraPosS.edit(embed = EmbedMaker(SubCpoS[PostNum], "".join(args), "S", PostNum, TotalPosts))
                             await KraPosS.remove_reaction("⬅️", self.DClient.user)
                             await KraPosS.remove_reaction("❌", self.DClient.user)
                             await KraPosS.remove_reaction("➡️", self.DClient.user)
                             await KraPosS.remove_reaction("#️⃣", self.DClient.user)
                             break
                     except asyncio.TimeoutError:
-                        await KraPosS.edit(embed = EmbedMaker(SubCpoS[PostNum], ContT[1], "S", PostNum, TotalPosts))
+                        await KraPosS.edit(embed = EmbedMaker(SubCpoS[PostNum], "".join(args), "S", PostNum, TotalPosts))
                         await KraPosS.remove_reaction("⬅️", self.DClient.user)
                         await KraPosS.remove_reaction("❌", self.DClient.user)
                         await KraPosS.remove_reaction("➡️", self.DClient.user)
