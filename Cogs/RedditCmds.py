@@ -311,13 +311,13 @@ class RedditCmds(commands.Cog):
                         await KraPosS.edit(
                             embed=discord.Embed(
                                 title="How would you like to sort by top?",
-                                description="🌍 to sort by top all time.\n📅 to sort by top this month.\n🗓️ to sort by top today.\n❌ to cancel",
+                                description="🌍 to sort by top all time.\n🗓️ to sort by top this month.\n📅 to sort by top today.\n❌ to cancel",
                                 footer="This timesout in 10s",
                             )
                         )
                         await KraPosS.add_reaction("🌍")
-                        await KraPosS.add_reaction("📅")
                         await KraPosS.add_reaction("🗓️")
+                        await KraPosS.add_reaction("📅")
                         ResIniT = await self.DClient.wait_for(
                             "reaction_add", check=ChCHEmCHT, timeout=10
                         )
@@ -325,16 +325,16 @@ class RedditCmds(commands.Cog):
                         await KraPosS.edit(embed=discord.Embed(title="Getting Posts"))
                         await KraPosS.remove_reaction("❌", self.DClient.user)
                         await KraPosS.remove_reaction("🌍", self.DClient.user)
-                        await KraPosS.remove_reaction("📅", self.DClient.user)
                         await KraPosS.remove_reaction("🗓️", self.DClient.user)
+                        await KraPosS.remove_reaction("📅", self.DClient.user)
                         if ResIniT[0].emoji == "❌":
                             await KraPosS.delete()
                             return
                         elif ResIniT[0].emoji == "🌍":
                             Post = Reddit.subreddit("".join(args)).top("all")
-                        elif ResIniT[0].emoji == "📅":
-                            Post = Reddit.subreddit("".join(args)).top("month")
                         elif ResIniT[0].emoji == "🗓️":
+                            Post = Reddit.subreddit("".join(args)).top("month")
+                        elif ResIniT[0].emoji == "📅":
                             Post = Reddit.subreddit("".join(args)).top("day")
                 except asyncio.TimeoutError:
                     await KraPosS.edit(embed=discord.Embed(title="Timeout"))

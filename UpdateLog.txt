@@ -1,6 +1,4 @@
-Whats new in 1.4.5a:
-NEW random cat image command (zcat)
-NEW random dog image command (zdog)
-NEW random fox image command (zfox)
-NEW random insult command (zinsult)
-FIXES bugs                                                                                                                      
+Whats new in 1.5a:
+NEW youtube command (zyoutube)
+NEW youtube search command (zyoutube)
+NEW youtube help command (zhelp youtube)                                                                                                            

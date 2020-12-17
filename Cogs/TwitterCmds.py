@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 import requests
-import os
 import tweepy
 from Setup import Twitter
 from Setup import ChVote
@@ -169,6 +168,9 @@ class TwitterCmds(commands.Cog):
                         inline=False,
                     )
                     SrchTw.append(TWuser)
+                if C == 0:
+                    await ctx.message.channel.send("Not Found :expressionless:")
+                    return
                 STEm.set_footer(
                     text='Choose a number to open Twitter User Profile. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*'
                 )
@@ -211,6 +213,7 @@ class TwitterCmds(commands.Cog):
                     )
             else:
                 await ctx.message.channel.send("No search argument :woozy_face:")
+                
         elif args:
             TWname = " ".join(args)
         else:

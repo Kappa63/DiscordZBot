@@ -11,6 +11,8 @@ import praw
 import pymongo
 import CBot
 from pymongo import MongoClient
+import pyyoutube
+import pafy
 
 load_dotenv()
 
@@ -49,10 +51,14 @@ Imgur = imgurpython.ImgurClient(
     client_id=os.getenv("IMGUR_ID"), client_secret=os.getenv("IMGUR_SECRET")
 )
 
+YClient = pyyoutube.Api(api_key=os.getenv("YOUTUBE_KEY"))
 
 def RemoveExtra(listRm, val):
     return [value for value in listRm if value != val]
 
+def GetVidDuration(VidId):
+    Vid = pafy.new(f'https://www.youtube.com/watch?v={VidId}')
+    return Vid.duration
 
 def FormatTime(SecondsFormat):
     Day = 0

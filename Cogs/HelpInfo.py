@@ -31,6 +31,9 @@ class HelpInfo(commands.Cog):
         HEm.add_field(name="zhelp anime: ", value="The Anime Commands", inline=False)
         HEm.add_field(name="zhelp covid: ", value="The Covid-19 Commands", inline=False)
         HEm.add_field(
+            name="zhelp youtube: ", value="The YouTube Commands", inline=False
+        )
+        HEm.add_field(
             name="zhelp misc: ", value="The Miscellaneous Commands", inline=False
         )
         HEm.add_field(name="zhelp nav: ", value="How to Navigate", inline=False)
@@ -143,6 +146,24 @@ class HelpInfo(commands.Cog):
         HEm.add_field(
             name="ztwitter search (Username): ",
             value="Searches for 10 users related to search argument",
+            inline=False,
+        )
+        await ctx.message.channel.send(embed=HEm)
+
+    @SendH.command(aliases=["youtube", "yt"])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def SendY(self, ctx):
+        HEm = discord.Embed(
+            title="**ZBot YouTube Help**", description="\u200b", color=0x0AF531
+        )
+        HEm.add_field(
+            name="zyoutube (Channel Name): ",
+            value="Returns info about the channel and 20 of the latest uploads",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zyoutube search (Search Term): ",
+            value="Searches for 10 channels related to search argument",
             inline=False,
         )
         await ctx.message.channel.send(embed=HEm)
@@ -296,20 +317,22 @@ class HelpInfo(commands.Cog):
             color=0x3695BA,
         )
         VEm.add_field(name="Dev: ", value="Kappa#5173", inline=False)
-        VEm.add_field(name="Version: ", value="1.4.5a", inline=False)
-        VEm.add_field(name="Release: ", value="21/11/2020", inline=True)
+        VEm.add_field(name="Version: ", value="1.5a", inline=False)
+        VEm.add_field(name="Version Release: ", value="17/12/2020", inline=False)
+        VEm.add_field(name="Initial Release: ", value="21/11/2020", inline=False)
         await ctx.message.channel.send(embed=VEm)
 
     @commands.command(name="log")
     async def UpdLog(self, ctx):
         LogUps = open("UpdateLog.txt")
         LOggLin = LogUps.read().splitlines()
-        SEm = discord.Embed(title=LOggLin[0], color=0x1F002A)
+        LEm = discord.Embed(title=LOggLin[0], color=0x1F002A)
         LOggLin.pop(0)
         for Logs in LOggLin:
             LogTem = Logs.split(" ")
-            SEm.add_field(name=LogTem[0], value=" ".join(LogTem[1:]), inline=False)
-        await ctx.message.channel.send(embed=SEm)
+            LEm.add_field(name=LogTem[0], value=" ".join(LogTem[1:]), inline=False)
+        LEm.set_footer(text = "Make sure to report any bugs you pass by on the official server. Check zbug")
+        await ctx.message.channel.send(embed=LEm)
 
     @commands.command(name="vote")
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -338,7 +361,7 @@ class HelpInfo(commands.Cog):
         )
         await ctx.message.channel.send(embed=SEm)
 
-    @commands.command(aliases=["support", "bug"])
+    @commands.command(aliases=["support", "bug", "bugs"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SupportServer(self, ctx):
         SEm = discord.Embed(

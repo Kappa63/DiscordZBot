@@ -51,6 +51,7 @@ Cogs = [
     "Cogs.OnlyMods",
     "Cogs.MainEvents",
     "Cogs.Rule34",
+    "Cogs.Youtube",
 ]
 
 if __name__ != "__main__":
