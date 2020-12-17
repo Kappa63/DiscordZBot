@@ -46,7 +46,7 @@ class Youtube(commands.Cog):
 
     @commands.command(aliases=["youtube","yt"])
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def YoutubeGetter(ctx, *args):
+    async def YoutubeGetter(self, ctx, *args):
         def ChCHEm(RcM, RuS):
             return (
                 RuS.bot == False
@@ -281,10 +281,7 @@ class Youtube(commands.Cog):
                                 pass
                             await YTEm.edit(
                                 embed=EmbedMaker(YTVids.items[VidNum].contentDetails.upload.videoId, YTinfo.items[0], VidNum, len(YTVids.items)))
-                        except asyncio.TimeoutError:
-                            await TempYT.edit("Request Timeout")
-                            await asyncio.sleep(5)
-                            await TempYT.delete()
+                   d
                 elif ReaEm[0].emoji == "➡️" and len(YTVids.items) == VidNum + 1:
                     await YTEm.remove_reaction("⬅️", self.DClient.user)
                     await YTEm.remove_reaction("❌", self.DClient.user)
