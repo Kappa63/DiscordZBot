@@ -7,7 +7,7 @@ import asyncio
 
 def EmbedMaker(VidID, Channel, VidNum, VidsTotal):
     Vid = YClient.get_video_by_id(video_id=VidID).items[0]
-    YLEm = discord.Embed(title = Vid.snippet.title, description = Vid.snippet.description.split("\n")[0], color = 0xFF0000)
+    YLEm = discord.Embed(title = Vid.snippet.title, description = Vid.snippet.description.split("\n")[0], url = f'https://www.youtube.com/watch?v={VidId}', color = 0xFF0000)
     YLEm.set_thumbnail(url = Vid.snippet.thumbnails.high.url)
     YLEm.add_field(name = f'`Video: {VidNum+1}/{VidsTotal}`', value = "\u200b", inline = False)
     if Vid.snippet.liveBroadcastContent == "live":
