@@ -281,10 +281,10 @@ class Youtube(commands.Cog):
                                 pass
                             await YTEm.edit(
                                 embed=EmbedMaker(YTVids.items[VidNum].contentDetails.upload.videoId, YTinfo.items[0], VidNum, len(YTVids.items)))
-                    except asyncio.TimeoutError:
-                        await TempYT.edit("Request Timeout")
-                        await asyncio.sleep(5)
-                        await TempYT.delete()
+                        except asyncio.TimeoutError:
+                            await TempYT.edit("Request Timeout")
+                            await asyncio.sleep(5)
+                            await TempYT.delete()
                 elif ReaEm[0].emoji == "➡️" and len(YTVids.items) == VidNum + 1:
                     await YTEm.remove_reaction("⬅️", self.DClient.user)
                     await YTEm.remove_reaction("❌", self.DClient.user)
