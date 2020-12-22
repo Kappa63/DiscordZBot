@@ -4,7 +4,6 @@ from Setup import ChVote
 from Setup import IMClient
 import asyncio
 
-
 class Movies(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
