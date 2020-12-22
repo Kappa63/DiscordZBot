@@ -7,45 +7,38 @@ import numpy
 import requests
 import os
 from Setup import GClient, GApi, Imgur
+from Setup import ChVote
 
 
 class Randomizers(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
 
-    @commands.command(name="cat")
+    @commands.command(name="advice")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def RandomCat(self, ctx):
-        CatGot = requests.get(
-            "https://aws.random.cat/meow", headers={"Accept": "application/json"}
+    async def RandomAdvice(self, ctx):
+        Advice = requests.get("https://api.adviceslip.com/advice", headers = {"Accept": "application/json"}).json()
+        await ctx.message.channel.send(
+            embed=discord.Embed(title="Some Advice", description = Advice["slip"]["advice"], color=0xBD2DB8)
         )
-        CatJSON = CatGot.json()
-        CEm = discord.Embed(title="Random Cat", color=0xA3D7C1)
-        CEm.set_image(url=CatJSON["file"])
-        await ctx.message.channel.send(embed=CEm)
 
-    @commands.command(name="dog")
+    @commands.command(name="kanye")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def RandomDoggo(self, ctx):
-        DoggoGot = requests.get(
-            "https://random.dog/woof.json", headers={"Accept": "application/json"}
+    async def ShitByKanye(self, ctx):
+        KanyeSays = requests.get("https://api.kanye.rest", headers = {"Accept": "application/json"}).json()
+        await ctx.message.channel.send(
+            embed=discord.Embed(title="Kanye Says Alot, Here's One", description = KanyeSays["quote"], color=0xBD2DB8)
         )
-        DoggoJSON = DoggoGot.json()
-        DEm = discord.Embed(title="Random Dog", color=0xFF3326)
-        DEm.set_image(url=DoggoJSON["url"])
-        await ctx.message.channel.send(embed=DEm)
 
-    @commands.command(name="fox")
+    @commands.command(name="qotd")
+    @commands.check(ChVote)
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def RandomFox(self, ctx):
-        FoxGot = requests.get(
-            "https://randomfox.ca/floof/", headers={"Accept": "application/json"}
-        )
-        FoxJSON = FoxGot.json()
-        FEm = discord.Embed(title="Random Fox", color=0x9DAA45)
-        FEm.set_image(url=FoxJSON["image"])
-        await ctx.message.channel.send(embed=FEm)
-
+    async def QuoteOfTheDay(self, ctx):
+        TodayQuote = requests.get("https://favqs.com/api/qotd", headers = {"Accept": "application/json"}).json()
+        QEm = discord.Embed(title="Quote Of The Day", description = TodayQuote["quote"]["body"], color=0xBD2DB8)
+        QEm.set_footer(text=f'By: {TodayQuote["quote"]["author"]}')
+        await ctx.message.channel.send(embed=)
+    
     @commands.command(name="insult")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RandomInsult(self, ctx):
@@ -55,13 +48,13 @@ class Randomizers(commands.Cog):
         )
         InsultJSON = InsultGot.json()
         await ctx.message.channel.send(
-            embed=discord.Embed(title=InsultJSON["insult"], color=0xBD2DB8)
+            embed=discord.Embed(title= "Insult", description = InsultJSON["insult"], color=0xBD2DB8)
         )
 
     @commands.command(name="roll")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RollTheDice(self, ctx):
-        ChORoDi = {
+        DiceFaces = {
             1: "https://i.imgur.com/A3winYh.png",
             2: "https://i.imgur.com/JFuawqi.png",
             3: "https://i.imgur.com/2tufStP.png",
@@ -69,14 +62,14 @@ class Randomizers(commands.Cog):
             5: "https://i.imgur.com/7hgCUOq.png",
             6: "https://i.imgur.com/5iyDeF1.png",
         }
-        NuToLe = {1: "One", 2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six"}
-        RoDiRe = random.randint(1, 6)
+        DiceRolls = {1: "One", 2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six"}
+        FaceNumber = random.randint(1, 6)
         DEm = discord.Embed(
             title="Dice Roll",
-            description=f"**The Dice Rolled a:** *{RoDiRe} ({NuToLe[RoDiRe]})*",
+            description=f"**The Dice Rolled a:** *{FaceNumber} ({DiceRolls[FaceNumber]})*",
             color=0xFAC62D,
         )
-        DEm.set_thumbnail(url=ChORoDi[RoDiRe])
+        DEm.set_thumbnail(url=DiceFaces[FaceNumber])
         await ctx.message.channel.send(embed=DEm)
 
     @commands.command(name="fact")
@@ -84,42 +77,29 @@ class Randomizers(commands.Cog):
     async def GetAFact(self, ctx):
         await ctx.message.channel.send(
             embed=discord.Embed(
-                title="Random Fact", description=randfacts.getFact(), color=0x1F002A
-            )
-        )
-
-    @commands.command(name="dadjoke")
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def KillMe(self, ctx):
-        rEqAla = requests.get(
-            "https://icanhazdadjoke.com/", headers={"Accept": "application/json"}
-        )
-        TraTOjS = rEqAla.json()
-        await ctx.message.channel.send(
-            embed=discord.Embed(
-                title="Random Dad Joke", description=TraTOjS["joke"], color=0x11D999
+                title="Fact", description=randfacts.getFact(), color=0x1F002A
             )
         )
 
     @commands.command(aliases=["color", "colour"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def ColorRandom(self, ctx):
-        CrMakImG = numpy.zeros((360, 360, 3), numpy.uint8)
+        MakeClear = numpy.zeros((360, 360, 3), numpy.uint8)
         R = random.randint(0, 255)
         G = random.randint(0, 255)
         B = random.randint(0, 255)
-        CrMakImG[:, 0:360] = (B, G, R)
-        RGhEC = "%02x%02x%02x" % (R, G, B)
-        cv2.imwrite("Color.png", CrMakImG)
-        LiImCo = Imgur.upload_from_path("Color.png")["link"]
+        MakeClear[:, 0:360] = (B, G, R)
+        RGBtoHEX = "%02x%02x%02x" % (R, G, B)
+        cv2.imwrite("Color.png", MakeClear)
+        ColoredImage = Imgur.upload_from_path("Color.png")["link"]
         os.remove("Color.png")
-        ColTEm = discord.Color(value=int(RGhEC, 16))
+        ColorObject = discord.Color(value=int(RGBtoHEX, 16))
         CEm = discord.Embed(
-            title="Random Color",
-            description=f"```-Hex: #{RGhEC}\n-RGB: ({R},{G},{B})```",
-            color=ColTEm,
+            title="Color",
+            description=f"```-Hex: #{RGBtoHEX}\n-RGB: ({R},{G},{B})```",
+            color=ColorObject,
         )
-        CEm.set_thumbnail(url=LiImCo)
+        CEm.set_thumbnail(url=ColoredImage)
         await ctx.message.channel.send(embed=CEm)
 
     @commands.command(name="giphy")
@@ -134,7 +114,6 @@ class Randomizers(commands.Cog):
                 await ctx.message.channel.send("No gifs found :expressionless:")
         else:
             await ctx.message.channel.send("No search term given :confused:")
-
 
 def setup(DClient):
     DClient.add_cog(Randomizers(DClient))

@@ -12,13 +12,14 @@ import pymongo
 import CBot
 from pymongo import MongoClient
 import pyyoutube
+import imdb
 import pafy
 
 load_dotenv()
 
 Mdb = os.getenv("MONGODB_URL")
 Cls = MongoClient(Mdb)
-DbM = Cls["CBot"]
+DbM = Cls["CBot"]   
 Col = DbM["Ser"]
 Colvt = DbM["Vts"]
 
@@ -53,12 +54,16 @@ Imgur = imgurpython.ImgurClient(
 
 YClient = pyyoutube.Api(api_key=os.getenv("YOUTUBE_KEY"))
 
+IMClient = imdb.IMDb()
+
 def RemoveExtra(listRm, val):
     return [value for value in listRm if value != val]
 
+
 def GetVidDuration(VidId):
-    Vid = pafy.new(f'https://www.youtube.com/watch?v={VidId}')
+    Vid = pafy.new(f"https://www.youtube.com/watch?v={VidId}")
     return Vid.duration
+
 
 def FormatTime(SecondsFormat):
     Day = 0
@@ -116,6 +121,28 @@ async def ChVote(ctx):
     if await CBot.TClient.get_user_vote(ctx.author.id):
         return True
     else:
+        try:
+            MemGuild = CBot.DClient.get_guild(783250489843384341)
+            Mem = MemGuild.get_member(ctx.author.id)
+            Roles = []
+            Roles.append(discord.utils.get(MemGuild.roles, id=783250729686532126))
+            Roles.append(discord.utils.get(MemGuild.roles, id=783256987655340043))
+            Roles.append(discord.utils.get(MemGuild.roles, id=784123230372757515))
+            Roles.append(discord.utils.get(MemGuild.roles, id=784124034559377409))
+            for Role in Roles:
+                if Role in Mem.roles:
+                    return True
+        except AttributeError:
+            pass
+        raise IsVote("No Vote")
+
+
+class IsPatreon(commands.CheckFailure):
+    pass
+
+
+def ChPatreon(ctx):
+    try:
         MemGuild = CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(ctx.author.id)
         Roles = []
@@ -126,24 +153,8 @@ async def ChVote(ctx):
         for Role in Roles:
             if Role in Mem.roles:
                 return True
-        raise IsVote("No Vote")
-
-
-class IsPatreon(commands.CheckFailure):
-    pass
-
-
-def ChPatreon(ctx):
-    MemGuild = CBot.DClient.get_guild(783250489843384341)
-    Mem = MemGuild.get_member(ctx.author.id)
-    Roles = []
-    Roles.append(discord.utils.get(MemGuild.roles, id=783250729686532126))
-    Roles.append(discord.utils.get(MemGuild.roles, id=783256987655340043))
-    Roles.append(discord.utils.get(MemGuild.roles, id=784123230372757515))
-    Roles.append(discord.utils.get(MemGuild.roles, id=784124034559377409))
-    for Role in Roles:
-        if Role in Mem.roles:
-            return True
+    except AttributeError:
+        pass
     raise IsPatreon("Not Patreon")
 
 

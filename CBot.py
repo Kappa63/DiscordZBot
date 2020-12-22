@@ -52,10 +52,14 @@ Cogs = [
     "Cogs.MainEvents",
     "Cogs.Rule34",
     "Cogs.Youtube",
+    "Cogs.Image",
+    "Cogs.Jokes",
+    "Cogs.Movies",
 ]
 
 if __name__ != "__main__":
     for Cog in Cogs:
         DClient.load_extension(Cog)
+    print("Cogs Loaded...")
 
 DClient.run(os.getenv("DISCORD_SECRET"))

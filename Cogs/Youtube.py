@@ -5,46 +5,81 @@ from Setup import ChVote
 from Setup import GetVidDuration
 import asyncio
 
+
 def EmbedMaker(VidID, Channel, VidNum, VidsTotal):
     Vid = YClient.get_video_by_id(video_id=VidID).items[0]
-    YLEm = discord.Embed(title = Vid.snippet.title, description = Vid.snippet.description.split("\n")[0], url = f'https://www.youtube.com/watch?v={VidID}', color = 0xFF0000)
-    YLEm.set_thumbnail(url = Vid.snippet.thumbnails.high.url)
-    YLEm.add_field(name = f'`Video: {VidNum+1}/{VidsTotal}`', value = "\u200b", inline = False)
+    YLEm = discord.Embed(
+        title=Vid.snippet.title,
+        description=Vid.snippet.description.split("\n")[0],
+        url=f"https://www.youtube.com/watch?v={VidID}",
+        color=0xFF0000,
+    )
+    YLEm.set_thumbnail(url=Vid.snippet.thumbnails.high.url)
+    YLEm.add_field(
+        name=f"`Video: {VidNum+1}/{VidsTotal}`", value="\u200b", inline=False
+    )
     if Vid.snippet.liveBroadcastContent == "live":
-        YLEm.add_field(name = "**CURRENTLY LIVE**", value = "\u200b", inline = True)
+        YLEm.add_field(name="**CURRENTLY LIVE**", value="\u200b", inline=True)
     else:
-        YLEm.add_field(name = f'Upload Date: {Vid.snippet.publishedAt[0:10]}', value = "\u200b", inline = False)
-        YLEm.add_field(name = f'Duration: {GetVidDuration(VidID)}', value = "\u200b", inline = False)
+        YLEm.add_field(
+            name=f"Upload Date: {Vid.snippet.publishedAt[0:10]}",
+            value="\u200b",
+            inline=False,
+        )
+        YLEm.add_field(
+            name=f"Duration: {GetVidDuration(VidID)}", value="\u200b", inline=False
+        )
     try:
-        YLEm.add_field(name = "Views :eye:", value = f'{int(Vid.statistics.viewCount):,}', inline = True)
+        YLEm.add_field(
+            name="Views :eye:", value=f"{int(Vid.statistics.viewCount):,}", inline=True
+        )
     except AttributeError:
-        YLEm.add_field(name = "Views :eye:", value = "Disabled", inline = True)
-    YLEm.add_field(name = "\u200b", value = "\u200b", inline = True)
+        YLEm.add_field(name="Views :eye:", value="Disabled", inline=True)
+    YLEm.add_field(name="\u200b", value="\u200b", inline=True)
     try:
-        YLEm.add_field(name = "Comments :speech_balloon:", value = f'{int(Vid.statistics.commentCount):,}', inline = True)
+        YLEm.add_field(
+            name="Comments :speech_balloon:",
+            value=f"{int(Vid.statistics.commentCount):,}",
+            inline=True,
+        )
     except AttributeError:
-        YLEm.add_field(name = "Comments :speech_balloon:", value = "Disabled", inline = True)
+        YLEm.add_field(name="Comments :speech_balloon:", value="Disabled", inline=True)
     try:
-        YLEm.add_field(name = "Likes :thumbsup:", value = f'{int(Vid.statistics.likeCount):,}', inline = True)
+        YLEm.add_field(
+            name="Likes :thumbsup:",
+            value=f"{int(Vid.statistics.likeCount):,}",
+            inline=True,
+        )
     except AttributeError:
-        YLEm.add_field(name = "Likes :thumbsup:", value = "Disabled", inline = True)
-    YLEm.add_field(name = "\u200b", value = "\u200b", inline = True)
+        YLEm.add_field(name="Likes :thumbsup:", value="Disabled", inline=True)
+    YLEm.add_field(name="\u200b", value="\u200b", inline=True)
     try:
-        YLEm.add_field(name = "Dislikes :thumbsdown:", value = f'{int(Vid.statistics.dislikeCount):,}', inline = True)
+        YLEm.add_field(
+            name="Dislikes :thumbsdown:",
+            value=f"{int(Vid.statistics.dislikeCount):,}",
+            inline=True,
+        )
     except AttributeError:
-        YLEm.add_field(name = "Dislikes :thumbsdown:", value = "Disabled", inline = True)
-    YLEm.add_field(name = "\u200b", value = "\u200b", inline = False)
+        YLEm.add_field(name="Dislikes :thumbsdown:", value="Disabled", inline=True)
+    YLEm.add_field(name="\u200b", value="\u200b", inline=False)
     if Channel.statistics.hiddenSubscriberCount == False:
-        YLEm.set_footer(text = f'{Channel.snippet.title} / Subs: {int(Channel.statistics.subscriberCount):,} / Videos: {int(Channel.statistics.videoCount):,}', icon_url = Channel.snippet.thumbnails.high.url)
+        YLEm.set_footer(
+            text=f"{Channel.snippet.title} / Subs: {int(Channel.statistics.subscriberCount):,} / Videos: {int(Channel.statistics.videoCount):,}",
+            icon_url=Channel.snippet.thumbnails.high.url,
+        )
     else:
-        YLEm.set_footer(text = f'{Channel.snippet.title} / Videos: {int(Channel.statistics.videoCount):,}\n\nNeed help navigating? zhelp navigation', icon_url = Channel.snippet.thumbnails.high.url)
+        YLEm.set_footer(
+            text=f"{Channel.snippet.title} / Videos: {int(Channel.statistics.videoCount):,}\n\nNeed help navigating? zhelp navigation",
+            icon_url=Channel.snippet.thumbnails.high.url,
+        )
     return YLEm
+
 
 class Youtube(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
 
-    @commands.command(aliases=["youtube","yt"])
+    @commands.command(aliases=["youtube", "yt"])
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def YoutubeGetter(self, ctx, *args):
         def ChCHEm(RcM, RuS):
@@ -78,7 +113,11 @@ class Youtube(commands.Cog):
             except ValueError:
                 if (MesS == "cancel") or (MesS == "c"):
                     RsT = True
-            return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
+            return (
+                MSg.guild.id == ctx.guild.id
+                and MSg.channel.id == ctx.channel.id
+                and RsT
+            )
 
         YTinput = " ".join(args).split(" ")
         if YTinput[0].lower() == "search" and args:
@@ -103,13 +142,13 @@ class Youtube(commands.Cog):
                     if ChannelGetter.items[0].statistics.hiddenSubscriberCount == False:
                         SYem.add_field(
                             name="\u200b",
-                            value=f"{C}. `{ChannelGetter.items[0].snippet.title} / Subs: {int(ChannelGetter.items[0].statistics.subscriberCount):,} / Videos: {int(ChannelGetter.items[0].statistics.videoCount):,}`",
+                            value=f'{C}. `{ChannelGetter.items[0].snippet.title} / Subs: {int(ChannelGetter.items[0].statistics.subscriberCount):,} / Videos: {int(ChannelGetter.items[0].statistics.videoCount):,}`',
                             inline=False,
                         )
                     else:
                         SYem.add_field(
                             name="\u200b",
-                            value=f"{C}. `{ChannelGetter.items[0].snippet.title} / Videos: {int(ChannelGetter.items[0].statistics.videoCount):,}`",
+                            value=f'{C}. `{ChannelGetter.items[0].snippet.title} / Videos: {int(ChannelGetter.items[0].statistics.videoCount):,}`',
                             inline=False,
                         )
                     SrchYT.append(ChannelGetter)
@@ -121,17 +160,22 @@ class Youtube(commands.Cog):
                 )
                 YTSent = await ctx.message.channel.send(embed=SYem)
                 try:
-                    ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=20)
+                    ResS = await self.DClient.wait_for(
+                        "message", check=ChCHanS, timeout=20
+                    )
                     LResS = ResS.content.lower()
                     try:
                         if int(ResS.content) <= 10:
                             YTchoice = SrchYT[int(ResS.content) - 1]
                             YTid = YTchoice.items[0].id
-                            if YTchoice.items[0].statistics.hiddenSubscriberCount == False:
+                            if (
+                                YTchoice.items[0].statistics.hiddenSubscriberCount
+                                == False
+                            ):
                                 await YTSent.edit(
                                     embed=discord.Embed(
                                         title=":calling: Finding...",
-                                        description=f'{YTchoice.items[0].snippet.title} / Subs: {int(YTchoice.items[0].statistics.subscriberCount):,} / Videos: {int(YTchoice.items[0].statistics.videoCount):,}',
+                                        description=f"{YTchoice.items[0].snippet.title} / Subs: {int(YTchoice.items[0].statistics.subscriberCount):,} / Videos: {int(YTchoice.items[0].statistics.videoCount):,}",
                                         color=0xFF0000,
                                     )
                                 )
@@ -139,7 +183,7 @@ class Youtube(commands.Cog):
                                 await YTSent.edit(
                                     embed=discord.Embed(
                                         title=":calling: Finding...",
-                                        description=f'{YTchoice.items[0].snippet.title} / Videos: {int(YTchoice.items[0].statistics.videoCount):,}',
+                                        description=f"{YTchoice.items[0].snippet.title} / Videos: {int(YTchoice.items[0].statistics.videoCount):,}",
                                         color=0xFF0000,
                                     )
                                 )
@@ -175,9 +219,15 @@ class Youtube(commands.Cog):
 
         if IDorName == "NAME":
             try:
-                YTtempID = YClient.search(q=" ".join(YTinput), count=1, search_type="channel").items[0].snippet.channelId
+                YTtempID = (
+                    YClient.search(q=" ".join(YTinput), count=1, search_type="channel")
+                    .items[0]
+                    .snippet.channelId
+                )
                 YTinfo = YClient.get_channel_info(channel_id=YTtempID)
-                YTVids = YClient.get_activities_by_channel(channel_id=YTtempID, count=20)
+                YTVids = YClient.get_activities_by_channel(
+                    channel_id=YTtempID, count=20
+                )
             except IndexError:
                 await ctx.message.channel.send("Nothing Found :woozy_face:")
                 return
@@ -195,6 +245,7 @@ class Youtube(commands.Cog):
         YEm = discord.Embed(
             title=YTinfo.items[0].snippet.title,
             description=YTcDesc,
+            url = f'https://www.youtube.com/channel/{YTinfo.items[0].id}',
             color=0xFF0000,
         )
         YEm.add_field(
@@ -239,13 +290,25 @@ class Youtube(commands.Cog):
                 elif ReaEm[0].emoji == "⬅️" and VidNum > 0:
                     VidNum -= 1
                     await YTEm.edit(
-                        embed=EmbedMaker(YTVids.items[VidNum].contentDetails.upload.videoId, YTinfo.items[0], VidNum, len(YTVids.items)))
+                        embed=EmbedMaker(
+                            YTVids.items[VidNum].contentDetails.upload.videoId,
+                            YTinfo.items[0],
+                            VidNum,
+                            len(YTVids.items),
+                        )
+                    )
 
                 elif ReaEm[0].emoji == "➡️" and OnChannel:
                     OnChannel = False
                     VidNum = 0
                     await YTEm.edit(
-                        embed=EmbedMaker(YTVids.items[VidNum].contentDetails.upload.videoId, YTinfo.items[0], VidNum, len(YTVids.items)))
+                        embed=EmbedMaker(
+                            YTVids.items[VidNum].contentDetails.upload.videoId,
+                            YTinfo.items[0],
+                            VidNum,
+                            len(YTVids.items),
+                        )
+                    )
                 elif (
                     ReaEm[0].emoji == "➡️"
                     and len(YTVids.items) > VidNum + 1
@@ -253,7 +316,13 @@ class Youtube(commands.Cog):
                 ):
                     VidNum += 1
                     await YTEm.edit(
-                        embed=EmbedMaker(YTVids.items[VidNum].contentDetails.upload.videoId, YTinfo.items[0], VidNum, len(YTVids.items)))
+                        embed=EmbedMaker(
+                            YTVids.items[VidNum].contentDetails.upload.videoId,
+                            YTinfo.items[0],
+                            VidNum,
+                            len(YTVids.items),
+                        )
+                    )
                 elif ReaEm[0].emoji == "#️⃣":
                     if await ChVote(ctx):
                         TempYT = await ctx.message.channel.send(
@@ -280,7 +349,13 @@ class Youtube(commands.Cog):
                             except ValueError:
                                 pass
                             await YTEm.edit(
-                                embed=EmbedMaker(YTVids.items[VidNum].contentDetails.upload.videoId, YTinfo.items[0], VidNum, len(YTVids.items)))
+                                embed=EmbedMaker(
+                                    YTVids.items[VidNum].contentDetails.upload.videoId,
+                                    YTinfo.items[0],
+                                    VidNum,
+                                    len(YTVids.items),
+                                )
+                            )
                         except asyncio.TimeoutError:
                             await TempYT.edit("Request Timeout")
                             await asyncio.sleep(5)
@@ -303,6 +378,7 @@ class Youtube(commands.Cog):
                 await YTEm.remove_reaction("➡️", self.DClient.user)
                 await YTEm.remove_reaction("#️⃣", self.DClient.user)
                 break
+
 
 def setup(DClient):
     DClient.add_cog(Youtube(DClient))

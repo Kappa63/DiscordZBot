@@ -1,4 +1,14 @@
-Whats new in 1.5a:
-NEW youtube command (zyoutube)
-NEW youtube search command (zyoutube)
-NEW youtube help command (zhelp youtube)                                                                                                            
+Whats new in 1.6a:
+NEW Joke Command: Tame jokes (zjoke)
+NEW Dark Joke Command: Less tame more NSFW jokes (zdarkjoke)
+NEW Pun Command: Puns. Just Puns. (zpun)
+NEW Quote Of The Day (QOTD): New quotes every day (zqotd) (For voters and patreon)
+NEW Kanye words: Stuff kanye says ||was tempted to call it "shit kanye says"|| (zkanye)
+NEW Random Food pics command: yeh just food pics. Warning they might get you hungry. (zfood, zdish)
+ADDED Channel's url to the youtube command when on the channel page
+ADDED Aliases to the dog command (zdoggo, zpupper, zdog, zpuppy)
+ADDED Aliases to the cat command (zcat, zkitten, zkitty)
+ADDED Aliases to the youtube command (zyoutube, zyt)
+CHANGED Dadjoke command help and the new joke commands now under their own joke help command (zhelp joke)
+CHANGED Image commands help now under an image help command(zhelp image)       
+FIXED apod command                                                                                               

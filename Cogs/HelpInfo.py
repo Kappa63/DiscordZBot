@@ -15,7 +15,6 @@ class HelpInfo(commands.Cog):
             value="Checks the current running version of ZBot",
             inline=False,
         )
-        HEm.add_field(name="zvote: ", value="To vote for ZBot", inline=False)
         HEm.add_field(
             name="zlog: ", value="Shows the latest update's update log", inline=False
         )
@@ -29,6 +28,8 @@ class HelpInfo(commands.Cog):
             name="zhelp twitter: ", value="The Twitter Commands", inline=False
         )
         HEm.add_field(name="zhelp anime: ", value="The Anime Commands", inline=False)
+        HEm.add_field(name="zhelp images: ", value="The Image Commands", inline=False)
+        HEm.add_field(name="zhelp jokes: ", value="The Joke Commands", inline=False)
         HEm.add_field(name="zhelp covid: ", value="The Covid-19 Commands", inline=False)
         HEm.add_field(
             name="zhelp youtube: ", value="The YouTube Commands", inline=False
@@ -166,6 +167,7 @@ class HelpInfo(commands.Cog):
             value="Searches for 10 channels related to search argument",
             inline=False,
         )
+        HEm.set_footer(text='Aliases: "youtube" / "yt"')
         await ctx.message.channel.send(embed=HEm)
 
     @SendH.command(name="rule34")
@@ -219,6 +221,39 @@ class HelpInfo(commands.Cog):
         )
         await ctx.message.channel.send(embed=HEm)
 
+    @SendH.command(aliases = ["image", "images"])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def SendI(self, ctx):
+        HEm = discord.Embed(
+            title="**ZBot Image Help**", description="\u200b", color=0x0AF531
+        )
+        HEm.add_field(name="zcat: ", value="Cat Pics", inline=False)
+        HEm.add_field(name="zdog: ", value="Dog Pics", inline=False)
+        HEm.add_field(name="zfox: ", value="Fox Pics", inline=False)
+        HEm.add_field(name="zfood: ", value="Food Pics", inline=False)
+        HEm.set_footer(text='Aliases: -"cat" / "kitten" / "kitty"\n-"doggo" / "dog" / "pupper" / "puppy"\n-"food" / "dishes" / "dish"')
+        await ctx.message.channel.send(embed=HEm)
+
+    @SendH.command(aliases = ["joke", "jokes"])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def SendJ(self, ctx):
+        HEm = discord.Embed(
+            title="**ZBot Joke Help**", description="\u200b", color=0x0AF531
+        )
+        HEm.add_field(
+            name="zdadjoke: ", value="Dad Jokes", inline=False
+        )
+        HEm.add_field(
+            name="zjoke: ", value="Jokes (No sensetive material)", inline=False
+        )
+        HEm.add_field(
+            name="zdarkjoke: ", value="Darker Jokes (Might contain sensetive material, at own descretion)", inline=False
+        )
+        HEm.add_field(
+            name="zpun: ", value="Puns.", inline=False
+        )
+        await ctx.message.channel.send(embed=HEm)
+
     @SendH.command(aliases=["misc", "misc.", "miscellaneous"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendM(self, ctx):
@@ -251,11 +286,18 @@ class HelpInfo(commands.Cog):
             value="Returns a RANDOM color with its HEX and RGB color codes",
             inline=False,
         )
-        HEm.add_field(name="zcat: ", value="Returns a RANDOM cat image", inline=False)
-        HEm.add_field(name="zdog: ", value="Returns a RANDOM dog image", inline=False)
-        HEm.add_field(name="zfox: ", value="Returns a RANDOM fox image", inline=False)
         HEm.add_field(name="zinsult: ", value="Returns an insult", inline=False)
         HEm.add_field(name="zfact: ", value="Returns a random fun fact", inline=False)
+        HEm.add_field(
+            name="zkanye: ",
+            value="Words by Kanye",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zqotd: ",
+            value="Quote Of The Day (Voters and Patreons ONLY)",
+            inline=False,
+        )
         HEm.add_field(
             name="zapod: ",
             value="Astronomy Picture of the Day (Voters and Patreons ONLY)",
@@ -265,9 +307,6 @@ class HelpInfo(commands.Cog):
             name="znasa: ",
             value="25 RANDOM mars images out of the 100s taken by NASA's Curiosity rover",
             inline=False,
-        )
-        HEm.add_field(
-            name="zdadjoke: ", value="Returns a random dad joke", inline=False
         )
         HEm.add_field(name="zroll: ", value="Rolls a dice", inline=False)
         HEm.add_field(
@@ -317,7 +356,7 @@ class HelpInfo(commands.Cog):
             color=0x3695BA,
         )
         VEm.add_field(name="Dev: ", value="Kappa#5173", inline=False)
-        VEm.add_field(name="Version: ", value="1.5a", inline=False)
+        VEm.add_field(name="Version: ", value="1.6a", inline=False)
         VEm.add_field(name="Version Release: ", value="17/12/2020", inline=False)
         VEm.add_field(name="Initial Release: ", value="21/11/2020", inline=False)
         await ctx.message.channel.send(embed=VEm)
