@@ -37,7 +37,7 @@ class Randomizers(commands.Cog):
         TodayQuote = requests.get("https://favqs.com/api/qotd", headers = {"Accept": "application/json"}).json()
         QEm = discord.Embed(title="Quote Of The Day", description = TodayQuote["quote"]["body"], color=0xBD2DB8)
         QEm.set_footer(text=f'By: {TodayQuote["quote"]["author"]}')
-        await ctx.message.channel.send(embed=)
+        await ctx.message.channel.send(embed=QEm)
     
     @commands.command(name="insult")
     @commands.cooldown(1, 1, commands.BucketType.user)
