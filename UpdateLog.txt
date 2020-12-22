@@ -2,6 +2,7 @@ Whats new in 1.6a:
 NEW Joke Command: Tame jokes (zjoke)
 NEW Dark Joke Command: Less tame more NSFW jokes (zdarkjoke)
 NEW Pun Command: Puns. Just Puns. (zpun)
+NEW Advice command: Get some good advice (zadvice)
 NEW Quote Of The Day (QOTD): New quotes every day (zqotd) (For voters and patreon)
 NEW Kanye words: Stuff kanye says ||was tempted to call it "shit kanye says"|| (zkanye)
 NEW Random Food pics command: yeh just food pics. Warning they might get you hungry. (zfood, zdish)

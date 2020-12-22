@@ -290,6 +290,11 @@ class HelpInfo(commands.Cog):
             inline=False,
         )
         HEm.add_field(
+            name="zadvice: ",
+            value="Good old advice",
+            inline=False,
+        )
+        HEm.add_field(
             name="zfry profile (@): ", value="Deep fries the avatar", inline=False
         )
         HEm.add_field(

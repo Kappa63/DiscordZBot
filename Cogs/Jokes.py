@@ -14,7 +14,7 @@ class Jokes(commands.Cog):
         ).json()
         await ctx.message.channel.send(
             embed=discord.Embed(
-                title="Dad Joke", description=DadJoke["joke"], color=0x11D999
+                title="Dad Joke", description=DadJoke["joke"], color=0x99807e
             )
         )
 
@@ -25,13 +25,13 @@ class Jokes(commands.Cog):
         if Joke["type"] == "twopart":
             await ctx.message.channel.send(
                 embed=discord.Embed(
-                    title=f'Joke ({Joke["category"]})', description=f'{Joke["setup"]}\n\n||{Joke["delivery"]}||', color=0x11D999
+                    title=f'Joke ({Joke["category"]})', description=f'{Joke["setup"]}\n\n||{Joke["delivery"]}||', color=0xeb88da
                 )
             )
         else:
             await ctx.message.channel.send(
                 embed=discord.Embed(
-                    title=f'Joke ({Joke["category"]})', description=Joke["joke"], color=0x11D999
+                    title=f'Joke ({Joke["category"]})', description=Joke["joke"], color=0xeb88da
                 )
             )
 
@@ -42,13 +42,13 @@ class Jokes(commands.Cog):
         if DarkJoke["type"] == "twopart":
             await ctx.message.channel.send(
                 embed=discord.Embed(
-                    title=f'Joke ({DarkJoke["category"]})', description=f'{DarkJoke["setup"]}\n\n||{DarkJoke["delivery"]}||', color=0x11D999
+                    title=f'Joke ({DarkJoke["category"]})', description=f'{DarkJoke["setup"]}\n\n||{DarkJoke["delivery"]}||', color=0xd8dccd
                 )
             )
         else:
             await ctx.message.channel.send(
                 embed=discord.Embed(
-                    title=f'Joke ({DarkJoke["category"]})', description=DarkJoke["joke"], color=0x11D999
+                    title=f'Joke ({DarkJoke["category"]})', description=DarkJoke["joke"], color=0xd8dccd
                 )
             )
     
@@ -59,13 +59,13 @@ class Jokes(commands.Cog):
         if Pun["type"] == "twopart":
             await ctx.message.channel.send(
                 embed=discord.Embed(
-                    title="Pun", description=f'{Pun["setup"]}\n\n||{Pun["delivery"]}||', color=0x11D999
+                    title="Pun", description=f'{Pun["setup"]}\n\n||{Pun["delivery"]}||', color=0x05d111
                 )
             )
         else:
             await ctx.message.channel.send(
                 embed=discord.Embed(
-                    title="Pun", description=Pun["joke"], color=0x11D999
+                    title="Pun", description=Pun["joke"], color=0x05d111
                 )
             )
 

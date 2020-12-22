@@ -19,7 +19,7 @@ class Randomizers(commands.Cog):
     async def RandomAdvice(self, ctx):
         Advice = requests.get("https://api.adviceslip.com/advice", headers = {"Accept": "application/json"}).json()
         await ctx.message.channel.send(
-            embed=discord.Embed(title="Some Advice", description = Advice["slip"]["advice"], color=0xBD2DB8)
+            embed=discord.Embed(title="Some Advice", description = Advice["slip"]["advice"], color=0x7dd7d8)
         )
 
     @commands.command(name="kanye")
@@ -27,7 +27,7 @@ class Randomizers(commands.Cog):
     async def ShitByKanye(self, ctx):
         KanyeSays = requests.get("https://api.kanye.rest", headers = {"Accept": "application/json"}).json()
         await ctx.message.channel.send(
-            embed=discord.Embed(title="Kanye Says Alot, Here's One", description = KanyeSays["quote"], color=0xBD2DB8)
+            embed=discord.Embed(title="Kanye Says Alot, Here's One", description = KanyeSays["quote"], color=0x53099b)
         )
 
     @commands.command(name="qotd")
@@ -35,7 +35,7 @@ class Randomizers(commands.Cog):
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def QuoteOfTheDay(self, ctx):
         TodayQuote = requests.get("https://favqs.com/api/qotd", headers = {"Accept": "application/json"}).json()
-        QEm = discord.Embed(title="Quote Of The Day", description = TodayQuote["quote"]["body"], color=0xBD2DB8)
+        QEm = discord.Embed(title="Quote Of The Day", description = TodayQuote["quote"]["body"], color=0x8d42ee)
         QEm.set_footer(text=f'By: {TodayQuote["quote"]["author"]}')
         await ctx.message.channel.send(embed=QEm)
     

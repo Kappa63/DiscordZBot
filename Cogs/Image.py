@@ -43,7 +43,7 @@ class Image(commands.Cog):
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RandomDishes(self, ctx):
         Hungry = requests.get("https://foodish-api.herokuapp.com/api/", headers = {"Accept": "application/json"}).json()
-        FEm = discord.Embed(title="Hungry?", color=0xA3D7C1)
+        FEm = discord.Embed(title="Hungry?", color=0xde8761)
         FEm.set_image(url=Hungry["image"])
         await ctx.message.channel.send(embed=FEm)
 
