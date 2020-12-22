@@ -70,4 +70,4 @@ class Jokes(commands.Cog):
             )
 
 def setup(DClient):
-    DClient.add_cog(Randomizers(DClient))
+    DClient.add_cog(Jokes(DClient))
