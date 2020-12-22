@@ -23,5 +23,6 @@ rule34==1.7.4
 python-youtube==0.6.4
 youtube-dl==2020.12.14
 pafy==0.5.5
+IMDbPY==2020.9.25
 aiohttp
 ratelimiter

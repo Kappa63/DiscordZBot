@@ -31,6 +31,7 @@ class HelpInfo(commands.Cog):
         HEm.add_field(name="zhelp images: ", value="The Image Commands", inline=False)
         HEm.add_field(name="zhelp jokes: ", value="The Joke Commands", inline=False)
         HEm.add_field(name="zhelp covid: ", value="The Covid-19 Commands", inline=False)
+        HEm.add_field(name="zhelp imdb: ", value="The IMDb Commands", inline=False)
         HEm.add_field(
             name="zhelp youtube: ", value="The YouTube Commands", inline=False
         )
@@ -147,6 +148,24 @@ class HelpInfo(commands.Cog):
         HEm.add_field(
             name="ztwitter search (Username): ",
             value="Searches for 10 users related to search argument",
+            inline=False,
+        )
+        await ctx.message.channel.send(embed=HEm)
+
+    @SendH.command(name="imdb")
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def SendIM(self, ctx):
+        HEm = discord.Embed(
+            title="**ZBot IMDb Help**", description="\u200b", color=0x0AF531
+        )
+        HEm.add_field(
+            name="zimdb (Movie/Series): ",
+            value="Returns info about the Movie/Series",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zimdb search (Search Argument): ",
+            value="Searches for 10 Movies/Series related to search argument",
             inline=False,
         )
         await ctx.message.channel.send(embed=HEm)
@@ -357,7 +376,7 @@ class HelpInfo(commands.Cog):
         )
         VEm.add_field(name="Dev: ", value="Kappa#5173", inline=False)
         VEm.add_field(name="Version: ", value="1.6a", inline=False)
-        VEm.add_field(name="Version Release: ", value="17/12/2020", inline=False)
+        VEm.add_field(name="Version Release: ", value="22/12/2020", inline=False)
         VEm.add_field(name="Initial Release: ", value="21/11/2020", inline=False)
         await ctx.message.channel.send(embed=VEm)
 
