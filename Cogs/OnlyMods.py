@@ -55,7 +55,7 @@ class OnlyMods(commands.Cog):
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetQOTDFile(self, ctx):
         Upload = requests.post(
-            url="https://file.io", files={"file": open("QOTDaily.txt")}
+            url="https://file.io", files={"file": open("QOTDDaily.txt")}
         ).json()
         await ctx.message.channel.send(
             embed=discord.Embed(
