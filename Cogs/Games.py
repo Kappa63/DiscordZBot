@@ -242,7 +242,7 @@ class Games(commands.Cog):
             Players = random.sample([ctx.message.author, ctx.message.mentions[0]], 2)
             PlayerAssign = {Players[0]: "x", Players[1]: "o"}
             R = 1
-            OriginalBoard = await ctx.message.channel.send(
+            Board = await ctx.message.channel.send(
                 embed=TTTBoardMaker(Table, Players[0], Players[1])
             )
             while True:
@@ -263,6 +263,7 @@ class Games(commands.Cog):
                         "message", check=ChCHanS, timeout=30
                     )
                     await MentionTurn.delete()
+                    await Board.delete()
                     LResS = ResS.content.lower()
                     try:
                         if int(ResS.content) < 10:
@@ -272,7 +273,7 @@ class Games(commands.Cog):
                                 ResS.author
                             ]
                             if TTTWinCheck(Table):
-                                await OriginalBoard.edit(
+                                Board = await ctx.message.channel.send(
                                     embed=TTTBoardMaker(
                                         Table,
                                         Players[0],
@@ -284,11 +285,12 @@ class Games(commands.Cog):
                                     f"{Player.mention} Wins!! :partying_face:"
                                 )
                                 return
-                            await OriginalBoard.edit(
+                            Board = await ctx.message.channel.send(
                                 embed=TTTBoardMaker(Table, Players[0], Players[1])
                             )
                     except ValueError:
                         if (LResS == "end") or (LResS == "endgame"):
+                            Board = await ctx.message.channel.send(embed=TTTBoardMaker(Table,Players[0],Players[1],"ENDED"))
                             return
                 except asyncio.TimeoutError:
                     await ctx.message.channel.send("Player did not play :sad:!")
