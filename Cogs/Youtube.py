@@ -1,7 +1,8 @@
 import discord
 from discord.ext import commands
 from Setup import YClient
-from Setup import ChVote
+from Setup import ChVoteUser
+from Setup import IsVote
 from Setup import GetVidDuration
 import asyncio
 
@@ -324,7 +325,7 @@ class Youtube(commands.Cog):
                         )
                     )
                 elif ReaEm[0].emoji == "#️⃣":
-                    if await ChVote(ctx):
+                    if await ChVoteUser(ReaEm[1].id):
                         TempYT = await ctx.message.channel.send(
                             'Choose a number to open navigate to page. "c" or "cancel" to exit navigation.'
                         )
@@ -360,6 +361,8 @@ class Youtube(commands.Cog):
                             await TempYT.edit("Request Timeout")
                             await asyncio.sleep(5)
                             await TempYT.delete()
+                    else:
+                        raise IsVote("No Vote")
                 elif ReaEm[0].emoji == "➡️" and len(YTVids.items) == VidNum + 1:
                     await YTEm.remove_reaction("⬅️", self.DClient.user)
                     await YTEm.remove_reaction("❌", self.DClient.user)

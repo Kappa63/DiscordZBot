@@ -4,7 +4,8 @@ from prawcore import NotFound, Forbidden
 import os
 import random
 from Setup import Reddit
-from Setup import ChVote
+from Setup import ChVote, ChVoteUser
+from Setup import IsVote
 import asyncio
 
 
@@ -409,7 +410,7 @@ class RedditCmds(commands.Cog):
                                 await KraPosS.remove_reaction("#️⃣", self.DClient.user)
                                 break
                         elif Res[0].emoji == "#️⃣":
-                            if await ChVote(ctx):
+                            if await ChVoteUser(Res[1].id):
                                 TemTw = await ctx.message.channel.send(
                                     'Choose a number to open navigate to page. "c" or "cancel" to exit navigation.'
                                 )
@@ -447,6 +448,8 @@ class RedditCmds(commands.Cog):
                                     await TemTw.edit("Request Timeout")
                                     await asyncio.sleep(5)
                                     await TemTw.delete()
+                            else:
+                                raise IsVote("No Vote")
                         elif Res[0].emoji == "❌":
                             await KraPosS.edit(
                                 embed=EmbedMaker(

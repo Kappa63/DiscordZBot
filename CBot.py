@@ -27,9 +27,10 @@ async def ChBot(ctx):
 
 @DClient.check
 async def ChModDown(ctx):
-    if (
-        "".join(open("OpenState.txt").read().splitlines()) == "Down"
-    ) and ctx.author.id not in [
+    OpenState = open("OpenState.txt")
+    State = OpenState.readlines()
+    OpenState.close()
+    if ("".join(State) == "Down") and ctx.author.id not in [
         507212584634548254,
         443986051371892746,
         224809178793771009,
@@ -53,8 +54,9 @@ Cogs = [
     "Cogs.Rule34",
     "Cogs.Youtube",
     "Cogs.Image",
-    "Cogs.Jokes",
+    "Cogs.WrittenStuff",
     "Cogs.Movies",
+    "Cogs.Games",
 ]
 
 if __name__ != "__main__":

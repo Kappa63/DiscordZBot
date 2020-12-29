@@ -1,8 +1,11 @@
-from discord.ext import commands
+from discord.ext import commands, tasks
 import discord
-from Setup import IsBot, IsVote, IsPatreon, Ignore, IsAdmin, IsSetup, IsNSFW
-from Setup import FormatTime
+from Setup import IsBot, IsVote, IsPatreon, IsPatreonT2, IsPatreonT3, IsPatreonT4, Ignore, IsAdmin, IsSetup, IsNSFW
+from Setup import FormatTime, TimeTillMidnight, GetPatreonTier
+from Setup import ChPatreonUserT2
 import random
+import requests
+import asyncio
 
 Doing = [
     "Playing with the laws of physics",
@@ -13,16 +16,55 @@ Doing = [
     "With Leona",
 ]
 
+def MakeAPODEmbed():
+    NASAapod = requests.get(
+        "https://api.nasa.gov/planetary/apod?api_key=0dsw3SiQmYCeNnwKZROSQIyrcZqjoDzMBo4ggCwS",
+        headers={"Accept": "application/json"},
+    )
+    JSONapod = NASAapod.json()
+    if len(JSONapod["explanation"]) > 1021:
+        Explanation = JSONapod["explanation"][0:1021]
+        Explanation = Explanation + "..."
+    else:
+        Explanation = JSONapod["explanation"]
+    DEm = discord.Embed(
+        title=JSONapod["title"],
+        description=f'Date {JSONapod["date"]}',
+        color=0xA9775A,
+    )
+    DEm.add_field(name="Explanation:", value=Explanation, inline=False)
+    try:
+        DEm.set_image(url=JSONapod["hdurl"])
+    except KeyError:
+        DEm.add_field(
+            name="\u200b", value=f'[Video Url]({JSONapod["url"]})', inline=False
+        )
+    try:
+        DEm.set_footer(text=f'Copyright: {JSONapod["copyright"]}')
+    except KeyError:
+        pass
+    return DEm
+
+def MakeQOTDEmbed():
+    TodayQuote = requests.get("https://favqs.com/api/qotd", headers = {"Accept": "application/json"}).json()
+    QEm = discord.Embed(title="Quote Of The Day", description = TodayQuote["quote"]["body"], color=0x8d42ee)
+    QEm.set_footer(text=f'By: {TodayQuote["quote"]["author"]}')
+    return QEm
 
 class MainEvents(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
+        self.SendAPODDaily.start()
+        self.SendQOTDDaily.start()
 
     @commands.Cog.listener()
     async def on_ready(self):
-        if "".join(open("OpenState.txt").read().splitlines()) == "Up":
+        StateFile = open("OpenState.txt")
+        State = StateFile.readlines()
+        StateFile.close()
+        if "".join(State) == "Up":
             await self.DClient.change_presence(
-                activity=discord.Game(random.choice(Doing))
+                activity=discord.Game(f'zhelp || {random.choice(Doing)}')
             )
         else:
             await self.DClient.change_presence(status=discord.Status.invisible)
@@ -57,6 +99,34 @@ class MainEvents(commands.Cog):
                     description="This command is only for voters or patreon! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord) / [Vote](https://top.gg/bot/768397640140062721/vote)",
                 )
             )
+        elif isinstance(error, IsPatreon):
+            await ctx.message.channel.send(
+                embed=discord.Embed(
+                    title="Oops",
+                    description="This command is only for patreons supporters! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord)",
+                )
+            )
+        elif isinstance(error, IsPatreonT2):
+            await ctx.message.channel.send(
+                embed=discord.Embed(
+                    title="Oops",
+                    description="This command is only for Tier 2 patreons (Super) supporters or above! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord)",
+                )
+            )
+        elif isinstance(error, IsPatreonT3):
+            await ctx.message.channel.send(
+                embed=discord.Embed(
+                    title="Oops",
+                    description="This command is only for Tier 3 patreons (Legend) supporters or above! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord)",
+                )
+            )
+        elif isinstance(error, IsPatreonT4):
+            await ctx.message.channel.send(
+                embed=discord.Embed(
+                    title="Oops",
+                    description="This command is only for Tier 4 patreons (Ultimate) supporters or above! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord)",
+                )
+            )
         elif isinstance(error, IsSetup):
             await ctx.message.channel.send(
                 embed=discord.Embed(
@@ -75,6 +145,167 @@ class MainEvents(commands.Cog):
         else:
             raise error
 
+    @tasks.loop(hours = 24)
+    async def SendAPODDaily(self):
+        print("Sending APOD...")
+        TierApplicable = {"Tier 2 Super":1, "Tier 3 Legend":2, "Tier 4 Ultimate":4}
+        OpenAPODChannelUserList = open("APODDaily.txt")
+        APODChannelUserList = OpenAPODChannelUserList.readlines()
+        OpenAPODChannelUserList.close()
+        APODEm = MakeAPODEmbed()
+        Line = 0
+        UserChannelCount = {}
+        for APODChannelUser in APODChannelUserList:
+            UserID = APODChannelUser.split(" ")[0]
+            ChannelID = APODChannelUser.split(" ")[1]
+            User = self.DClient.get_user(int(UserID))
+            Channel = self.DClient.get_channel(int(ChannelID))
+            if ChPatreonUserT2(User):
+                TierLimit = TierApplicable[GetPatreonTier(UserID)]
+                if UserID in UserChannelCount:
+                    UserChannelCount[UserID] += 1
+                else:
+                    UserChannelCount[UserID] = 1
+                if Channel is None:
+                    del APODChannelUserList[Line]
+                else:
+                    if UserChannelCount <= TierLimit:
+                        await Channel.send(embed = APODEm)
+                    else:
+                        await Channel.send("NO LONGER APPLICABLE FOR THIS MANY CHANNELS. Daily APOD stopped in this channel. :pensive: You can resign up for patreon, check zpatreon")
+                        del APODChannelUserList[Line]
+            else:
+                await Channel.send("NO LONGER A PATREON. Daily APOD stopped. :pensive: You can re-sign up for patreon, check zpatreon")
+                del APODChannelUserList[Line]
+            Line += 1
+        FixAPODChannelUserFile = open("APODDaily.txt", "w+")
+        for Line in APODChannelUserList:
+            FixAPODChannelUserFile.write(Line)
+        FixAPODChannelUserFile.close()
+
+    @SendAPODDaily.before_loop
+    async def RegulateBeforeAPODLoop(self):
+        TimeToWait = TimeTillMidnight()
+        print(f'{TimeToWait}s to start 24 hour APOD loop...')
+        for _ in range(): 
+            await asyncio.sleep(1)
+        print("Start 24 hour APOD loop")
+        print("Sending APOD...")
+        TierApplicable = {"Tier 2 Super":1, "Tier 3 Legend":2, "Tier 4 Ultimate":4}
+        OpenAPODChannelUserList = open("APODDaily.txt")
+        APODChannelUserList = OpenAPODChannelUserList.readlines()
+        OpenAPODChannelUserList.close()
+        APODEm = MakeAPODEmbed()
+        Line = 0
+        UserChannelCount = {}
+        for APODChannelUser in APODChannelUserList:
+            UserID = APODChannelUser.split(" ")[0]
+            ChannelID = APODChannelUser.split(" ")[1]
+            User = self.DClient.get_user(int(UserID))
+            Channel = self.DClient.get_channel(int(ChannelID))
+            if ChPatreonUserT2(User):
+                TierLimit = TierApplicable[GetPatreonTier(UserID)]
+                if UserID in UserChannelCount:
+                    UserChannelCount[UserID] += 1
+                else:
+                    UserChannelCount[UserID] = 1
+                if Channel is None:
+                    del APODChannelUserList[Line]
+                else:
+                    if UserChannelCount <= TierLimit:
+                        await Channel.send(embed = APODEm)
+                    else:
+                        await Channel.send("NO LONGER APPLICABLE FOR THIS MANY CHANNELS. Daily APOD stopped in this channel. :pensive: You can resign up for patreon, check zpatreon")
+                        del APODChannelUserList[Line]
+            else:
+                await Channel.send("NO LONGER A PATREON. Daily APOD stopped. :pensive: You can re-sign up for patreon, check zpatreon")
+                del APODChannelUserList[Line]
+            Line += 1
+        FixAPODChannelUserFile = open("APODDaily.txt", "w+")
+        for Line in APODChannelUserList:
+            FixAPODChannelUserFile.write(Line)
+        FixAPODChannelUserFile.close()
+
+    @tasks.loop(hours = 24)
+    async def SendQOTDDaily(self):
+        print("Sending QOTD...")
+        TierApplicable = {"Tier 2 Super":1, "Tier 3 Legend":2, "Tier 4 Ultimate":4}
+        OpenQOTDChannelUserList = open("QOTDDaily.txt")
+        QOTDChannelUserList = OpenQOTDChannelUserList.readlines()
+        OpenQOTDChannelUserList.close()
+        QOTDEm = MakeQOTDEmbed()
+        Line = 0
+        UserChannelCount = {}
+        for QOTDChannelUser in QOTDChannelUserList:
+            UserID = QOTDChannelUser.split(" ")[0]
+            ChannelID = QOTDChannelUser.split(" ")[1]
+            User = self.DClient.get_user(int(UserID))
+            Channel = self.DClient.get_channel(int(ChannelID))
+            if ChPatreonUserT2(User):
+                TierLimit = TierApplicable[GetPatreonTier(UserID)]
+                if UserID in UserChannelCount:
+                    UserChannelCount[UserID] += 1
+                else:
+                    UserChannelCount[UserID] = 1
+                if Channel is None:
+                    del QOTDChannelUserList[Line]
+                else:
+                    if UserChannelCount <= TierLimit:
+                        await Channel.send(embed = QOTDEm)
+                    else:
+                        await Channel.send("NO LONGER APPLICABLE FOR THIS MANY CHANNELS. Daily APOD stopped in this channel. :pensive: You can resign up for patreon, check zpatreon")
+                        del QOTDChannelUserList[Line]
+            else:
+                await Channel.send("NO LONGER A PATREON or NO LONGER APPLICABLE TO THIS MANY CHANNELS. Daily QOTD stopped. :pensive: You can resign up for patreon, check zpatreon")
+                del QOTDChannelUserList[Line]
+            Line += 1
+        FixQOTDChannelUserFile = open("QOTDDaily.txt", "w+")
+        for Line in QOTDChannelUserList:
+            FixQOTDChannelUserFile.write(Line)
+        FixQOTDChannelUserFile.close()
+
+    @SendQOTDDaily.before_loop
+    async def RegulateBeforeQOTDLoop(self):
+        TimeToWait = TimeTillMidnight()
+        print(f'{TimeToWait}s to start 24 hour QOTD loop...')
+        for _ in range(): 
+            await asyncio.sleep(1)
+        print("Start 24 hour QOTD loop")
+        print("Sending QOTD...")
+        TierApplicable = {"Tier 2 Super":1, "Tier 3 Legend":2, "Tier 4 Ultimate":4}
+        OpenQOTDChannelUserList = open("QOTDDaily.txt")
+        QOTDChannelUserList = OpenQOTDChannelUserList.readlines()
+        OpenQOTDChannelUserList.close()
+        QOTDEm = MakeQOTDEmbed()
+        Line = 0
+        UserChannelCount = {}
+        for QOTDChannelUser in QOTDChannelUserList:
+            UserID = QOTDChannelUser.split(" ")[0]
+            ChannelID = QOTDChannelUser.split(" ")[1]
+            User = self.DClient.get_user(int(UserID))
+            Channel = self.DClient.get_channel(int(ChannelID))
+            if ChPatreonUserT2(User):
+                TierLimit = TierApplicable[GetPatreonTier(UserID)]
+                if UserID in UserChannelCount:
+                    UserChannelCount[UserID] += 1
+                else:
+                    UserChannelCount[UserID] = 1
+                if Channel is None:
+                    del QOTDChannelUserList[Line]
+                else:
+                    if UserChannelCount <= TierLimit:
+                        await Channel.send(embed = QOTDEm)
+                    else:
+                        await Channel.send("NO LONGER APPLICABLE FOR THIS MANY CHANNELS. Daily APOD stopped in this channel. :pensive: You can resign up for patreon, check zpatreon")
+                        del QOTDChannelUserList[Line]
+            else:
+                await Channel.send("NO LONGER A PATREON or NO LONGER APPLICABLE TO THIS MANY CHANNELS. Daily QOTD stopped. :pensive: You can resign up for patreon, check zpatreon")
+                del QOTDChannelUserList[Line]
+            Line += 1
+        FixQOTDChannelUserFile = open("QOTDDaily.txt", "w+")
+        for Line in QOTDChannelUserList:
+            FixQOTDChannelUserFile.write(Line)
+        FixQOTDChannelUserFile.close()
 
 def setup(DClient):
     DClient.add_cog(MainEvents(DClient))

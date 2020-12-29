@@ -1,18 +1,11 @@
-Whats new in 1.6a:
-NEW Joke Command: Tame jokes (zjoke)
-NEW Dark Joke Command: Less tame more NSFW jokes (zdarkjoke)
-NEW Pun Command: Puns. Just Puns. (zpun)
-NEW Advice command: Get some good advice (zadvice)
-NEW Quote Of The Day (QOTD): New quotes every day (zqotd) (For voters and patreon)
-NEW Kanye words: Stuff kanye says ||was tempted to call it "shit kanye says"|| (zkanye)
-NEW Random Food pics command: yeh just food pics. Warning they might get you hungry. (zfood, zdish)
-NEW IMDb Command: Get info about your favourite movies and shows. (zimdb)
-NEW IMDb search Command: Search IMDb for a movie or show (zimdb search)
-NEW IMDb help Command: Help on how to use the IMDb commands (zhelp imdb)
-ADDED Channel's url to the youtube command when on the channel page
-ADDED Aliases to the dog command (zdoggo, zpupper, zdog, zpuppy)
-ADDED Aliases to the cat command (zcat, zkitten, zkitty)
-ADDED Aliases to the youtube command (zyoutube, zyt)
-CHANGED Dadjoke command help and the new joke commands now under their own joke help command (zhelp joke)
-CHANGED Image commands help now under an image help command(zhelp image)       
-FIXED apod command                                                                                               
+Whats new in 1.7a:
+NEW Game section
+NEW First game is Sudoku (zsudoku)
+NEW Second game is Tic-Tac-Toe (zttt, ztictactoe)
+NEW Ofcourse the Game section's help command (zhelp game, zhelp games)
+NEW Taylor Swift image and quote command (ztaylorswift, ztaylor, ztswift) 
+NEW Daily APOD command: sends daily apods to channel (zapoddaily) help in zhelp apod (For Tier 2 patreons or more)
+NEW Daily QOTD command: sends daily qotds to channel (zqotddaily) help in zhelp apod (For Tier 2 patreons or more)
+REVAMPED Help commands (zhelp)
+IMPROVED Logic
+CHANGES Internally

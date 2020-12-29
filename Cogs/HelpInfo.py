@@ -19,34 +19,22 @@ class HelpInfo(commands.Cog):
             name="zlog: ", value="Shows the latest update's update log", inline=False
         )
         HEm.add_field(
-            name="zhelp server: ",
-            value="Provides all the server commands (including word track commands)",
+            name="zhelp (Category): ",
+            value="Provides help for the category",
             inline=False,
         )
-        HEm.add_field(name="zhelp reddit: ", value="The Reddit Commands", inline=False)
         HEm.add_field(
-            name="zhelp twitter: ", value="The Twitter Commands", inline=False
+            name="Categories: ",
+            value="**`-Social(s)`**\n**`-Anime/Manga/Doujin/Hentai`**\n**`-Rule34`**\n**`-Image`**\n**`-Joke`**\n**`-Quotes/Advice/Insult`**\n**`-Info/Informatics`**\n**`-IMDb`**\n**`-Games`**\n**`-Server/Counting`**\n**`-Misc/Miscellaneous`**\n**`-Navigation/Nav`**",
+            inline=False,
         )
-        HEm.add_field(name="zhelp anime: ", value="The Anime Commands", inline=False)
-        HEm.add_field(name="zhelp images: ", value="The Image Commands", inline=False)
-        HEm.add_field(name="zhelp jokes: ", value="The Joke Commands", inline=False)
-        HEm.add_field(name="zhelp covid: ", value="The Covid-19 Commands", inline=False)
-        HEm.add_field(name="zhelp imdb: ", value="The IMDb Commands", inline=False)
-        HEm.add_field(
-            name="zhelp youtube: ", value="The YouTube Commands", inline=False
-        )
-        HEm.add_field(
-            name="zhelp misc: ", value="The Miscellaneous Commands", inline=False
-        )
-        HEm.add_field(name="zhelp nav: ", value="How to Navigate", inline=False)
-        HEm.add_field(name="zhelp rule34: ", value="The Rule34 Commands", inline=False)
         HEm.add_field(
             name="Links: ",
             value="[Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord) / [Vote](https://top.gg/bot/768397640140062721/vote)",
         )
         await ctx.message.channel.send(embed=HEm)
 
-    @SendH.command(name="server")
+    @SendH.command(aliases = ["server", "counting", "tracking", "count"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendS(self, ctx):
         HEm = discord.Embed(
@@ -94,15 +82,15 @@ class HelpInfo(commands.Cog):
             inline=False,
         )
         HEm.set_footer(
-            text="Note: Counting is limited to 10 per Message to reduce spam incentives"
+            text="Note that counting is limited to 10 per Message to reduce spam incentives"
         )
         await ctx.message.channel.send(embed=HEm)
 
-    @SendH.command(name="reddit")
+    @SendH.command(aliases=["social", "socials", "reddit", "twitter", "youtube"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendR(self, ctx):
         HEm = discord.Embed(
-            title="**ZBot Reddit Help**", description="\u200b", color=0x0AF531
+            title="**ZBot Social(s) Help**", description="\u200b", color=0x0AF531
         )
         HEm.add_field(
             name="zreddit (Subreddit Name): ",
@@ -114,32 +102,6 @@ class HelpInfo(commands.Cog):
             value="Returns the 100 posts of a subreddit sorted in any format (Voters and Patreons ONLY)",
             inline=False,
         )
-        await ctx.message.channel.send(embed=HEm)
-
-    @SendH.command(name="covid")
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def SendC(self, ctx):
-        HEm = discord.Embed(
-            title="**ZBot Covid-19 Help**", description="\u200b", color=0x0AF531
-        )
-        HEm.add_field(
-            name="zcovid: ",
-            value="Returns the worldwide status of Covid-19",
-            inline=False,
-        )
-        HEm.add_field(
-            name="zcovid (Country): ",
-            value="Returns the status of Covid-19 in country",
-            inline=False,
-        )
-        await ctx.message.channel.send(embed=HEm)
-
-    @SendH.command(name="twitter")
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def SendT(self, ctx):
-        HEm = discord.Embed(
-            title="**ZBot Twitter Help**", description="\u200b", color=0x0AF531
-        )
         HEm.add_field(
             name="ztwitter (User @): ",
             value="Returns the user profile and 20 of their latest tweets",
@@ -150,9 +112,105 @@ class HelpInfo(commands.Cog):
             value="Searches for 10 users related to search argument",
             inline=False,
         )
+        HEm.add_field(
+            name="zyoutube (Channel Name): ",
+            value="Returns info about the channel and 20 of the latest uploads",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zyoutube search (Search Term): ",
+            value="Searches for 10 channels related to search argument",
+            inline=False,
+        )
+        HEm.add_field(
+            name="Aliases:", value="**-Youtube =** `youtube, yt`", inline=False
+        )
         await ctx.message.channel.send(embed=HEm)
 
-    @SendH.command(name="imdb")
+    @SendH.command(aliases=["game", "games", "sudoku", "ttt", "tictactoe"])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def SendG(self, ctx):
+        HEm = discord.Embed(
+            title="**ZBot Game Help**", description="\u200b", color=0x0AF531
+        )
+        HEm.add_field(
+            name="zsudoku (easy/medium/hard/random): ",
+            value="Returns a sudoku puzzle with the given difficulty",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zttt (mention): ",
+            value="Starts a Tic-Tac-Toe game vs the mentioned user",
+            inline=False,
+        )
+        HEm.add_field(
+            name="Note:",
+            value="-In sudoku react with the eye to get the solution or with the X to never get the solution. If X isn't pressed solution is auto given after 1 hour\n\n-In TTT each player has 30sec to play. A player should enter the number of the corresponding square to play there. If a player enters 'end' the game ends",
+            inline=False,
+        )
+        await ctx.message.channel.send(embed=HEm)
+
+    @SendH.command(
+        aliases=[
+            "covid",
+            "info",
+            "informatics",
+            "information",
+            "nasa",
+            "apod",
+            "facts",
+            "fact",
+        ]
+    )
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def SendC(self, ctx):
+        HEm = discord.Embed(
+            title="**ZBot Informatics Help**", description="\u200b", color=0x0AF531
+        )
+        HEm.add_field(
+            name="zcovid: ",
+            value="Worldwide status of Covid-19",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zcovid (Country): ",
+            value="Status of Covid-19 in country",
+            inline=False,
+        )
+        HEm.add_field(name="zfact: ", value="Random fun fact", inline=False)
+        HEm.add_field(
+            name="zapod: ",
+            value="Astronomy Picture of the Day (Voters and Patreons ONLY)",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zapoddaily: ",
+            value="Returns when the next APOD Daily will happen (Tier 2 or more Patreons ONLY)",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zapoddaily start: ",
+            value="Start receiving daily APODs in the current channel (Tier 2 or more Patreons ONLY)",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zapoddaily end: ",
+            value="Stop receiving daily APODs (Tier 2 or more Patreons ONLY)",
+            inline=False,
+        )
+        HEm.add_field(
+            name="znasa: ",
+            value="25 RANDOM mars images out of the 100s taken by NASA's Curiosity rover (Different each roll)",
+            inline=False,
+        )
+        HEm.add_field(
+            name="Notes",
+            value="**-Covid:** Recovered data seemed to be off in some countries, therefore the recovered data is innacurate most of the time.",
+            inline=False,
+        )
+        await ctx.message.channel.send(embed=HEm)
+
+    @SendH.command(aliases=["imdb", "shows", "show", "movie", "movies"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendIM(self, ctx):
         HEm = discord.Embed(
@@ -168,25 +226,6 @@ class HelpInfo(commands.Cog):
             value="Searches for 10 Movies/Series related to search argument",
             inline=False,
         )
-        await ctx.message.channel.send(embed=HEm)
-
-    @SendH.command(aliases=["youtube", "yt"])
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def SendY(self, ctx):
-        HEm = discord.Embed(
-            title="**ZBot YouTube Help**", description="\u200b", color=0x0AF531
-        )
-        HEm.add_field(
-            name="zyoutube (Channel Name): ",
-            value="Returns info about the channel and 20 of the latest uploads",
-            inline=False,
-        )
-        HEm.add_field(
-            name="zyoutube search (Search Term): ",
-            value="Searches for 10 channels related to search argument",
-            inline=False,
-        )
-        HEm.set_footer(text='Aliases: "youtube" / "yt"')
         await ctx.message.channel.send(embed=HEm)
 
     @SendH.command(name="rule34")
@@ -238,9 +277,14 @@ class HelpInfo(commands.Cog):
             value="Searches for the 10 most popular doujin (NSFW)",
             inline=False,
         )
+        HEm.add_field(
+            name="Notes: ",
+            value="**-Hentai: **Some hentai are not available. This is to abide by the discord TOS.",
+            inline=False,
+        )
         await ctx.message.channel.send(embed=HEm)
 
-    @SendH.command(aliases = ["image", "images"])
+    @SendH.command(aliases=["image", "images"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendI(self, ctx):
         HEm = discord.Embed(
@@ -250,26 +294,75 @@ class HelpInfo(commands.Cog):
         HEm.add_field(name="zdog: ", value="Dog Pics", inline=False)
         HEm.add_field(name="zfox: ", value="Fox Pics", inline=False)
         HEm.add_field(name="zfood: ", value="Food Pics", inline=False)
-        HEm.set_footer(text='Aliases: -"cat" / "kitten" / "kitty"\n-"doggo" / "dog" / "pupper" / "puppy"\n-"food" / "dishes" / "dish"')
+        HEm.add_field(
+            name="zfry (Image Attachment/Image Url): ",
+            value="Deep fries the image",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zfry profile (@): ", value="Deep fries the avatar", inline=False
+        )
+        HEm.add_field(
+            name="zpdf (PDF Attachment/PDF Url): ",
+            value="Views the PDF's first 40 pages as images",
+            inline=False,
+        )
+        HEm.add_field(
+            name="Aliases:",
+            value="**-Cat =** `cat, kitten, kitty`\n\n**-Dog =** `doggo, dog, pupper, puppy`\n\n**-Food =** `food, dishes, dish`",
+        )
         await ctx.message.channel.send(embed=HEm)
 
-    @SendH.command(aliases = ["joke", "jokes"])
+    @SendH.command(aliases=["joke", "jokes"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendJ(self, ctx):
         HEm = discord.Embed(
             title="**ZBot Joke Help**", description="\u200b", color=0x0AF531
         )
-        HEm.add_field(
-            name="zdadjoke: ", value="Dad Jokes", inline=False
-        )
+        HEm.add_field(name="zdadjoke: ", value="Dad Jokes", inline=False)
         HEm.add_field(
             name="zjoke: ", value="Jokes (No sensetive material)", inline=False
         )
         HEm.add_field(
-            name="zdarkjoke: ", value="Darker Jokes (Might contain sensetive material, at own descretion)", inline=False
+            name="zdarkjoke: ",
+            value="Darker Jokes (Might contain sensetive material, at own descretion)",
+            inline=False,
+        )
+        HEm.add_field(name="zpun: ", value="Puns.", inline=False)
+        await ctx.message.channel.send(embed=HEm)
+
+    @SendH.command(aliases=["quotes", "quote", "insult", "insults", "advice", "kanye", "taylor", "taylorswift", "qotd"])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def SendQ(self, ctx):
+        HEm = discord.Embed(
+            title="**ZBot Quotes/Advice/Insult Help**",
+            description="\u200b",
+            color=0x0AF531,
         )
         HEm.add_field(
-            name="zpun: ", value="Puns.", inline=False
+            name="zadvice: ",
+            value="Good old advice",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zkanye: ",
+            value="Words by Kanye",
+            inline=False,
+        )
+        HEm.add_field(
+            name="ztaylor: ",
+            value="Image and Quote of Taylor Swift",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zqotd: ",
+            value="Quote Of The Day (Voters and Patreons ONLY)",
+            inline=False,
+        )
+        HEm.add_field(name="zinsult: ", value="Returns an insult", inline=False)
+        HEm.add_field(
+            name="Aliases:",
+            value="**-Kanye =** `kanye, kanyewest`\n\n**-Taylor =** `taylor, taylorswift`",
         )
         await ctx.message.channel.send(embed=HEm)
 
@@ -285,51 +378,11 @@ class HelpInfo(commands.Cog):
             inline=False,
         )
         HEm.add_field(
-            name="zfry (Image Attachment/Image Url): ",
-            value="Deep fries the image",
-            inline=False,
-        )
-        HEm.add_field(
-            name="zadvice: ",
-            value="Good old advice",
-            inline=False,
-        )
-        HEm.add_field(
-            name="zfry profile (@): ", value="Deep fries the avatar", inline=False
-        )
-        HEm.add_field(
-            name="zpdf (PDF Attachment/PDF Url): ",
-            value="Views the PDF's first 40 pages",
-            inline=False,
-        )
-        HEm.add_field(
             name="zcalc (Input): ", value="Calculates and returns", inline=False
         )
         HEm.add_field(
             name="zcolor: ",
             value="Returns a RANDOM color with its HEX and RGB color codes",
-            inline=False,
-        )
-        HEm.add_field(name="zinsult: ", value="Returns an insult", inline=False)
-        HEm.add_field(name="zfact: ", value="Returns a random fun fact", inline=False)
-        HEm.add_field(
-            name="zkanye: ",
-            value="Words by Kanye",
-            inline=False,
-        )
-        HEm.add_field(
-            name="zqotd: ",
-            value="Quote Of The Day (Voters and Patreons ONLY)",
-            inline=False,
-        )
-        HEm.add_field(
-            name="zapod: ",
-            value="Astronomy Picture of the Day (Voters and Patreons ONLY)",
-            inline=False,
-        )
-        HEm.add_field(
-            name="znasa: ",
-            value="25 RANDOM mars images out of the 100s taken by NASA's Curiosity rover",
             inline=False,
         )
         HEm.add_field(name="zroll: ", value="Rolls a dice", inline=False)
@@ -338,8 +391,10 @@ class HelpInfo(commands.Cog):
             value="Returns a RANDOM gif from top 50 results on giphy",
             inline=False,
         )
-        HEm.set_footer(
-            text="Notes: -zremind is limited to 1day max.\n-zremind could sometimes fail to notify you due to the bot going down. So dont rely on it entirely.\n-During testing recovered data from zcovid was extremely inaccurate.\n-Some hentai are not available. This is to abide by the discord TOS."
+        HEm.add_field(
+            name="Notes:",
+            value="**-zremind:** is limited to 1day max. Could occasionally fail to notify you due to the bot going down, so dont rely on it entirely.",
+            inline=False,
         )
         await ctx.message.channel.send(embed=HEm)
 
@@ -380,21 +435,24 @@ class HelpInfo(commands.Cog):
             color=0x3695BA,
         )
         VEm.add_field(name="Dev: ", value="Kappa#5173", inline=False)
-        VEm.add_field(name="Version: ", value="1.6a", inline=False)
-        VEm.add_field(name="Version Release: ", value="22/12/2020", inline=False)
+        VEm.add_field(name="Version: ", value="1.7a", inline=False)
+        VEm.add_field(name="Version Release: ", value="29/12/2020", inline=False)
         VEm.add_field(name="Initial Release: ", value="21/11/2020", inline=False)
         await ctx.message.channel.send(embed=VEm)
 
     @commands.command(name="log")
     async def UpdLog(self, ctx):
         LogUps = open("UpdateLog.txt")
-        LOggLin = LogUps.read().splitlines()
+        LOggLin = LogUps.readlines()
+        LogUps.close()
         LEm = discord.Embed(title=LOggLin[0], color=0x1F002A)
         LOggLin.pop(0)
         for Logs in LOggLin:
             LogTem = Logs.split(" ")
             LEm.add_field(name=LogTem[0], value=" ".join(LogTem[1:]), inline=False)
-        LEm.set_footer(text = "Make sure to report any bugs you pass by on the official server. Check zbug")
+        LEm.set_footer(
+            text="Make sure to report any bugs you pass by on the official server. Check zbug"
+        )
         await ctx.message.channel.send(embed=LEm)
 
     @commands.command(name="vote")
@@ -407,7 +465,7 @@ class HelpInfo(commands.Cog):
             color=0x000000,
         )
         SEm.add_field(
-            name="*-Using instant navigation to page/image/post/tweet*\n*-Surfing Reddit and using all sorting formats*\n*-Surfing Rule34*\n*-Using zapod (Astronomy Picture of the Day)*\n\n",
+            name="*-Using instant navigation to page/image/post/tweet*\n*-Surfing Reddit and using all sorting formats*\n*-Surfing Rule34*\n*-Using zapod (Astronomy Picture of the Day)*\n*-Using zqotd (Quote of the Day)*\n",
             value="\u200b",
             inline=False,
         )
@@ -419,8 +477,13 @@ class HelpInfo(commands.Cog):
         SEm = discord.Embed(
             title="Join Patreon",
             url="https://www.patreon.com/join/ZBotDiscord",
-            description="**Want to support ZBot's development?**",
+            description="**Want to support ZBot's development?\n\nI currently have no idea what kind of perks should be added (I clearly need more). Suggestions are welcome on the official support server (zsupport)**",
             color=0x000000,
+        )
+        SEm.add_field(
+            name="**-Tier 1:** `All voting perks without having to vote`\n\n**-Tier 2 (Super):** `Previous tier's perks`, `Setting up apoddaily and qotddaily in 1 channel each`\n\n**-Tier 3 (Legend):** `Previous tiers' perks`, `Setting up apoddaily and qotddaily in 2 channels each`\n\n**-Tier 4 (Ultimate):** `Previous tiers' perks`, `Setting up apoddaily and qotddaily in 4 channels each`",
+            value="\u200b",
+            inline=False,
         )
         await ctx.message.channel.send(embed=SEm)
 

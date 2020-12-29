@@ -2,9 +2,10 @@ import discord
 import random
 import requests
 from discord.ext import commands
-from Setup import ChVote
+from Setup import ChVote, ChVoteUser, ChPatreonT2, ChAdmin
+from Setup import FormatTime, TimeTillMidnight, GetPatreonTier
+from Setup import IsVote
 import asyncio
-
 
 class Nasa(commands.Cog):
     def __init__(self, DClient):
@@ -41,6 +42,68 @@ class Nasa(commands.Cog):
         except KeyError:
             pass
         await ctx.message.channel.send(embed=DEm)
+
+    @commands.group(name="apoddaily", invoke_without_command=True)
+    @commands.check(ChPatreonT2)
+    @commands.check(ChAdmin)
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def NasaApodDAILY(self, ctx):
+        TimeLeft = FormatTime(TimeTillMidnight())
+        await ctx.message.channel.send(embed = discord.Embed(title = "APOD in...", description = f'The next Daily APOD is in {TimeLeft} :grin:.\n You can be added to APOD Daily with "zapoddaily start".\n Check "zhelp apod" for more info'))
+    
+    @NasaApodDAILY.command(name="start")
+    @commands.check(ChPatreonT2)
+    @commands.check(ChAdmin)
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def StartNasaApodDAILY(self, ctx):
+        TierApplicable = {"Tier 2 Super":1, "Tier 3 Legend":2, "Tier 4 Ultimate":4}
+        LineToCheckAdd = f'{ctx.author.id} {ctx.message.channel.id} {ctx.guild.id} \n'
+        UserID = f'{ctx.author.id}'
+        OpenAPODChannelUserFile = open("APODDaily.txt")
+        APODChannelUserFile = OpenAPODChannelUserFile.readlines()
+        OpenAPODChannelUserFile.close()
+        TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
+        for Line in APODChannelUserFile:
+            if Line == LineToCheckAdd:
+                await ctx.message.channel.send(embed = discord.Embed(title = "All Good", description = "This channel is already added to APOD daily"))
+                return
+        Channels = 0
+        for Line in APODChannelUserFile:
+            if Line.split(" ")[0] == UserID:
+                Channels += 1
+                if Channels == TierLimit: 
+                    await ctx.message.channel.send(embed = discord.Embed(title = "Oops", description = "You already added the max amount of channels to APOD daily.\nDifferent patreon levels get more channels\nCheck 'zpatreon'"))
+                    return
+        AppendAPODChannelUserFile = open("APODDaily.txt", "a")
+        AppendAPODChannelUserFile.write(f'{ctx.author.id} {ctx.message.channel.id} {ctx.guild.id} \n')
+        AppendAPODChannelUserFile.close()
+        await ctx.message.channel.send(embed = discord.Embed(title = "Success", description = "Added to APOD daily successfully"))
+
+    @NasaApodDAILY.command(name="stop")
+    @commands.check(ChPatreonT2)
+    @commands.check(ChAdmin)
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def RemoveNasaApodDAILY(self, ctx):
+        LineToCheckAdd = f'{ctx.author.id} {ctx.message.channel.id} {ctx.guild.id} \n'
+        OpenAPODChannelUserFile = open("APODDaily.txt")
+        APODChannelUserFile = OpenAPODChannelUserFile.readlines()
+        OpenAPODChannelUserFile.close()
+        LineNum = 0
+        Exist = False
+        for Line in APODChannelUserFile:
+            if Line == LineToCheckAdd:
+                del APODChannelUserFile[LineNum]
+                Exist = True
+                return
+            LineNum += 1
+        if Exist:
+            FixAPODChannelUserFile = open("APODDaily.txt", "w+")
+            for Line in APODChannelUserFile:
+                FixAPODChannelUserFile.write(Line)
+            FixAPODChannelUserFile.close()
+            await ctx.message.channel.send(embed = discord.Embed(title = "Success", description = "Removed from APOD daily successfully"))
+            return
+        await ctx.message.channel.send(embed = discord.Embed(title = "All Good", description = "You are not in APOD daily"))
 
     @commands.command(name="nasa")
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -133,7 +196,7 @@ class Nasa(commands.Cog):
                         await NTEm.remove_reaction("#️⃣", self.DClient.user)
                         break
                 elif Res[0].emoji == "#️⃣":
-                    if ChPatreonFu(ctx) or (await TClient.get_user_vote(ctx.author.id)):
+                    if await ChVoteUser(Res[1].id):
                         TemTw = await ctx.message.channel.send(
                             'Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n*The Navigation closes automatically after 10sec of inactivity.*'
                         )
@@ -165,11 +228,7 @@ class Nasa(commands.Cog):
                             await asyncio.sleep(5)
                             await TemTw.delete()
                     else:
-                        TemS = await ctx.message.channel.send(
-                            "Instant navigation to image is only for voters or Patreon Supporters. \n:robot: zvote or zpatreon to learn more. :robot:"
-                        )
-                        await asyncio.sleep(5)
-                        await TemS.delete()
+                        raise IsVote("No Vote")
                 elif Res[0].emoji == "❌":
                     await NTEm.edit(
                         embed=MakeEmbed(MarsImagesCH, ImageNum, ImagesExtracted)

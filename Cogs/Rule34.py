@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-from Setup import ChVote, ChNSFW
+from Setup import ChVote, ChVoteUser, ChNSFW
+from Setup import IsVote
 import asyncio
 import random
 import rule34
@@ -128,7 +129,7 @@ class Rule34(commands.Cog):
                         await RTEm.remove_reaction("#️⃣", self.DClient.user)
                         break
                 elif Res[0].emoji == "#️⃣":
-                    if await ChVote(ctx):
+                    if await ChVoteUser(Res[1].id):
                         TemTw = await ctx.message.channel.send(
                             'Choose a number to open navigate to page. "c" or "cancel" to exit navigation.'
                         )
@@ -161,6 +162,8 @@ class Rule34(commands.Cog):
                             await TemTw.edit("Request Timeout")
                             await asyncio.sleep(5)
                             await TemTw.delete()
+                    else:
+                        raise IsVote("No Vote")
                 elif Res[0].emoji == "❌":
                     await RTEm.edit(
                         embed=MakeEmbed(Rule34Surf[RuleNum], "S", RuleNum, TotalRules)

@@ -3,7 +3,8 @@ from discord.ext import commands
 import requests
 import tweepy
 from Setup import Twitter
-from Setup import ChVote
+from Setup import ChVote, ChVoteUser
+from Setup import IsVote
 import asyncio
 
 
@@ -320,7 +321,7 @@ class TwitterCmds(commands.Cog):
                                 )
                             )
                         elif ReaEm[0].emoji == "#️⃣":
-                            if await ChVote(ctx):
+                            if await ChVoteUser(ReaEm[1].id):
                                 TemTw = await ctx.message.channel.send(
                                     'Choose a number to open navigate to page. "c" or "cancel" to exit navigation.'
                                 )
@@ -358,6 +359,8 @@ class TwitterCmds(commands.Cog):
                                     await TemTw.edit("Request Timeout")
                                     await asyncio.sleep(5)
                                     await TemTw.delete()
+                            else:
+                                raise IsVote("No Vote")
                         elif ReaEm[0].emoji == "➡️" and len(TWtimeline) == TwTNum + 1:
                             await TwTsL.remove_reaction("⬅️", self.DClient.user)
                             await TwTsL.remove_reaction("❌", self.DClient.user)
