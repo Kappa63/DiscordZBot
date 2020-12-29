@@ -3,13 +3,14 @@ from discord.ext import commands
 import requests
 from Setup import Imgur
 from Setup import ChVoteUser
-from Setup import IsVote
+from Setup import ErrorEmbeds
 from pdf2image import convert_from_path
 import random
 from PIL import Image
 import deeppyer
 import asyncio
 import os
+
 
 class Image(commands.Cog):
     def __init__(self, DClient):
@@ -239,7 +240,9 @@ class Image(commands.Cog):
                                             await asyncio.sleep(5)
                                             await NavNote.delete()
                                     else:
-                                        raise IsVote("No Vote")
+                                        await ctx.message.channel.send(
+                                            embed=ErrorEmbeds("Vote")
+                                        )
                                 elif ReaEm[0].emoji == "❌":
                                     await PTEm.remove_reaction("⬅️", self.DClient.user)
                                     await PTEm.remove_reaction("❌", self.DClient.user)
@@ -333,6 +336,7 @@ class Image(commands.Cog):
                 )
         except requests.exceptions.MissingSchema:
             pass
+
 
 def setup(DClient):
     DClient.add_cog(Image(DClient))

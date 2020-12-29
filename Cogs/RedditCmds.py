@@ -5,7 +5,7 @@ import os
 import random
 from Setup import Reddit
 from Setup import ChVote, ChVoteUser
-from Setup import IsVote
+from Setup import ErrorEmbeds
 import asyncio
 
 
@@ -449,7 +449,9 @@ class RedditCmds(commands.Cog):
                                     await asyncio.sleep(5)
                                     await TemTw.delete()
                             else:
-                                raise IsVote("No Vote")
+                                await ctx.message.channel.send(
+                                    embed=ErrorEmbeds("Vote")
+                                )
                         elif Res[0].emoji == "❌":
                             await KraPosS.edit(
                                 embed=EmbedMaker(

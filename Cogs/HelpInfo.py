@@ -34,7 +34,7 @@ class HelpInfo(commands.Cog):
         )
         await ctx.message.channel.send(embed=HEm)
 
-    @SendH.command(aliases = ["server", "counting", "tracking", "count"])
+    @SendH.command(aliases=["server", "counting", "tracking", "count"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendS(self, ctx):
         HEm = discord.Embed(
@@ -331,7 +331,19 @@ class HelpInfo(commands.Cog):
         HEm.add_field(name="zpun: ", value="Puns.", inline=False)
         await ctx.message.channel.send(embed=HEm)
 
-    @SendH.command(aliases=["quotes", "quote", "insult", "insults", "advice", "kanye", "taylor", "taylorswift", "qotd"])
+    @SendH.command(
+        aliases=[
+            "quotes",
+            "quote",
+            "insult",
+            "insults",
+            "advice",
+            "kanye",
+            "taylor",
+            "taylorswift",
+            "qotd",
+        ]
+    )
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendQ(self, ctx):
         HEm = discord.Embed(

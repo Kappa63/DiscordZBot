@@ -3,11 +3,12 @@ from discord.ext import commands
 from Setup import IMClient
 import asyncio
 
+
 class Movies(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
 
-    @commands.command(name = "imdb")
+    @commands.command(name="imdb")
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def MovieGetter(self, ctx, *args):
         def ChCHanS(MSg):
@@ -32,7 +33,7 @@ class Movies(commands.Cog):
             if " ".join(MVinput):
                 C = 0
                 SrchIMDb = []
-                for Movie in IMClient.search_movie(" ".join(MVinput), results = 10):
+                for Movie in IMClient.search_movie(" ".join(MVinput), results=10):
                     C += 1
                     if C == 1:
                         SYem = discord.Embed(
@@ -101,7 +102,7 @@ class Movies(commands.Cog):
 
         if IDorName == "NAME":
             try:
-                IMDbtempID = IMClient.search_movie(MVname, results = 1)[0].movieID
+                IMDbtempID = IMClient.search_movie(MVname, results=1)[0].movieID
                 IMDbinfo = IMClient.get_movie(IMDbtempID).data
             except IndexError:
                 await ctx.message.channel.send("Nothing Found :woozy_face:")
@@ -118,8 +119,8 @@ class Movies(commands.Cog):
 
         YEm = discord.Embed(
             title=IMDbinfo["original title"],
-            description= ", ".join(IMDbinfo["genres"]),
-            url = f'https://www.imdb.com/title/tt{IMDbinfo["imdbID"]}',
+            description=", ".join(IMDbinfo["genres"]),
+            url=f'https://www.imdb.com/title/tt{IMDbinfo["imdbID"]}',
             color=0xDBA506,
         )
         YEm.add_field(
@@ -154,7 +155,7 @@ class Movies(commands.Cog):
         try:
             YEm.add_field(
                 name="Rating:",
-                value= IMDbinfo["rating"],
+                value=IMDbinfo["rating"],
                 inline=True,
             )
         except KeyError:
@@ -169,7 +170,7 @@ class Movies(commands.Cog):
                     break
             YEm.add_field(
                 name="Cast:",
-                value= "\n".join(Cast[0:10]) + Note,
+                value="\n".join(Cast[0:10]) + Note,
                 inline=False,
             )
         except KeyError:
@@ -177,8 +178,9 @@ class Movies(commands.Cog):
         try:
             YEm.set_thumbnail(url=IMDbinfo["cover url"])
         except KeyError:
-            pass    
+            pass
         YTEm = await ctx.message.channel.send(embed=YEm)
+
 
 def setup(DClient):
     DClient.add_cog(Movies(DClient))

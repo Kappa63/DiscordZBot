@@ -20,7 +20,7 @@ load_dotenv()
 
 Mdb = os.getenv("MONGODB_URL")
 Cls = MongoClient(Mdb)
-DbM = Cls["CBot"]   
+DbM = Cls["CBot"]
 Col = DbM["Ser"]
 Colvt = DbM["Vts"]
 
@@ -57,6 +57,7 @@ YClient = pyyoutube.Api(api_key=os.getenv("YOUTUBE_KEY"))
 
 IMClient = imdb.IMDb()
 
+
 def RemoveExtra(listRm, val):
     return [value for value in listRm if value != val]
 
@@ -65,10 +66,17 @@ def GetVidDuration(VidId):
     Vid = pafy.new(f"https://www.youtube.com/watch?v={VidId}")
     return Vid.duration
 
+
 def TimeTillMidnight():
     Now = datetime.datetime.now()
-    Time = 10 + ((24 - Now.hour - 1) * 60 * 60) + ((60 - Now.minute - 1) * 60) + (60 - Now.second)
+    Time = (
+        10
+        + ((24 - Now.hour - 1) * 60 * 60)
+        + ((60 - Now.minute - 1) * 60)
+        + (60 - Now.second)
+    )
     return Time
+
 
 def FormatTime(SecondsFormat):
     Day = 0
@@ -122,6 +130,34 @@ class IsVote(commands.CheckFailure):
     pass
 
 
+def ErrorEmbeds(Type):
+    if Type == "Vote":
+        return discord.Embed(
+            title="Oops",
+            description="This command is only for voters or patreon! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord) / [Vote](https://top.gg/bot/768397640140062721/vote)",
+        )
+    elif Type == "Patreon":
+        return discord.Embed(
+            title="Oops",
+            description="This command is only for patreons supporters! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord)",
+        )
+    elif Type == "PatreonT2":
+        return discord.Embed(
+            title="Oops",
+            description="This command is only for Tier 2 patreons (Super) supporters or above! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord)",
+        )
+    elif Type == "PatreonT3":
+        return discord.Embed(
+            title="Oops",
+            description="This command is only for Tier 3 patreons (Legend) supporters or above! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord)",
+        )
+    elif Type == "PatreonT4":
+        return discord.Embed(
+            title="Oops",
+            description="This command is only for Tier 4 patreons (Ultimate) supporters or above! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord)",
+        )
+
+
 async def ChVote(ctx):
     if await CBot.TClient.get_user_vote(ctx.author.id):
         return True
@@ -140,6 +176,7 @@ async def ChVote(ctx):
         except AttributeError:
             pass
         raise IsVote("No Vote")
+
 
 async def ChVoteUser(UserID):
     if await CBot.TClient.get_user_vote(UserID):
@@ -160,16 +197,30 @@ async def ChVoteUser(UserID):
             pass
         raise IsVote("No Vote")
 
+
 class IsPatreon(commands.CheckFailure):
     pass
+
+
 class IsPatreonT2(commands.CheckFailure):
     pass
+
+
 class IsPatreonT3(commands.CheckFailure):
     pass
+
+
 class IsPatreonT4(commands.CheckFailure):
     pass
 
-PatreonTiers = {783250729686532126:"Tier 1 Casual", 783256987655340043:"Tier 2 Super", 784123230372757515:"Tier 3 Legend", 784124034559377409:"Tier 4 Ultimate"}
+
+PatreonTiers = {
+    783250729686532126: "Tier 1 Casual",
+    783256987655340043: "Tier 2 Super",
+    784123230372757515: "Tier 3 Legend",
+    784124034559377409: "Tier 4 Ultimate",
+}
+
 
 def GetPatreonTier(UserID):
     try:
@@ -185,6 +236,7 @@ def GetPatreonTier(UserID):
                 return PatreonTiers[Role.id]
     except AttributeError:
         pass
+
 
 def ChPatreon(ctx):
     try:
@@ -202,6 +254,7 @@ def ChPatreon(ctx):
         pass
     raise IsPatreon("Not Patreon")
 
+
 def ChPatreonUser(UserID):
     try:
         MemGuild = CBot.DClient.get_guild(783250489843384341)
@@ -218,6 +271,7 @@ def ChPatreonUser(UserID):
         pass
     return False
 
+
 def ChPatreonT2(ctx):
     try:
         MemGuild = CBot.DClient.get_guild(783250489843384341)
@@ -232,6 +286,7 @@ def ChPatreonT2(ctx):
     except AttributeError:
         pass
     raise IsPatreonT2("Not Patreon")
+
 
 def ChPatreonUserT2(UserID):
     try:
@@ -248,6 +303,7 @@ def ChPatreonUserT2(UserID):
         pass
     return False
 
+
 def ChPatreonT3(ctx):
     try:
         MemGuild = CBot.DClient.get_guild(783250489843384341)
@@ -261,6 +317,7 @@ def ChPatreonT3(ctx):
     except AttributeError:
         pass
     raise IsPatreonT3("Not Patreon")
+
 
 def ChPatreonUserT3(UserID):
     try:
@@ -276,6 +333,7 @@ def ChPatreonUserT3(UserID):
         pass
     return False
 
+
 def ChPatreonT4(ctx):
     try:
         MemGuild = CBot.DClient.get_guild(783250489843384341)
@@ -288,6 +346,7 @@ def ChPatreonT4(ctx):
     except AttributeError:
         pass
     raise IsPatreonT4("Not Patreon")
+
 
 def ChPatreonUserT4(UserID):
     try:
@@ -302,11 +361,14 @@ def ChPatreonUserT4(UserID):
         pass
     return False
 
+
 class IsBot(commands.CheckFailure):
     pass
 
+
 class Ignore(commands.CheckFailure):
     pass
+
 
 def ChDev(ctx):
     if ctx.author.id == 443986051371892746:

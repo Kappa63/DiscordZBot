@@ -7,6 +7,7 @@ import requests
 import os
 from Setup import GClient, GApi, Imgur
 
+
 class Randomizers(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
@@ -65,6 +66,7 @@ class Randomizers(commands.Cog):
                 await ctx.message.channel.send("No gifs found :expressionless:")
         else:
             await ctx.message.channel.send("No search term given :confused:")
+
 
 def setup(DClient):
     DClient.add_cog(Randomizers(DClient))

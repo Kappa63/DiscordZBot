@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from Setup import YClient
 from Setup import ChVoteUser
-from Setup import IsVote
+from Setup import ErrorEmbeds
 from Setup import GetVidDuration
 import asyncio
 
@@ -143,13 +143,13 @@ class Youtube(commands.Cog):
                     if ChannelGetter.items[0].statistics.hiddenSubscriberCount == False:
                         SYem.add_field(
                             name="\u200b",
-                            value=f'{C}. `{ChannelGetter.items[0].snippet.title} / Subs: {int(ChannelGetter.items[0].statistics.subscriberCount):,} / Videos: {int(ChannelGetter.items[0].statistics.videoCount):,}`',
+                            value=f"{C}. `{ChannelGetter.items[0].snippet.title} / Subs: {int(ChannelGetter.items[0].statistics.subscriberCount):,} / Videos: {int(ChannelGetter.items[0].statistics.videoCount):,}`",
                             inline=False,
                         )
                     else:
                         SYem.add_field(
                             name="\u200b",
-                            value=f'{C}. `{ChannelGetter.items[0].snippet.title} / Videos: {int(ChannelGetter.items[0].statistics.videoCount):,}`',
+                            value=f"{C}. `{ChannelGetter.items[0].snippet.title} / Videos: {int(ChannelGetter.items[0].statistics.videoCount):,}`",
                             inline=False,
                         )
                     SrchYT.append(ChannelGetter)
@@ -246,7 +246,7 @@ class Youtube(commands.Cog):
         YEm = discord.Embed(
             title=YTinfo.items[0].snippet.title,
             description=YTcDesc,
-            url = f'https://www.youtube.com/channel/{YTinfo.items[0].id}',
+            url=f"https://www.youtube.com/channel/{YTinfo.items[0].id}",
             color=0xFF0000,
         )
         YEm.add_field(
@@ -362,7 +362,7 @@ class Youtube(commands.Cog):
                             await asyncio.sleep(5)
                             await TempYT.delete()
                     else:
-                        raise IsVote("No Vote")
+                        await ctx.message.channel.send(embed=ErrorEmbeds("Vote"))
                 elif ReaEm[0].emoji == "➡️" and len(YTVids.items) == VidNum + 1:
                     await YTEm.remove_reaction("⬅️", self.DClient.user)
                     await YTEm.remove_reaction("❌", self.DClient.user)

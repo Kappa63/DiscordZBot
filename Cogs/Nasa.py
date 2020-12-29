@@ -4,8 +4,9 @@ import requests
 from discord.ext import commands
 from Setup import ChVote, ChVoteUser, ChPatreonT2, ChAdmin
 from Setup import FormatTime, TimeTillMidnight, GetPatreonTier
-from Setup import IsVote
+from Setup import ErrorEmbeds
 import asyncio
+
 
 class Nasa(commands.Cog):
     def __init__(self, DClient):
@@ -49,42 +50,63 @@ class Nasa(commands.Cog):
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def NasaApodDAILY(self, ctx):
         TimeLeft = FormatTime(TimeTillMidnight())
-        await ctx.message.channel.send(embed = discord.Embed(title = "APOD in...", description = f'The next Daily APOD is in {TimeLeft} :grin:.\n You can be added to APOD Daily with "zapoddaily start".\n Check "zhelp apod" for more info'))
-    
+        await ctx.message.channel.send(
+            embed=discord.Embed(
+                title="APOD in...",
+                description=f'The next Daily APOD is in {TimeLeft} :grin:.\n You can be added to APOD Daily with "zapoddaily start".\n Check "zhelp apod" for more info',
+            )
+        )
+
     @NasaApodDAILY.command(name="start")
     @commands.check(ChPatreonT2)
     @commands.check(ChAdmin)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def StartNasaApodDAILY(self, ctx):
-        TierApplicable = {"Tier 2 Super":1, "Tier 3 Legend":2, "Tier 4 Ultimate":4}
-        LineToCheckAdd = f'{ctx.author.id} {ctx.message.channel.id} {ctx.guild.id} \n'
-        UserID = f'{ctx.author.id}'
+        TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
+        LineToCheckAdd = f"{ctx.author.id} {ctx.message.channel.id} {ctx.guild.id} \n"
+        UserID = f"{ctx.author.id}"
         OpenAPODChannelUserFile = open("APODDaily.txt")
         APODChannelUserFile = OpenAPODChannelUserFile.readlines()
         OpenAPODChannelUserFile.close()
         TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
         for Line in APODChannelUserFile:
             if Line == LineToCheckAdd:
-                await ctx.message.channel.send(embed = discord.Embed(title = "All Good", description = "This channel is already added to APOD daily"))
+                await ctx.message.channel.send(
+                    embed=discord.Embed(
+                        title="All Good",
+                        description="This channel is already added to APOD daily",
+                    )
+                )
                 return
         Channels = 0
         for Line in APODChannelUserFile:
             if Line.split(" ")[0] == UserID:
                 Channels += 1
-                if Channels == TierLimit: 
-                    await ctx.message.channel.send(embed = discord.Embed(title = "Oops", description = "You already added the max amount of channels to APOD daily.\nDifferent patreon levels get more channels\nCheck 'zpatreon'"))
+                if Channels == TierLimit:
+                    await ctx.message.channel.send(
+                        embed=discord.Embed(
+                            title="Oops",
+                            description="You already added the max amount of channels to APOD daily.\nDifferent patreon levels get more channels\nCheck 'zpatreon'",
+                        )
+                    )
                     return
         AppendAPODChannelUserFile = open("APODDaily.txt", "a")
-        AppendAPODChannelUserFile.write(f'{ctx.author.id} {ctx.message.channel.id} {ctx.guild.id} \n')
+        AppendAPODChannelUserFile.write(
+            f"{ctx.author.id} {ctx.message.channel.id} {ctx.guild.id} \n"
+        )
         AppendAPODChannelUserFile.close()
-        await ctx.message.channel.send(embed = discord.Embed(title = "Success", description = "Added to APOD daily successfully"))
+        await ctx.message.channel.send(
+            embed=discord.Embed(
+                title="Success", description="Added to APOD daily successfully"
+            )
+        )
 
     @NasaApodDAILY.command(name="stop")
     @commands.check(ChPatreonT2)
     @commands.check(ChAdmin)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RemoveNasaApodDAILY(self, ctx):
-        LineToCheckAdd = f'{ctx.author.id} {ctx.message.channel.id} {ctx.guild.id} \n'
+        LineToCheckAdd = f"{ctx.author.id} {ctx.message.channel.id} {ctx.guild.id} \n"
         OpenAPODChannelUserFile = open("APODDaily.txt")
         APODChannelUserFile = OpenAPODChannelUserFile.readlines()
         OpenAPODChannelUserFile.close()
@@ -101,9 +123,17 @@ class Nasa(commands.Cog):
             for Line in APODChannelUserFile:
                 FixAPODChannelUserFile.write(Line)
             FixAPODChannelUserFile.close()
-            await ctx.message.channel.send(embed = discord.Embed(title = "Success", description = "Removed from APOD daily successfully"))
+            await ctx.message.channel.send(
+                embed=discord.Embed(
+                    title="Success", description="Removed from APOD daily successfully"
+                )
+            )
             return
-        await ctx.message.channel.send(embed = discord.Embed(title = "All Good", description = "You are not in APOD daily"))
+        await ctx.message.channel.send(
+            embed=discord.Embed(
+                title="All Good", description="You are not in APOD daily"
+            )
+        )
 
     @commands.command(name="nasa")
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -228,7 +258,7 @@ class Nasa(commands.Cog):
                             await asyncio.sleep(5)
                             await TemTw.delete()
                     else:
-                        raise IsVote("No Vote")
+                        await ctx.message.channel.send(embed=ErrorEmbeds("Vote"))
                 elif Res[0].emoji == "❌":
                     await NTEm.edit(
                         embed=MakeEmbed(MarsImagesCH, ImageNum, ImagesExtracted)

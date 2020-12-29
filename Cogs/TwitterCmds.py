@@ -4,7 +4,7 @@ import requests
 import tweepy
 from Setup import Twitter
 from Setup import ChVote, ChVoteUser
-from Setup import IsVote
+from Setup import ErrorEmbeds
 import asyncio
 
 
@@ -214,7 +214,7 @@ class TwitterCmds(commands.Cog):
                     )
             else:
                 await ctx.message.channel.send("No search argument :woozy_face:")
-                
+
         elif args:
             TWname = " ".join(args)
         else:
@@ -360,7 +360,9 @@ class TwitterCmds(commands.Cog):
                                     await asyncio.sleep(5)
                                     await TemTw.delete()
                             else:
-                                raise IsVote("No Vote")
+                                await ctx.message.channel.send(
+                                    embed=ErrorEmbeds("Vote")
+                                )
                         elif ReaEm[0].emoji == "➡️" and len(TWtimeline) == TwTNum + 1:
                             await TwTsL.remove_reaction("⬅️", self.DClient.user)
                             await TwTsL.remove_reaction("❌", self.DClient.user)

@@ -2,9 +2,9 @@ import discord
 from discord.ext import commands
 import mal
 from hentai import Utils, Sort, Hentai, Format
-from Setup import IsVote
 from Setup import MClient
 from Setup import ChVote, ChVoteUser, ChNSFW
+from Setup import ErrorEmbeds
 import asyncio
 
 
@@ -758,7 +758,9 @@ class AnimeManga(commands.Cog):
                                         await asyncio.sleep(5)
                                         await TempNG.delete()
                                 else:
-                                    raise IsVote("No Vote")
+                                    await ctx.message.channel.send(
+                                        embed=ErrorEmbeds("Vote")
+                                    )
                             elif Res[0].emoji == "❌":
                                 await DmSent.edit(
                                     embed=EmbedMaker(DentAi, FdesCtI, Page, "CLOSED")

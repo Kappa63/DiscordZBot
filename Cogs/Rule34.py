@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from Setup import ChVote, ChVoteUser, ChNSFW
-from Setup import IsVote
+from Setup import ErrorEmbeds
 import asyncio
 import random
 import rule34
@@ -163,7 +163,7 @@ class Rule34(commands.Cog):
                             await asyncio.sleep(5)
                             await TemTw.delete()
                     else:
-                        raise IsVote("No Vote")
+                        await ctx.message.channel.send(embed=ErrorEmbeds("Vote"))
                 elif Res[0].emoji == "❌":
                     await RTEm.edit(
                         embed=MakeEmbed(Rule34Surf[RuleNum], "S", RuleNum, TotalRules)
