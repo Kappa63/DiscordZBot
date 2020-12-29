@@ -101,7 +101,7 @@ class Nasa(commands.Cog):
             )
         )
 
-    @NasaApodDAILY.command(name="stop")
+    @NasaApodDAILY.command(aliases=["stop","end"])
     @commands.check(ChPatreonT2)
     @commands.check(ChAdmin)
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -116,7 +116,7 @@ class Nasa(commands.Cog):
             if Line == LineToCheckAdd:
                 del APODChannelUserFile[LineNum]
                 Exist = True
-                return
+                break
             LineNum += 1
         if Exist:
             FixAPODChannelUserFile = open("APODDaily.txt", "w+")

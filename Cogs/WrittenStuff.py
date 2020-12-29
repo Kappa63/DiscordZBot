@@ -93,7 +93,7 @@ class WrittenStuff(commands.Cog):
             if Line == LineToCheckAdd:
                 del QOTDChannelUserFile[LineNum]
                 Exist = True
-                return
+                break
             LineNum += 1
         if Exist:
             FixQOTDChannelUserFile = open("QOTDDaily.txt", "w+")

@@ -81,6 +81,35 @@ class OnlyMods(commands.Cog):
                 color=0x000000,
             )
         )
+    
+    @commands.command(name="numapod")
+    @commands.check(ChDev)
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def GetAPODNum(self, ctx):
+        APODFile = open("APODDaily.txt")
+        ApodLines = APODFile.readlines()
+        APODFile.close()
+        await ctx.message.channel.send(
+            embed=discord.Embed(
+                title=f'{len(ApodLines)} People in APOD Daily',
+                color=0x000000,
+            )
+        )
+    
+    @commands.command(name="numqotd")
+    @commands.check(ChDev)
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def GetQOTDNum(self, ctx):
+        QOTDFile = open("QOTDDaily.txt")
+        QotdLines = QOTDFile.readlines()
+        QOTDFile.close()
+        await ctx.message.channel.send(
+            embed=discord.Embed(
+                title=f'{len(QotdLines)} People in QOTD Daily',
+                color=0x000000,
+            )
+        )
+
 
 
 def setup(DClient):
