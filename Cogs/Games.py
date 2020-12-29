@@ -293,11 +293,12 @@ class Games(commands.Cog):
                             Board = await ctx.message.channel.send(embed=TTTBoardMaker(Table,Players[0],Players[1],"ENDED"))
                             return
                 except asyncio.TimeoutError:
-                    await ctx.message.channel.send("Player did not play :sad:!")
+                    Board = await ctx.message.channel.send(embed=TTTBoardMaker(Table,Players[0],Players[1],f'{Player.display_name} DID NOT RESPOND'))
+                    await ctx.message.channel.send(f"{Player.mention} did not play :slight_frown:!")
                     return
                 R += 1
         else:
-            await ctx.message.channel.send("No second player mentioned :sad:!")
+            await ctx.message.channel.send("No second player mentioned :slight_frown:!")
 
 
 def setup(DClient):
