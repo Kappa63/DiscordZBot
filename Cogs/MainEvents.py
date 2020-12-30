@@ -186,7 +186,7 @@ class MainEvents(commands.Cog):
     async def RegulateBeforeAPODLoop(self):
         TimeToWait = TimeTillMidnight()
         print(f"{TimeToWait}s to start 24 hour APOD loop...")
-        for _ in range():
+        for _ in range(TimeToWait):
             await asyncio.sleep(1)
         print("Start 24 hour APOD loop")
         print("Sending APOD...")
