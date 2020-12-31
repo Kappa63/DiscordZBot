@@ -344,10 +344,12 @@ class Image(commands.Cog):
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def QRmake(self, ctx, *args):
         if args:
+            Files = []
             ToQR = " ".join(args).split(" ")
             QRcode = qrcode.make(ToQR)
             QRcode.save("QR.png")
-            await ctx.message.channel.send(files = discord.File("QR.png"))
+            Files.append(discord.File("QR.png"))
+            await ctx.message.channel.send(files=Files)
             os.remove("QR.png")
         else:
             await ctx.message.channel.send("Nothing to QR")
