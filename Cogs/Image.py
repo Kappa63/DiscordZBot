@@ -345,7 +345,7 @@ class Image(commands.Cog):
     async def QRmake(self, ctx, *args):
         if args:
             Files = []
-            ToQR = " ".join(args).split(" ")
+            ToQR = " ".join(args)
             QRcode = qrcode.make(ToQR)
             QRcode.save("QR.png")
             Files.append(discord.File("QR.png"))
