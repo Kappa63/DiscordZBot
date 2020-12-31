@@ -10,6 +10,7 @@ from PIL import Image
 import deeppyer
 import asyncio
 import os
+import qrcode
 
 
 class Image(commands.Cog):
@@ -264,19 +265,21 @@ class Image(commands.Cog):
         else:
             await ctx.message.channel.send("No or too many attachments :woozy_face:")
 
-    @commands.group(name="fry", invoke_without_command=True)
+    @commands.group(aliases=["fry", "deepfry"], invoke_without_command=True)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def ImageFrier(self, ctx, *args):
-        if args:
-            URLargs = " ".join(args).split(" ")
+        if args or len(ctx.message.attachments) > 0:
             Attached = []
-            try:
-                for url in URLargs:
-                    Attached.append(url)
-            except TypeError:
-                pass
-            for AtT in ctx.message.attachments:
-                Attached.append(AtT.url)
+            if args:
+                URLargs = " ".join(args).split(" ")
+                try:
+                    for url in URLargs:
+                        Attached.append(url)
+                except TypeError:
+                    pass
+            if len(ctx.message.attachments) > 0:
+                for AtT in ctx.message.attachments:
+                    Attached.append(AtT.url)
             Files = []
             C = 0
             for File in Attached:
@@ -336,6 +339,18 @@ class Image(commands.Cog):
                 )
         except requests.exceptions.MissingSchema:
             pass
+
+    @commands.command(aliases=["qr","qrcode"])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def QRmake(self, ctx, *args):
+        if args:
+            ToQR = " ".join(args).split(" ")
+            QRcode = qrcode.make(ToQR)
+            QRcode.save("QR.png")
+            await ctx.message.channel.send(files = discord.File("QR.png"))
+            os.remove("QR.png")
+        else:
+            await ctx.message.channel.send("Nothing to QR")
 
 
 def setup(DClient):

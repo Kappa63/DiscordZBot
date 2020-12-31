@@ -34,7 +34,7 @@ class HelpInfo(commands.Cog):
         )
         await ctx.message.channel.send(embed=HEm)
 
-    @SendH.command(aliases=["server", "counting", "tracking", "count"])
+    @SendH.command(aliases=["server", "counting", "tracking", "counting", "count", "track"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendS(self, ctx):
         HEm = discord.Embed(
@@ -99,27 +99,27 @@ class HelpInfo(commands.Cog):
         )
         HEm.add_field(
             name="zreddit surf (Subreddit Name): ",
-            value="Returns the 100 posts of a subreddit sorted in any format (Voters and Patreons ONLY)",
+            value="100 Posts of The Subreddit Sorted in Any Format (Voters and Patreons ONLY)",
             inline=False,
         )
         HEm.add_field(
             name="ztwitter (User @): ",
-            value="Returns the user profile and 20 of their latest tweets",
+            value="Details About the User Profile and 20 of Their Latest Tweets",
             inline=False,
         )
         HEm.add_field(
-            name="ztwitter search (Username): ",
-            value="Searches for 10 users related to search argument",
+            name="ztwitter search (Search Term): ",
+            value="Searches for 10 Users Related to Search Term",
             inline=False,
         )
         HEm.add_field(
             name="zyoutube (Channel Name): ",
-            value="Returns info about the channel and 20 of the latest uploads",
+            value="Details About the Channel and 20 of The Latest Uploads",
             inline=False,
         )
         HEm.add_field(
             name="zyoutube search (Search Term): ",
-            value="Searches for 10 channels related to search argument",
+            value="Searches for 10 Channels Related to Search Term",
             inline=False,
         )
         HEm.add_field(
@@ -127,7 +127,7 @@ class HelpInfo(commands.Cog):
         )
         await ctx.message.channel.send(embed=HEm)
 
-    @SendH.command(aliases=["game", "games", "sudoku", "ttt", "tictactoe"])
+    @SendH.command(aliases=["game", "games", "sudoku", "ttt", "tictactoe", "chess"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendG(self, ctx):
         HEm = discord.Embed(
@@ -144,8 +144,13 @@ class HelpInfo(commands.Cog):
             inline=False,
         )
         HEm.add_field(
+            name="zchess (mention): ",
+            value="Starts a Chess game vs the mentioned user",
+            inline=False,
+        )
+        HEm.add_field(
             name="Note:",
-            value="-In sudoku react with the eye to get the solution or with the X to never get the solution. If X isn't pressed solution is auto given after 1 hour\n\n-In TTT each player has 30sec to play. A player should enter the number of the corresponding square to play there. If a player enters 'end' the game ends",
+            value="-In sudoku react with the eye to get the solution or with the X to never get the solution. If X isn't pressed solution is auto given after 1 hour\n\n-In TTT each player has 30sec to play. A player should enter the number of the corresponding square to play there. If a player enters 'end' the game ends\n\n-In Chess a standard 10min time is given to each player. Time starts after each player has made 1 move. Every turn the legal moves are listed. Typing in a move is case sensetive (Must be as listed). Typing in 'resign' will result in loss by resignation. Draws automatically happen if Stalemate or Insufficient Material. A Draw can be Claimed by Typing in 'claimdraw' (Only after a threefold-repition or 50 move-rule). The bot announces if a Draw Claim is allowed. Win by Checkmate.",
             inline=False,
         )
         await ctx.message.channel.send(embed=HEm)
@@ -155,6 +160,7 @@ class HelpInfo(commands.Cog):
             "covid",
             "info",
             "informatics",
+            "informatic",
             "information",
             "nasa",
             "apod",
@@ -303,13 +309,23 @@ class HelpInfo(commands.Cog):
             name="zfry profile (@): ", value="Deep fries the avatar", inline=False
         )
         HEm.add_field(
+            name="zgiphy (Phrase/Word to search for): ",
+            value="Returns a RANDOM gif from top 50 results on giphy",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zqr (Text): ",
+            value="Makes a qrcode of the Text",
+            inline=False,
+        )
+        HEm.add_field(
             name="zpdf (PDF Attachment/PDF Url): ",
             value="Views the PDF's first 40 pages as images",
             inline=False,
         )
         HEm.add_field(
             name="Aliases:",
-            value="**-Cat =** `cat, kitten, kitty`\n\n**-Dog =** `doggo, dog, pupper, puppy`\n\n**-Food =** `food, dishes, dish`",
+            value="**-Cat =** `cat, kitten, kitty`\n\n**-Dog =** `doggo, dog, pupper, puppy`\n\n**-Food =** `food, dishes, dish`\n\n**-QR =** `qrcode, qr`",
         )
         await ctx.message.channel.send(embed=HEm)
 
@@ -371,10 +387,25 @@ class HelpInfo(commands.Cog):
             value="Quote Of The Day (Voters and Patreons ONLY)",
             inline=False,
         )
+        HEm.add_field(
+            name="zqotddaily: ",
+            value="Returns when the next QOTD Daily will happen (Tier 2 or more Patreons ONLY)",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zqotddaily start: ",
+            value="Start receiving daily QOTDs in the current channel (Tier 2 or more Patreons ONLY)",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zqotddaily end: ",
+            value="Stop receiving daily QOTDs (Tier 2 or more Patreons ONLY)",
+            inline=False,
+        )
         HEm.add_field(name="zinsult: ", value="Returns an insult", inline=False)
         HEm.add_field(
             name="Aliases:",
-            value="**-Kanye =** `kanye, kanyewest`\n\n**-Taylor =** `taylor, taylorswift`",
+            value="**-Kanye =** `kanye, kanyewest`\n\n**-Taylor =** `taylor, taylorswift`\n\n**-QOTD Daily =** `qotddaily end, qotddaily stop`",
         )
         await ctx.message.channel.send(embed=HEm)
 
@@ -398,11 +429,6 @@ class HelpInfo(commands.Cog):
             inline=False,
         )
         HEm.add_field(name="zroll: ", value="Rolls a dice", inline=False)
-        HEm.add_field(
-            name="zgiphy (Phrase/Word to search for): ",
-            value="Returns a RANDOM gif from top 50 results on giphy",
-            inline=False,
-        )
         HEm.add_field(
             name="Notes:",
             value="**-zremind:** is limited to 1day max. Could occasionally fail to notify you due to the bot going down, so dont rely on it entirely.",
@@ -448,7 +474,7 @@ class HelpInfo(commands.Cog):
         )
         VEm.add_field(name="Dev: ", value="Kappa#5173", inline=False)
         VEm.add_field(name="Version: ", value="1.7a", inline=False)
-        VEm.add_field(name="Version Release: ", value="29/12/2020", inline=False)
+        VEm.add_field(name="Version Release: ", value="31/12/2020", inline=False)
         VEm.add_field(name="Initial Release: ", value="21/11/2020", inline=False)
         await ctx.message.channel.send(embed=VEm)
 

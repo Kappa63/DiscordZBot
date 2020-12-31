@@ -153,9 +153,8 @@ class MainEvents(commands.Cog):
         for APODChannelUser in APODChannelUserList:
             UserID = APODChannelUser.split(" ")[0]
             ChannelID = APODChannelUser.split(" ")[1]
-            User = self.DClient.get_user(int(UserID))
             Channel = self.DClient.get_channel(int(ChannelID))
-            if ChPatreonUserT2(User):
+            if ChPatreonUserT2(int(UserID)):
                 TierLimit = TierApplicable[GetPatreonTier(UserID)]
                 if UserID in UserChannelCount:
                     UserChannelCount[UserID] += 1
@@ -200,9 +199,8 @@ class MainEvents(commands.Cog):
         for APODChannelUser in APODChannelUserList:
             UserID = APODChannelUser.split(" ")[0]
             ChannelID = APODChannelUser.split(" ")[1]
-            User = self.DClient.get_user(int(UserID))
             Channel = self.DClient.get_channel(int(ChannelID))
-            if ChPatreonUserT2(User):
+            if ChPatreonUserT2(int(UserID)):
                 TierLimit = TierApplicable[GetPatreonTier(UserID)]
                 if UserID in UserChannelCount:
                     UserChannelCount[UserID] += 1
@@ -242,9 +240,8 @@ class MainEvents(commands.Cog):
         for QOTDChannelUser in QOTDChannelUserList:
             UserID = QOTDChannelUser.split(" ")[0]
             ChannelID = QOTDChannelUser.split(" ")[1]
-            User = self.DClient.get_user(int(UserID))
             Channel = self.DClient.get_channel(int(ChannelID))
-            if ChPatreonUserT2(User):
+            if ChPatreonUserT2(UserID):
                 TierLimit = TierApplicable[GetPatreonTier(UserID)]
                 if UserID in UserChannelCount:
                     UserChannelCount[UserID] += 1
@@ -289,9 +286,8 @@ class MainEvents(commands.Cog):
         for QOTDChannelUser in QOTDChannelUserList:
             UserID = QOTDChannelUser.split(" ")[0]
             ChannelID = QOTDChannelUser.split(" ")[1]
-            User = self.DClient.get_user(int(UserID))
             Channel = self.DClient.get_channel(int(ChannelID))
-            if ChPatreonUserT2(User):
+            if ChPatreonUserT2(UserID):
                 TierLimit = TierApplicable[GetPatreonTier(UserID)]
                 if UserID in UserChannelCount:
                     UserChannelCount[UserID] += 1

@@ -1,11 +1,10 @@
-Whats new in 1.7a:
-NEW Game section
-NEW First game is Sudoku (zsudoku)
-NEW Second game is Tic-Tac-Toe (zttt, ztictactoe)
-NEW Ofcourse the Game section's help command (zhelp game, zhelp games)
-NEW Taylor Swift image and quote command (ztaylorswift, ztaylor, ztswift) 
-NEW Daily APOD command: sends daily apods to channel (zapoddaily) help in zhelp apod (For Tier 2 patreons or more)
-NEW Daily QOTD command: sends daily qotds to channel (zqotddaily) help in zhelp apod (For Tier 2 patreons or more)
-REVAMPED Help commands (zhelp)
-IMPROVED Logic
-CHANGES Internally
+Whats new in 1.8a:
+NEW Chess game (zchess)
+NEW Qrcode maker command: converts line of text to a qrcode image (zqr, zqrcode)
+ADDED QRcode help to (zhelp image, zhelp qr, zhelp qrcode)
+ADDED Chess help to (zhelp game, zhelp chess)
+ADDED Alias to zfry (zdeepfry)
+FIXED APOD Daily -Hopefully-
+FIXED QOTD Daily -Hopefully-
+FIXED zfry
+REDESIGNED Bot page

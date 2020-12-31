@@ -3,7 +3,9 @@ from discord.ext import commands
 import requests
 import asyncio
 import random
-
+import time
+import datetime
+import chess
 
 def SudokuBoardMaker(Title, BoardName, Board, Difficulty):
     DigitReplace = [
@@ -148,6 +150,55 @@ def TTTGetForm(Input):
     Form = [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
     return Form[NumInput]
 
+def MakeChessBoard(Board, PlayerTimes, Players):
+    OnWhite = {
+        ".": "<:10:793974818286469120>",
+        "P": "<:24:793974817648541707>",
+        "R": "<:9_:793974818302853170>",
+        "N": "<:22:793974817715781633>",
+        "B": "<:19:793974817912258580>",
+        "Q": "<:26:793974817496891424>",
+        "K": "<:12:793974818269298689>",
+        "p": "<:18:793974818013577266>",
+        "r": "<:14:793974818172829716>",
+        "n": "<:7_:793974818416492564>",
+        "b": "<:16:793974818106114118>",
+        "q": "<:15:793974818126168065>",
+        "k": "<:8_:793974818335883265>",
+    }
+    OnGrey = {
+        ".": "<:11:793974818269560882>",
+        "P": "<:5_:793974818449784882>",
+        "R": "<:3_:793987203721723915>",
+        "N": "<:2_:793974819535847434>",
+        "B": "<:1_:793974819518677013>",
+        "Q": "<:25:793974817627570188>",
+        "K": "<:13:793974818252783616>",
+        "p": "<:23:793974817706868737>",
+        "r": "<:21:793974817794555923>",
+        "n": "<:6_:793974818436939826>",
+        "b": "<:17:793974818105720842>",
+        "q": "<:4_:793974818453848074>",
+        "k": "<:20:793974817883422751>",
+    }
+    RowMarker = ["8\u2002", "7\u2002", "6\u2002", "5\u2002", "4\u2002", "3\u2002", "2\u2002", "1\u2002"]
+    Sub = 1
+    EmBoard = f'Stuck? "zhelp chess"\n\n{Players[0].display_name} vs {Players[1].display_name}\n\u2002 Time: P1: {str(datetime.timedelta(seconds = PlayerTimes[Players[0]]))[2:]} / P2: {str(datetime.timedelta(seconds = PlayerTimes[Players[1]]))[2:]}\n'
+    for Row in range(8):
+        for Sq in range(8):
+            if Sq == 0:
+                EmBoard += RowMarker[Row]
+            if (Sq-Sub)%2 == 0:
+                EmBoard += OnGrey[Board[Row][Sq]]
+            else:
+                EmBoard += OnWhite[Board[Row][Sq]]
+        if Row%2 == 0:
+            Sub = 0
+        else:
+            Sub = 1
+        EmBoard += "\n"
+    EmBoard += "\u2003a\u2003b\u2003c\u2003d\u2003e\u2003f\u2003g\u2003h"
+    return EmBoard
 
 class Games(commands.Cog):
     def __init__(self, DClient):
@@ -237,9 +288,9 @@ class Games(commands.Cog):
                 and MSg.author == Player
             )
 
-        if len(ctx.message.mentions) > 0:
+        if len(ctx.message.mentions) > 0 and ctx.message.mentions.bot == False:
             Table = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
-            Players = random.sample([ctx.message.author, ctx.message.mentions[0]], 2)
+            Players = [ctx.message.author, ctx.message.mentions[0]]
             PlayerAssign = {Players[0]: "x", Players[1]: "o"}
             R = 1
             Board = await ctx.message.channel.send(
@@ -298,8 +349,88 @@ class Games(commands.Cog):
                     return
                 R += 1
         else:
-            await ctx.message.channel.send("No second player mentioned :slight_frown:!")
+            await ctx.message.channel.send("No second player mentioned or Mentioned a bot :slight_frown:!")
 
+    @commands.command(name="chess")
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def PlayChess(self, ctx, *args):
+        def ChCHanS(MSg):
+            MesS = MSg.content.lower()
+            RsT = False
+            if MSg.content in LegalMoves:
+                RsT = True
+            elif (MesS == "resign"):
+                RsT = True
+            elif CanClaimDraw and MesS == "claimdraw":
+                RsT = True
+            return (
+                MSg.guild.id == ctx.guild.id
+                and MSg.channel.id == ctx.channel.id
+                and RsT
+                and MSg.author == Player
+            )
+        if len(ctx.message.mentions) > 0 and ctx.message.mentions[0].bot == False:
+            Players = [ctx.message.author, ctx.message.mentions[0]]
+            ChessBoard = chess.Board()
+            R = 0
+            CanClaimDraw = False
+            PlayerTimes = {Players[0]:600, Players[1]:600}
+            Board = await ctx.message.channel.send(MakeChessBoard(("".join(str(ChessBoard).split(" "))).splitlines(), PlayerTimes, Players))
+            Moves = []
+            while True:
+                LegalMoves = [ChessBoard.san(i) for i in list(ChessBoard.legal_moves)]
+                if R % 2 == 0:
+                    Player = Players[1]
+                else:
+                    Player = Players[0]
+                MentionTurn = await ctx.message.channel.send(
+                    f'{Player.mention}Please choose where to play: {", ".join(LegalMoves)}'
+                )
+                try:
+                    TimeTemp = int(time.time())
+                    ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=PlayerTimes[Player])
+                    if R > 1:
+                        PlayerTimes[Player] -= (int(time.time()) - TimeTemp)
+                    Moves.append(ResS)
+                    await MentionTurn.delete()
+                    LResS = ResS.content.lower()
+                    if ResS.content in LegalMoves:
+                        await Board.delete()
+                        ChessBoard.push_san(ResS.content)
+                        if ChessBoard.is_checkmate():
+                            Board = await ctx.message.channel.send()
+                            await ctx.message.channel.send(f"{Player.mention} WINS by Checkmate!!")
+                            return
+                        elif ChessBoard.is_insufficient_material():
+                            Board = await ctx.message.channel.send()
+                            await ctx.message.channel.send("DRAW by Insufficient Material!!")
+                            return
+                        elif ChessBoard.is_stalemate():
+                            Board = await ctx.message.channel.send()
+                            await ctx.message.channel.send("DRAW by Stalemate!!")
+                            return
+                        elif ChessBoard.can_claim_draw():
+                            await ctx.message.channel.send("A DRAW Can Now be Claimed")
+                            CanClaimDraw = True
+                        Board = await ctx.message.channel.send(MakeChessBoard(("".join(str(ChessBoard).split(" "))).splitlines(), PlayerTimes, Players))
+                    elif LResS == "resign":
+                        if R % 2 == 0:
+                            await ctx.message.channel.send(f'{Players[0].mention} WINS by Resignation')
+                        else:
+                            await ctx.message.channel.send(f'{Players[1].mention} WINS by Resignation')
+                        return
+                    elif LResS == "claimdraw":
+                        await ctx.message.channel.send(f"{Player.mention} Claims DRAW!!")
+                        return 
+                except asyncio.TimeoutError:
+                    if R % 2 == 0:
+                        await ctx.message.channel.send(f'{Players[0].mention} WINS by Timeout')
+                    else:
+                        await ctx.message.channel.send(f'{Players[1].mention} WINS by Timeout')
+                    return
+                R += 1
+        else:
+            await ctx.message.channel.send("No second player mentioned or Mentioned a bot :slight_frown:!")
 
 def setup(DClient):
     DClient.add_cog(Games(DClient))
