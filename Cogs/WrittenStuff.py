@@ -43,12 +43,10 @@ class WrittenStuff(commands.Cog):
         await ctx.message.channel.send(embed=QEm)
     
     @commands.group(name="qotddaily", invoke_without_command=True)
-    @commands.check(ChPatreonT2)
-    @commands.check(ChAdmin)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def QotdDAILY(self, ctx):
         TimeLeft = FormatTime(TimeTillMidnight())
-        await ctx.message.channel.send(embed = discord.Embed(title = "APOD in...", description = f'The next Daily QOTD is in {TimeLeft}.\n You can be added to QOTD Daily with "zqotddaily start".\n Check "zhelp qotd" for more info'))
+        await ctx.message.channel.send(embed = discord.Embed(title = "QOTD in...", description = f'The next Daily QOTD is in {TimeLeft}.\n You can be added to QOTD Daily with "zqotddaily start" (If patreon tier 2+).\n Check "zhelp qotd" for more info'))
     
     @QotdDAILY.command(name="start")
     @commands.check(ChPatreonT2)
@@ -77,8 +75,20 @@ class WrittenStuff(commands.Cog):
         AppendQOTDChannelUserFile.write(f'{ctx.author.id} {ctx.message.channel.id} {ctx.guild.id} \n')
         AppendQOTDChannelUserFile.close()
         await ctx.message.channel.send(embed = discord.Embed(title = "Success", description = "Added to QOTD daily successfully"))
+        Upload = requests.post(
+            url="https://file.io", files={"file": open("QOTDDaily.txt")}
+        ).json()
+        Channel = self.DClient.get_channel(794268834868494336)
+        await Channel.send(
+            embed=discord.Embed(
+                title=f'QOTD Upload Success: {Upload["success"]}',
+                description=f'Key: {Upload["key"]}\n\nExpiry: {Upload["expiry"]}\n\nHard Link: {Upload["link"]}',
+                url=Upload["link"],
+                color=0x000000,
+            )
+        )
 
-    @QotdDAILY.command(name="stop")
+    @QotdDAILY.command(aliases=["stop","end"])
     @commands.check(ChPatreonT2)
     @commands.check(ChAdmin)
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -103,6 +113,18 @@ class WrittenStuff(commands.Cog):
             await ctx.message.channel.send(embed = discord.Embed(title = "Success", description = "Removed from QOTD daily successfully"))
             return
         await ctx.message.channel.send(embed = discord.Embed(title = "All Good", description = "You are already not in QOTD daily"))
+        Upload = requests.post(
+            url="https://file.io", files={"file": open("QOTDDaily.txt")}
+        ).json()
+        Channel = self.DClient.get_channel(794268834868494336)
+        await Channel.send(
+            embed=discord.Embed(
+                title=f'QOTD Upload Success: {Upload["success"]}',
+                description=f'Key: {Upload["key"]}\n\nExpiry: {Upload["expiry"]}\n\nHard Link: {Upload["link"]}',
+                url=Upload["link"],
+                color=0x000000,
+            )
+        )
 
     @commands.command(name="insult")
     @commands.cooldown(1, 1, commands.BucketType.user)

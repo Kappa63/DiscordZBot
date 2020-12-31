@@ -59,7 +59,7 @@ class OnlyMods(commands.Cog):
         ).json()
         await ctx.message.channel.send(
             embed=discord.Embed(
-                title=f'Success: {Upload["success"]}',
+                title=f'QOTD Upload Success: {Upload["success"]}',
                 description=f'Key: {Upload["key"]}\n\nExpiry: {Upload["expiry"]}\n\nHard Link: {Upload["link"]}',
                 url=Upload["link"],
                 color=0x000000,
@@ -75,7 +75,7 @@ class OnlyMods(commands.Cog):
         ).json()
         await ctx.message.channel.send(
             embed=discord.Embed(
-                title=f'Success: {Upload["success"]}',
+                title=f'APOD Upload Success: {Upload["success"]}',
                 description=f'Key: {Upload["key"]}\n\nExpiry: {Upload["expiry"]}\n\nHard Link: {Upload["link"]}',
                 url=Upload["link"],
                 color=0x000000,

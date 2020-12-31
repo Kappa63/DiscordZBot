@@ -45,15 +45,13 @@ class Nasa(commands.Cog):
         await ctx.message.channel.send(embed=DEm)
 
     @commands.group(name="apoddaily", invoke_without_command=True)
-    @commands.check(ChPatreonT2)
-    @commands.check(ChAdmin)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def NasaApodDAILY(self, ctx):
         TimeLeft = FormatTime(TimeTillMidnight())
         await ctx.message.channel.send(
             embed=discord.Embed(
                 title="APOD in...",
-                description=f'The next Daily APOD is in {TimeLeft} :grin:.\n You can be added to APOD Daily with "zapoddaily start".\n Check "zhelp apod" for more info',
+                description=f'The next Daily APOD is in {TimeLeft}.\n You can be added to APOD Daily with "zapoddaily start" (If patreon tier 2+).\n Check "zhelp apod" for more info',
             )
         )
 
@@ -100,6 +98,18 @@ class Nasa(commands.Cog):
                 title="Success", description="Added to APOD daily successfully"
             )
         )
+        Upload = requests.post(
+            url="https://file.io", files={"file": open("APODDaily.txt")}
+        ).json()
+        Channel = self.DClient.get_channel(794268659177488464)
+        await Channel.send(
+            embed=discord.Embed(
+                title=f'APOD Upload Success: {Upload["success"]}',
+                description=f'Key: {Upload["key"]}\n\nExpiry: {Upload["expiry"]}\n\nHard Link: {Upload["link"]}',
+                url=Upload["link"],
+                color=0x000000,
+            )
+        )
 
     @NasaApodDAILY.command(aliases=["stop","end"])
     @commands.check(ChPatreonT2)
@@ -132,6 +142,18 @@ class Nasa(commands.Cog):
         await ctx.message.channel.send(
             embed=discord.Embed(
                 title="All Good", description="You are not in APOD daily"
+            )
+        )
+        Upload = requests.post(
+            url="https://file.io", files={"file": open("APODDaily.txt")}
+        ).json()
+        Channel = self.DClient.get_channel(794268659177488464)
+        await Channel.send(
+            embed=discord.Embed(
+                title=f'APOD Upload Success: {Upload["success"]}',
+                description=f'Key: {Upload["key"]}\n\nExpiry: {Upload["expiry"]}\n\nHard Link: {Upload["link"]}',
+                url=Upload["link"],
+                color=0x000000,
             )
         )
 
