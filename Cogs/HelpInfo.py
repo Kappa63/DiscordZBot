@@ -34,7 +34,7 @@ class HelpInfo(commands.Cog):
         )
         await ctx.message.channel.send(embed=HEm)
 
-    @SendH.command(aliases=["server", "counting", "tracking", "counting", "count", "track"])
+    @SendH.command(aliases=["server", "counting", "tracking", "count", "track"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendS(self, ctx):
         HEm = discord.Embed(
