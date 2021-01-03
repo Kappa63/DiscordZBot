@@ -1,7 +1,7 @@
 from discord.ext import commands
 import discord
 import FuncMon
-from Setup import Col, Colvt
+from Setup import Col
 from Setup import ChAdmin, ChSer, RemoveExtra
 import asyncio
 
@@ -392,14 +392,8 @@ class MongoDB(commands.Cog):
     async def on_message(self, message):
         CmSLim = 0
         if (
-            Col.count_documents(
-                {"IDd": "GuildInfo", "IDg": str(message.guild.id), "Setup": "Done"}
-            )
-            != 0
-        ):
-            DbB = Col.find(
-                {"IDd": "GuildInfo", "IDg": str(message.guild.id), "Setup": "Done"}
-            )
+            Col.count_documents({"IDd": "GuildInfo", "IDg": str(message.guild.id), "Setup": "Done"})!= 0):
+            DbB = Col.find({"IDd": "GuildInfo", "IDg": str(message.guild.id), "Setup": "Done"})
             for i in DbB:
                 KMeys = i.keys()
             Remove = "*_"

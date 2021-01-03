@@ -288,7 +288,7 @@ class Games(commands.Cog):
                 and MSg.author == Player
             )
 
-        if len(ctx.message.mentions) > 0 and ctx.message.mentions.bot == False:
+        if len(ctx.message.mentions) > 0 and ctx.message.mentions[0].bot == False:
             Table = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
             Players = [ctx.message.author, ctx.message.mentions[0]]
             PlayerAssign = {Players[0]: "x", Players[1]: "o"}

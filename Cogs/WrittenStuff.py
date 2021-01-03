@@ -3,6 +3,7 @@ from discord.ext import commands
 import requests
 import randfacts
 from Setup import ChVote, ChPatreonT2, GetPatreonTier, ChAdmin, FormatTime, TimeTillMidnight
+from Setup import AQd
 
 class WrittenStuff(commands.Cog):
     def __init__(self, DClient):
@@ -54,77 +55,31 @@ class WrittenStuff(commands.Cog):
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def StartQotdDAILY(self, ctx):
         TierApplicable = {"Tier 2 Super":1, "Tier 3 Legend":2, "Tier 4 Ultimate":4}
-        LineToCheckAdd = f'{ctx.author.id} {ctx.message.channel.id} {ctx.guild.id} \n'
-        UserID = f'{ctx.author.id}'
-        OpenQOTDChannelUserFile = open("QOTDDaily.txt")
-        QOTDChannelUserFile = OpenQOTDChannelUserFile.readlines()
-        OpenQOTDChannelUserFile.close()
         TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
-        for Line in QOTDChannelUserFile:
-            if Line == LineToCheckAdd:
-                await ctx.message.channel.send(embed = discord.Embed(title = "All Good", description = "This channel is already added to QOTD daily"))
-                return
-        Channels = 0
-        for Line in QOTDChannelUserFile:
-            if Line.split(" ")[0] == UserID:
-                Channels += 1
-                if Channels == TierLimit: 
-                    await ctx.message.channel.send(embed = discord.Embed(title = "Oops", description = "You already added the max amount of channels to QOTD daily.\nDifferent patreon levels get more channels\nCheck 'zpatreon'"))
-                    return
-        AppendQOTDChannelUserFile = open("QOTDDaily.txt", "a")
-        AppendQOTDChannelUserFile.write(f'{ctx.author.id} {ctx.message.channel.id} {ctx.guild.id} \n')
-        AppendQOTDChannelUserFile.close()
+        if AQd.count_documents({"Type":"QOTD", "IDd":ctx.author.id}) >= TierLimit:
+            await ctx.message.channel.send(embed = discord.Embed(title = "Oops", description = "You already added the max amount of channels to QOTD daily.\nDifferent patreon levels get more channels\nCheck 'zpatreon'"))
+            return
+        QOTDUsers = AQd.find({"Type":"QOTD"})
+        UserToCheckAdd = {"Type":"QOTD", "IDd":ctx.author.id, "IDg":ctx.guild.id, "Channel":ctx.message.channel.id}
+        if AQd.count_documents(UserToCheckAdd) == 1:
+            await ctx.message.channel.send(embed = discord.Embed(title = "All Good", description = "This channel is already added to QOTD daily"))
+            return
+        AQd.insert_one(UserToCheckAdd)
         await ctx.message.channel.send(embed = discord.Embed(title = "Success", description = "Added to QOTD daily successfully"))
-        Upload = requests.post(
-            url="https://file.io", files={"file": open("QOTDDaily.txt")}
-        ).json()
-        Channel = self.DClient.get_channel(794268834868494336)
-        await Channel.send(
-            embed=discord.Embed(
-                title=f'QOTD Upload Success: {Upload["success"]}',
-                description=f'Key: {Upload["key"]}\n\nExpiry: {Upload["expiry"]}\n\nHard Link: {Upload["link"]}',
-                url=Upload["link"],
-                color=0x000000,
-            )
-        )
 
     @QotdDAILY.command(aliases=["stop","end"])
     @commands.check(ChPatreonT2)
     @commands.check(ChAdmin)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RemoveQotddDAILY(self, ctx):
-        LineToCheckAdd = f'{ctx.author.id} {ctx.message.channel.id} {ctx.guild.id} \n'
-        OpenQOTDChannelUserFile = open("QOTDDaily.txt")
-        QOTDChannelUserFile = OpenQOTDChannelUserFile.readlines()
-        OpenQOTDChannelUserFile.close()
-        LineNum = 0
-        Exist = False
-        for Line in QOTDChannelUserFile:
-            if Line == LineToCheckAdd:
-                del QOTDChannelUserFile[LineNum]
-                Exist = True
-                break
-            LineNum += 1
-        if Exist:
-            FixQOTDChannelUserFile = open("QOTDDaily.txt", "w+")
-            for Line in QOTDChannelUserFile:
-                FixQOTDChannelUserFile.write(Line)
-            FixQOTDChannelUserFile.close()
-            await ctx.message.channel.send(embed = discord.Embed(title = "Success", description = "Removed from QOTD daily successfully"))
-            return
+        UserToCheckRemove = {"Type":"QOTD", "IDd":ctx.author.id, "IDg":ctx.guild.id, "Channel":ctx.message.channel.id}
+        if AQd.count_documents(UserToCheckRemove) == 1:
+            Users = AQd.find(UserToCheckRemove)
+            for User in Users:
+                AQd.delete_one(User) 
+                await ctx.message.channel.send(embed = discord.Embed(title = "Success", description = "Removed from QOTD daily successfully"))
+                return
         await ctx.message.channel.send(embed = discord.Embed(title = "All Good", description = "You are already not in QOTD daily"))
-        Upload = requests.post(
-            url="https://file.io", files={"file": open("QOTDDaily.txt")}
-        ).json()
-        Channel = self.DClient.get_channel(794268834868494336)
-        await Channel.send(
-            embed=discord.Embed(
-                title=f'QOTD Upload Success: {Upload["success"]}',
-                description=f'Key: {Upload["key"]}\n\nExpiry: {Upload["expiry"]}\n\nHard Link: {Upload["link"]}',
-                url=Upload["link"],
-                color=0x000000,
-            )
-        )
 
     @commands.command(name="insult")
     @commands.cooldown(1, 1, commands.BucketType.user)

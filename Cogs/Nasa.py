@@ -5,6 +5,7 @@ from discord.ext import commands
 from Setup import ChVote, ChVoteUser, ChPatreonT2, ChAdmin
 from Setup import FormatTime, TimeTillMidnight, GetPatreonTier
 from Setup import ErrorEmbeds
+from Setup import AQd
 import asyncio
 
 
@@ -60,102 +61,33 @@ class Nasa(commands.Cog):
     @commands.check(ChAdmin)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def StartNasaApodDAILY(self, ctx):
-        TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
-        LineToCheckAdd = f"{ctx.author.id} {ctx.message.channel.id} {ctx.guild.id} \n"
-        UserID = f"{ctx.author.id}"
-        OpenAPODChannelUserFile = open("APODDaily.txt")
-        APODChannelUserFile = OpenAPODChannelUserFile.readlines()
-        OpenAPODChannelUserFile.close()
+        TierApplicable = {"Tier 2 Super":1, "Tier 3 Legend":2, "Tier 4 Ultimate":4}
         TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
-        for Line in APODChannelUserFile:
-            if Line == LineToCheckAdd:
-                await ctx.message.channel.send(
-                    embed=discord.Embed(
-                        title="All Good",
-                        description="This channel is already added to APOD daily",
-                    )
-                )
-                return
-        Channels = 0
-        for Line in APODChannelUserFile:
-            if Line.split(" ")[0] == UserID:
-                Channels += 1
-                if Channels == TierLimit:
-                    await ctx.message.channel.send(
-                        embed=discord.Embed(
-                            title="Oops",
-                            description="You already added the max amount of channels to APOD daily.\nDifferent patreon levels get more channels\nCheck 'zpatreon'",
-                        )
-                    )
-                    return
-        AppendAPODChannelUserFile = open("APODDaily.txt", "a")
-        AppendAPODChannelUserFile.write(
-            f"{ctx.author.id} {ctx.message.channel.id} {ctx.guild.id} \n"
-        )
-        AppendAPODChannelUserFile.close()
-        await ctx.message.channel.send(
-            embed=discord.Embed(
-                title="Success", description="Added to APOD daily successfully"
-            )
-        )
-        Upload = requests.post(
-            url="https://file.io", files={"file": open("APODDaily.txt")}
-        ).json()
-        Channel = self.DClient.get_channel(794268659177488464)
-        await Channel.send(
-            embed=discord.Embed(
-                title=f'APOD Upload Success: {Upload["success"]}',
-                description=f'Key: {Upload["key"]}\n\nExpiry: {Upload["expiry"]}\n\nHard Link: {Upload["link"]}',
-                url=Upload["link"],
-                color=0x000000,
-            )
-        )
+        if AQd.count_documents({"Type":"APOD", "IDd":ctx.author.id}) >= TierLimit:
+            await ctx.message.channel.send(embed = discord.Embed(title = "Oops", description = "You already added the max amount of channels to APOD daily.\nDifferent patreon levels get more channels\nCheck 'zpatreon'"))
+            return
+        APODUsers = AQd.find({"Type":"APOD"})
+        UserToCheckAdd = {"Type":"APOD", "IDd":ctx.author.id, "IDg":ctx.guild.id, "Channel":ctx.message.channel.id}
+        if AQd.count_documents(UserToCheckAdd) == 1:
+            await ctx.message.channel.send(embed = discord.Embed(title = "All Good", description = "This channel is already added to APOD daily"))
+            return
+        AQd.insert_one(UserToCheckAdd)
+        await ctx.message.channel.send(embed = discord.Embed(title = "Success", description = "Added to APOD daily successfully"))
 
     @NasaApodDAILY.command(aliases=["stop","end"])
     @commands.check(ChPatreonT2)
     @commands.check(ChAdmin)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RemoveNasaApodDAILY(self, ctx):
-        LineToCheckAdd = f"{ctx.author.id} {ctx.message.channel.id} {ctx.guild.id} \n"
-        OpenAPODChannelUserFile = open("APODDaily.txt")
-        APODChannelUserFile = OpenAPODChannelUserFile.readlines()
-        OpenAPODChannelUserFile.close()
-        LineNum = 0
-        Exist = False
-        for Line in APODChannelUserFile:
-            if Line == LineToCheckAdd:
-                del APODChannelUserFile[LineNum]
-                Exist = True
-                break
-            LineNum += 1
-        if Exist:
-            FixAPODChannelUserFile = open("APODDaily.txt", "w+")
-            for Line in APODChannelUserFile:
-                FixAPODChannelUserFile.write(Line)
-            FixAPODChannelUserFile.close()
-            await ctx.message.channel.send(
-                embed=discord.Embed(
-                    title="Success", description="Removed from APOD daily successfully"
-                )
-            )
+        UserToCheckRemove = {"Type":"APOD", "IDd":ctx.author.id, "IDg":ctx.guild.id, "Channel":ctx.message.channel.id}
+        APODUsers = AQd.find({"Type":"APOD"})
+        if AQd.count_documents(UserToCheckRemove) == 1:
+            Users = AQd.find(UserToCheckRemove)
+            for User in Users:
+                AQd.delete_one(User) 
+            await ctx.message.channel.send(embed = discord.Embed(title = "Success", description = "Removed from APOD daily successfully"))
             return
-        await ctx.message.channel.send(
-            embed=discord.Embed(
-                title="All Good", description="You are not in APOD daily"
-            )
-        )
-        Upload = requests.post(
-            url="https://file.io", files={"file": open("APODDaily.txt")}
-        ).json()
-        Channel = self.DClient.get_channel(794268659177488464)
-        await Channel.send(
-            embed=discord.Embed(
-                title=f'APOD Upload Success: {Upload["success"]}',
-                description=f'Key: {Upload["key"]}\n\nExpiry: {Upload["expiry"]}\n\nHard Link: {Upload["link"]}',
-                url=Upload["link"],
-                color=0x000000,
-            )
-        )
+        await ctx.message.channel.send(embed = discord.Embed(title = "All Good", description = "You are already not in APOD daily"))
 
     @commands.command(name="nasa")
     @commands.cooldown(1, 1, commands.BucketType.user)

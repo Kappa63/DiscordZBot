@@ -22,7 +22,7 @@ Mdb = os.getenv("MONGODB_URL")
 Cls = MongoClient(Mdb)
 DbM = Cls["CBot"]
 Col = DbM["Ser"]
-Colvt = DbM["Vts"]
+AQd = DbM["Daily"]
 
 GClient = os.getenv("GIPHY_KEY")
 GApi = giphy_client.DefaultApi()

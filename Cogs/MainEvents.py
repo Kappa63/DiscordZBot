@@ -14,17 +14,18 @@ from Setup import (
 )
 from Setup import FormatTime, TimeTillMidnight, GetPatreonTier, ErrorEmbeds
 from Setup import ChPatreonUserT2
+from Setup import AQd
 import random
 import requests
 import asyncio
 
 Doing = [
-    "Playing with the laws of physics",
-    "Torture",
+    "Playing With The Laws Of Physics",
+    "Getting Tortured",
     "Just Vibin'",
-    "With my toes",
-    "Chess with god",
-    "With Leona",
+    "Playing With My Toes",
+    "Playing Chess With God",
+    "Playing With Leona",
 ]
 
 
@@ -89,6 +90,8 @@ class MainEvents(commands.Cog):
         else:
             await self.DClient.change_presence(status=discord.Status.invisible)
         print(f"Online in {len(self.DClient.guilds)}...")
+        StaffChannel = self.DClient.get_channel(795080325020909598)
+        await StaffChannel.send(f"Back Online In {len(self.DClient.guilds)}...")
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -138,181 +141,98 @@ class MainEvents(commands.Cog):
         elif isinstance(error, commands.CommandNotFound) or isinstance(error, Ignore):
             pass
         else:
+            StaffChannel = self.DClient.get_channel(795080325020909598)
+            Me = self.DClient.get_user(443986051371892746)
+            await StaffChannel.send(Me.mention)
+            await StaffChannel.send(str(error))
             raise error
 
-    @tasks.loop(hours=24)
+    @tasks.loop(seconds=TimeTillMidnight())
     async def SendAPODDaily(self):
         print("Sending APOD...")
+        StaffChannel = self.DClient.get_channel(795080325020909598)
+        await StaffChannel.send("Sending APOD...")
         TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
-        OpenAPODChannelUserList = open("APODDaily.txt")
-        APODChannelUserList = OpenAPODChannelUserList.readlines()
-        OpenAPODChannelUserList.close()
         APODEm = MakeAPODEmbed()
-        Line = 0
-        UserChannelCount = {}
-        for APODChannelUser in APODChannelUserList:
-            UserID = APODChannelUser.split(" ")[0]
-            ChannelID = APODChannelUser.split(" ")[1]
-            Channel = self.DClient.get_channel(int(ChannelID))
-            if ChPatreonUserT2(int(UserID)):
+        APODUsers = AQd.find({"Type":"APOD"})
+        ToBeRemoved = []
+        for User in APODUsers:
+            UserID = User["IDd"]
+            ChannelID = User["Channel"]
+            if ChPatreonUserT2(UserID):
                 TierLimit = TierApplicable[GetPatreonTier(UserID)]
-                if UserID in UserChannelCount:
-                    UserChannelCount[UserID] += 1
-                else:
-                    UserChannelCount[UserID] = 1
-                if Channel is None:
-                    del APODChannelUserList[Line]
-                else:
-                    if UserChannelCount <= TierLimit:
-                        await Channel.send(embed=APODEm)
+                if AQd.count_documents({"Type":"APOD", "IDd":UserID}) > TierLimit:
+                    APODTempUsers = AQd.find({"Type":"APOD", "IDd":UserID})
+                    Num = 0
+                    for TempUser in APODTempUsers:
+                        Num += 1
+                        if Num > TierLimit:
+                            ToBeRemoved.append(TempUser) if TempUser not in ToBeRemoved else ToBeRemoved
+                Channel = self.DClient.get_channel(ChannelID)
+                if User not in ToBeRemoved:
+                    if Channel is None:
+                        AQd.delete_one(User)
                     else:
-                        await Channel.send(
-                            "NO LONGER APPLICABLE FOR THIS MANY CHANNELS. Daily APOD stopped in this channel. :pensive: You can resign up for patreon, check zpatreon"
-                        )
-                        del APODChannelUserList[Line]
+                        await Channel.send(embed=APODEm)
+                else:
+                    await Channel.send("NO LONGER APPLICABLE TO THIS MANY CHANNELS. Daily APOD stopped. :pensive: You can resign up for patreon, check zpatreon")
+                    AQd.delete_one(User)
             else:
-                await Channel.send(
-                    "NO LONGER A PATREON. Daily APOD stopped. :pensive: You can re-sign up for patreon, check zpatreon"
-                )
-                del APODChannelUserList[Line]
-            Line += 1
-        FixAPODChannelUserFile = open("APODDaily.txt", "w+")
-        for Line in APODChannelUserList:
-            FixAPODChannelUserFile.write(Line)
-        FixAPODChannelUserFile.close()
+                await Channel.send("NO LONGER A PATREON. Daily APOD stopped. :pensive: You can resign up for patreon, check zpatreon")
+        await StaffChannel.send(f'Next APOD in {TimeTillMidnight()}s...')
+        raise ValueError
+        self.SendAPODDaily.change_interval(seconds = TimeTillMidnight())
 
     @SendAPODDaily.before_loop
     async def RegulateBeforeAPODLoop(self):
-        TimeToWait = TimeTillMidnight()
-        print(f"{TimeToWait}s to start 24 hour APOD loop...")
-        for _ in range(TimeToWait):
-            await asyncio.sleep(1)
-        print("Start 24 hour APOD loop")
-        print("Sending APOD...")
-        TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
-        OpenAPODChannelUserList = open("APODDaily.txt")
-        APODChannelUserList = OpenAPODChannelUserList.readlines()
-        OpenAPODChannelUserList.close()
-        APODEm = MakeAPODEmbed()
-        Line = 0
-        UserChannelCount = {}
-        for APODChannelUser in APODChannelUserList:
-            UserID = APODChannelUser.split(" ")[0]
-            ChannelID = APODChannelUser.split(" ")[1]
-            Channel = self.DClient.get_channel(int(ChannelID))
-            if ChPatreonUserT2(int(UserID)):
-                TierLimit = TierApplicable[GetPatreonTier(UserID)]
-                if UserID in UserChannelCount:
-                    UserChannelCount[UserID] += 1
-                else:
-                    UserChannelCount[UserID] = 1
-                if Channel is None:
-                    del APODChannelUserList[Line]
-                else:
-                    if UserChannelCount <= TierLimit:
-                        await Channel.send(embed=APODEm)
-                    else:
-                        await Channel.send(
-                            "NO LONGER APPLICABLE FOR THIS MANY CHANNELS. Daily APOD stopped in this channel. :pensive: You can resign up for patreon, check zpatreon"
-                        )
-                        del APODChannelUserList[Line]
-            else:
-                await Channel.send(
-                    "NO LONGER A PATREON. Daily APOD stopped. :pensive: You can re-sign up for patreon, check zpatreon"
-                )
-                del APODChannelUserList[Line]
-            Line += 1
-        FixAPODChannelUserFile = open("APODDaily.txt", "w+")
-        for Line in APODChannelUserList:
-            FixAPODChannelUserFile.write(Line)
-        FixAPODChannelUserFile.close()
+        await self.DClient.wait_until_ready()
+        print("APOD Regulating...")
+        StaffChannel = self.DClient.get_channel(795080325020909598)
+        await StaffChannel.send(f'APOD Regulating for {TimeTillMidnight()}s...')
+        await asyncio.sleep(TimeTillMidnight())
 
-    @tasks.loop(hours=24)
+    @tasks.loop(seconds=TimeTillMidnight())
     async def SendQOTDDaily(self):
         print("Sending QOTD...")
+        StaffChannel = self.DClient.get_channel(795080325020909598)
+        await StaffChannel.send("Sending QOTD...")
         TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
-        OpenQOTDChannelUserList = open("QOTDDaily.txt")
-        QOTDChannelUserList = OpenQOTDChannelUserList.readlines()
-        OpenQOTDChannelUserList.close()
         QOTDEm = MakeQOTDEmbed()
-        Line = 0
-        UserChannelCount = {}
-        for QOTDChannelUser in QOTDChannelUserList:
-            UserID = QOTDChannelUser.split(" ")[0]
-            ChannelID = QOTDChannelUser.split(" ")[1]
-            Channel = self.DClient.get_channel(int(ChannelID))
+        QOTDUsers = AQd.find({"Type":"QOTD"})
+        ToBeRemoved = []
+        for User in QOTDUsers:
+            UserID = User["IDd"]
+            ChannelID = User["Channel"]
             if ChPatreonUserT2(UserID):
                 TierLimit = TierApplicable[GetPatreonTier(UserID)]
-                if UserID in UserChannelCount:
-                    UserChannelCount[UserID] += 1
-                else:
-                    UserChannelCount[UserID] = 1
-                if Channel is None:
-                    del QOTDChannelUserList[Line]
-                else:
-                    if UserChannelCount <= TierLimit:
-                        await Channel.send(embed=QOTDEm)
+                if AQd.count_documents({"Type":"QOTD", "IDd":UserID}) > TierLimit:
+                    QOTDTempUsers = AQd.find({"Type":"QOTD", "IDd":UserID})
+                    Num = 0
+                    for TempUser in QOTDTempUsers:
+                        Num += 1
+                        if Num > TierLimit:
+                            ToBeRemoved.append(TempUser) if TempUser not in ToBeRemoved else ToBeRemoved
+                Channel = self.DClient.get_channel(ChannelID)
+                if User not in ToBeRemoved:
+                    if Channel is None:
+                        AQd.delete_one(User)
                     else:
-                        await Channel.send(
-                            "NO LONGER APPLICABLE FOR THIS MANY CHANNELS. Daily APOD stopped in this channel. :pensive: You can resign up for patreon, check zpatreon"
-                        )
-                        del QOTDChannelUserList[Line]
+                        await Channel.send(embed=QOTDEm)
+                else:
+                    await Channel.send("NO LONGER APPLICABLE TO THIS MANY CHANNELS. Daily QOTD stopped. :pensive: You can resign up for patreon, check zpatreon")
+                    AQd.delete_one(User)
             else:
-                await Channel.send(
-                    "NO LONGER A PATREON or NO LONGER APPLICABLE TO THIS MANY CHANNELS. Daily QOTD stopped. :pensive: You can resign up for patreon, check zpatreon"
-                )
-                del QOTDChannelUserList[Line]
-            Line += 1
-        FixQOTDChannelUserFile = open("QOTDDaily.txt", "w+")
-        for Line in QOTDChannelUserList:
-            FixQOTDChannelUserFile.write(Line)
-        FixQOTDChannelUserFile.close()
+                await Channel.send("NO LONGER A PATREON. Daily QOTD stopped. :pensive: You can resign up for patreon, check zpatreon")
+        await StaffChannel.send(f'Next QOTD in {TimeTillMidnight()}s...')
+        self.SendQOTDDaily.change_interval(seconds = TimeTillMidnight())
 
     @SendQOTDDaily.before_loop
     async def RegulateBeforeQOTDLoop(self):
-        TimeToWait = TimeTillMidnight()
-        print(f"{TimeToWait}s to start 24 hour QOTD loop...")
-        for _ in range():
-            await asyncio.sleep(1)
-        print("Start 24 hour QOTD loop")
-        print("Sending QOTD...")
-        TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
-        OpenQOTDChannelUserList = open("QOTDDaily.txt")
-        QOTDChannelUserList = OpenQOTDChannelUserList.readlines()
-        OpenQOTDChannelUserList.close()
-        QOTDEm = MakeQOTDEmbed()
-        Line = 0
-        UserChannelCount = {}
-        for QOTDChannelUser in QOTDChannelUserList:
-            UserID = QOTDChannelUser.split(" ")[0]
-            ChannelID = QOTDChannelUser.split(" ")[1]
-            Channel = self.DClient.get_channel(int(ChannelID))
-            if ChPatreonUserT2(UserID):
-                TierLimit = TierApplicable[GetPatreonTier(UserID)]
-                if UserID in UserChannelCount:
-                    UserChannelCount[UserID] += 1
-                else:
-                    UserChannelCount[UserID] = 1
-                if Channel is None:
-                    del QOTDChannelUserList[Line]
-                else:
-                    if UserChannelCount <= TierLimit:
-                        await Channel.send(embed=QOTDEm)
-                    else:
-                        await Channel.send(
-                            "NO LONGER APPLICABLE FOR THIS MANY CHANNELS. Daily APOD stopped in this channel. :pensive: You can resign up for patreon, check zpatreon"
-                        )
-                        del QOTDChannelUserList[Line]
-            else:
-                await Channel.send(
-                    "NO LONGER A PATREON or NO LONGER APPLICABLE TO THIS MANY CHANNELS. Daily QOTD stopped. :pensive: You can resign up for patreon, check zpatreon"
-                )
-                del QOTDChannelUserList[Line]
-            Line += 1
-        FixQOTDChannelUserFile = open("QOTDDaily.txt", "w+")
-        for Line in QOTDChannelUserList:
-            FixQOTDChannelUserFile.write(Line)
-        FixQOTDChannelUserFile.close()
+        await self.DClient.wait_until_ready()
+        print("QOTD Regulating...")
+        StaffChannel = self.DClient.get_channel(795080325020909598)
+        await StaffChannel.send(f'QOTD Regulating for {TimeTillMidnight()}s...')
+        await asyncio.sleep(TimeTillMidnight())
 
 
 def setup(DClient):
