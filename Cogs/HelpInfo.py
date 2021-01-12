@@ -189,6 +189,11 @@ class HelpInfo(commands.Cog):
             inline=False,
         )
         HEm.add_field(
+            name="zcptd: ",
+            value="Chess Puzzle of The Day from Chess.com (For Voters and Patreon Only)",
+            inline=False,
+        )
+        HEm.add_field(
             name="zcptddaily: ",
             value="Returns when the next CPTD Daily will happen",
             inline=False,

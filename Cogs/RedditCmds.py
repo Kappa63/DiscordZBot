@@ -164,7 +164,7 @@ def EmbedMaker(ctx, SubCpoS, Subname, Type="R", PostNum=0, TotalPosts=0):
             text=f"From r/{Subname}\n\nNeed help navigating? zhelp navigation"
         )
     else:
-        REm.set_footer(text=f"From r/{Subname}")
+        REm.set_footer(text=f"From r/{SubCpoS.subreddit.name}")
     REm.set_author(name=f"*By u/{SubCpoS.author}*")
     return REm
 
