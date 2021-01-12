@@ -12,8 +12,7 @@ import asyncio
 import os
 import qrcode
 
-
-class Image(commands.Cog):
+class Images(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
 
@@ -38,6 +37,17 @@ class Image(commands.Cog):
         DEm = discord.Embed(title="Woof Woof", color=0xFF3326)
         DEm.set_image(url=DoggoJSON["url"])
         await ctx.message.channel.send(embed=DEm)
+
+    @commands.command(aliases=["thispersondoesnotexist", "thispersondoesntexist", "tpde"])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def GetAnImaginedPerson(self, ctx):
+        PEm = discord.Embed(title="This Person Does NOT Exist.", color=0x753684)
+        GetTpde = requests.get("https://thispersondoesnotexist.com/image", allow_redirects=True)
+        This = open("Tpde.png", "wb").write(GetTpde.content)
+        TpdeImg = discord.File("Tpde.png")
+        PEm.set_image(url="attachment://Tpde.png")
+        await ctx.send(file=TpdeImg, embed=PEm)
+        os.remove("Tpde.png")
 
     @commands.command(name="fox")
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -356,4 +366,4 @@ class Image(commands.Cog):
 
 
 def setup(DClient):
-    DClient.add_cog(Image(DClient))
+    DClient.add_cog(Images(DClient))

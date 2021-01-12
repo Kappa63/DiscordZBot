@@ -51,10 +51,10 @@ class HelpInfo(commands.Cog):
             inline=False,
         )
         HEm.add_field(
-            name="zadd: ", value="Adds a word/phrase to keep track of", inline=False
+            name="zadd [word]: ", value="Adds a word/phrase to keep track of", inline=False
         )
         HEm.add_field(
-            name="zremove: ",
+            name="zremove [word]: ",
             value="Removes an existing word/phrase being tracked",
             inline=False,
         )
@@ -86,20 +86,55 @@ class HelpInfo(commands.Cog):
         )
         await ctx.message.channel.send(embed=HEm)
 
-    @SendH.command(aliases=["social", "socials", "reddit", "twitter", "youtube"])
+    @SendH.command(aliases=["social", "socials", "reddit", "twitter", "youtube", "multireddit", "multireddits", "redditor"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendR(self, ctx):
         HEm = discord.Embed(
             title="**ZBot Social(s) Help**", description="\u200b", color=0x0AF531
         )
         HEm.add_field(
-            name="zreddit (Subreddit Name): ",
+            name="zreddit [Subreddit Name]: ",
             value="Returns a RANDOM post from the top 100 posts in hot from any subreddit",
             inline=False,
         )
         HEm.add_field(
-            name="zreddit surf (Subreddit Name): ",
+            name="zreddit surf [Subreddit Name]: ",
             value="100 Posts of The Subreddit Sorted in Any Format (Voters and Patreons ONLY)",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zredditor [Redditor name]: ",
+            value="View a redditor's profile and 100 of their latest posts",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zmultireddit [Multireddit Name]: ",
+            value="Opens the multireddit and allows you to scroll through its subreddits all together (For Tier 2 patreons or more)",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zmultireddit list: ",
+            value="List all the Multireddits you created along with the Subreddits in them (For Tier 2 patreons or more)",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zmultireddit create [Desired Multireddit Name]: ",
+            value="Creates a new Multireddit with the desired name (For Tier 2 patreons or more)",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zmultireddit delete [Multireddit name]: ",
+            value="Deletes a created Multireddit (For Tier 2 patreons or more)",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zmultireddit add [Multireddit name] [Subreddit name]: ",
+            value="Adds a Subreddit to your multireddit (For Tier 2 patreons or more)",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zmultireddit remove [Multireddit name] [Subreddit name]: ",
+            value="Removes a subreddit from your Multireddit (For Tier 2 patreons or more)",
             inline=False,
         )
         HEm.add_field(
@@ -110,6 +145,11 @@ class HelpInfo(commands.Cog):
         HEm.add_field(
             name="ztwitter search (Search Term): ",
             value="Searches for 10 Users Related to Search Term",
+            inline=False,
+        )
+        HEm.add_field(
+            name="ztwitter trending: ",
+            value="Shows whats currently trending (USA)",
             inline=False,
         )
         HEm.add_field(
@@ -127,25 +167,40 @@ class HelpInfo(commands.Cog):
         )
         await ctx.message.channel.send(embed=HEm)
 
-    @SendH.command(aliases=["game", "games", "sudoku", "ttt", "tictactoe", "chess"])
+    @SendH.command(aliases=["game", "games", "sudoku", "ttt", "tictactoe", "chess", "cptd"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendG(self, ctx):
         HEm = discord.Embed(
             title="**ZBot Game Help**", description="\u200b", color=0x0AF531
         )
         HEm.add_field(
-            name="zsudoku (easy/medium/hard/random): ",
+            name="zsudoku [easy/medium/hard/random]: ",
             value="Returns a sudoku puzzle with the given difficulty",
             inline=False,
         )
         HEm.add_field(
-            name="zttt (mention): ",
+            name="zttt [mention]: ",
             value="Starts a Tic-Tac-Toe game vs the mentioned user",
             inline=False,
         )
         HEm.add_field(
-            name="zchess (mention): ",
+            name="zchess [mention]: ",
             value="Starts a Chess game vs the mentioned user",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zcptddaily: ",
+            value="Returns when the next CPTD Daily will happen",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zcptddaily start: ",
+            value="Start receiving daily CPTDs in the current channel (Tier 2 or more Patreons ONLY)",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zcptddaily end/stop: ",
+            value="Stop receiving daily CPTDs (Tier 2 or more Patreons ONLY)",
             inline=False,
         )
         HEm.add_field(
@@ -179,7 +234,7 @@ class HelpInfo(commands.Cog):
             inline=False,
         )
         HEm.add_field(
-            name="zcovid (Country): ",
+            name="zcovid [Country]: ",
             value="Status of Covid-19 in country",
             inline=False,
         )
@@ -191,7 +246,7 @@ class HelpInfo(commands.Cog):
         )
         HEm.add_field(
             name="zapoddaily: ",
-            value="Returns when the next APOD Daily will happen (Tier 2 or more Patreons ONLY)",
+            value="Returns when the next APOD Daily will happen",
             inline=False,
         )
         HEm.add_field(
@@ -200,7 +255,7 @@ class HelpInfo(commands.Cog):
             inline=False,
         )
         HEm.add_field(
-            name="zapoddaily end: ",
+            name="zapoddaily end/stop: ",
             value="Stop receiving daily APODs (Tier 2 or more Patreons ONLY)",
             inline=False,
         )
@@ -223,12 +278,12 @@ class HelpInfo(commands.Cog):
             title="**ZBot IMDb Help**", description="\u200b", color=0x0AF531
         )
         HEm.add_field(
-            name="zimdb (Movie/Series): ",
+            name="zimdb [Movie/Series]: ",
             value="Returns info about the Movie/Series",
             inline=False,
         )
         HEm.add_field(
-            name="zimdb search (Search Argument): ",
+            name="zimdb search [Search Argument]: ",
             value="Searches for 10 Movies/Series related to search argument",
             inline=False,
         )
@@ -241,12 +296,12 @@ class HelpInfo(commands.Cog):
             title="**ZBot Rule34 Help**", description="\u200b", color=0x0AF531
         )
         HEm.add_field(
-            name="zrule34 (Search Term): ",
+            name="zrule34 [Search Term]: ",
             value="Returns a RANDOM rule34 image (NSFW)",
             inline=False,
         )
         HEm.add_field(
-            name="zrule34 surf (Search Term): ",
+            name="zrule34 surf [Search Term]: ",
             value="Returns 100 rule34 images from a random page (Voters and Patreons ONLY) (NSFW)",
             inline=False,
         )
@@ -259,17 +314,17 @@ class HelpInfo(commands.Cog):
             title="**ZBot Anime Help**", description="\u200b", color=0x0AF531
         )
         HEm.add_field(
-            name="zanime (Anime Name): ",
+            name="zanime [Anime Name]: ",
             value="Searches for anime and returns all the info about chosen one",
             inline=False,
         )
         HEm.add_field(
-            name="zmanga (Manga Name): ",
+            name="zmanga [Manga Name]: ",
             value="Searches for manga and returns all the info about chosen one",
             inline=False,
         )
         HEm.add_field(
-            name="zhentai (Magic Numbers): ",
+            name="zhentai [Magic Numbers]: ",
             value="Gets doujin from nhentai using magic numbers (NSFW)",
             inline=False,
         )
@@ -279,7 +334,7 @@ class HelpInfo(commands.Cog):
             inline=False,
         )
         HEm.add_field(
-            name="zhentai search (Doujin Name): ",
+            name="zhentai search [Doujin Name]: ",
             value="Searches for the 10 most popular doujin (NSFW)",
             inline=False,
         )
@@ -290,7 +345,7 @@ class HelpInfo(commands.Cog):
         )
         await ctx.message.channel.send(embed=HEm)
 
-    @SendH.command(aliases=["image", "images"])
+    @SendH.command(aliases=["image", "images", "fry", "qr"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendI(self, ctx):
         HEm = discord.Embed(
@@ -300,8 +355,9 @@ class HelpInfo(commands.Cog):
         HEm.add_field(name="zdog: ", value="Dog Pics", inline=False)
         HEm.add_field(name="zfox: ", value="Fox Pics", inline=False)
         HEm.add_field(name="zfood: ", value="Food Pics", inline=False)
+        HEm.add_field(name="ztpde: ", value="This Person Doesn't Exist. An AI generated person that did not and probably will never exist", inline=False)
         HEm.add_field(
-            name="zfry (Image Attachment/Image Url): ",
+            name="zfry [Image Attachment/Image Url]: ",
             value="Deep fries the image",
             inline=False,
         )
@@ -309,17 +365,17 @@ class HelpInfo(commands.Cog):
             name="zfry profile (@): ", value="Deep fries the avatar", inline=False
         )
         HEm.add_field(
-            name="zgiphy (Phrase/Word to search for): ",
+            name="zgiphy [Search argument]: ",
             value="Returns a RANDOM gif from top 50 results on giphy",
             inline=False,
         )
         HEm.add_field(
-            name="zqr (Text): ",
+            name="zqr [Text]: ",
             value="Makes a qrcode of the Text",
             inline=False,
         )
         HEm.add_field(
-            name="zpdf (PDF Attachment/PDF Url): ",
+            name="zpdf [PDF Attachment/PDF Url]: ",
             value="Views the PDF's first 40 pages as images",
             inline=False,
         )
@@ -398,14 +454,14 @@ class HelpInfo(commands.Cog):
             inline=False,
         )
         HEm.add_field(
-            name="zqotddaily end: ",
+            name="zqotddaily end/stop: ",
             value="Stop receiving daily QOTDs (Tier 2 or more Patreons ONLY)",
             inline=False,
         )
         HEm.add_field(name="zinsult: ", value="Returns an insult", inline=False)
         HEm.add_field(
             name="Aliases:",
-            value="**-Kanye =** `kanye, kanyewest`\n\n**-Taylor =** `taylor, taylorswift`\n\n**-QOTD Daily =** `qotddaily end, qotddaily stop`",
+            value="**-Kanye =** `kanye, kanyewest`\n\n**-Taylor =** `taylor, taylorswift`",
         )
         await ctx.message.channel.send(embed=HEm)
 
@@ -416,12 +472,12 @@ class HelpInfo(commands.Cog):
             title="**ZBot Misc. Help**", description="\u200b", color=0x0AF531
         )
         HEm.add_field(
-            name="zremind (Arguments): ",
+            name="zremind [Arguments]: ",
             value='Pings you after time is over. Arguments are a number followed by d, h, m, or s for days, hours, minutes, seconds respectively.(Ex. "zremind 2d 3h 52m 14s" is a remind after 2days 3hours 52minutes and 14seconds)',
             inline=False,
         )
         HEm.add_field(
-            name="zcalc (Input): ", value="Calculates and returns", inline=False
+            name="zcalc [Input]: ", value="Calculates and returns", inline=False
         )
         HEm.add_field(
             name="zcolor: ",
@@ -473,8 +529,8 @@ class HelpInfo(commands.Cog):
             color=0x3695BA,
         )
         VEm.add_field(name="Dev: ", value="Kappa#5173", inline=False)
-        VEm.add_field(name="Version: ", value="1.7a", inline=False)
-        VEm.add_field(name="Version Release: ", value="31/12/2020", inline=False)
+        VEm.add_field(name="Version: ", value="2.1a", inline=False)
+        VEm.add_field(name="Version Release: ", value="12/1/2021", inline=False)
         VEm.add_field(name="Initial Release: ", value="21/11/2020", inline=False)
         await ctx.message.channel.send(embed=VEm)
 
@@ -519,7 +575,7 @@ class HelpInfo(commands.Cog):
             color=0x000000,
         )
         SEm.add_field(
-            name="**-Tier 1:** `All voting perks without having to vote`\n\n**-Tier 2 (Super):** `Previous tier's perks`, `Setting up apoddaily and qotddaily in 1 channel each`\n\n**-Tier 3 (Legend):** `Previous tiers' perks`, `Setting up apoddaily and qotddaily in 2 channels each`\n\n**-Tier 4 (Ultimate):** `Previous tiers' perks`, `Setting up apoddaily and qotddaily in 4 channels each`",
+            name="**-Tier 1:** `All voting perks without having to vote`\n\n**-Tier 2 (Super):** `Previous tier's perks`, `Setting up apoddaily, qotddaily, and cptddaily in 1 channel each`, `Making 1 Multireddit`\n\n**-Tier 3 (Legend):** `Previous tiers' perks`, `Setting up apoddaily, qotddaily, and cptddaily in 2 channels each`, `Making 2 Multireddits`\n\n**-Tier 4 (Ultimate):** `Previous tiers' perks`, `Setting up apoddaily, qotddaily, and cptddaily in 4 channels each`, `Making 4 Multireddits`",
             value="\u200b",
             inline=False,
         )

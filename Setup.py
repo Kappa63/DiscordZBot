@@ -23,6 +23,7 @@ Cls = MongoClient(Mdb)
 DbM = Cls["CBot"]
 Col = DbM["Ser"]
 AQd = DbM["Daily"]
+Rdt = DbM["Reddit"]
 
 GClient = os.getenv("GIPHY_KEY")
 GApi = giphy_client.DefaultApi()
@@ -115,6 +116,19 @@ def ChSer(ctx):
         return True
     raise IsSetup("Unready")
 
+
+class IsMultiredditLimit(commands.CheckFailure):
+    pass
+
+def ChMaxMultireddits(ctx):
+    TierApplicable = {"Tier 2 Super":1, "Tier 3 Legend":2, "Tier 4 Ultimate":4}
+    TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
+    if Rdt.count_documents({"IDd":ctx.author.id}) > 0:
+        User = Rdt.find({"IDd":ctx.author.id})[0]
+        Multireddits = User.keys()
+        if len(Multireddits) > TierLimit: 
+            raise IsMultiredditLimit("Too much")
+    return True
 
 class IsAdmin(commands.CheckFailure):
     pass

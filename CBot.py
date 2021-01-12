@@ -53,7 +53,7 @@ Cogs = [
     "Cogs.MainEvents",
     "Cogs.Rule34",
     "Cogs.Youtube",
-    "Cogs.Image",
+    "Cogs.Images",
     "Cogs.WrittenStuff",
     "Cogs.Movies",
     "Cogs.Games",

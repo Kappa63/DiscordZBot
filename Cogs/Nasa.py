@@ -66,7 +66,6 @@ class Nasa(commands.Cog):
         if AQd.count_documents({"Type":"APOD", "IDd":ctx.author.id}) >= TierLimit:
             await ctx.message.channel.send(embed = discord.Embed(title = "Oops", description = "You already added the max amount of channels to APOD daily.\nDifferent patreon levels get more channels\nCheck 'zpatreon'"))
             return
-        APODUsers = AQd.find({"Type":"APOD"})
         UserToCheckAdd = {"Type":"APOD", "IDd":ctx.author.id, "IDg":ctx.guild.id, "Channel":ctx.message.channel.id}
         if AQd.count_documents(UserToCheckAdd) == 1:
             await ctx.message.channel.send(embed = discord.Embed(title = "All Good", description = "This channel is already added to APOD daily"))
@@ -80,7 +79,6 @@ class Nasa(commands.Cog):
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RemoveNasaApodDAILY(self, ctx):
         UserToCheckRemove = {"Type":"APOD", "IDd":ctx.author.id, "IDg":ctx.guild.id, "Channel":ctx.message.channel.id}
-        APODUsers = AQd.find({"Type":"APOD"})
         if AQd.count_documents(UserToCheckRemove) == 1:
             Users = AQd.find(UserToCheckRemove)
             for User in Users:

@@ -6,6 +6,9 @@ import random
 import time
 import datetime
 import chess
+from Setup import AQd
+from Setup import ChVote, ChPatreonT2, ChAdmin
+from Setup import FormatTime, TimeTillMidnight, GetPatreonTier
 
 def SudokuBoardMaker(Title, BoardName, Board, Difficulty):
     DigitReplace = [
@@ -431,6 +434,57 @@ class Games(commands.Cog):
                 R += 1
         else:
             await ctx.message.channel.send("No second player mentioned or Mentioned a bot :slight_frown:!")
+
+    @commands.command(aliases=["cptd","chesspuzzleoftheday"])
+    @commands.check(ChVote)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def SendCPTD(self, ctx):
+        GetCPTD = requests.get("https://api.chess.com/pub/puzzle", headers={"Accept": "application/json"}).json()
+        CEm = discord.Embed(title=GetCPTD["title"], description=f'[Daily Puzzle]({GetCPTD["url"]}) from [Chess.com](https://www.chess.com/)', color = 0x6c9d41)
+        CEm.set_image(url = GetCPTD["image"])
+        await ctx.message.channel.send(embed=CEm)
+
+    @commands.group(name="cptdddaily", invoke_without_command=True)
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def CptdDAILY(self, ctx):
+        TimeLeft = FormatTime(TimeTillMidnight())
+        await ctx.message.channel.send(
+            embed=discord.Embed(
+                title="CPTD in...",
+                description=f'The next Daily CPTD is in {TimeLeft}.\n You can be added to CPTD Daily with "zcptddaily start" (If patreon tier 2+).\n Check "zhelp cptd" for more info',
+            )
+        )
+
+    @CptdDAILY.command(name="start")
+    @commands.check(ChPatreonT2)
+    @commands.check(ChAdmin)
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def StartCptdDAILY(self, ctx):
+        TierApplicable = {"Tier 2 Super":1, "Tier 3 Legend":2, "Tier 4 Ultimate":4}
+        TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
+        if AQd.count_documents({"Type":"CPTD", "IDd":ctx.author.id}) >= TierLimit:
+            await ctx.message.channel.send(embed = discord.Embed(title = "Oops", description = "You already added the max amount of channels to CPTD daily.\nDifferent patreon levels get more channels\nCheck 'zpatreon'"))
+            return
+        UserToCheckAdd = {"Type":"CPTD", "IDd":ctx.author.id, "IDg":ctx.guild.id, "Channel":ctx.message.channel.id}
+        if AQd.count_documents(UserToCheckAdd) == 1:
+            await ctx.message.channel.send(embed = discord.Embed(title = "All Good", description = "This channel is already added to CPTD daily"))
+            return
+        AQd.insert_one(UserToCheckAdd)
+        await ctx.message.channel.send(embed = discord.Embed(title = "Success", description = "Added to CPTD daily successfully"))
+
+    @CptdDAILY.command(aliases=["stop","end"])
+    @commands.check(ChPatreonT2)
+    @commands.check(ChAdmin)
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def RemoveCptdDAILY(self, ctx):
+        UserToCheckRemove = {"Type":"CPTD", "IDd":ctx.author.id, "IDg":ctx.guild.id, "Channel":ctx.message.channel.id}
+        if AQd.count_documents(UserToCheckRemove) == 1:
+            Users = AQd.find(UserToCheckRemove)
+            for User in Users:
+                AQd.delete_one(User) 
+            await ctx.message.channel.send(embed = discord.Embed(title = "Success", description = "Removed from CPTD daily successfully"))
+            return
+        await ctx.message.channel.send(embed = discord.Embed(title = "All Good", description = "You are already not in CPTD daily"))
 
 def setup(DClient):
     DClient.add_cog(Games(DClient))

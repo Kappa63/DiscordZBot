@@ -11,6 +11,7 @@ from Setup import (
     IsAdmin,
     IsSetup,
     IsNSFW,
+    IsMultiredditLimit,
 )
 from Setup import FormatTime, TimeTillMidnight, GetPatreonTier, ErrorEmbeds
 from Setup import ChPatreonUserT2
@@ -71,12 +72,18 @@ def MakeQOTDEmbed():
     QEm.set_footer(text=f'By: {TodayQuote["quote"]["author"]}')
     return QEm
 
+def MakeCPTDEmbed():
+    GetCPTD = requests.get("https://api.chess.com/pub/puzzle", headers={"Accept": "application/json"}).json()
+    CEm = discord.Embed(title=GetCPTD["title"], description=f'[Daily Puzzle]({GetCPTD["url"]}) from [Chess.com](https://www.chess.com/)', color = 0x6c9d41)
+    CEm.set_image(url = GetCPTD["image"])
+    return CEm
 
 class MainEvents(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
         self.SendAPODDaily.start()
         self.SendQOTDDaily.start()
+        self.SendCPTDDaily.start()
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -138,6 +145,12 @@ class MainEvents(commands.Cog):
                     title="Oops", description="This can only be used in NSFW channels."
                 )
             )
+        elif isinstance(error, IsMultiredditLimit):
+            await ctx.message.channel.send(
+                embed=discord.Embed(
+                    title="Oops", description="You can no longer have this many Multireddits. Remove some to comply with your limit. Until then you cannot use your Multireddits."
+                )
+            )
         elif isinstance(error, commands.CommandNotFound) or isinstance(error, Ignore):
             pass
         else:
@@ -192,6 +205,50 @@ class MainEvents(commands.Cog):
         await asyncio.sleep(TimeTillMidnight())
 
     @tasks.loop(seconds=TimeTillMidnight())
+    async def SendCPTDDaily(self):
+        print("Sending CPTD...")
+        StaffChannel = self.DClient.get_channel(795080325020909598)
+        await StaffChannel.send("Sending CPTD...")
+        TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
+        CPTDEm = MakeCPTDEmbed()
+        CPTDUsers = AQd.find({"Type":"CPTD"})
+        ToBeRemoved = []
+        for User in CPTDUsers:
+            UserID = User["IDd"]
+            ChannelID = User["Channel"]
+            if ChPatreonUserT2(UserID):
+                TierLimit = TierApplicable[GetPatreonTier(UserID)]
+                if AQd.count_documents({"Type":"CPTD", "IDd":UserID}) > TierLimit:
+                    CPTDTempUsers = AQd.find({"Type":"CPTD", "IDd":UserID})
+                    Num = 0
+                    for TempUser in CPTDTempUsers:
+                        Num += 1
+                        if Num > TierLimit:
+                            ToBeRemoved.append(TempUser) if TempUser not in ToBeRemoved else ToBeRemoved
+                Channel = self.DClient.get_channel(ChannelID)
+                if User not in ToBeRemoved:
+                    if Channel is None:
+                        AQd.delete_one(User)
+                    else:
+                        await Channel.send(embed=CPTDEm)
+                else:
+                    await Channel.send("NO LONGER APPLICABLE TO THIS MANY CHANNELS. Daily CPTD stopped. :pensive: You can resign up for patreon, check zpatreon")
+                    AQd.delete_one(User)
+            else:
+                await Channel.send("NO LONGER A PATREON. Daily CPTD stopped. :pensive: You can resign up for patreon, check zpatreon")
+        await StaffChannel.send(f'Next CPTD in {TimeTillMidnight()}s...')
+        raise ValueError
+        self.SendCPTDDaily.change_interval(seconds = TimeTillMidnight())
+
+    @SendCPTDDaily.before_loop
+    async def RegulateBeforeCPTDLoop(self):
+        await self.DClient.wait_until_ready()
+        print("CPTD Regulating...")
+        StaffChannel = self.DClient.get_channel(795080325020909598)
+        await StaffChannel.send(f'CPTD Regulating for {TimeTillMidnight()}s...')
+        await asyncio.sleep(TimeTillMidnight())
+
+    @tasks.loop(seconds=TimeTillMidnight())
     async def SendQOTDDaily(self):
         print("Sending QOTD...")
         StaffChannel = self.DClient.get_channel(795080325020909598)
@@ -224,6 +281,7 @@ class MainEvents(commands.Cog):
             else:
                 await Channel.send("NO LONGER A PATREON. Daily QOTD stopped. :pensive: You can resign up for patreon, check zpatreon")
         await StaffChannel.send(f'Next QOTD in {TimeTillMidnight()}s...')
+        raise ValueError
         self.SendQOTDDaily.change_interval(seconds = TimeTillMidnight())
 
     @SendQOTDDaily.before_loop

@@ -106,7 +106,7 @@ class TwitterCmds(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
 
-    @commands.command(name="twitter")
+    @commands.group(name="twitter", invoke_without_command=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def TwitterNav(self, ctx, *args):
         def ChCHanS(MSg):
@@ -386,6 +386,17 @@ class TwitterCmds(commands.Cog):
         except UnboundLocalError:
             pass
 
-
+    @TwitterNav.command(name="trending")
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def TwitterTrends(self, ctx, *args):
+        Trends = Twitter.trends_place(id = 23424977)
+        TEm = discord.Embed(title = f'Currently Trending (USA) ({Trends[0]["as_of"][:10]} {Trends[0]["as_of"][12:16]})', color = 0x0384FC)
+        for Trend in Trends[0]["trends"]:
+            if Trend["tweet_volume"]:
+                TEm.add_field(name=Trend["name"], value=f'{Trend["tweet_volume"]:,} Tweets', inline=False)
+            else:
+                TEm.add_field(name=Trend["name"], value=f'\u200b', inline=False)
+        await ctx.message.channel.send(embed=TEm)
+            
 def setup(DClient):
     DClient.add_cog(TwitterCmds(DClient))
