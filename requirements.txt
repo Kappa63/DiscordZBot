@@ -26,5 +26,6 @@ pafy==0.5.5
 IMDbPY==2020.9.25
 chess==1.3.3
 qrcode==6.1
+osuapi==0.0.42
 aiohttp
 ratelimiter
