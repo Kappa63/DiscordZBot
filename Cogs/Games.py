@@ -444,7 +444,7 @@ class Games(commands.Cog):
         CEm.set_image(url = GetCPTD["image"])
         await ctx.message.channel.send(embed=CEm)
 
-    @commands.group(name="cptdddaily", invoke_without_command=True)
+    @commands.group(name="cptddaily", invoke_without_command=True)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def CptdDAILY(self, ctx):
         TimeLeft = FormatTime(TimeTillMidnight())

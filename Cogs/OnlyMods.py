@@ -3,6 +3,7 @@ from discord.ext import commands
 from Setup import ChDev
 import random
 import requests
+from Setup import AQd
 
 Doing = [
     "Playing with the laws of physics",
@@ -49,49 +50,14 @@ class OnlyMods(commands.Cog):
         StateFile.write("Up")
         StateFile.close()
         await ctx.message.channel.send("Bot Visible (Up)")
-
-    @commands.command(name="uploadqotd")
-    @commands.check(ChDev)
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def GetQOTDFile(self, ctx):
-        Upload = requests.post(
-            url="https://file.io", files={"file": open("QOTDDaily.txt")}
-        ).json()
-        await ctx.message.channel.send(
-            embed=discord.Embed(
-                title=f'QOTD Upload Success: {Upload["success"]}',
-                description=f'Key: {Upload["key"]}\n\nExpiry: {Upload["expiry"]}\n\nHard Link: {Upload["link"]}',
-                url=Upload["link"],
-                color=0x000000,
-            )
-        )
-
-    @commands.command(name="uploadapod")
-    @commands.check(ChDev)
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def GetAPODFile(self, ctx):
-        Upload = requests.post(
-            url="https://file.io", files={"file": open("APODDaily.txt")}
-        ).json()
-        await ctx.message.channel.send(
-            embed=discord.Embed(
-                title=f'APOD Upload Success: {Upload["success"]}',
-                description=f'Key: {Upload["key"]}\n\nExpiry: {Upload["expiry"]}\n\nHard Link: {Upload["link"]}',
-                url=Upload["link"],
-                color=0x000000,
-            )
-        )
     
     @commands.command(name="numapod")
     @commands.check(ChDev)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetAPODNum(self, ctx):
-        APODFile = open("APODDaily.txt")
-        ApodLines = APODFile.readlines()
-        APODFile.close()
         await ctx.message.channel.send(
             embed=discord.Embed(
-                title=f'{len(ApodLines)} People in APOD Daily',
+                title=f'{AQd.count_documents({"Type":"APOD"})} in APOD Daily',
                 color=0x000000,
             )
         )
@@ -100,12 +66,20 @@ class OnlyMods(commands.Cog):
     @commands.check(ChDev)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetQOTDNum(self, ctx):
-        QOTDFile = open("QOTDDaily.txt")
-        QotdLines = QOTDFile.readlines()
-        QOTDFile.close()
         await ctx.message.channel.send(
             embed=discord.Embed(
-                title=f'{len(QotdLines)} People in QOTD Daily',
+                title=f'{AQd.count_documents({"Type":"QOTD"})} in QOTD Daily',
+                color=0x000000,
+            )
+        )
+
+    @commands.command(name="numcptd")
+    @commands.check(ChDev)
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def GetCPTDNum(self, ctx):
+        await ctx.message.channel.send(
+            embed=discord.Embed(
+                title=f'{AQd.count_documents({"Type":"CPTD"})} in CPTD Daily',
                 color=0x000000,
             )
         )

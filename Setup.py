@@ -15,6 +15,7 @@ import pyyoutube
 import imdb
 import pafy
 import datetime
+import osuapi
 
 load_dotenv()
 
@@ -58,6 +59,7 @@ YClient = pyyoutube.Api(api_key=os.getenv("YOUTUBE_KEY"))
 
 IMClient = imdb.IMDb()
 
+OClient = osuapi.OsuApi(os.getenv("OSU_KEY"), connector=osuapi.ReqConnector())
 
 def RemoveExtra(listRm, val):
     return [value for value in listRm if value != val]

@@ -6,7 +6,6 @@ import asyncio
 import random
 import rule34
 
-
 def MakeEmbed(Rule, Type="R", RuleNum=0, TotalRules=0):
     Tags = ", ".join(Rule.tags)
     if len(Tags) > 253:
@@ -41,7 +40,7 @@ class Rule34(commands.Cog):
             try:
                 Rule34 = rule34.Rule34(asyncio.get_event_loop())
                 Rule34Choices = await Rule34.getImages(
-                    f'-underage -loli -lolicon -lolita -lolita_channel -shota -shotacon {" ".join(args)}'
+                    f'-underage -loli -lolicon -lolita -lolita_channel -shota -shotacon {"_".join(args).lower()}'
                 )
                 ShowRule = random.choice(Rule34Choices)
             except TypeError:
@@ -81,7 +80,7 @@ class Rule34(commands.Cog):
             try:
                 Rule34 = rule34.Rule34(asyncio.get_event_loop())
                 Rule34Surf = await Rule34.getImages(
-                    f'-underage -loli -lolicon -lolita -lolita_channel -shota -shotacon {" ".join(args)}'
+                    f'-underage -loli -lolicon -lolita -lolita_channel -shota -shotacon {"_".join(args).lower()}'
                 )
             except TypeError:
                 await ctx.message.channel.send("Nothing Found :no_mouth:")

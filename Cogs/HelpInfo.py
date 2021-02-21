@@ -167,7 +167,7 @@ class HelpInfo(commands.Cog):
         )
         await ctx.message.channel.send(embed=HEm)
 
-    @SendH.command(aliases=["game", "games", "sudoku", "ttt", "tictactoe", "chess", "cptd"])
+    @SendH.command(aliases=["game", "osu", "games", "sudoku", "ttt", "tictactoe", "chess", "cptd"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendG(self, ctx):
         HEm = discord.Embed(
@@ -206,6 +206,11 @@ class HelpInfo(commands.Cog):
         HEm.add_field(
             name="zcptddaily end/stop: ",
             value="Stop receiving daily CPTDs (Tier 2 or more Patreons ONLY)",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zosu [Username]: ",
+            value="Get the user's osu profile",
             inline=False,
         )
         HEm.add_field(

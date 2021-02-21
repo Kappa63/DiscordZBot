@@ -79,7 +79,7 @@ def EmbedMaker(VidID, Channel, VidNum, VidsTotal):
 class Youtube(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
-
+    
     @commands.command(aliases=["youtube", "yt"])
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def YoutubeGetter(self, ctx, *args):

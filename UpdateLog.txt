@@ -1,22 +1,5 @@
-Whats new in 2.1a:
-NEW Redditor profile command: view a redditor's profile and 100 of their latest posts (zredditor [Redditor name])
-NEW Twitter trending command: Shows whats currently trending on twitter USA (ztwitter trending)
-NEW Images of people that dont exist command: An AI generated person that did not and probably will never exist (ztpde, zthispersondoesntexist)
-NEW MULTIREDDITS are here: Multireddits are a combination of multiple subreddits that can be surfed together (For Tier 2 patreons or more)
-NEW Multireddit list command: List all the multireddits you created with the subreddits in them (zmultireddit list)(For Tier 2 patreons or more)
-NEW Multireddit create command: Creates a new multireddit with the desired name (zmultireddit create [Desired Multireddit Name])(For Tier 2 patreons or more)
-NEW Multireddit delete command: Deletes a created a multireddit (zmultireddit delete [Multireddit name])(For Tier 2 patreons or more)
-NEW Add subreddit to Multireddit command: Adds a subreddit to your multireddit (zmultireddit add [Multireddit name] [Subreddit name])(For Tier 2 patreons or more)
-NEW Remove subreddit from Multireddit command: Removes a subreddit from your multireddit (zmultireddit remove [Multireddit name] [Subreddit name])(For Tier 2 patreons or more)
-NEW Surf multireddit again: Opens the multireddit and allows you to scroll through its subreddits all together (zmultireddit [Multireddit name])(For Tier 2 patreons or more)
-NEW CPTD command: Chess Puzzle of The Day from Chess.com (zcptd, zchesspuzzleoftheday)(For Voters and Patreon Only)
-NEW CPTD Daily: Sends CPTD in a channel everyday automatically
-NEW Check when will the CPTD be sent (zcptddaily)
-NEW Start CPTD Daily in the current channel (zcptddaily start)(For Tier 2 patreons or more)
-NEW End CPTD Daily in the current channel (zcptddaily end/stop)(For Tier 2 patreons or more)
-ADDED CPTD help command to game help (zhelp game, zhelp cptd)
-ADDED The Multireddit commands to social help (zhelp social, zhelp multireddit)
-ADDED The redditor commands to social help (zhelp social, zhelp redditor)
-ADDED Twitter trending command to social help (zhelp social)
-ADDED Image of people that don't exist to image help (zhelp image)
-FIXED zfry (didnt return any images) now fixed
+Whats new in 2.2a:
+NEW osu command: view an osu player's account (zosu [Username])
+ADDED zosu to the game help command (zhelp game, zhelp osu)
+FIXED cptddaily (command was mistankingly named cptdddaily)
+IMPROVED rule34 search
