@@ -57,6 +57,7 @@ Cogs = [
     "Cogs.WrittenStuff",
     "Cogs.Movies",
     "Cogs.Games",
+    "Cogs.GameAPIs",
 ]
 
 if __name__ != "__main__":
