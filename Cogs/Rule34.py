@@ -32,7 +32,7 @@ class Rule34(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
 
-    @commands.group(name="rule34", invoke_without_command=True)
+    @commands.group(aliases= ["rule34","r34"], invoke_without_command=True)
     @commands.check(ChNSFW)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetRule34(self, ctx, *args):

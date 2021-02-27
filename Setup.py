@@ -11,6 +11,7 @@ import praw
 import pymongo
 import CBot
 from pymongo import MongoClient
+from google_images_search import GoogleImagesSearch
 import pyyoutube
 import imdb
 import pafy
@@ -28,6 +29,10 @@ Rdt = DbM["Reddit"]
 
 GClient = os.getenv("GIPHY_KEY")
 GApi = giphy_client.DefaultApi()
+
+CClient = {"X-CMC_PRO_API_KEY": os.getenv("COINBASE_KEY")}
+
+GiClient = GoogleImagesSearch(os.getenv("GCS_KEY"), os.getenv("CX_ID"))
 
 MClient = malclient.Client()
 MClient.init(access_token=os.getenv("MAL_ACCESS_TOKEN"))
@@ -60,6 +65,9 @@ YClient = pyyoutube.Api(api_key=os.getenv("YOUTUBE_KEY"))
 IMClient = imdb.IMDb()
 
 OClient = osuapi.OsuApi(os.getenv("OSU_KEY"), connector=osuapi.ReqConnector())
+
+async def SendWait(ctx, Notice):
+    await ctx.message.channel.send(embed = discord.Embed(title = Notice))
 
 def RemoveExtra(listRm, val):
     return [value for value in listRm if value != val]

@@ -432,8 +432,6 @@ class MongoDB(commands.Cog):
                         PhMsRase.pop(0)
                     except IndexError:
                         pass
-        else:
-            pass
 
     @commands.Cog.listener()
     async def on_member_join(self, member):

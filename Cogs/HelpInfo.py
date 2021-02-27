@@ -231,6 +231,11 @@ class HelpInfo(commands.Cog):
             "apod",
             "facts",
             "fact",
+            "crypto",
+            "cryptocurrency",
+            "gis",
+            "google",
+            "weather"
         ]
     )
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -248,6 +253,11 @@ class HelpInfo(commands.Cog):
             value="Status of Covid-19 in country",
             inline=False,
         )
+        HEm.add_field(
+            name="zcrypto: ",
+            value="Top 50 Cryptocurrencies by Market Cap",
+            inline=False,
+        )
         HEm.add_field(name="zfact: ", value="Random fun fact", inline=False)
         HEm.add_field(
             name="zapod: ",
@@ -262,6 +272,21 @@ class HelpInfo(commands.Cog):
         HEm.add_field(
             name="zapoddaily start: ",
             value="Start receiving daily APODs in the current channel (Tier 2 or more Patreons ONLY)",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zweather [Place]: ",
+            value="Get the weather",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zgis [Search Term]: ",
+            value="Google Image Search. 20 google image results",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zgoogle [Search Term]: ",
+            value="Google Search. 20 google results",
             inline=False,
         )
         HEm.add_field(
@@ -539,8 +564,8 @@ class HelpInfo(commands.Cog):
             color=0x3695BA,
         )
         VEm.add_field(name="Dev: ", value="Kappa#5173", inline=False)
-        VEm.add_field(name="Version: ", value="2.1a", inline=False)
-        VEm.add_field(name="Version Release: ", value="12/1/2021", inline=False)
+        VEm.add_field(name="Version: ", value="2.3a", inline=False)
+        VEm.add_field(name="Version Release: ", value="27/2/2021", inline=False)
         VEm.add_field(name="Initial Release: ", value="21/11/2020", inline=False)
         await ctx.message.channel.send(embed=VEm)
 
@@ -565,13 +590,8 @@ class HelpInfo(commands.Cog):
         SEm = discord.Embed(
             title="Vote For ZBot",
             url="https://top.gg/bot/768397640140062721/vote",
-            description="**You can vote once every 12 hours for the following perks**",
+            description="**You can vote once every 12 hours for some perks**",
             color=0x000000,
-        )
-        SEm.add_field(
-            name="*-Using instant navigation to page/image/post/tweet*\n*-Surfing Reddit and using all sorting formats*\n*-Surfing Rule34*\n*-Using zapod (Astronomy Picture of the Day)*\n*-Using zqotd (Quote of the Day)*\n",
-            value="\u200b",
-            inline=False,
         )
         await ctx.message.channel.send(embed=SEm)
 
@@ -581,13 +601,8 @@ class HelpInfo(commands.Cog):
         SEm = discord.Embed(
             title="Join Patreon",
             url="https://www.patreon.com/join/ZBotDiscord",
-            description="**Want to support ZBot's development?\n\nI currently have no idea what kind of perks should be added (I clearly need more). Suggestions are welcome on the official support server (zsupport)**",
+            description="**Want to support ZBot's development?**",
             color=0x000000,
-        )
-        SEm.add_field(
-            name="**-Tier 1:** `All voting perks without having to vote`\n\n**-Tier 2 (Super):** `Previous tier's perks`, `Setting up apoddaily, qotddaily, and cptddaily in 1 channel each`, `Making 1 Multireddit`\n\n**-Tier 3 (Legend):** `Previous tiers' perks`, `Setting up apoddaily, qotddaily, and cptddaily in 2 channels each`, `Making 2 Multireddits`\n\n**-Tier 4 (Ultimate):** `Previous tiers' perks`, `Setting up apoddaily, qotddaily, and cptddaily in 4 channels each`, `Making 4 Multireddits`",
-            value="\u200b",
-            inline=False,
         )
         await ctx.message.channel.send(embed=SEm)
 

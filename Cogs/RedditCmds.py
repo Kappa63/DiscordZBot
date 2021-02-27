@@ -3,7 +3,7 @@ from discord.ext import commands
 from prawcore import NotFound, Forbidden
 import os
 import random
-from Setup import Reddit, Rdt, GetPatreonTier
+from Setup import Reddit, Rdt, GetPatreonTier, SendWait
 from Setup import ChVote, ChVoteUser, ChPatreonT2, ChMaxMultireddits
 from Setup import ErrorEmbeds
 import FuncMon
@@ -205,6 +205,7 @@ class RedditCmds(commands.Cog):
     async def RedditRand(self, ctx, *args):
         if args:
             if CheckSub("".join(args)):
+                await SendWait(ctx, ":mobile_phone: Finding Post...")
                 try:
                     Post = Reddit.subreddit("".join(args)).hot()
                     TotalPosts = 0
@@ -276,6 +277,7 @@ class RedditCmds(commands.Cog):
 
         if args:
             if CheckSub("".join(args)) or inspect.stack()[1].function == "__call__":
+                await SendWait(ctx, ":mobile_phone: Finding Posts...")
                 KraPosS = await ctx.message.channel.send(
                     embed=discord.Embed(
                         title="How would you like to sort the subreddit?",
@@ -663,6 +665,7 @@ class RedditCmds(commands.Cog):
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def GetMultis(self, ctx, *args):
         if args:
+
             ArgumentHandle = " ".join(args).split(" ")
             if Rdt.count_documents({"IDd":ctx.author.id}) > 0:
                 User = Rdt.find({"IDd":ctx.author.id})[0]

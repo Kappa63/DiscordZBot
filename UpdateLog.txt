@@ -1,5 +1,6 @@
-Whats new in 2.2a:
-NEW osu command: view an osu player's account (zosu [Username])
-ADDED zosu to the game help command (zhelp game, zhelp osu)
-FIXED cptddaily (command was mistankingly named cptdddaily)
-IMPROVED rule34 search
+Whats new in 2.3a:
+NEW google search command: returns 20 google results (zgoogle [search])
+NEW google image search command: returns 20 google image results (zgis [search])
+NEW weather command: find the weather wherever (zweather [place])
+NEW cryptocurrency command: Top 50 Cryptocurrencies by Market Cap (zcrypto)
+ADDED weather, crypto, google, and google image search to info help (zhelp info, zhelp weather, zhelp google, zhelp crytpo, zhelp gis)

@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from Setup import IMClient
+from Setup import SendWait
 import asyncio
 
 
@@ -25,7 +26,8 @@ class Movies(commands.Cog):
                 and MSg.channel.id == ctx.channel.id
                 and RsT
             )
-
+            
+        await SendWait(ctx, ":tv: Getting Movie/Show...")
         MVinput = " ".join(args).split(" ")
         if MVinput[0].lower() == "search" and args:
             IDorName = "ID"

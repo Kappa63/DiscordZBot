@@ -1,8 +1,9 @@
 import discord
 from discord.ext import commands
 from Setup import FormatTime
+from Setup import CClient
 import asyncio
-
+import requests
 
 class Misc(commands.Cog):
     def __init__(self, DClient):
@@ -102,6 +103,74 @@ class Misc(commands.Cog):
                 )
         else:
             await ctx.message.channel.send("No arguments given :no_mouth:")
+
+    @commands.command(aliases = ["crypto", "cryptocurrency"])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def GetCrypto(self, ctx):
+        def ChCHEm(RcM, RuS):
+            return (
+                RuS.bot == False
+                and RcM.message == Crypter
+                and str(RcM.emoji) in ["⬅️", "❌", "➡️"]
+            )
+
+        Crypts = requests.get("https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest", headers = CClient).json()
+        CrEm = discord.Embed(title = "Markets", description = "Today's Cryptocurrency Prices by Market Cap.", color = 0xf3f18a)
+        C = 0
+        CryptNum = 1
+        TotalCrypts = 5
+        Embeds = []
+        CrEm.add_field(name = f"Page: [{CryptNum} / 5]", value="\u200b", inline=False)
+        for i in Crypts["data"][:50]:
+            CrEm.add_field(name=f'{i["name"]} ({i["symbol"]}): `${i["quote"]["USD"]["price"]}`', value=f'**%Change (24h):** *`{i["quote"]["USD"]["percent_change_24h"]}%`* // **%Change (7d):** *`{i["quote"]["USD"]["percent_change_7d"]}%`* // **Market Cap:** *`{i["quote"]["USD"]["market_cap"]}`*',  inline=False)
+            C += 1
+            if C == 10: C = 0; CrEm.set_footer(text=f'Data Extracted on: {Crypts["status"]["timestamp"][:10]}'); CryptNum += 1;Embeds.append(CrEm); CrEm = discord.Embed(title = "Markets", description = "Today's Cryptocurrency Prices by Market Cap.", color = 0xf3f18a); CrEm.add_field(name = f"Page: `[{CryptNum} / 5]`", value="\u200b", inline=False)
+        CryptNum = 0
+        Crypter = await ctx.message.channel.send(embed= Embeds[CryptNum])
+        await Crypter.add_reaction("⬅️")
+        await Crypter.add_reaction("❌")
+        await Crypter.add_reaction("➡️")
+        while True:
+            try:
+                Res = await self.DClient.wait_for(
+                    "reaction_add", check=ChCHEm, timeout=120
+                )
+                await Crypter.remove_reaction(Res[0].emoji, Res[1])
+                if Res[0].emoji == "⬅️" and CryptNum != 0:
+                    CryptNum -= 1
+                    await Crypter.edit(
+                        embed=Embeds[CryptNum]
+                    )
+                elif Res[0].emoji == "➡️":
+                    if CryptNum < TotalCrypts - 1:
+                        CryptNum += 1
+                        await Crypter.edit(
+                            embed=Embeds[CryptNum]
+                        )
+                    else:
+                        await Crypter.edit(
+                            embed=Embeds[CryptNum]
+                        )
+                        await Crypter.remove_reaction("⬅️", self.DClient.user)
+                        await Crypter.remove_reaction("❌", self.DClient.user)
+                        await Crypter.remove_reaction("➡️", self.DClient.user)
+                        break
+                elif Res[0].emoji == "❌":
+                    await Crypter.edit(
+                        embed=Embeds[CryptNum]
+                    )
+                    await Crypter.remove_reaction("⬅️", self.DClient.user)
+                    await Crypter.remove_reaction("❌", self.DClient.user)
+                    await Crypter.remove_reaction("➡️", self.DClient.user)
+                    break
+            except asyncio.TimeoutError:
+                await Crypter.edit(
+                    embed=Embeds[CryptNum]
+                )
+                await Crypter.remove_reaction("⬅️", self.DClient.user)
+                await Crypter.remove_reaction("❌", self.DClient.user)
+                await Crypter.remove_reaction("➡️", self.DClient.user)
+                break
 
     @Calculater.error
     async def CalculateError(self, ctx, error):

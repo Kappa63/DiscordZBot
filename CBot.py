@@ -24,6 +24,11 @@ async def ChBot(ctx):
         raise IsBot("Bot")
     return True
 
+@DClient.check
+async def ChDM(ctx):
+    if ctx.guild:
+        return True
+    raise Ignore("Ignore")
 
 @DClient.check
 async def ChModDown(ctx):
@@ -58,6 +63,7 @@ Cogs = [
     "Cogs.Movies",
     "Cogs.Games",
     "Cogs.GameAPIs",
+    "Cogs.Google",
 ]
 
 if __name__ != "__main__":
