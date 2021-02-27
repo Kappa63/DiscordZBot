@@ -30,7 +30,7 @@ class Google(commands.Cog):
         ResultTotal = 20
         Colors = [0x4285f4, 0xea4335, 0xfbbc05, 0x34a853]*5
         for Result in search(" ".join(args), tld="com", num=20, pause=2, stop = 20):
-            IEm = discord.Embed(title = f'Google Results for {" ".join(args)}', description = f'Result: [{ResultNum}/{ResultTotal}]', color = Colors.pop(0))
+            IEm = discord.Embed(title = f'Google Results for **`{" ".join(args)}`**', description = f'Result: [{ResultNum}/{ResultTotal}]', color = Colors.pop(0))
             SearchResults.append((IEm, Result))
             ResultNum += 1
         ResultNum = 0
@@ -95,7 +95,7 @@ class Google(commands.Cog):
         ImageTotal = 20
         Colors = [0x4285f4, 0xea4335, 0xfbbc05, 0x34a853]*5
         for Image in GiClient.results():
-            IEm = discord.Embed(title = f'Google Image Results for {" ".join(args)}', description = f'Image: [{ImageNum}/{ImageTotal}]', color = Colors.pop(0))
+            IEm = discord.Embed(title = f'Google Image Results for **`{" ".join(args)}`**', description = f'Image: [{ImageNum}/{ImageTotal}]', color = Colors.pop(0))
             IEm.set_image(url = Image.url)
             ImageResults.append(IEm)
             ImageNum += 1
@@ -161,8 +161,8 @@ class Google(commands.Cog):
             Weather = Weather.split('\n') 
             Time = Weather[0] 
             Atmosphere = Weather[1] 
-            TempCelsius = str((int(re.findall("-?\d+", Temp)[0]) - 32) * 5/9) + "°C"
-            WEm = discord.Embed(title = f'Weather in {" ".join(args)}')
+            TempCelsius = str(int((int(re.findall("-?\d+", Temp)[0]) - 32) * 5/9)) + "°C"
+            WEm = discord.Embed(title = f'Weather in **`{" ".join(args)}`**')
             WEm.add_field(name="Atmosphere:", value=f'**`{Atmosphere}`**', inline=False)
             WEm.add_field(name="Time:", value=f'**`{Time}`**', inline=False)
             WEm.add_field(name="Temperature:", value=f'**`{Temp} // {TempCelsius}`**', inline=False)
