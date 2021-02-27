@@ -277,7 +277,6 @@ class RedditCmds(commands.Cog):
 
         if args:
             if CheckSub("".join(args)) or inspect.stack()[1].function == "__call__":
-                await SendWait(ctx, ":mobile_phone: Finding Posts...")
                 KraPosS = await ctx.message.channel.send(
                     embed=discord.Embed(
                         title="How would you like to sort the subreddit?",
@@ -295,7 +294,7 @@ class RedditCmds(commands.Cog):
                         "reaction_add", check=ChCHEmCH, timeout=10
                     )
                     if ResIni[0].emoji != "🔝":
-                        await KraPosS.edit(embed=discord.Embed(title="Getting Posts"))
+                        await KraPosS.edit(embed=discord.Embed(title=":mobile_phone: Finding Posts..."))
                         await KraPosS.remove_reaction("❌", self.DClient.user)
                     await KraPosS.remove_reaction(ResIni[0].emoji, ResIni[1])
                     await KraPosS.remove_reaction("🔝", self.DClient.user)
@@ -327,7 +326,7 @@ class RedditCmds(commands.Cog):
                             "reaction_add", check=ChCHEmCHT, timeout=10
                         )
                         await KraPosS.remove_reaction(ResIniT[0].emoji, ResIniT[1])
-                        await KraPosS.edit(embed=discord.Embed(title="Getting Posts"))
+                        await KraPosS.edit(embed=discord.Embed(title=":mobile_phone: Finding Posts..."))
                         await KraPosS.remove_reaction("❌", self.DClient.user)
                         await KraPosS.remove_reaction("🌍", self.DClient.user)
                         await KraPosS.remove_reaction("🗓️", self.DClient.user)

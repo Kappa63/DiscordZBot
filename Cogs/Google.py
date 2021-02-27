@@ -152,19 +152,23 @@ class Google(commands.Cog):
         if not args:
             await ctx.message.channel.send("No search argument :woozy_face:")
             return
-        await SendWait(ctx, ":white_sun_small_cloud: Getting Temp...")
+        await SendWait(ctx, ":white_sun_small_cloud: Getting Weather...")
         RWeather = requests.get(f'https://google.com/search?q=weather+in+{" ".join(args)}')
-        Soup = BeautifulSoup(RWeather.content, "html.parser" ) 
-        Temp = Soup.find("div", class_ = "BNeawe iBp4i AP7Wnd").text
-        Weather = Soup.find("div", class_ = "BNeawe tAd8D AP7Wnd").text 
-        Weather = Weather.split('\n') 
-        Time = Weather[0] 
-        Atmosphere = Weather[1] 
-        Temp = re.findall("-?\d+", Temp)[0] + "°C"
-        WEm = discord.Embed(title = f'Weather in {" ".join(args)}')
-        WEm.add_field(name="Atmosphere:", value=f'**`{Atmosphere}`**', inline=False)
-        WEm.add_field(name="Time:", value=f'**`{Time}`**', inline=False)
-        WEm.add_field(name="Temperature:", value=f'**`{Temp}`**', inline=False)
+        try:
+            Soup = BeautifulSoup(RWeather.content, "html.parser" ) 
+            Temp = Soup.find("div", class_ = "BNeawe iBp4i AP7Wnd").text
+            Weather = Soup.find("div", class_ = "BNeawe tAd8D AP7Wnd").text 
+            Weather = Weather.split('\n') 
+            Time = Weather[0] 
+            Atmosphere = Weather[1] 
+            TempCelsius = str((int(re.findall("-?\d+", Temp)[0]) - 32) * 5/9) + "°C"
+            WEm = discord.Embed(title = f'Weather in {" ".join(args)}')
+            WEm.add_field(name="Atmosphere:", value=f'**`{Atmosphere}`**', inline=False)
+            WEm.add_field(name="Time:", value=f'**`{Time}`**', inline=False)
+            WEm.add_field(name="Temperature:", value=f'**`{Temp} // {TempCelsius}`**', inline=False)
+        except AttributeError:
+            await ctx.message.channel.send("Failed... :woozy_face:")
+            return
         await ctx.message.channel.send(embed = WEm) 
                     
 def setup(DClient):
