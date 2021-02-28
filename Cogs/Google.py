@@ -89,7 +89,7 @@ class Google(commands.Cog):
                 and RcM.message == Imager
                 and str(RcM.emoji) in ["⬅️", "❌", "➡️"]
             )
-        GiClient.search(search_params={"q":" ".join(args), "num":20, "safeundefined":"medium"})
+        GiClient.search(search_params={"q":" ".join(args), "num":20, "safeundefined":"high"})
         ImageResults = []
         ImageNum = 1 
         ImageTotal = 20
