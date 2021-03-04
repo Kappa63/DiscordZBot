@@ -181,7 +181,18 @@ class HelpInfo(commands.Cog):
         await ctx.message.channel.send(embed=HEm)
 
     @SendH.command(
-        aliases=["game", "osu", "games", "sudoku", "ttt", "tictactoe", "chess", "cptd"]
+        aliases=[
+            "game",
+            "osu",
+            "fortnite",
+            "pubg",
+            "games",
+            "sudoku",
+            "ttt",
+            "tictactoe",
+            "chess",
+            "cptd",
+        ]
     )
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendG(self, ctx):

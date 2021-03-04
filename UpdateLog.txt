@@ -1,6 +1,7 @@
 Whats new in 2.4a:
 NEW Fortnite Stats command: Get a user's fortnite stats (zfortnite [User])
 NEW pubg stats commands: Get a user's all time or season pubg stats (zpubg all [User] & zpubg season [User])
+ADDED pubg and fortnite help to game help (zhelp games, zhelp fortnite, zhelp pubg)
 IMPROVED zpdf. Now converts then sends. (No more delay between pages)
 IMPROVED zreddit speed. Now returns posts faster.
 CLEANED reply messages. Now look a bit more "polished"
