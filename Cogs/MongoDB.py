@@ -2,7 +2,7 @@ from discord.ext import commands
 import discord
 import FuncMon
 from Setup import Col
-from Setup import ChAdmin, ChSer, RemoveExtra
+from Setup import ChAdmin, ChSer, RemoveExtra, SendWait
 import asyncio
 
 
@@ -42,12 +42,13 @@ class MongoDB(commands.Cog):
                                 Wp,
                                 0,
                             )
-            await ctx.message.channel.send(
-                ":partying_face: Setup complete, you can now use tracking commands :partying_face:"
+            await SendWait(
+                ctx,
+                ":partying_face: Setup complete, you can now use tracking commands :partying_face:",
             )
         else:
-            await ctx.message.channel.send(
-                ":partying_face: This server is already setup :partying_face:"
+            await SendWait(
+                ctx, ":partying_face: This server is already setup :partying_face:"
             )
 
     @commands.command(name="update")
@@ -81,12 +82,13 @@ class MongoDB(commands.Cog):
                                 Wp,
                                 0,
                             )
-            await ctx.message.channel.send(
-                f":partying_face: The server info has been updated (added {NumAdD} members) :partying_face:"
+            await SendWait(
+                ctx,
+                f":partying_face: The server info has been updated (added {NumAdD} members) :partying_face:",
             )
         else:
-            await ctx.message.channel.send(
-                ":partying_face: This server is already up to date :partying_face:"
+            await SendWait(
+                ctx, ":partying_face: This server is already up to date :partying_face:"
             )
 
     @commands.command(name="add")
@@ -107,7 +109,7 @@ class MongoDB(commands.Cog):
             )
         else:
             Msg = f'"{WorA}" ALREADY EXIST :confused:'
-        await ctx.message.channel.send(Msg)
+        await SendWait(ctx, Msg)
 
     @commands.command(aliases=["rem", "remove"])
     @commands.check(ChAdmin)
@@ -127,7 +129,7 @@ class MongoDB(commands.Cog):
             )
         else:
             Msg = f'"{WorA}" DOESNT EXIST :confused:'
-        await ctx.message.channel.send(Msg)
+        await SendWait(ctx, Msg)
 
     @commands.command(name="list")
     @commands.check(ChSer)
@@ -263,9 +265,9 @@ class MongoDB(commands.Cog):
                 IEm.add_field(name=Enput, value=f"{Num:,}", inline=True)
                 await ctx.message.channel.send(embed=IEm)
             else:
-                await ctx.message.channel.send("That word doesnt exist yet! :confused:")
+                await SendWait(ctx, "That word doesnt exist yet! :confused:")
         elif isBot == True:
-            await ctx.message.channel.send("Cannot check a bot's stats :confused:")
+            await SendWait(ctx, "Cannot check a bot's stats :confused:")
 
     @commands.command(name="top")
     @commands.check(ChSer)
@@ -386,14 +388,20 @@ class MongoDB(commands.Cog):
             await ctx.message.channel.send(embed=IEm)
 
         else:
-            await ctx.message.channel.send("That word doesnt exist yet :confused:")
+            await SendWait(ctx, "That word doesnt exist yet :confused:")
 
     @commands.Cog.listener()
     async def on_message(self, message):
         CmSLim = 0
         if (
-            Col.count_documents({"IDd": "GuildInfo", "IDg": str(message.guild.id), "Setup": "Done"})!= 0):
-            DbB = Col.find({"IDd": "GuildInfo", "IDg": str(message.guild.id), "Setup": "Done"})
+            Col.count_documents(
+                {"IDd": "GuildInfo", "IDg": str(message.guild.id), "Setup": "Done"}
+            )
+            != 0
+        ):
+            DbB = Col.find(
+                {"IDd": "GuildInfo", "IDg": str(message.guild.id), "Setup": "Done"}
+            )
             for i in DbB:
                 KMeys = i.keys()
             Remove = "*_"

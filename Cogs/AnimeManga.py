@@ -3,10 +3,9 @@ from discord.ext import commands
 import mal
 from hentai import Utils, Sort, Hentai, Format
 from Setup import MClient
-from Setup import ChVote, ChVoteUser, ChNSFW
+from Setup import ChVote, ChVoteUser, ChNSFW, SendWait
 from Setup import ErrorEmbeds
 import asyncio
-
 
 def EmbedMaker(DentAi, FdesCtI, Page, State):
     DEmE = discord.Embed(
@@ -255,7 +254,7 @@ class AnimeManga(commands.Cog):
             except UnboundLocalError:
                 pass
         else:
-            await ctx.message.channel.send("No Arguments :no_mouth:")
+            await SendWait(ctx, "No Arguments :no_mouth:")
 
     @commands.command(name="anime")
     @commands.cooldown(1, 10, commands.BucketType.guild)
@@ -502,7 +501,7 @@ class AnimeManga(commands.Cog):
             except UnboundLocalError:
                 pass
         else:
-            await ctx.message.channel.send("No Arguments :no_mouth:")
+            await SendWait(ctx, "No Arguments :no_mouth:")
 
     @commands.command(name="hentai")
     @commands.check(ChNSFW)
@@ -559,10 +558,16 @@ class AnimeManga(commands.Cog):
                 SrchDen = []
                 if " ".join(Chlks):
                     try:
-                        for DeOujin in Utils.search_by_query(
-                            query=f'{" ".join(Chlks)} -tag:"lolicon" -tag:"shotacon"',
-                            sort=Sort.Popular,
-                        ):
+                        if ctx.guild.id != 586940644153622550:
+                            Search = Utils.search_by_query(
+                                query=f'{" ".join(Chlks)} -tag:"lolicon" -tag:"shotacon"',
+                                sort=Sort.Popular,
+                            )
+                        else:
+                            Search = Utils.search_by_query(
+                                query=" ".join(Chlks), sort=Sort.Popular
+                            )
+                        for DeOujin in Search:
                             C += 1
                             if C == 1:
                                 SEm = discord.Embed(
@@ -635,7 +640,7 @@ class AnimeManga(commands.Cog):
                         )
                         await ctx.message.channel.send(embed=SEm)
                 else:
-                    await ctx.message.channel.send("No search argument :woozy_face:")
+                    await SendWait(ctx, "No search argument :woozy_face:")
             elif len(Chlks) >= 1:
                 try:
                     Srch = int(" ".join(args))
@@ -644,20 +649,23 @@ class AnimeManga(commands.Cog):
                         while True:
                             Srch = Utils.get_random_id()
                             DentAi = Hentai(Srch)
-                            if ("lolicon" not in [tag.name for tag in DentAi.tag]) and (
-                                "shotacon" not in [tag.name for tag in DentAi.tag]
-                            ):
+                            if (
+                                ("lolicon" not in [tag.name for tag in DentAi.tag])
+                                and ("shotacon" not in [tag.name for tag in DentAi.tag])
+                            ) or ctx.guild.id == 586940644153622550:
                                 break
                     else:
-                        await ctx.message.channel.send(
-                            "The argument contained non-numeral characters and wasn't a random request. :no_mouth:"
+                        await SendWait(
+                            ctx,
+                            "The argument contained non-numeral characters and wasn't a random request. :no_mouth:",
                         )
             try:
                 if Hentai.exists(Srch):
                     DentAi = Hentai(Srch)
-                    if ("lolicon" not in [tag.name for tag in DentAi.tag]) and (
-                        "shotacon" not in [tag.name for tag in DentAi.tag]
-                    ):
+                    if (
+                        ("lolicon" not in [tag.name for tag in DentAi.tag])
+                        and ("shotacon" not in [tag.name for tag in DentAi.tag])
+                    ) or ctx.guild.id == 586940644153622550:
                         Tags = ", ".join([tag.name for tag in DentAi.tag])
                         if len(Tags) > 253:
                             FdesCtI = Tags[0:253]
@@ -685,6 +693,11 @@ class AnimeManga(commands.Cog):
                             inline=False,
                         )
                         DmSent = await ctx.message.channel.send(embed=DEm)
+                    else:
+                        await SendWait(
+                            "In compliance with discord TOS, this is Unavailable. :upside_down: "
+                        )
+                        return
                     await DmSent.add_reaction("⬅️")
                     await DmSent.add_reaction("❌")
                     await DmSent.add_reaction("➡️")
@@ -775,17 +788,13 @@ class AnimeManga(commands.Cog):
                                 embed=EmbedMaker(DentAi, FdesCtI, Page, "CLOSED")
                             )
                             break
-                    await ctx.message.channel.send(
-                        ":newspaper2: Doujin Closed :newspaper2:"
-                    )
+                    await SendWait(ctx, ":newspaper2: Doujin Closed :newspaper2:")
                 else:
-                    await ctx.message.channel.send(
-                        "That Doujin doesn't exist :expressionless:"
-                    )
+                    await SendWait(ctx, "That Doujin doesn't exist :expressionless:")
             except UnboundLocalError:
                 pass
         else:
-            await ctx.message.channel.send("No arguments :no_mouth:")
+            await SendWait(ctx, "No arguments :no_mouth:")
 
 
 def setup(DClient):

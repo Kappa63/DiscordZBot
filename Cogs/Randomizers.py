@@ -6,6 +6,7 @@ import numpy
 import requests
 import os
 from Setup import GClient, GApi, Imgur
+from Setup import SendWait
 
 
 class Randomizers(commands.Cog):
@@ -63,9 +64,9 @@ class Randomizers(commands.Cog):
                 GifF = random.choices(GifSAl)
                 await ctx.message.channel.send(GifF[0].url)
             except IndexError:
-                await ctx.message.channel.send("No gifs found :expressionless:")
+                await SendWait(ctx, "No gifs found :expressionless:")
         else:
-            await ctx.message.channel.send("No search term given :confused:")
+            await SendWait(ctx, "No search term given :confused:")
 
 
 def setup(DClient):

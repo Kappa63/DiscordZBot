@@ -1,9 +1,8 @@
 import discord
 from discord.ext import commands
 from Setup import YClient
-from Setup import ChVoteUser
+from Setup import ChVoteUser, GetVidDuration, SendWait
 from Setup import ErrorEmbeds
-from Setup import GetVidDuration
 import asyncio
 
 
@@ -79,7 +78,7 @@ def EmbedMaker(VidID, Channel, VidNum, VidsTotal):
 class Youtube(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
-    
+
     @commands.command(aliases=["youtube", "yt"])
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def YoutubeGetter(self, ctx, *args):
@@ -154,7 +153,7 @@ class Youtube(commands.Cog):
                         )
                     SrchYT.append(ChannelGetter)
                 if C == 0:
-                    await ctx.message.channel.send("Nothing Found :woozy_face:")
+                    await SendWait(ctx, "Nothing Found :woozy_face:")
                     return
                 SYem.set_footer(
                     text='Choose a number to open Youtube Channel. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*'
@@ -208,14 +207,14 @@ class Youtube(commands.Cog):
                     )
                     return
             else:
-                await ctx.message.channel.send("No search argument :woozy_face:")
+                await SendWait(ctx, "No search argument :woozy_face:")
                 return
 
         elif args:
             YTname = " ".join(args)
             IDorName = "NAME"
         else:
-            await ctx.message.channel.send("No Arguments :no_mouth:")
+            await SendWait(ctx, "No Arguments :no_mouth:")
             return
 
         if IDorName == "NAME":
@@ -230,7 +229,7 @@ class Youtube(commands.Cog):
                     channel_id=YTtempID, count=20
                 )
             except IndexError:
-                await ctx.message.channel.send("Nothing Found :woozy_face:")
+                await SendWait(ctx, "Nothing Found :woozy_face:")
                 return
         elif IDorName == "ID":
             YTinfo = YClient.get_channel_info(channel_id=YTid)

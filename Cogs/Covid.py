@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from Setup import Covid as CVd
+from Setup import SendWait
 import datetime
 
 
@@ -44,7 +45,7 @@ class Covid(commands.Cog):
                 )
                 CEm.set_footer(text="Note: Data may not be completely accurate")
             else:
-                await ctx.message.channel.send("Country not found :pensive:")
+                await SendWait(ctx, "Country not found :pensive:")
         else:
             CovidWorld = CVd.getLatest()
             CEm = discord.Embed(

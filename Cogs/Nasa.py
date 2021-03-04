@@ -3,7 +3,7 @@ import random
 import requests
 from discord.ext import commands
 from Setup import ChVote, ChVoteUser, ChPatreonT2, ChAdmin
-from Setup import FormatTime, TimeTillMidnight, GetPatreonTier
+from Setup import FormatTime, TimeTillMidnight, GetPatreonTier, SendWait
 from Setup import ErrorEmbeds
 from Setup import AQd
 import asyncio
@@ -49,11 +49,9 @@ class Nasa(commands.Cog):
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def NasaApodDAILY(self, ctx):
         TimeLeft = FormatTime(TimeTillMidnight())
-        await ctx.message.channel.send(
-            embed=discord.Embed(
-                title="APOD in...",
-                description=f'The next Daily APOD is in {TimeLeft}.\n You can be added to APOD Daily with "zapoddaily start" (If patreon tier 2+).\n Check "zhelp apod" for more info',
-            )
+        await SendWait(
+            ctx,
+            f'The next Daily APOD is in {TimeLeft}.\n You can be added to APOD Daily with "zapoddaily start" (If patreon tier 2+).\n Check "zhelp apod" for more info',
         )
 
     @NasaApodDAILY.command(name="start")
@@ -61,31 +59,44 @@ class Nasa(commands.Cog):
     @commands.check(ChAdmin)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def StartNasaApodDAILY(self, ctx):
-        TierApplicable = {"Tier 2 Super":1, "Tier 3 Legend":2, "Tier 4 Ultimate":4}
+        TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
         TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
-        if AQd.count_documents({"Type":"APOD", "IDd":ctx.author.id}) >= TierLimit:
-            await ctx.message.channel.send(embed = discord.Embed(title = "Oops", description = "You already added the max amount of channels to APOD daily.\nDifferent patreon levels get more channels\nCheck 'zpatreon'"))
+        if AQd.count_documents({"Type": "APOD", "IDd": ctx.author.id}) >= TierLimit:
+            await SendWait(
+                ctx,
+                "You already added the max amount of channels to APOD daily.\nDifferent patreon levels get more channels\nCheck 'zpatreon'",
+            )
             return
-        UserToCheckAdd = {"Type":"APOD", "IDd":ctx.author.id, "IDg":ctx.guild.id, "Channel":ctx.message.channel.id}
+        UserToCheckAdd = {
+            "Type": "APOD",
+            "IDd": ctx.author.id,
+            "IDg": ctx.guild.id,
+            "Channel": ctx.message.channel.id,
+        }
         if AQd.count_documents(UserToCheckAdd) == 1:
-            await ctx.message.channel.send(embed = discord.Embed(title = "All Good", description = "This channel is already added to APOD daily"))
+            await SendWait(ctx, "This channel is already added to APOD daily")
             return
         AQd.insert_one(UserToCheckAdd)
-        await ctx.message.channel.send(embed = discord.Embed(title = "Success", description = "Added to APOD daily successfully"))
+        await SendWait(ctx, "Added to APOD daily successfully")
 
-    @NasaApodDAILY.command(aliases=["stop","end"])
+    @NasaApodDAILY.command(aliases=["stop", "end"])
     @commands.check(ChPatreonT2)
     @commands.check(ChAdmin)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RemoveNasaApodDAILY(self, ctx):
-        UserToCheckRemove = {"Type":"APOD", "IDd":ctx.author.id, "IDg":ctx.guild.id, "Channel":ctx.message.channel.id}
+        UserToCheckRemove = {
+            "Type": "APOD",
+            "IDd": ctx.author.id,
+            "IDg": ctx.guild.id,
+            "Channel": ctx.message.channel.id,
+        }
         if AQd.count_documents(UserToCheckRemove) == 1:
             Users = AQd.find(UserToCheckRemove)
             for User in Users:
-                AQd.delete_one(User) 
-            await ctx.message.channel.send(embed = discord.Embed(title = "Success", description = "Removed from APOD daily successfully"))
+                AQd.delete_one(User)
+            await SendWait(ctx, "Removed from APOD daily successfully")
             return
-        await ctx.message.channel.send(embed = discord.Embed(title = "All Good", description = "You are already not in APOD daily"))
+        await SendWait(ctx, "You are already not in APOD daily")
 
     @commands.command(name="nasa")
     @commands.cooldown(1, 1, commands.BucketType.user)

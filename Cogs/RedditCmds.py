@@ -11,6 +11,7 @@ import inspect
 import asyncio
 import datetime
 
+
 def EmbedMaker(ctx, SubCpoS, Subname, Type="R", PostNum=0, TotalPosts=0):
     if len(SubCpoS.title) > 253:
         PostTitle = SubCpoS.title[0:253]
@@ -207,11 +208,8 @@ class RedditCmds(commands.Cog):
             if CheckSub("".join(args)):
                 await SendWait(ctx, ":mobile_phone: Finding Post...")
                 try:
-                    Post = Reddit.subreddit("".join(args)).hot()
-                    TotalPosts = 0
-                    for _ in Post:
-                        TotalPosts += 1
-                    Post = Reddit.subreddit("".join(args)).hot()
+                    Post = list(Reddit.subreddit("".join(args)).hot())
+                    TotalPosts = len(Post)
                     if TotalPosts == 0:
                         await ctx.message.channel.send(
                             "No posts on that subreddit :no_mouth:"
@@ -294,7 +292,9 @@ class RedditCmds(commands.Cog):
                         "reaction_add", check=ChCHEmCH, timeout=10
                     )
                     if ResIni[0].emoji != "🔝":
-                        await KraPosS.edit(embed=discord.Embed(title=":mobile_phone: Finding Posts..."))
+                        await KraPosS.edit(
+                            embed=discord.Embed(title=":mobile_phone: Finding Posts...")
+                        )
                         await KraPosS.remove_reaction("❌", self.DClient.user)
                     await KraPosS.remove_reaction(ResIni[0].emoji, ResIni[1])
                     await KraPosS.remove_reaction("🔝", self.DClient.user)
@@ -326,7 +326,9 @@ class RedditCmds(commands.Cog):
                             "reaction_add", check=ChCHEmCHT, timeout=10
                         )
                         await KraPosS.remove_reaction(ResIniT[0].emoji, ResIniT[1])
-                        await KraPosS.edit(embed=discord.Embed(title=":mobile_phone: Finding Posts..."))
+                        await KraPosS.edit(
+                            embed=discord.Embed(title=":mobile_phone: Finding Posts...")
+                        )
                         await KraPosS.remove_reaction("❌", self.DClient.user)
                         await KraPosS.remove_reaction("🌍", self.DClient.user)
                         await KraPosS.remove_reaction("🗓️", self.DClient.user)
@@ -353,9 +355,7 @@ class RedditCmds(commands.Cog):
                     if not SuTPos.stickied:
                         SubCpoS.append(SuTPos)
                 if TotalPosts == 0:
-                    await ctx.message.channel.send(
-                        "No posts on that subreddit :no_mouth:"
-                    )
+                    await SendWait(ctx, "No posts on that subreddit :no_mouth:")
                     return
                 KraPosS = await ctx.message.channel.send(
                     embed=EmbedMaker(ctx, SubCpoS[0], "".join(args), "S", 0, TotalPosts)
@@ -488,11 +488,12 @@ class RedditCmds(commands.Cog):
                         await KraPosS.remove_reaction("#️⃣", self.DClient.user)
                         break
             else:
-                await ctx.message.channel.send(
-                    "Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)"
+                await SendWait(
+                    ctx,
+                    "Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)",
                 )
         else:
-            await ctx.message.channel.send("No arguments :no_mouth:")
+            await SendWait(ctx, "No arguments :no_mouth:")
 
     @commands.command(name="redditor")
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -518,13 +519,26 @@ class RedditCmds(commands.Cog):
                 and MSg.channel.id == ctx.channel.id
                 and RsT
             )
+
         if args:
             try:
                 User = Reddit.redditor("".join(args))
-                UEm = discord.Embed(title = f'u/{User.name}', description = User.subreddit["public_description"], color = 0x8B0000)
-                UEm.add_field(name=f'{(User.link_karma + User.awarder_karma + User.awardee_karma + User.comment_karma):,} karma **·** {(datetime.datetime.now() - datetime.datetime.fromtimestamp(User.created_utc)).days} days', value="\u200b", inline=False)
-                UEm.add_field(name=f'Trophies: `{", ".join([trophy.name for trophy in User.trophies()])}`', value="\u200b", inline=False)
-                UEm.set_thumbnail(url = User.icon_img)
+                UEm = discord.Embed(
+                    title=f"u/{User.name}",
+                    description=User.subreddit["public_description"],
+                    color=0x8B0000,
+                )
+                UEm.add_field(
+                    name=f"{(User.link_karma + User.awarder_karma + User.awardee_karma + User.comment_karma):,} karma **·** {(datetime.datetime.now() - datetime.datetime.fromtimestamp(User.created_utc)).days} days",
+                    value="\u200b",
+                    inline=False,
+                )
+                UEm.add_field(
+                    name=f'Trophies: `{", ".join([trophy.name for trophy in User.trophies()])}`',
+                    value="\u200b",
+                    inline=False,
+                )
+                UEm.set_thumbnail(url=User.icon_img)
                 RTEm = await ctx.message.channel.send(embed=UEm)
                 PostNum = 0
                 OnRedditor = True
@@ -535,9 +549,7 @@ class RedditCmds(commands.Cog):
                     if not SuTPos.stickied:
                         SubCpoS.append(SuTPos)
                 if TotalPosts == 0:
-                    await ctx.message.channel.send(
-                        "No posts :no_mouth:"
-                    )
+                    await SendWait(ctx, "No posts :no_mouth:")
                     return
                 await RTEm.add_reaction("⬅️")
                 await RTEm.add_reaction("❌")
@@ -634,7 +646,9 @@ class RedditCmds(commands.Cog):
                                     await asyncio.sleep(5)
                                     await TempRdt.delete()
                             else:
-                                await ctx.message.channel.send(embed=ErrorEmbeds("Vote"))
+                                await ctx.message.channel.send(
+                                    embed=ErrorEmbeds("Vote")
+                                )
                         elif ReaEm[0].emoji == "➡️" and TotalPosts == PostNum + 1:
                             await RTEm.remove_reaction("⬅️", self.DClient.user)
                             await RTEm.remove_reaction("❌", self.DClient.user)
@@ -654,9 +668,9 @@ class RedditCmds(commands.Cog):
                         await RTEm.remove_reaction("#️⃣", self.DClient.user)
                         break
             except NotFound:
-                await ctx.message.channel.send("Redditor Not Found :no_mouth:")
+                await SendWait(ctx, "Redditor Not Found :no_mouth:")
         else:
-            await ctx.message.channel.send("No arguments :no_mouth:")
+            await SendWait(ctx, "No arguments :no_mouth:")
 
     @commands.group(name="multireddit", invoke_without_command=True)
     @commands.check(ChPatreonT2)
@@ -666,33 +680,42 @@ class RedditCmds(commands.Cog):
         if args:
 
             ArgumentHandle = " ".join(args).split(" ")
-            if Rdt.count_documents({"IDd":ctx.author.id}) > 0:
-                User = Rdt.find({"IDd":ctx.author.id})[0]
+            if Rdt.count_documents({"IDd": ctx.author.id}) > 0:
+                User = Rdt.find({"IDd": ctx.author.id})[0]
                 Multireddits = User.keys()
-                if ArgumentHandle[0] in Multireddits and ArgumentHandle[0] not in ["IDd","_id"]:
+                if ArgumentHandle[0] in Multireddits and ArgumentHandle[0] not in [
+                    "IDd",
+                    "_id",
+                ]:
                     Subreddits = "+".join(User[ArgumentHandle[0]])
-                    await self.RedditNav(ctx, Subreddits) 
+                    await self.RedditNav(ctx, Subreddits)
                 else:
-                    await ctx.message.channel.send(embed=discord.Embed(title="Oops", description=f"That Multireddit ({ArgumentHandle[0]}) doesn't exist"))
+                    await SendWait(
+                        ctx, f"That Multireddit ({ArgumentHandle[0]}) doesn't exist"
+                    )
             else:
-                await ctx.message.channel.send(embed=discord.Embed(title="Oops", description="No Multireddits Found"))
+                await SendWait(ctx, "No Multireddits Found")
         else:
-            await ctx.message.channel.send(embed=discord.Embed(title="Oops", description="You forgot to add a Multireddit name"))
-    
+            await SendWait(ctx, "You forgot to add a Multireddit name")
+
     @GetMultis.command(name="list")
     @commands.check(ChPatreonT2)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def ListMultis(self, ctx):
-        if Rdt.count_documents({"IDd":ctx.author.id}) > 0:
-            User = Rdt.find({"IDd":ctx.author.id})[0]
+        if Rdt.count_documents({"IDd": ctx.author.id}) > 0:
+            User = Rdt.find({"IDd": ctx.author.id})[0]
             Multireddits = User.keys()
-            MEm = discord.Embed(title=f"{ctx.author.display_name}'s MultiReddits", color=0x8B0000)
+            MEm = discord.Embed(
+                title=f"{ctx.author.display_name}'s MultiReddits", color=0x8B0000
+            )
             for Multireddit in Multireddits:
-                if Multireddit not in ["IDd","_id"]:
-                    MEm.add_field(name=Multireddit, value= f'`{", ".join(User[Multireddit])}`')
+                if Multireddit not in ["IDd", "_id"]:
+                    MEm.add_field(
+                        name=Multireddit, value=f'`{", ".join(User[Multireddit])}`'
+                    )
             await ctx.message.channel.send(embed=MEm)
         else:
-            await ctx.message.channel.send(embed=discord.Embed(title="Oops", description="No Multireddits Found"))
+            await SendWait(ctx, "No Multireddits Found")
 
     @GetMultis.command(name="create")
     @commands.check(ChPatreonT2)
@@ -701,48 +724,67 @@ class RedditCmds(commands.Cog):
     async def CreateMulti(self, ctx, *args):
         ArgumentHandle = " ".join(args).split(" ")
         if args:
-            TierApplicable = {"Tier 2 Super":1, "Tier 3 Legend":2, "Tier 4 Ultimate":4}
+            TierApplicable = {
+                "Tier 2 Super": 1,
+                "Tier 3 Legend": 2,
+                "Tier 4 Ultimate": 4,
+            }
             TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
-            if Rdt.count_documents({"IDd":ctx.author.id}) > 0:
-                User = Rdt.find({"IDd":ctx.author.id})[0]
+            if Rdt.count_documents({"IDd": ctx.author.id}) > 0:
+                User = Rdt.find({"IDd": ctx.author.id})[0]
                 Multireddits = User.keys()
                 if len(Multireddits) < TierLimit:
                     for Multireddit in Multireddits:
                         if Multireddit == ArgumentHandle[0]:
-                            await ctx.message.channel.send(embed=discord.Embed(title="Oops", description=f'Multireddit ({ArgumentHandle[0]}) Already Exists'))
+                            await SendWait(
+                                ctx, f"Multireddit ({ArgumentHandle[0]}) Already Exists"
+                            )
                             return
-                    FuncMon.DbAdd(Rdt, {"IDd":ctx.author.id}, ArgumentHandle[0], [])
-                    await ctx.message.channel.send(embed=discord.Embed(title="Done", description=f'Added the Multireddit ({ArgumentHandle[0]}), you can now add and remove subreddits from it.'))
+                    FuncMon.DbAdd(Rdt, {"IDd": ctx.author.id}, ArgumentHandle[0], [])
+                    await SendWait(
+                        ctx,
+                        f"Added the Multireddit ({ArgumentHandle[0]}), you can now add and remove subreddits from it.",
+                    )
                 else:
-                    await ctx.message.channel.send(embed=discord.Embed(title="Oops", description="You already have the maximum amount of Multireddits. You can use 'zmultireddit' to see your multireddits or check 'zpatreon' to know more about limits"))
+                    await SendWait(
+                        ctx,
+                        "You already have the maximum amount of Multireddits. You can use 'zmultireddit' to see your multireddits or check 'zpatreon' to know more about limits",
+                    )
             else:
-                Rdt.insert_one({"IDd":ctx.author.id, ArgumentHandle[0]:[]})
-                await ctx.message.channel.send(embed=discord.Embed(title="Done", description=f'Added the Multireddit ({ArgumentHandle[0]}), you can now add and remove subreddits from it.'))
+                Rdt.insert_one({"IDd": ctx.author.id, ArgumentHandle[0]: []})
+                await SendWait(
+                    ctx,
+                    f"Added the Multireddit ({ArgumentHandle[0]}), you can now add and remove subreddits from it.",
+                )
         else:
-            await ctx.message.channel.send(embed=discord.Embed(title="Oops", description="No Arguments"))
-        
+            await SendWait(ctx, "No Arguments")
+
     @GetMultis.command(name="delete")
     @commands.check(ChPatreonT2)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def DeleteMulti(self, ctx, *args):
         if args:
             ArgumentHandle = " ".join(args).split(" ")
-            if Rdt.count_documents({"IDd":ctx.author.id}) > 0:
-                User = Rdt.find({"IDd":ctx.author.id})[0]
+            if Rdt.count_documents({"IDd": ctx.author.id}) > 0:
+                User = Rdt.find({"IDd": ctx.author.id})[0]
                 Multireddits = User.keys()
-                Multis = len(Multireddits)-2
+                Multis = len(Multireddits) - 2
                 for Multireddit in Multireddits:
                     if Multireddit == ArgumentHandle[0]:
                         if Multis == 1:
-                            Rdt.delete_one({"IDd":ctx.author.id})
+                            Rdt.delete_one({"IDd": ctx.author.id})
                         else:
-                            FuncMon.DbRem(Rdt, {"IDd":ctx.author.id}, ArgumentHandle[0])
-                        await ctx.message.channel.send(embed=discord.Embed(title="Done", description=f'Deleted the Multireddit ({ArgumentHandle[0]}).'))
+                            FuncMon.DbRem(
+                                Rdt, {"IDd": ctx.author.id}, ArgumentHandle[0]
+                            )
+                        await SendWait(
+                            ctx, f"Deleted the Multireddit ({ArgumentHandle[0]})."
+                        )
                         return
             else:
-                await ctx.message.channel.send(embed=discord.Embed(title="Well..", description="You don't have any Multireddits"))
+                await SendWait(ctx, "You don't have any Multireddits")
         else:
-            await ctx.message.channel.send(embed=discord.Embed(title="Oops", description="No Arguments"))
+            await SendWait(ctx, "No Arguments")
 
     @GetMultis.command(name="add")
     @commands.check(ChPatreonT2)
@@ -751,24 +793,44 @@ class RedditCmds(commands.Cog):
     async def AddMulti(self, ctx, *args):
         ArgumentHandle = " ".join(args).split(" ")
         if args:
-            User = Rdt.find({"IDd":ctx.author.id})[0]
+            User = Rdt.find({"IDd": ctx.author.id})[0]
             Multireddits = User.keys()
-            if ArgumentHandle[0] in Multireddits and ArgumentHandle[0] not in ["IDd","_id"]:
+            if ArgumentHandle[0] in Multireddits and ArgumentHandle[0] not in [
+                "IDd",
+                "_id",
+            ]:
                 if "".join(ArgumentHandle[1:]) not in User[ArgumentHandle[0]]:
                     if CheckSub("".join(ArgumentHandle[1:])):
                         User[ArgumentHandle[0]].append("".join(ArgumentHandle[1:]))
-                        if FuncMon.ChangeTo(Rdt, {"IDd":ctx.author.id}, ArgumentHandle[0], User[ArgumentHandle[0]]):
-                            await ctx.message.channel.send(embed=discord.Embed(title="Done", description=f'Added the Subreddit ({"".join(ArgumentHandle[1:])}) to Multireddit ({ArgumentHandle[0]})'))
+                        if FuncMon.ChangeTo(
+                            Rdt,
+                            {"IDd": ctx.author.id},
+                            ArgumentHandle[0],
+                            User[ArgumentHandle[0]],
+                        ):
+                            await SendWait(
+                                ctx,
+                                f'Added the Subreddit ({"".join(ArgumentHandle[1:])}) to Multireddit ({ArgumentHandle[0]})',
+                            )
                         else:
-                            await ctx.message.channel.send(embed=discord.Embed(title="Well...", description="Something happened... Not sure"))
+                            await SendWait(ctx, "Something happened... Not sure")
                     else:
-                        await ctx.message.channel.send(embed=discord.Embed(title="Oops", description=f'That Subreddit ({"".join(ArgumentHandle[1:])}) does not exist or is private'))
+                        await SendWait(
+                            ctx,
+                            f'That Subreddit ({"".join(ArgumentHandle[1:])}) does not exist or is private',
+                        )
                 else:
-                    await ctx.message.channel.send(embed=discord.Embed(title="Well...", description=f'Subreddit ({ArgumentHandle[0]}) Already Exists in that Multireddit ({ArgumentHandle[0]})'))
+                    await SendWait(
+                        ctx,
+                        f"Subreddit ({ArgumentHandle[0]}) Already Exists in that Multireddit ({ArgumentHandle[0]})",
+                    )
             else:
-                await ctx.message.channel.send(embed=discord.Embed(title="Oops", description=f'That Multireddit ({ArgumentHandle[0]}) does not exist. Check if the name is right or create it.'))
+                await SendWait(
+                    ctx,
+                    f"That Multireddit ({ArgumentHandle[0]}) does not exist. Check if the name is right or create it.",
+                )
         else:
-            await ctx.message.channel.send(embed=discord.Embed(title="Oops", description="No Arguments"))
+            await SendWait(ctx, "No Arguments")
 
     @GetMultis.command(aliases=["remove", "rem"])
     @commands.check(ChPatreonT2)
@@ -777,24 +839,42 @@ class RedditCmds(commands.Cog):
     async def RemoveMulti(self, ctx, *args):
         ArgumentHandle = " ".join(args).split(" ")
         if args:
-            if Rdt.count_documents({"IDd":ctx.author.id}) > 0:
-                User = Rdt.find({"IDd":ctx.author.id})[0]
+            if Rdt.count_documents({"IDd": ctx.author.id}) > 0:
+                User = Rdt.find({"IDd": ctx.author.id})[0]
                 Multireddits = User.keys()
-                if ArgumentHandle[0] in Multireddits and ArgumentHandle[0] not in ["IDd","_id"]:
+                if ArgumentHandle[0] in Multireddits and ArgumentHandle[0] not in [
+                    "IDd",
+                    "_id",
+                ]:
                     if "".join(ArgumentHandle[1:]) in User[ArgumentHandle[0]]:
                         User[ArgumentHandle[0]].remove("".join(ArgumentHandle[1:]))
-                        if FuncMon.ChangeTo(Rdt, {"IDd":ctx.author.id}, ArgumentHandle[0], User[ArgumentHandle[0]]):
-                            await ctx.message.channel.send(embed=discord.Embed(title="Done", description=f'Removed the Subreddit ({"".join(ArgumentHandle[1:])}) from Multireddit ({ArgumentHandle[0]})'))
+                        if FuncMon.ChangeTo(
+                            Rdt,
+                            {"IDd": ctx.author.id},
+                            ArgumentHandle[0],
+                            User[ArgumentHandle[0]],
+                        ):
+                            await SendWait(
+                                ctx,
+                                f'Removed the Subreddit ({"".join(ArgumentHandle[1:])}) from Multireddit ({ArgumentHandle[0]})',
+                            )
                         else:
-                            await ctx.message.channel.send(embed=discord.Embed(title="Well...", description="Something happened... Not sure"))
+                            await SendWait(ctx, "Something happened... Not sure")
                     else:
-                        await ctx.message.channel.send(embed=discord.Embed(title="Well...", description=f'Subreddit ({ArgumentHandle[0]}) does not exist in that Multireddit ({ArgumentHandle[0]})'))
+                        await SendWait(
+                            ctx,
+                            f"Subreddit ({ArgumentHandle[0]}) does not exist in that Multireddit ({ArgumentHandle[0]})",
+                        )
                 else:
-                    await ctx.message.channel.send(embed=discord.Embed(title="Oops", description=f'That Multireddit ({ArgumentHandle[0]}) does not exist. Check if the name is right or create it.'))
+                    await SendWait(
+                        ctx,
+                        f"That Multireddit ({ArgumentHandle[0]}) does not exist. Check if the name is right or create it.",
+                    )
             else:
-                await ctx.message.channel.send(embed=discord.Embed(title="Well..", description="You don't have any Multireddits"))
+                await SendWait(ctx, "You don't have any Multireddits")
         else:
-            await ctx.message.channel.send(embed=discord.Embed(title="Oops", description="No Arguments"))
+            await SendWait(ctx, "No Arguments")
+
 
 def setup(DClient):
     DClient.add_cog(RedditCmds(DClient))

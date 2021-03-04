@@ -1,10 +1,11 @@
 import discord
 from discord.ext import commands
-from Setup import ChVote, ChVoteUser, ChNSFW
+from Setup import ChVote, ChVoteUser, ChNSFW, SendWait
 from Setup import ErrorEmbeds
 import asyncio
 import random
 import rule34
+
 
 def MakeEmbed(Rule, Type="R", RuleNum=0, TotalRules=0):
     Tags = ", ".join(Rule.tags)
@@ -32,19 +33,22 @@ class Rule34(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
 
-    @commands.group(aliases= ["rule34","r34"], invoke_without_command=True)
+    @commands.group(aliases=["rule34", "r34"], invoke_without_command=True)
     @commands.check(ChNSFW)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetRule34(self, ctx, *args):
         if args:
             try:
                 Rule34 = rule34.Rule34(asyncio.get_event_loop())
-                Rule34Choices = await Rule34.getImages(
-                    f'-underage -loli -lolicon -lolita -lolita_channel -shota -shotacon {"_".join(args).lower()}'
-                )
+                if ctx.guild.id != 586940644153622550:
+                    Rule34Choices = await Rule34.getImages(
+                        f'-underage -loli -lolicon -lolita -lolita_channel -shota -shotacon {"_".join(args).lower()}'
+                    )
+                else:
+                    Rule34Choices = await Rule34.getImages(f'{"_".join(args).lower()}')
                 ShowRule = random.choice(Rule34Choices)
             except TypeError:
-                await ctx.message.channel.send("Nothing Found :no_mouth:")
+                await SendWait(ctx, "Nothing Found :no_mouth:")
                 return
             print(ShowRule)
             await ctx.message.channel.send(embed=MakeEmbed(ShowRule))
@@ -79,14 +83,17 @@ class Rule34(commands.Cog):
         if args:
             try:
                 Rule34 = rule34.Rule34(asyncio.get_event_loop())
-                Rule34Surf = await Rule34.getImages(
-                    f'-underage -loli -lolicon -lolita -lolita_channel -shota -shotacon {"_".join(args).lower()}'
-                )
+                if ctx.guild.id != 586940644153622550:
+                    Rule34Surf = await Rule34.getImages(
+                        f'-underage -loli -lolicon -lolita -lolita_channel -shota -shotacon {"_".join(args).lower()}'
+                    )
+                else:
+                    Rule34Surf = await Rule34.getImages(f'{"_".join(args).lower()}')
             except TypeError:
-                await ctx.message.channel.send("Nothing Found :no_mouth:")
+                await SendWait(ctx, "Nothing Found :no_mouth:")
                 return
         else:
-            await ctx.message.channel.send("No arguments :no_mouth:")
+            await SendWait(ctx, "No arguments :no_mouth:")
             return
         RuleNum = 0
         TotalRules = len(Rule34Surf)

@@ -17,6 +17,7 @@ import imdb
 import pafy
 import datetime
 import osuapi
+import concurrent.futures as Cf
 
 load_dotenv()
 
@@ -42,6 +43,8 @@ MClient.refresh_bearer_token(
     refresh_token=os.getenv("MAL_REFRESH_TOKEN"),
 )
 
+PClient = {"Authorization": os.getenv("PUBG_KEY"), "accept": "application/vnd.api+json"}
+
 twitter = tweepy.OAuthHandler(os.getenv("TWITTER_KEY"), os.getenv("TWITTER_SECRET"))
 twitter.set_access_token(
     os.getenv("TWITTER_ACCESS_TOKEN"), os.getenv("TWITTER_ACCESS_SECRET")
@@ -52,6 +55,7 @@ Reddit = praw.Reddit(
     client_id=os.getenv("REDDIT_ID"),
     client_secret=os.getenv("REDDIT_SECRET"),
     user_agent="ZBot by u/Kamlin333",
+    check_for_async=False,
 )
 
 Covid = COVID19Py.COVID19(data_source="jhu")
@@ -66,8 +70,10 @@ IMClient = imdb.IMDb()
 
 OClient = osuapi.OsuApi(os.getenv("OSU_KEY"), connector=osuapi.ReqConnector())
 
+
 async def SendWait(ctx, Notice):
-    await ctx.message.channel.send(embed = discord.Embed(title = Notice))
+    await ctx.message.channel.send(embed=discord.Embed(title=Notice))
+
 
 def RemoveExtra(listRm, val):
     return [value for value in listRm if value != val]
@@ -112,6 +118,16 @@ def FormatTime(SecondsFormat):
         return f"{SecondsFormat}Sec(s)"
 
 
+def Threader(FunctionList, ParameterList):
+    with Cf.ThreadPoolExecutor() as Execute:
+        Pool = [
+            Execute.submit(Func, *Param)
+            for Func, Param in zip(FunctionList, ParameterList)
+        ]
+        Results = [Execution.result() for Execution in Pool]
+    return Results
+
+
 class IsSetup(commands.CheckFailure):
     pass
 
@@ -130,15 +146,17 @@ def ChSer(ctx):
 class IsMultiredditLimit(commands.CheckFailure):
     pass
 
+
 def ChMaxMultireddits(ctx):
-    TierApplicable = {"Tier 2 Super":1, "Tier 3 Legend":2, "Tier 4 Ultimate":4}
+    TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
     TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
-    if Rdt.count_documents({"IDd":ctx.author.id}) > 0:
-        User = Rdt.find({"IDd":ctx.author.id})[0]
+    if Rdt.count_documents({"IDd": ctx.author.id}) > 0:
+        User = Rdt.find({"IDd": ctx.author.id})[0]
         Multireddits = User.keys()
-        if len(Multireddits) > TierLimit: 
+        if len(Multireddits) > TierLimit:
             raise IsMultiredditLimit("Too much")
     return True
+
 
 class IsAdmin(commands.CheckFailure):
     pass

@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from Setup import ChDev
+from Setup import ChDev, SendWait
 import random
 import requests
 from Setup import AQd
@@ -36,7 +36,7 @@ class OnlyMods(commands.Cog):
         StateFile = open("OpenState.txt", "w+")
         StateFile.write("Down")
         StateFile.close()
-        await ctx.message.channel.send("Bot Invisible (Down)")
+        await SendWait(ctx, "Bot Invisible (Down)")
 
     @commands.command(name="makeup")
     @commands.check(ChDev)
@@ -49,40 +49,25 @@ class OnlyMods(commands.Cog):
         StateFile = open("OpenState.txt", "w+")
         StateFile.write("Up")
         StateFile.close()
-        await ctx.message.channel.send("Bot Visible (Up)")
-    
+        await SendWait(ctx, "Bot Visible (Up)")
+
     @commands.command(name="numapod")
     @commands.check(ChDev)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetAPODNum(self, ctx):
-        await ctx.message.channel.send(
-            embed=discord.Embed(
-                title=f'{AQd.count_documents({"Type":"APOD"})} in APOD Daily',
-                color=0x000000,
-            )
-        )
-    
+        await SendWait(ctx, f'{AQd.count_documents({"Type":"APOD"})} in APOD Daily')
+
     @commands.command(name="numqotd")
     @commands.check(ChDev)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetQOTDNum(self, ctx):
-        await ctx.message.channel.send(
-            embed=discord.Embed(
-                title=f'{AQd.count_documents({"Type":"QOTD"})} in QOTD Daily',
-                color=0x000000,
-            )
-        )
+        await SendWait(ctx, f'{AQd.count_documents({"Type":"QOTD"})} in QOTD Daily')
 
     @commands.command(name="numcptd")
     @commands.check(ChDev)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetCPTDNum(self, ctx):
-        await ctx.message.channel.send(
-            embed=discord.Embed(
-                title=f'{AQd.count_documents({"Type":"CPTD"})} in CPTD Daily',
-                color=0x000000,
-            )
-        )
+        await SendWait(ctx, f'{AQd.count_documents({"Type":"CPTD"})} in CPTD Daily')
 
 
 def setup(DClient):

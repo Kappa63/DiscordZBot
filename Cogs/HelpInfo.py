@@ -51,7 +51,9 @@ class HelpInfo(commands.Cog):
             inline=False,
         )
         HEm.add_field(
-            name="zadd [word]: ", value="Adds a word/phrase to keep track of", inline=False
+            name="zadd [word]: ",
+            value="Adds a word/phrase to keep track of",
+            inline=False,
         )
         HEm.add_field(
             name="zremove [word]: ",
@@ -86,7 +88,18 @@ class HelpInfo(commands.Cog):
         )
         await ctx.message.channel.send(embed=HEm)
 
-    @SendH.command(aliases=["social", "socials", "reddit", "twitter", "youtube", "multireddit", "multireddits", "redditor"])
+    @SendH.command(
+        aliases=[
+            "social",
+            "socials",
+            "reddit",
+            "twitter",
+            "youtube",
+            "multireddit",
+            "multireddits",
+            "redditor",
+        ]
+    )
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendR(self, ctx):
         HEm = discord.Embed(
@@ -167,7 +180,9 @@ class HelpInfo(commands.Cog):
         )
         await ctx.message.channel.send(embed=HEm)
 
-    @SendH.command(aliases=["game", "osu", "games", "sudoku", "ttt", "tictactoe", "chess", "cptd"])
+    @SendH.command(
+        aliases=["game", "osu", "games", "sudoku", "ttt", "tictactoe", "chess", "cptd"]
+    )
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendG(self, ctx):
         HEm = discord.Embed(
@@ -210,7 +225,22 @@ class HelpInfo(commands.Cog):
         )
         HEm.add_field(
             name="zosu [Username]: ",
-            value="Get the user's osu profile",
+            value="Get the user's OSU! profile",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zfortnite [Name]: ",
+            value="Get the user's Fortnite stats",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zpubg all [Name]: ",
+            value="Get the user's lifetime stats",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zpubg season [Name]: ",
+            value="Get the user's stats in the current season",
             inline=False,
         )
         HEm.add_field(
@@ -235,7 +265,7 @@ class HelpInfo(commands.Cog):
             "cryptocurrency",
             "gis",
             "google",
-            "weather"
+            "weather",
         ]
     )
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -390,7 +420,11 @@ class HelpInfo(commands.Cog):
         HEm.add_field(name="zdog: ", value="Dog Pics", inline=False)
         HEm.add_field(name="zfox: ", value="Fox Pics", inline=False)
         HEm.add_field(name="zfood: ", value="Food Pics", inline=False)
-        HEm.add_field(name="ztpde: ", value="This Person Doesn't Exist. An AI generated person that did not and probably will never exist", inline=False)
+        HEm.add_field(
+            name="ztpde: ",
+            value="This Person Doesn't Exist. An AI generated person that did not and probably will never exist",
+            inline=False,
+        )
         HEm.add_field(
             name="zfry [Image Attachment/Image Url]: ",
             value="Deep fries the image",
@@ -473,26 +507,26 @@ class HelpInfo(commands.Cog):
             value="Image and Quote of Taylor Swift",
             inline=False,
         )
-        HEm.add_field(
-            name="zqotd: ",
-            value="Quote Of The Day (Voters and Patreons ONLY)",
-            inline=False,
-        )
-        HEm.add_field(
-            name="zqotddaily: ",
-            value="Returns when the next QOTD Daily will happen (Tier 2 or more Patreons ONLY)",
-            inline=False,
-        )
-        HEm.add_field(
-            name="zqotddaily start: ",
-            value="Start receiving daily QOTDs in the current channel (Tier 2 or more Patreons ONLY)",
-            inline=False,
-        )
-        HEm.add_field(
-            name="zqotddaily end/stop: ",
-            value="Stop receiving daily QOTDs (Tier 2 or more Patreons ONLY)",
-            inline=False,
-        )
+        # HEm.add_field(
+        #     name="zqotd: ",
+        #     value="Quote Of The Day (Voters and Patreons ONLY)",
+        #     inline=False,
+        # )
+        # HEm.add_field(
+        #     name="zqotddaily: ",
+        #     value="Returns when the next QOTD Daily will happen (Tier 2 or more Patreons ONLY)",
+        #     inline=False,
+        # )
+        # HEm.add_field(
+        #     name="zqotddaily start: ",
+        #     value="Start receiving daily QOTDs in the current channel (Tier 2 or more Patreons ONLY)",
+        #     inline=False,
+        # )
+        # HEm.add_field(
+        #     name="zqotddaily end/stop: ",
+        #     value="Stop receiving daily QOTDs (Tier 2 or more Patreons ONLY)",
+        #     inline=False,
+        # )
         HEm.add_field(name="zinsult: ", value="Returns an insult", inline=False)
         HEm.add_field(
             name="Aliases:",
@@ -564,8 +598,8 @@ class HelpInfo(commands.Cog):
             color=0x3695BA,
         )
         VEm.add_field(name="Dev: ", value="Kappa#5173", inline=False)
-        VEm.add_field(name="Version: ", value="2.3a", inline=False)
-        VEm.add_field(name="Version Release: ", value="27/2/2021", inline=False)
+        VEm.add_field(name="Version: ", value="2.4a", inline=False)
+        VEm.add_field(name="Version Release: ", value="4/3/2021", inline=False)
         VEm.add_field(name="Initial Release: ", value="21/11/2020", inline=False)
         await ctx.message.channel.send(embed=VEm)
 

@@ -3,7 +3,7 @@ from discord.ext import commands
 import requests
 import tweepy
 from Setup import Twitter
-from Setup import ChVote, ChVoteUser
+from Setup import ChVote, ChVoteUser, SendWait
 from Setup import ErrorEmbeds
 import asyncio
 
@@ -170,7 +170,7 @@ class TwitterCmds(commands.Cog):
                     )
                     SrchTw.append(TWuser)
                 if C == 0:
-                    await ctx.message.channel.send("Not Found :expressionless:")
+                    await SendWait(ctx, "Not Found :expressionless:")
                     return
                 STEm.set_footer(
                     text='Choose a number to open Twitter User Profile. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*'
@@ -213,12 +213,12 @@ class TwitterCmds(commands.Cog):
                         )
                     )
             else:
-                await ctx.message.channel.send("No search argument :woozy_face:")
+                await SendWait(ctx, "No search argument :woozy_face:")
 
         elif args:
             TWname = " ".join(args)
         else:
-            await ctx.message.channel.send("No Arguments :no_mouth:")
+            await SendWait(ctx, "No Arguments :no_mouth:")
         try:
             try:
                 TWprofile = Twitter.get_user(TWname)
@@ -382,21 +382,29 @@ class TwitterCmds(commands.Cog):
                         await TwTsL.remove_reaction("#️⃣", self.DClient.user)
                         break
             except tweepy.error.TweepError:
-                await ctx.message.channel.send("Not Found :expressionless:")
+                await SendWait(ctx, "Not Found :expressionless:")
         except UnboundLocalError:
             pass
 
     @TwitterNav.command(name="trending")
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def TwitterTrends(self, ctx, *args):
-        Trends = Twitter.trends_place(id = 23424977)
-        TEm = discord.Embed(title = f'Currently Trending (USA) ({Trends[0]["as_of"][:10]} {Trends[0]["as_of"][12:16]})', color = 0x0384FC)
+        Trends = Twitter.trends_place(id=23424977)
+        TEm = discord.Embed(
+            title=f'Currently Trending (USA) ({Trends[0]["as_of"][:10]} {Trends[0]["as_of"][12:16]})',
+            color=0x0384FC,
+        )
         for Trend in Trends[0]["trends"]:
             if Trend["tweet_volume"]:
-                TEm.add_field(name=Trend["name"], value=f'{Trend["tweet_volume"]:,} Tweets', inline=False)
+                TEm.add_field(
+                    name=Trend["name"],
+                    value=f'{Trend["tweet_volume"]:,} Tweets',
+                    inline=False,
+                )
             else:
-                TEm.add_field(name=Trend["name"], value=f'\u200b', inline=False)
+                TEm.add_field(name=Trend["name"], value=f"\u200b", inline=False)
         await ctx.message.channel.send(embed=TEm)
-            
+
+
 def setup(DClient):
     DClient.add_cog(TwitterCmds(DClient))

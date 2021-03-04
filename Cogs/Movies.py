@@ -26,7 +26,7 @@ class Movies(commands.Cog):
                 and MSg.channel.id == ctx.channel.id
                 and RsT
             )
-            
+
         await SendWait(ctx, ":tv: Getting Movie/Show...")
         MVinput = " ".join(args).split(" ")
         if MVinput[0].lower() == "search" and args:
@@ -50,7 +50,7 @@ class Movies(commands.Cog):
                     )
                     SrchIMDb.append(Movie)
                 if C == 0:
-                    await ctx.message.channel.send("Nothing Found :woozy_face:")
+                    await SendWait(ctx, "Nothing Found :woozy_face:")
                     return
                 SYem.set_footer(
                     text='Choose a number to check Movie or Series. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*'
@@ -92,14 +92,14 @@ class Movies(commands.Cog):
                     )
                     return
             else:
-                await ctx.message.channel.send("No search argument :woozy_face:")
+                await SendWait(ctx, "No search argument :woozy_face:")
                 return
 
         elif args:
             MVname = " ".join(args)
             IDorName = "NAME"
         else:
-            await ctx.message.channel.send("No Arguments :no_mouth:")
+            await SendWait(ctx, "No Arguments :no_mouth:")
             return
 
         if IDorName == "NAME":
@@ -107,7 +107,7 @@ class Movies(commands.Cog):
                 IMDbtempID = IMClient.search_movie(MVname, results=1)[0].movieID
                 IMDbinfo = IMClient.get_movie(IMDbtempID).data
             except IndexError:
-                await ctx.message.channel.send("Nothing Found :woozy_face:")
+                await SendWait(ctx, "Nothing Found :woozy_face:")
                 return
         elif IDorName == "ID":
             IMDbinfo = IMClient.get_movie(IMDbID).data

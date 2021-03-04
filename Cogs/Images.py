@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import requests
 from Setup import Imgur
-from Setup import ChVoteUser
+from Setup import ChVoteUser, SendWait
 from Setup import ErrorEmbeds
 from pdf2image import convert_from_path
 import random
@@ -11,6 +11,7 @@ import deeppyer
 import asyncio
 import os
 import qrcode
+
 
 class Images(commands.Cog):
     def __init__(self, DClient):
@@ -38,11 +39,15 @@ class Images(commands.Cog):
         DEm.set_image(url=DoggoJSON["url"])
         await ctx.message.channel.send(embed=DEm)
 
-    @commands.command(aliases=["thispersondoesnotexist", "thispersondoesntexist", "tpde"])
+    @commands.command(
+        aliases=["thispersondoesnotexist", "thispersondoesntexist", "tpde"]
+    )
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetAnImaginedPerson(self, ctx):
         PEm = discord.Embed(title="This Person Does NOT Exist.", color=0x753684)
-        GetTpde = requests.get("https://thispersondoesnotexist.com/image", allow_redirects=True)
+        GetTpde = requests.get(
+            "https://thispersondoesnotexist.com/image", allow_redirects=True
+        )
         This = open("Tpde.png", "wb").write(GetTpde.content)
         TpdeImg = discord.File("Tpde.png")
         PEm.set_image(url="attachment://Tpde.png")
@@ -89,26 +94,10 @@ class Images(commands.Cog):
     @commands.command(name="pdf")
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def PDFreader(self, ctx, *args):
-        def EmbTI(PDFname, PDFimages, PDFpage, PDFcache):
-            try:
-                ImgurLink = PDFcache[PDFpage]
-                print("Cached...")
-                CHcache = False
-            except IndexError:
-                print("Uploading...")
-                PDFimages[PDFpage].save(f"{PDFname}.jpg", "JPEG")
-                ImgurLink = Imgur.upload_from_path(f"{PDFname}.jpg")["link"]
-                CHcache = True
-            PEm = discord.Embed(title="PDF Viewer")
-            PEm.set_image(url=ImgurLink)
-            PEm.add_field(name=f"```{PDFpage+1}/{len(PDFimages)}```", value="\u200b")
-            PEm.set_footer(text="Need help navigating? zhelp navigation")
-            return CHcache, ImgurLink, PEm
-
         def ChCHEm(RcM, RuS):
             return (
                 RuS.bot == False
-                and RcM.message == PTEm
+                and RcM.message == PDFer
                 and str(RcM.emoji) in ["⬅️", "❌", "➡️", "#️⃣"]
             )
 
@@ -127,153 +116,127 @@ class Images(commands.Cog):
                 and RsT
             )
 
-        if (len(ctx.message.attachments) == 1 and len(args) == 0) or (
-            len(ctx.message.attachments) == 0 and len(args) == 1
+        if (args and not ctx.message.attachments) or (
+            not args and ctx.message.attachments
         ):
             PDFattach = []
-            URLargs = " ".join(args).split(" ")
-            if len(ctx.message.attachments) == 1:
+            if args:
+                PDFattach.append("".join(args))
+            if ctx.message.attachments:
                 for AtT in ctx.message.attachments:
                     PDFattach.append(AtT.url)
-            else:
-                try:
-                    for Lin in URLargs:
-                        PDFattach.append(Lin)
-                except TypeError:
-                    pass
-
-            for GetPDF in PDFattach:
-                try:
-                    ChPDF = (
-                        requests.head(GetPDF).headers.get("content-type").split("/")[1]
+            GetPDF = PDFattach[0]
+            try:
+                ChPDF = requests.head(GetPDF).headers.get("content-type").split("/")[1]
+                if ChPDF != "pdf":
+                    await SendWait(ctx, "Not a PDF :woozy_face:")
+                    return
+                RanLetters = "ioewsahkzcldnpq"
+                PDFname = "".join((random.choice(RanLetters) for i in range(10)))
+                await SendWait(ctx, ":printer: Converting...")
+                PDFcontent = requests.get(GetPDF, allow_redirects=True)
+                open(f"{PDFname}.pdf", "wb").write(PDFcontent.content)
+                PDFimages = convert_from_path(
+                    f"{PDFname}.pdf",
+                    500,
+                    last_page=40,
+                )
+                PDFcnvrt = []
+                Dels = []
+                PageNum = 1
+                TotalPages = len(PDFimages)
+                for Img in PDFimages:
+                    Img.save(f"{PDFname}.jpg", "JPEG")
+                    PEm = discord.Embed(
+                        title="PDF Viewer", description=f"**`{PageNum}/{TotalPages}`**"
                     )
-                    if ChPDF == "pdf":
-                        RanLetters = "ioewsahkzcldnpq"
-                        PDFname = "".join(
-                            (random.choice(RanLetters) for i in range(10))
+                    Up = Imgur.upload_from_path(f"{PDFname}.jpg")
+                    Dels.append(Up["id"])
+                    PEm.set_image(url=Up["link"])
+                    PDFcnvrt.append(PEm)
+                    PageNum += 1
+                os.remove(f"{PDFname}.jpg")
+                os.remove(f"{PDFname}.pdf")
+                PageNum = 0
+                PDFer = await ctx.message.channel.send(embed=PDFcnvrt[PageNum])
+                await PDFer.add_reaction("⬅️")
+                await PDFer.add_reaction("❌")
+                await PDFer.add_reaction("➡️")
+                await PDFer.add_reaction("#️⃣")
+                while True:
+                    try:
+                        Res = await self.DClient.wait_for(
+                            "reaction_add", check=ChCHEm, timeout=120
                         )
-                        PDFcontent = requests.get(GetPDF, allow_redirects=True)
-                        open(f"{PDFname}.pdf", "wb").write(PDFcontent.content)
-                        PDFimages = convert_from_path(
-                            f"{PDFname}.pdf", 500, last_page=40
-                        )
-                        print(PDFimages)
-                        PDFpage = 0
-                        PDFcache = []
-                        PTEm = await ctx.message.channel.send(
-                            embed=discord.Embed(
-                                title="Uploading Page...",
-                                description="After upload a page will no longer be uploaded again (Faster navigation to page)",
-                            )
-                        )
-                        CHcache, ImgurLink, PEm = EmbTI(
-                            PDFname, PDFimages, PDFpage, PDFcache
-                        )
-                        if CHcache:
-                            PDFcache.append(ImgurLink)
-                        await PTEm.edit(embed=PEm)
-                        await PTEm.add_reaction("⬅️")
-                        await PTEm.add_reaction("❌")
-                        await PTEm.add_reaction("➡️")
-                        await PTEm.add_reaction("#️⃣")
-                        while True:
-                            try:
-                                ReaEm = await self.DClient.wait_for(
-                                    "reaction_add", check=ChCHEm, timeout=120
-                                )
-                                await PTEm.remove_reaction(ReaEm[0].emoji, ReaEm[1])
-                                if ReaEm[0].emoji == "⬅️" and PDFpage != 0:
-                                    PDFpage -= 1
-                                    CHcache, ImgurLink, PEm = EmbTI(
-                                        PDFname, PDFimages, PDFpage, PDFcache
-                                    )
-                                    if CHcache:
-                                        PDFcache.append(ImgurLink)
-                                    await PTEm.edit(embed=PEm)
-                                elif ReaEm[0].emoji == "➡️":
-                                    if PDFpage < len(PDFimages) - 1:
-                                        PDFpage += 1
-                                        CHcache, ImgurLink, PEm = EmbTI(
-                                            PDFname, PDFimages, PDFpage, PDFcache
-                                        )
-                                        if CHcache:
-                                            PDFcache.append(ImgurLink)
-                                        await PTEm.edit(embed=PEm)
-                                    else:
-                                        await PTEm.remove_reaction(
-                                            "⬅️", self.DClient.user
-                                        )
-                                        await PTEm.remove_reaction(
-                                            "❌", self.DClient.user
-                                        )
-                                        await PTEm.remove_reaction(
-                                            "➡️", self.DClient.user
-                                        )
-                                        await PTEm.remove_reaction(
-                                            "#️⃣", self.DClient.user
-                                        )
-                                        os.remove(f"{PDFname}.jpg")
-                                        os.remove(f"{PDFname}.pdf")
-                                        break
-                                elif ReaEm[0].emoji == "#️⃣":
-                                    if await ChVoteUser(ReaEm[1].id):
-                                        NavNote = await ctx.message.channel.send(
-                                            'Choose a number to open navigate to page. "c" or "cancel" to exit navigation.'
-                                        )
-                                        try:
-                                            ResE = await self.DClient.wait_for(
-                                                "message", check=ChCHEmFN, timeout=10
-                                            )
-                                            await NavNote.delete()
-                                            await ResE.delete()
-                                            try:
-                                                try:
-                                                    pG = int(ResE.content)
-                                                    if 0 < pG <= len(PDFimages) - 1:
-                                                        PDFpage = pG - 1
-                                                    elif pG < 1:
-                                                        PDFpage = 0
-                                                        pass
-                                                    else:
-                                                        PDFpage = len(PDFimages) - 1
-                                                except TypeError:
-                                                    pass
-                                            except ValueError:
-                                                pass
-                                            CHcache, ImgurLink, PEm = EmbTI(
-                                                PDFname, PDFimages, PDFpage, PDFcache
-                                            )
-                                            if CHcache:
-                                                PDFcache.append(ImgurLink)
-                                            await PTEm.edit(embed=PEm)
-                                        except asyncio.TimeoutError:
-                                            await NavNote.edit("Request Timeout")
-                                            await asyncio.sleep(5)
-                                            await NavNote.delete()
-                                    else:
-                                        await ctx.message.channel.send(
-                                            embed=ErrorEmbeds("Vote")
-                                        )
-                                elif ReaEm[0].emoji == "❌":
-                                    await PTEm.remove_reaction("⬅️", self.DClient.user)
-                                    await PTEm.remove_reaction("❌", self.DClient.user)
-                                    await PTEm.remove_reaction("➡️", self.DClient.user)
-                                    await PTEm.remove_reaction("#️⃣", self.DClient.user)
-                                    os.remove(f"{PDFname}.jpg")
-                                    os.remove(f"{PDFname}.pdf")
-                                    break
-                            except asyncio.TimeoutError:
-                                await PTEm.remove_reaction("⬅️", self.DClient.user)
-                                await PTEm.remove_reaction("❌", self.DClient.user)
-                                await PTEm.remove_reaction("➡️", self.DClient.user)
-                                await PTEm.remove_reaction("#️⃣", self.DClient.user)
-                                os.remove(f"{PDFname}.jpg")
-                                os.remove(f"{PDFname}.pdf")
+                        await PDFer.remove_reaction(Res[0].emoji, Res[1])
+                        if Res[0].emoji == "⬅️" and PageNum != 0:
+                            PageNum -= 1
+                            await PDFer.edit(embed=PDFcnvrt[PageNum])
+                        elif Res[0].emoji == "➡️":
+                            if PageNum < TotalPages - 1:
+                                PageNum += 1
+                                await PDFer.edit(embed=PDFcnvrt[PageNum])
+                            else:
+                                await PDFer.edit(embed=PDFcnvrt[PageNum])
+                                await PDFer.remove_reaction("⬅️", self.DClient.user)
+                                await PDFer.remove_reaction("❌", self.DClient.user)
+                                await PDFer.remove_reaction("➡️", self.DClient.user)
+                                await PDFer.remove_reaction("#️⃣", self.DClient.user)
                                 break
-                except requests.exceptions.MissingSchema:
-                    await ctx.message.channel.send("Not a PDF :woozy_face:")
+                        elif Res[0].emoji == "#️⃣":
+                            if await ChVoteUser(Res[1].id):
+                                TemTw = await ctx.message.channel.send(
+                                    'Choose a number to open navigate to page. "c" or "cancel" to exit navigation.'
+                                )
+                                try:
+                                    ResE = await self.DClient.wait_for(
+                                        "message", check=ChCHEmFN, timeout=10
+                                    )
+                                    await TemTw.delete()
+                                    await ResE.delete()
+                                    try:
+                                        try:
+                                            pG = int(ResE.content)
+                                            if 0 < pG <= TotalPages - 1:
+                                                PageNum = pG - 1
+                                            elif pG < 1:
+                                                PageNum = 0
+                                                pass
+                                            else:
+                                                PageNum = TotalPages - 1
+                                        except TypeError:
+                                            pass
+                                    except ValueError:
+                                        pass
+                                    await PDFer.edit(embed=PDFcnvrt[PageNum])
+                                except asyncio.exceptions.TimeoutError:
+                                    await TemTw.edit("Request Timeout")
+                                    await asyncio.sleep(5)
+                                    await TemTw.delete()
+                            else:
+                                await ctx.message.channel.send(
+                                    embed=ErrorEmbeds("Vote")
+                                )
+                        elif Res[0].emoji == "❌":
+                            await PDFer.edit(embed=PDFcnvrt[PageNum])
+                            await PDFer.remove_reaction("⬅️", self.DClient.user)
+                            await PDFer.remove_reaction("❌", self.DClient.user)
+                            await PDFer.remove_reaction("➡️", self.DClient.user)
+                            await PDFer.remove_reaction("#️⃣", self.DClient.user)
+                            break
+                    except asyncio.TimeoutError:
+                        await PDFer.edit(embed=PDFcnvrt[PageNum])
+                        await PDFer.remove_reaction("⬅️", self.DClient.user)
+                        await PDFer.remove_reaction("❌", self.DClient.user)
+                        await PDFer.remove_reaction("➡️", self.DClient.user)
+                        await PDFer.remove_reaction("#️⃣", self.DClient.user)
+                        break
+                for i in Dels:
+                    Imgur.delete_image(i)
+            except requests.exceptions.MissingSchema:
+                await SendWait(ctx, "Not a PDF :woozy_face:")
         else:
-            await ctx.message.channel.send("No or too many attachments :woozy_face:")
+            await SendWait(ctx, "No or too many attachments :woozy_face:")
 
     @commands.group(aliases=["fry", "deepfry"], invoke_without_command=True)
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -309,15 +272,13 @@ class Images(commands.Cog):
                         Files.pop(0)
                         os.remove("NsRndo.jpg")
                     else:
-                        await ctx.message.channel.send(
-                            f"File({C}) isnt a valid image type :sweat:"
+                        await SendWait(
+                            ctx, f"File({C}) isnt a valid image type :sweat:"
                         )
                 except requests.exceptions.MissingSchema:
                     pass
         else:
-            await ctx.message.channel.send(
-                "No image(s) or link(s) were attached :woozy_face:"
-            )
+            await SendWait(ctx, "No image(s) or link(s) were attached :woozy_face:")
 
     @ImageFrier.command(name="profile")
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -344,13 +305,11 @@ class Images(commands.Cog):
                 Files.pop(0)
                 os.remove("NsRndo.jpg")
             else:
-                await ctx.message.channel.send(
-                    f"File({C}) isnt a valid image type :sweat:"
-                )
+                await SendWait(ctx, f"File({C}) isnt a valid image type :sweat:")
         except requests.exceptions.MissingSchema:
             pass
 
-    @commands.command(aliases=["qr","qrcode"])
+    @commands.command(aliases=["qr", "qrcode"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def QRmake(self, ctx, *args):
         if args:
@@ -362,7 +321,7 @@ class Images(commands.Cog):
             await ctx.message.channel.send(files=Files)
             os.remove("QR.png")
         else:
-            await ctx.message.channel.send("Nothing to QR")
+            await SendWait(ctx, "Nothing to QR")
 
 
 def setup(DClient):
