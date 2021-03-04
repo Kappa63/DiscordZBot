@@ -96,7 +96,7 @@ class MainEvents(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
         self.SendAPODDaily.start()
-        self.SendQOTDDaily.start()
+        # self.SendQOTDDaily.start()
         self.SendCPTDDaily.start()
 
     @commands.Cog.listener()
