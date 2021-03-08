@@ -694,7 +694,7 @@ class AnimeManga(commands.Cog):
                         )
                         DmSent = await ctx.message.channel.send(embed=DEm)
                     else:
-                        await SendWait(
+                        await SendWait(ctx, 
                             "In compliance with discord TOS, this is Unavailable. :upside_down: "
                         )
                         return

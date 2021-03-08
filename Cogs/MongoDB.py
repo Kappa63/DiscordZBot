@@ -220,11 +220,8 @@ class MongoDB(commands.Cog):
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def IMsg(self, ctx, *args):
         isBot = False
-        if len(ctx.message.mentions) > 0:
-            if (
-                ctx.message.mentions[0].bot == False
-                and (f"<@!{ctx.message.mentions[0].id}>") == args[0]
-            ):
+        if ctx.message.mentions:
+            if (ctx.message.mentions[0].bot == False and (f"<@!{ctx.message.mentions[0].id}>") == args[0]):
                 AUmN = ctx.message.mentions[0]
                 aRGu = list(args)
                 aRGu.pop(0)
@@ -266,7 +263,7 @@ class MongoDB(commands.Cog):
                 await ctx.message.channel.send(embed=IEm)
             else:
                 await SendWait(ctx, "That word doesnt exist yet! :confused:")
-        elif isBot == True:
+        else:
             await SendWait(ctx, "Cannot check a bot's stats :confused:")
 
     @commands.command(name="top")
