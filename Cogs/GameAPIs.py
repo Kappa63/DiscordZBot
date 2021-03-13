@@ -9,7 +9,7 @@ def PUBGDataEmbed(data, name):
     PEm = discord.Embed(title=name, color=0x32110A)
     Combiner = lambda x, y: {k: x.get(k, 0) + y.get(k, 0) for k in set(x) | set(y)}
     Duo, Solo, Squad = Threader(
-        [Combiner, Combiner, Combiner],
+        [Combiner]*3,
         [
             [data["duo"], data["duo-fpp"]],
             [data["solo"], data["solo-fpp"]],

@@ -5,8 +5,9 @@ import cv2
 import numpy
 import requests
 import os
-from Setup import GClient, GApi, Imgur
+from Setup import GClient, GApi
 from Setup import SendWait
+import pyimgbox
 
 
 class Randomizers(commands.Cog):
@@ -44,7 +45,9 @@ class Randomizers(commands.Cog):
         MakeClear[:, 0:360] = (B, G, R)
         RGBtoHEX = "%02x%02x%02x" % (R, G, B)
         cv2.imwrite("Color.png", MakeClear)
-        ColoredImage = Imgur.upload_from_path("Color.png")["link"]
+        async with pyimgbox.Gallery(title="The Color") as gallery:
+            Img = await gallery.upload("Color.png")
+        ColoredImage = Img["image_url"]
         os.remove("Color.png")
         ColorObject = discord.Color(value=int(RGBtoHEX, 16))
         CEm = discord.Embed(

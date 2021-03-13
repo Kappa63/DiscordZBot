@@ -6,7 +6,7 @@ import giphy_client
 import tweepy
 import malclient
 import COVID19Py
-import imgurpython
+#- import imgurpython
 import praw
 import pymongo
 import CBot
@@ -21,10 +21,10 @@ import concurrent.futures as Cf
 
 load_dotenv()
 
-Mdb = os.getenv("MONGODB_URL")
-Cls = MongoClient(Mdb)
+Cls = MongoClient(os.getenv("MONGODB_URL"))
 DbM = Cls["CBot"]
 Col = DbM["Ser"]
+ColT = DbM["SerTwo"]
 AQd = DbM["Daily"]
 Rdt = DbM["Reddit"]
 
@@ -60,9 +60,9 @@ Reddit = praw.Reddit(
 
 Covid = COVID19Py.COVID19(data_source="jhu")
 
-Imgur = imgurpython.ImgurClient(
-    client_id=os.getenv("IMGUR_ID"), client_secret=os.getenv("IMGUR_SECRET")
-)
+#- Imgur = imgurpython.ImgurClient(
+#-     client_id=os.getenv("IMGUR_ID"), client_secret=os.getenv("IMGUR_SECRET")
+#- )
 
 YClient = pyyoutube.Api(api_key=os.getenv("YOUTUBE_KEY"))
 
@@ -133,15 +133,24 @@ class IsSetup(commands.CheckFailure):
 
 
 def ChSer(ctx):
-    if (
-        Col.count_documents(
-            {"IDd": "GuildInfo", "IDg": str(ctx.guild.id), "Setup": "Done"}
-        )
-        != 0
-    ):
+    if ColT.count_documents({"IDg": str(ctx.guild.id)}):
         return True
     raise IsSetup("Unready")
 
+    #!! DEPRECATED Server Check
+    #! if (
+    #!     Col.count_documents(
+    #!         {"IDd": "GuildInfo", "IDg": str(ctx.guild.id), "Setup": "Done"}
+    #!     )
+    #!     != 0
+    #! ):
+    #!     return True
+    #! raise IsSetup("Unready")
+
+def ChSerGuild(guild):
+    if ColT.count_documents({"IDg": str(guild.id)}):
+        return True
+    return False
 
 class IsMultiredditLimit(commands.CheckFailure):
     pass

@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
 import requests
-from Setup import Imgur
-from Setup import ChVoteUser, SendWait
+import pyimgbox
+from Setup import ChVoteUser, SendWait, Threader
 from Setup import ErrorEmbeds
 from pdf2image import convert_from_path
 import random
@@ -116,9 +116,7 @@ class Images(commands.Cog):
                 and RsT
             )
 
-        if (args and not ctx.message.attachments) or (
-            not args and ctx.message.attachments
-        ):
+        if (args and not ctx.message.attachments) or (not args and ctx.message.attachments):
             PDFattach = []
             if args:
                 PDFattach.append("".join(args))
@@ -136,27 +134,22 @@ class Images(commands.Cog):
                 await SendWait(ctx, ":printer: Converting...")
                 PDFcontent = requests.get(GetPDF, allow_redirects=True)
                 open(f"{PDFname}.pdf", "wb").write(PDFcontent.content)
-                PDFimages = convert_from_path(
-                    f"{PDFname}.pdf",
-                    500,
-                    last_page=40,
-                )
+                PDFimages = convert_from_path(f"{PDFname}.pdf",500,last_page=40,)
                 PDFcnvrt = []
-                Dels = []
                 PageNum = 1
                 TotalPages = len(PDFimages)
-                for Img in PDFimages:
-                    Img.save(f"{PDFname}.jpg", "JPEG")
-                    PEm = discord.Embed(
-                        title="PDF Viewer", description=f"**`{PageNum}/{TotalPages}`**"
-                    )
-                    Up = Imgur.upload_from_path(f"{PDFname}.jpg")
-                    Dels.append(Up["id"])
-                    PEm.set_image(url=Up["link"])
+                Sub = []
+                async with pyimgbox.Gallery(title=PDFname) as gallery:
+                    for i in PDFimages:
+                        i.save(f"{PDFname}.jpg", "JPEG")
+                        Sub.append(await gallery.upload(f"{PDFname}.jpg"))
+
+                for Up in Sub:
+                    PEm = discord.Embed(title="PDF Viewer", description=f"**`{PageNum}/{TotalPages}`**")
+                    PEm.set_image(url=Up["image_url"])
                     PDFcnvrt.append(PEm)
                     PageNum += 1
-                os.remove(f"{PDFname}.jpg")
-                os.remove(f"{PDFname}.pdf")
+
                 PageNum = 0
                 PDFer = await ctx.message.channel.send(embed=PDFcnvrt[PageNum])
                 await PDFer.add_reaction("⬅️")
@@ -231,8 +224,6 @@ class Images(commands.Cog):
                         await PDFer.remove_reaction("➡️", self.DClient.user)
                         await PDFer.remove_reaction("#️⃣", self.DClient.user)
                         break
-                for i in Dels:
-                    Imgur.delete_image(i)
             except requests.exceptions.MissingSchema:
                 await SendWait(ctx, "Not a PDF :woozy_face:")
         else:
