@@ -207,22 +207,19 @@ class RedditCmds(commands.Cog):
         if args:
             if CheckSub("".join(args)):
                 await SendWait(ctx, ":mobile_phone: Finding Post...")
-                try:
-                    Post = list(Reddit.subreddit("".join(args)).hot())
-                    TotalPosts = len(Post)
-                    if TotalPosts == 0:
-                        await ctx.message.channel.send(
-                            "No posts on that subreddit :no_mouth:"
-                        )
-                        return
-                    ChoicePosts = random.randint(1, TotalPosts)
-                    for _ in range(0, ChoicePosts):
-                        SubCpoS = next(Sub for Sub in Post if not Sub.stickied)
-                except StopIteration:
+                #- try:
+                Post = [i for i in list(Reddit.subreddit("".join(args)).hot()) if not i.stickied]
+                if not Post:
                     await ctx.message.channel.send(
                         "No posts on that subreddit :no_mouth:"
                     )
                     return
+                SubCpoS = random.choice(Post)
+                #- except StopIteration:
+                #-     await ctx.message.channel.send(
+                #-         "No posts on that subreddit :no_mouth:"
+                #-     )
+                #-     return
                 await ctx.message.channel.send(
                     embed=EmbedMaker(ctx, SubCpoS, "".join(args))
                 )
@@ -348,12 +345,13 @@ class RedditCmds(commands.Cog):
                     await KraPosS.delete()
                     return
 
-                SubCpoS = []
-                TotalPosts = 0
-                for SuTPos in Post:
-                    TotalPosts += 1
-                    if not SuTPos.stickied:
-                        SubCpoS.append(SuTPos)
+                SubCpoS = [SuTPos for SuTPos in Post if not SuTPos.stickied]
+                # TotalPosts = 0
+                # for SuTPos in Post:
+                #     # TotalPosts += 1
+                #     if not SuTPos.stickied:
+                #         SubCpoS.append(SuTPos)
+                TotalPosts = len(SubCpoS)
                 if TotalPosts == 0:
                     await SendWait(ctx, "No posts on that subreddit :no_mouth:")
                     return
