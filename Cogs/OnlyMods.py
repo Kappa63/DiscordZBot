@@ -28,6 +28,20 @@ class OnlyMods(commands.Cog):
         SEm.add_field(name="ShardCount: ", value=self.DClient.shard_count, inline=False)
         await ctx.message.channel.send(embed=SEm)
 
+    @commands.command(name="embed")
+    @commands.check(ChDev)
+    async def Embedder(self, ctx, *args):
+        args = (" ".join(args)).split("_")
+        for i in args:
+            if i[:2].lower() == "-t":
+                Title = i[3:]
+            if i[:2].lower() == "-d":
+                Desc = i[3:]
+            if i[:2].lower() == "-c":
+                Color = 0xff0000 if i[3:].lower() == "red" else 0x3a62d8 if i[3:].lower() == "blue" else 0xc4c4c4
+        await ctx.message.delete()
+        await ctx.message.channel.send(embed=discord.Embed(title=Title, description = Desc, color = Color))
+
     @commands.command(name="makedown")
     @commands.check(ChDev)
     @commands.cooldown(1, 1, commands.BucketType.user)

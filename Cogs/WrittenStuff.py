@@ -41,6 +41,30 @@ class WrittenStuff(commands.Cog):
             )
         )
 
+    @commands.group(aliases=["bin", "binary"])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def Bins(self, ctx):
+        pass
+    
+    @Bins.command(aliases=["make", "create"])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def To(self, ctx, *args):
+        Binary = " ".join([format(i,"b") for i in bytearray(" ".join(args),"utf-8")])
+        await ctx.message.channel.send(embed = discord.Embed(title = "Convert To Binary", description = Binary[:2048], color = 0x5ADF44))
+
+    @Bins.commanxd(name = "read")
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def From(self, ctx, *args):
+        try:
+            String = "".join([chr(int(Binary, 2)) for Binary in args])
+            try:
+                requests.get(String)
+                await ctx.message.channel.send(String)
+            except:
+                await ctx.message.channel.send(embed = discord.Embed(title = "Convert To Text", description = String[:2048], color = 0x5ADF44))
+        except ValueError:
+            await SendWait("Something went wrong. Check if the binary has any errors.")
+
     @commands.command(aliases=["kanye", "kanyewest"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def ShitByKanye(self, ctx):

@@ -119,7 +119,7 @@ class MainEvents(commands.Cog):
         if isinstance(error, commands.CommandOnCooldown):
             await SendWait(
                 ctx,
-                "Hold the spam. Wait atleast {FormatTime(round(error.retry_after, 2))}",
+                f'Hold the spam. Wait atleast {FormatTime(round(error.retry_after, 2))}',
             )
         elif isinstance(error, IsAdmin):
             await SendWait(ctx, "Non-admins are not allowed to use this command")
@@ -150,12 +150,12 @@ class MainEvents(commands.Cog):
             or isinstance(error, Ignore)
             or isinstance(error, IsBot)
         ):
-            pass
+            return
         else:
             StaffChannel = self.DClient.get_channel(795080325020909598)
             Me = self.DClient.get_user(443986051371892746)
             await StaffChannel.send(Me.mention)
-            await StaffChannel.send(str(error))
+            await StaffChannel.send(f'In {ctx.command}: {error}')
             raise error
 
     @tasks.loop(seconds=TimeTillMidnight())

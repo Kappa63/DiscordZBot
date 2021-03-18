@@ -434,6 +434,11 @@ class HelpInfo(commands.Cog):
             inline=False,
         )
         HEm.add_field(
+            name="zpog: ",
+            value="Random Pog",
+            inline=False,
+        )
+        HEm.add_field(
             name="zfry [Image Attachment/Image Url]: ",
             value="Deep fries the image",
             inline=False,
@@ -447,18 +452,23 @@ class HelpInfo(commands.Cog):
             inline=False,
         )
         HEm.add_field(
-            name="zqr [Text]: ",
-            value="Makes a qrcode of the Text",
+            name="zqrcode make [Tex/Attachment]: ",
+            value="Converts the Text or Attachments into Qrcodes",
             inline=False,
         )
         HEm.add_field(
-            name="zpdf [PDF Attachment/PDF Url]: ",
+            name="zqrcode read [Qrcode Url/Attachment]: ",
+            value="Converts the Qrcodes into Text",
+            inline=False,
+        )
+        HEm.add_field(
+            name="zpdf [PDF Attachment/Url]: ",
             value="Views the PDF's first 40 pages as images",
             inline=False,
         )
         HEm.add_field(
             name="Aliases:",
-            value="**-Cat =** `cat, kitten, kitty`\n\n**-Dog =** `doggo, dog, pupper, puppy`\n\n**-Food =** `food, dishes, dish`\n\n**-QR =** `qrcode, qr`",
+            value="**-Pog =** `pog, poggers, pogger`\n\n**-Cat =** `cat, kitten, kitty`\n\n**-Dog =** `doggo, dog, pupper, puppy`\n\n**-Food =** `food, dishes, dish`\n\n**-QR =** `qrcode, qr`\n\n**-QR Create =** `qrcode create, qrcode make`",
         )
         await ctx.message.channel.send(embed=HEm)
 
@@ -490,7 +500,6 @@ class HelpInfo(commands.Cog):
             "kanye",
             "taylor",
             "taylorswift",
-            "qotd",
         ]
     )
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -542,7 +551,7 @@ class HelpInfo(commands.Cog):
         )
         await ctx.message.channel.send(embed=HEm)
 
-    @SendH.command(aliases=["misc", "misc.", "miscellaneous"])
+    @SendH.command(aliases=["misc", "misc.", "miscellaneous", "binary", "bin"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendM(self, ctx):
         HEm = discord.Embed(
@@ -562,9 +571,15 @@ class HelpInfo(commands.Cog):
             inline=False,
         )
         HEm.add_field(name="zroll: ", value="Rolls a dice", inline=False)
+        HEm.add_field(name="zbinary make [Text]", value="Converts the text into Binary", inline= False)
+        HEm.add_field(name="zbinary read [Binary]", value="Converts the Binary into Text", inline= False)
+        HEm.add_field(
+            name="Aliases:",
+            value="**-Binary =** `bin, binary`\n\n**-Binary Create =** `binary create, binary make`",
+        )
         HEm.add_field(
             name="Notes:",
-            value="**-zremind:** is limited to 1day max. Could occasionally fail to notify you due to the bot going down, so dont rely on it entirely.",
+            value="**-zremind:** is limited to 1day max. Could occasionally fail to notify you due to the bot going down.",
             inline=False,
         )
         await ctx.message.channel.send(embed=HEm)
@@ -606,8 +621,8 @@ class HelpInfo(commands.Cog):
             color=0x3695BA,
         )
         VEm.add_field(name="Dev: ", value="Kappa#5173", inline=False)
-        VEm.add_field(name="Version: ", value="2.5a", inline=False)
-        VEm.add_field(name="Version Release: ", value="13/3/2021", inline=False)
+        VEm.add_field(name="Version: ", value="2.6a", inline=False)
+        VEm.add_field(name="Version Release: ", value="18/3/2021", inline=False)
         VEm.add_field(name="Initial Release: ", value="21/11/2020", inline=False)
         await ctx.message.channel.send(embed=VEm)
 

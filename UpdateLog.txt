@@ -1,6 +1,9 @@
-Whats new in 2.5a:
-RECREATED Counting System Completely
-FIXED Unable to add "." or "$" characters in Counting
-REMOVED Counting limit. (No longer stops at 10)
-CHANGED zreset is now zclear (zclear simply fits the action more)
-IMPROVED zpdf. Sped up converting process
+Whats new in 2.6a:
+NEW Pog command: Random Pog (zpog, zpogger, poggers)
+NEW Convert from text to Binary (zbinary/zbin make/create [text])
+NEW Convert from binary to text (zbinary/zbin read [Binary]) 
+NEW Convert from QRcode to text (zqr/zqrcode read [qrcode Url/Attachment])
+CHANGED Qrcode creation command from zqr/zqrcode [text] to zqr/zqrcode make/create [text]
+ADDED Make qrcode from attachment
+ADDED Binary commands to miscellaneous help (zhelp misc, zhelp bin)
+ADDED Pog and new Qr commands to image help (zhelp image)

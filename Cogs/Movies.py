@@ -112,12 +112,15 @@ class Movies(commands.Cog):
         elif IDorName == "ID":
             IMDbinfo = IMClient.get_movie(IMDbID).data
 
-        Plot = IMDbinfo["plot outline"]
-        if len(Plot) > 1000:
-            PlotF = Plot[0:100]
-            PlotF = PlotF + "..."
-        else:
-            PlotF = Plot
+        try:
+            Plot = IMDbinfo["plot outline"]
+            if len(Plot) > 1000:
+                PlotF = Plot[0:100]
+                PlotF = PlotF + "..."
+            else:
+                PlotF = Plot
+        except KeyError:
+            pass
 
         YEm = discord.Embed(
             title=IMDbinfo["original title"],

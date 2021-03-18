@@ -11,6 +11,7 @@ import deeppyer
 import asyncio
 import os
 import qrcode
+import cv2
 
 
 class Images(commands.Cog):
@@ -27,6 +28,14 @@ class Images(commands.Cog):
         CEm = discord.Embed(title="Meow", color=0xA3D7C1)
         CEm.set_image(url=CatJSON["file"])
         await ctx.message.channel.send(embed=CEm)
+
+    @commands.command(aliases=["pog","poggers", "pogger"])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def POOOGGERRRS(self, ctx):
+        Pog = random.choice(open("Pog.txt").readlines())
+        # PEm = discord.Embed(title=random.choice(["POG", "POGGERS"]), color=0xEE9882)
+        # PEm.set_image(url=Pog)
+        await ctx.message.channel.send(Pog)
 
     @commands.command(aliases=["doggo", "dog", "pupper", "puppy"])
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -232,10 +241,10 @@ class Images(commands.Cog):
     @commands.group(aliases=["fry", "deepfry"], invoke_without_command=True)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def ImageFrier(self, ctx, *args):
-        if args or len(ctx.message.attachments) > 0:
+        if args or ctx.message.attachments:
             Attached = []
             if args:
-                URLargs = " ".join(args).split(" ")
+                URLargs = list(args)
                 try:
                     for url in URLargs:
                         Attached.append(url)
@@ -274,7 +283,7 @@ class Images(commands.Cog):
     @ImageFrier.command(name="profile")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def ProfileFrier(self, ctx):
-        if len(ctx.message.mentions) > 0:
+        if ctx.message.mentions:
             Profile = str((ctx.message.mentions[0]).avatar_url)
         else:
             Profile = str(ctx.author.avatar_url)
@@ -300,20 +309,69 @@ class Images(commands.Cog):
         except requests.exceptions.MissingSchema:
             pass
 
-    @commands.command(aliases=["qr", "qrcode"])
+    @commands.group(aliases=["qr", "qrcode"])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def QRCodes(self,ctx):
+        pass
+
+    @QRCodes.command(aliases=["make", "create"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def QRmake(self, ctx, *args):
-        if args:
+        if args or ctx.message.attachments:
+            Stuff = []
             Files = []
-            ToQR = " ".join(args)
-            QRcode = qrcode.make(ToQR)
-            QRcode.save("QR.png")
-            Files.append(discord.File("QR.png"))
-            await ctx.message.channel.send(files=Files)
-            os.remove("QR.png")
+            if args: Stuff.append(" ".join(args))
+            [Stuff.append(i.url) for i in ctx.message.attachments]
+            for ToQR in Stuff:
+                QRcode = qrcode.make(ToQR)
+                QRcode.save("QR.png")
+                Files.append(discord.File("QR.png"))
+                await ctx.message.channel.send(files=Files)
+                os.remove("QR.png")
         else:
             await SendWait(ctx, "Nothing to QR")
 
+    @QRCodes.command(name="read")
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def QRread(self, ctx, *args):
+        if args or len(ctx.message.attachments) > 0:
+            Attached = []
+            if args:
+                URLargs = " ".join(args).split(" ")
+                try:
+                    for url in URLargs:
+                        Attached.append(url)
+                except TypeError:
+                    pass
+            if len(ctx.message.attachments) > 0:
+                for AtT in ctx.message.attachments:
+                    Attached.append(AtT.url)
+            Files = []
+            C = 0
+            for File in Attached:
+                try:
+                    if (
+                        requests.head(File).headers.get("content-type").split("/")[0]
+                        == "image"
+                    ):
+                        C += 1
+                        GetURLimg = requests.get(File, allow_redirects=True)
+                        open("QrStf.png", "wb").write(GetURLimg.content)
+                        Data = cv2.QRCodeDetector().detectAndDecode(cv2.imread("QrStf.png"))[0]
+                        try:
+                            requests.get(Data)
+                            await ctx.message.channel.send(Data)
+                        except:
+                            await SendWait(ctx, Data)
+                        os.remove("QrStf.png")
+                    else:
+                        await SendWait(
+                            ctx, f"File({C}) doesnt contain a qrcode :sweat:"
+                        )
+                except requests.exceptions.MissingSchema:
+                    pass
+        else:
+            await SendWait(ctx, "No image(s) or link(s) were attached :woozy_face:")
 
 def setup(DClient):
     DClient.add_cog(Images(DClient))

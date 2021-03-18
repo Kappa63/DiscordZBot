@@ -109,13 +109,13 @@ def FormatTime(SecondsFormat):
             Hour -= 24
         SecondsFormat -= 60
     if Day != 0:
-        return f"{Day}Day(s) {Hour}Hour(s) {Min}Min(s) {SecondsFormat}Sec(s)"
+        return f"{Day}d {Hour}h {Min}m {SecondsFormat}s"
     elif Hour != 0:
-        return f"{Hour}Hour(s) {Min}Min(s) {SecondsFormat}Sec(s)"
+        return f"{Hour}h {Min}m {SecondsFormat}s"
     elif Min != 0:
-        return f"{Min}Min(s) {SecondsFormat}Sec(s)"
+        return f"{Min}m {SecondsFormat}s"
     else:
-        return f"{SecondsFormat}Sec(s)"
+        return f"{SecondsFormat}s"
 
 
 def Threader(FunctionList, ParameterList):
