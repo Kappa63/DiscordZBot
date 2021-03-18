@@ -52,7 +52,7 @@ class WrittenStuff(commands.Cog):
         Binary = " ".join([format(i,"b") for i in bytearray(" ".join(args),"utf-8")])
         await ctx.message.channel.send(embed = discord.Embed(title = "Convert To Binary", description = Binary[:2048], color = 0x5ADF44))
 
-    @Bins.commanxd(name = "read")
+    @Bins.command(name = "read")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def From(self, ctx, *args):
         try:
