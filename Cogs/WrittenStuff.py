@@ -63,7 +63,7 @@ class WrittenStuff(commands.Cog):
             except:
                 await ctx.message.channel.send(embed = discord.Embed(title = "Convert To Text", description = String[:2048], color = 0x5ADF44))
         except ValueError:
-            await SendWait("Something went wrong. Check if the binary has any errors.")
+            await SendWait(ctx, "Something went wrong. Check if the binary has any errors.")
 
     @commands.command(aliases=["kanye", "kanyewest"])
     @commands.cooldown(1, 1, commands.BucketType.user)
