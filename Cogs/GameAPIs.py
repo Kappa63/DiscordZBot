@@ -41,6 +41,7 @@ class GameAPIs(commands.Cog):
         self.DClient = DClient
 
     @commands.command(name="osu")
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def OSUuser(self, ctx, *args):
         if args:
             SearchUser = OClient.get_user("".join(args))
@@ -79,6 +80,7 @@ class GameAPIs(commands.Cog):
             await SendWait(ctx, "No Username Given. Try add a Username First.")
 
     @commands.command(name="fortnite")
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def FortniteUser(self, ctx, *args):
         if not args:
             await SendWait(ctx, "No Username Given. Try add a Username First.")
@@ -97,10 +99,12 @@ class GameAPIs(commands.Cog):
             await SendWait(ctx, "No User Found. Try a Valid Username")
 
     @commands.group(name="pubg")
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def PUBGUser(self, ctx):
         pass
 
     @PUBGUser.command(name="all")
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def GetAllTime(self, ctx, *args):
         if not args:
             await SendWait(ctx, "No Username Given. Try add a Username First.")
@@ -121,6 +125,7 @@ class GameAPIs(commands.Cog):
             await SendWait(ctx, "No User Found. Try a Valid Username")
 
     @PUBGUser.command(name="season")
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def GetSeason(self, ctx, *args):
         if not args:
             await SendWait(ctx, "No Username Given. Try add a Username First.")

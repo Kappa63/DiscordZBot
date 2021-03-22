@@ -95,6 +95,7 @@ class HelpInfo(commands.Cog):
             "multireddit",
             "multireddits",
             "redditor",
+            "twitch"
         ]
     )
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -148,12 +149,12 @@ class HelpInfo(commands.Cog):
             inline=False,
         )
         HEm.add_field(
-            name="ztwitter (User @): ",
+            name="ztwitter [User @]: ",
             value="Details About the User Profile and 20 of Their Latest Tweets",
             inline=False,
         )
         HEm.add_field(
-            name="ztwitter search (Search Term): ",
+            name="ztwitter search [Search Term]: ",
             value="Searches for 10 Users Related to Search Term",
             inline=False,
         )
@@ -163,13 +164,28 @@ class HelpInfo(commands.Cog):
             inline=False,
         )
         HEm.add_field(
-            name="zyoutube (Channel Name): ",
+            name="zyoutube [Channel Name]: ",
             value="Details About the Channel and 20 of The Latest Uploads",
             inline=False,
         )
         HEm.add_field(
-            name="zyoutube search (Search Term): ",
+            name="zyoutube search [Search Term]: ",
             value="Searches for 10 Channels Related to Search Term",
+            inline=False,
+        )
+        HEm.add_field(
+            name="ztwitch [User]: ",
+            value="Returns a twitch user's Profile",
+            inline=False,
+        )
+        HEm.add_field(
+            name="ztwitch stream [User]: ",
+            value="returns a twitch user's current Live stream",
+            inline=False,
+        )
+        HEm.add_field(
+            name="ztwitch clips [User]: ",
+            value="20 of the Channels Clips",
             inline=False,
         )
         HEm.add_field(
@@ -274,6 +290,7 @@ class HelpInfo(commands.Cog):
             "gis",
             "google",
             "weather",
+            "news"
         ]
     )
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -325,6 +342,11 @@ class HelpInfo(commands.Cog):
         HEm.add_field(
             name="zgoogle [Search Term]: ",
             value="Google Search. 20 google results",
+            inline=False,
+        )
+        HEm.add_field(
+            name="znews: ",
+            value="Get some of the top news headlines",
             inline=False,
         )
         HEm.add_field(
@@ -468,7 +490,7 @@ class HelpInfo(commands.Cog):
         )
         HEm.add_field(
             name="Aliases:",
-            value="**-Pog =** `pog, poggers, pogger`\n\n**-Cat =** `cat, kitten, kitty`\n\n**-Dog =** `doggo, dog, pupper, puppy`\n\n**-Food =** `food, dishes, dish`\n\n**-QR =** `qrcode, qr`\n\n**-QR Create =** `qrcode create, qrcode make`",
+            value="**-Pog =** `pog, poggers, pogger, pogchamp`\n\n**-Cat =** `cat, kitten, kitty`\n\n**-Dog =** `doggo, dog, pupper, puppy`\n\n**-Food =** `food, dishes, dish`\n\n**-QR =** `qrcode, qr`\n\n**-QR Create =** `qrcode create, qrcode make`",
         )
         await ctx.message.channel.send(embed=HEm)
 
@@ -571,11 +593,12 @@ class HelpInfo(commands.Cog):
             inline=False,
         )
         HEm.add_field(name="zroll: ", value="Rolls a dice", inline=False)
+        HEm.add_field(name="zcoinflip: ", value="Flips a coin", inline=False)
         HEm.add_field(name="zbinary make [Text]", value="Converts the text into Binary", inline= False)
         HEm.add_field(name="zbinary read [Binary]", value="Converts the Binary into Text", inline= False)
         HEm.add_field(
             name="Aliases:",
-            value="**-Binary =** `bin, binary`\n\n**-Binary Create =** `binary create, binary make`",
+            value="**-Binary =** `bin, binary`\n\n**-Binary Create =** `binary create, binary make`\n\n**-Coinflip =** `cf, coinflip`",
         )
         HEm.add_field(
             name="Notes:",
@@ -621,8 +644,8 @@ class HelpInfo(commands.Cog):
             color=0x3695BA,
         )
         VEm.add_field(name="Dev: ", value="Kappa#5173", inline=False)
-        VEm.add_field(name="Version: ", value="2.6a", inline=False)
-        VEm.add_field(name="Version Release: ", value="18/3/2021", inline=False)
+        VEm.add_field(name="Version: ", value="2.7a", inline=False)
+        VEm.add_field(name="Version Release: ", value="22/3/2021", inline=False)
         VEm.add_field(name="Initial Release: ", value="21/11/2020", inline=False)
         await ctx.message.channel.send(embed=VEm)
 

@@ -44,7 +44,6 @@ class OnlyMods(commands.Cog):
 
     @commands.command(name="makedown")
     @commands.check(ChDev)
-    @commands.cooldown(1, 1, commands.BucketType.user)
     async def MakeBotOff(self, ctx):
         await self.DClient.change_presence(status=discord.Status.invisible)
         StateFile = open("OpenState.txt", "w+")
@@ -54,7 +53,6 @@ class OnlyMods(commands.Cog):
 
     @commands.command(name="makeup")
     @commands.check(ChDev)
-    @commands.cooldown(1, 1, commands.BucketType.user)
     async def MakeBotOn(self, ctx):
         await self.DClient.change_presence(
             status=discord.Status.online,
@@ -67,19 +65,16 @@ class OnlyMods(commands.Cog):
 
     @commands.command(name="numapod")
     @commands.check(ChDev)
-    @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetAPODNum(self, ctx):
         await SendWait(ctx, f'{AQd.count_documents({"Type":"APOD"})} in APOD Daily')
 
     @commands.command(name="numqotd")
     @commands.check(ChDev)
-    @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetQOTDNum(self, ctx):
         await SendWait(ctx, f'{AQd.count_documents({"Type":"QOTD"})} in QOTD Daily')
 
     @commands.command(name="numcptd")
     @commands.check(ChDev)
-    @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetCPTDNum(self, ctx):
         await SendWait(ctx, f'{AQd.count_documents({"Type":"CPTD"})} in CPTD Daily')
 

@@ -10,8 +10,10 @@ from Setup import (
     FormatTime,
     TimeTillMidnight,
     SendWait,
+    NClient
 )
 from Setup import AQd
+import re
 
 
 class WrittenStuff(commands.Cog):
@@ -31,6 +33,14 @@ class WrittenStuff(commands.Cog):
                 color=0x7DD7D8,
             )
         )
+    
+    @commands.command(name="news")
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def TheNews(self, ctx):
+        News = requests.get("https://newsapi.org/v2/top-headlines", params=NClient).json()
+        NEm = discord.Embed(title = "News", color = 0x0F49B2)
+        for Num, Article in enumerate(News["articles"], start=1): NEm.add_field(name = f'`{Num}.` {Article["title"]}. **Published On:** {re.sub("T", " ", Article["publishedAt"])[:-1]}', value=Article["url"])
+        await ctx.message.channel.send(embed = NEm)
 
     @commands.command(aliases=["funfact", "fact"])
     @commands.cooldown(1, 1, commands.BucketType.user)

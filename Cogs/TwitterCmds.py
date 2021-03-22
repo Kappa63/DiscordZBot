@@ -8,7 +8,7 @@ from Setup import ErrorEmbeds
 import asyncio
 
 
-def EmbedMaker(TWprofile, IsVerified, TwTtype, TWtimeline, TwTNum, TwTtotal):
+def TwitterbedMaker(TWprofile, IsVerified, TwTtype, TWtimeline, TwTNum, TwTtotal):
     TEmE = discord.Embed(
         title=f"@{TWprofile.screen_name} / {TWprofile.name} {IsVerified}",
         description=TwTtype,
@@ -282,7 +282,7 @@ class TwitterCmds(commands.Cog):
                         elif ReaEm[0].emoji == "⬅️" and TwTNum > 0:
                             TwTNum -= 1
                             await TwTsL.edit(
-                                embed=EmbedMaker(
+                                embed=TwitterbedMaker(
                                     TWprofile,
                                     IsVerified,
                                     ChTwTp(TWtimeline[TwTNum]),
@@ -295,7 +295,7 @@ class TwitterCmds(commands.Cog):
                             OnMain = False
                             TwTNum = 0
                             await TwTsL.edit(
-                                embed=EmbedMaker(
+                                embed=TwitterbedMaker(
                                     TWprofile,
                                     IsVerified,
                                     ChTwTp(TWtimeline[TwTNum]),
@@ -311,7 +311,7 @@ class TwitterCmds(commands.Cog):
                         ):
                             TwTNum += 1
                             await TwTsL.edit(
-                                embed=EmbedMaker(
+                                embed=TwitterbedMaker(
                                     TWprofile,
                                     IsVerified,
                                     ChTwTp(TWtimeline[TwTNum]),
@@ -346,7 +346,7 @@ class TwitterCmds(commands.Cog):
                                     except ValueError:
                                         pass
                                     await TwTsL.edit(
-                                        embed=EmbedMaker(
+                                        embed=TwitterbedMaker(
                                             TWprofile,
                                             IsVerified,
                                             ChTwTp(TWtimeline[TwTNum]),

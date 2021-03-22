@@ -6,6 +6,7 @@ import giphy_client
 import tweepy
 import malclient
 import COVID19Py
+import twitch
 #- import imgurpython
 import praw
 import pymongo
@@ -32,6 +33,8 @@ GClient = os.getenv("GIPHY_KEY")
 GApi = giphy_client.DefaultApi()
 
 CClient = {"X-CMC_PRO_API_KEY": os.getenv("COINBASE_KEY")}
+
+NClient = {"country":"us", "apiKey":os.getenv("NEWS_KEY")}
 
 GiClient = GoogleImagesSearch(os.getenv("GCS_KEY"), os.getenv("CX_ID"))
 
@@ -65,6 +68,8 @@ Covid = COVID19Py.COVID19(data_source="jhu")
 #- )
 
 YClient = pyyoutube.Api(api_key=os.getenv("YOUTUBE_KEY"))
+
+THelix = twitch.Helix("v4x0nnwm3mpf2ufw6f95l3r21755pa", "95a48mh5c7sc8hl03pedquv0dfdw8r", use_cache=True, cache_duration= datetime.timedelta(minutes=1))
 
 IMClient = imdb.IMDb()
 

@@ -14,7 +14,7 @@ class Google(commands.Cog):
         self.DClient = DClient
 
     @commands.command(name="google")
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def GoogleThat(self, ctx, *args):
         if not args:
             await SendWait(ctx, "No search argument :woozy_face:")
@@ -84,7 +84,7 @@ class Google(commands.Cog):
                 break
 
     @commands.command(aliases=["gis", "googleimagesearch", "imagesearch"])
-    @commands.cooldown(1, 3, commands.BucketType.user)
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def ImageSearching(self, ctx, *args):
         if not args:
             await SendWait(ctx, "No search argument :woozy_face:")
@@ -152,7 +152,7 @@ class Google(commands.Cog):
                 break
 
     @commands.command(name="weather")
-    @commands.cooldown(1, 3, commands.BucketType.user)
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def GetTemp(self, ctx, *args):
         if not args:
             await SendWait(ctx, "No search argument :woozy_face:")

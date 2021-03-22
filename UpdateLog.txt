@@ -1,9 +1,9 @@
-Whats new in 2.6a:
-NEW Pog command: Random Pog (zpog, zpogger, poggers)
-NEW Convert from text to Binary (zbinary/zbin make/create [text])
-NEW Convert from binary to text (zbinary/zbin read [Binary]) 
-NEW Convert from QRcode to text (zqr/zqrcode read [qrcode Url/Attachment])
-CHANGED Qrcode creation command from zqr/zqrcode [text] to zqr/zqrcode make/create [text]
-ADDED Make qrcode from attachment
-ADDED Binary commands to miscellaneous help (zhelp misc, zhelp bin)
-ADDED Pog and new Qr commands to image help (zhelp image)
+Whats new in 2.7a:
+NEW twitch command: Gets a twitch user (ztwitch [user])
+NEW twitch stream command: Gets a twitch user's live stream if the are live (ztwitch stream [user])
+NEW twitch clips command: Gets 20 of a twitch user's clips (ztwitch clips [user])
+NEW news command: Some news from the top headlines (znews)
+NEW coinflip command: flips a coin (zcf, zcoinflip)
+ADDED twitch commands to social help (zhelp socials, zhelp twitch)
+ADDED news command to info help (zhelp informatics)
+ADDED alias for pog command: zpogchamp

@@ -220,7 +220,7 @@ class Games(commands.Cog):
         self.DClient = DClient
 
     @commands.command(name="sudoku")
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def PlaySudoku(self, ctx, *args):
         def ChCHEm(RcM, RuS):
             return (
@@ -279,7 +279,7 @@ class Games(commands.Cog):
             )
 
     @commands.command(aliases=["ttt", "tictactoe"])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def PlayTTT(self, ctx):
         def ChCHanS(MSg):
             MesS = MSg.content.lower()
@@ -382,7 +382,7 @@ class Games(commands.Cog):
             )
 
     @commands.command(name="chess")
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def PlayChess(self, ctx, *args):
         def ChCHanS(MSg):
             MesS = MSg.content.lower()
@@ -482,7 +482,7 @@ class Games(commands.Cog):
 
     @commands.command(aliases=["cptd", "chesspuzzleoftheday"])
     @commands.check(ChVote)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def SendCPTD(self, ctx):
         GetCPTD = requests.get(
             "https://api.chess.com/pub/puzzle", headers={"Accept": "application/json"}

@@ -10,7 +10,7 @@ class Movies(commands.Cog):
         self.DClient = DClient
 
     @commands.command(name="imdb")
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def MovieGetter(self, ctx, *args):
         def ChCHanS(MSg):
             MesS = MSg.content.lower()

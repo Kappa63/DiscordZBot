@@ -29,7 +29,7 @@ class Images(commands.Cog):
         CEm.set_image(url=CatJSON["file"])
         await ctx.message.channel.send(embed=CEm)
 
-    @commands.command(aliases=["pog","poggers", "pogger"])
+    @commands.command(aliases=["pog","poggers", "pogger", "pogchamp"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def POOOGGERRRS(self, ctx):
         Pog = random.choice(open("Pog.txt").readlines())

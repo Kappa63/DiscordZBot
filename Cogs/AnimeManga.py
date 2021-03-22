@@ -33,7 +33,7 @@ class AnimeManga(commands.Cog):
         self.DClient = DClient
 
     @commands.command(name="manga")
-    @commands.cooldown(1, 10, commands.BucketType.guild)
+    @commands.cooldown(1, 3, commands.BucketType.guild)
     async def MangaInfo(self, ctx, *args):
         def ChCHanS(MSg):
             MesS = MSg.content.lower()
@@ -257,7 +257,7 @@ class AnimeManga(commands.Cog):
             await SendWait(ctx, "No Arguments :no_mouth:")
 
     @commands.command(name="anime")
-    @commands.cooldown(1, 10, commands.BucketType.guild)
+    @commands.cooldown(1, 3, commands.BucketType.guild)
     async def AnimeInfo(self, ctx, *args):
         def ChCHanS(MSg):
             MesS = MSg.content.lower()

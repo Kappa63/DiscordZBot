@@ -35,6 +35,22 @@ class Randomizers(commands.Cog):
         DEm.set_thumbnail(url=DiceFaces[FaceNumber])
         await ctx.message.channel.send(embed=DEm)
 
+    @commands.command(aliases=["cf", "coinflip"])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def FlipTheCoin(self, ctx):
+        CoinFaces = {
+            "Heads": "https://cdn.discordapp.com/attachments/768718636583747584/823561367000842350/Heads.png",
+            "Tails": "https://cdn.discordapp.com/attachments/768718636583747584/823561369990332416/Tails.png"
+        }
+        Face = random.choice(list(CoinFaces.keys()))
+        CEm = discord.Embed(
+            title="Coin Flip",
+            description=f"**The Coin Landed on:** *{Face}*",
+            color=0xFAC62D,
+        )
+        CEm.set_thumbnail(url=CoinFaces[Face])
+        await ctx.message.channel.send(embed=CEm)
+
     @commands.command(aliases=["color", "colour"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def ColorRandom(self, ctx):
@@ -59,6 +75,7 @@ class Randomizers(commands.Cog):
         await ctx.message.channel.send(embed=CEm)
 
     @commands.command(name="giphy")
+    @commands.cooldown(1, 1, commands.BucketType.user)
     async def RandomGif(self, ctx, *args):
         if args:
             try:
