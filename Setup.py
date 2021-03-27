@@ -69,7 +69,7 @@ Covid = COVID19Py.COVID19(data_source="jhu")
 
 YClient = pyyoutube.Api(api_key=os.getenv("YOUTUBE_KEY"))
 
-THelix = twitch.Helix("v4x0nnwm3mpf2ufw6f95l3r21755pa", "95a48mh5c7sc8hl03pedquv0dfdw8r", use_cache=True, cache_duration= datetime.timedelta(minutes=1))
+THelix = twitch.Helix(os.getenv("TWITCH_ID"), os.getenv("TWITCH_SECRET"), use_cache=True, cache_duration= datetime.timedelta(minutes=1))
 
 IMClient = imdb.IMDb()
 

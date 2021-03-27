@@ -1,9 +1,6 @@
-Whats new in 2.7a:
-NEW twitch command: Gets a twitch user (ztwitch [user])
-NEW twitch stream command: Gets a twitch user's live stream if the are live (ztwitch stream [user])
-NEW twitch clips command: Gets 20 of a twitch user's clips (ztwitch clips [user])
-NEW news command: Some news from the top headlines (znews)
-NEW coinflip command: flips a coin (zcf, zcoinflip)
-ADDED twitch commands to social help (zhelp socials, zhelp twitch)
-ADDED news command to info help (zhelp informatics)
-ADDED alias for pog command: zpogchamp
+Whats new in 2.7.1a:
+FIXED `zTwitch Stream` wrong thumbnail
+FIXED `zTwitch Clips` not showing thumbnails
+.. ..
+.. ..
+NEWS I'll be taking next week for rest. See ya then. Support on the [Official Server](https://discord.gg/V6E6prUBPv) will continue as normal.

@@ -644,8 +644,8 @@ class HelpInfo(commands.Cog):
             color=0x3695BA,
         )
         VEm.add_field(name="Dev: ", value="Kappa#5173", inline=False)
-        VEm.add_field(name="Version: ", value="2.7a", inline=False)
-        VEm.add_field(name="Version Release: ", value="22/3/2021", inline=False)
+        VEm.add_field(name="Version: ", value="2.7.1a", inline=False)
+        VEm.add_field(name="Version Release: ", value="27/3/2021", inline=False)
         VEm.add_field(name="Initial Release: ", value="21/11/2020", inline=False)
         await ctx.message.channel.send(embed=VEm)
 

@@ -12,6 +12,7 @@ import requests
 import tweepy
 import FuncMon
 import inspect
+import pyimgbox
 import asyncio
 import datetime
 
@@ -403,8 +404,14 @@ class Socials(commands.Cog):
             State = SHelix.type.upper()
             StreamTitle = SHelix.title
             CurrentViewers = SHelix.viewer_count
-            StartTime = re.sub("T", " ", SHelix.started_at)[:-1]
+            StartTime = SHelix.started_at.replace("T"," ")[:-1]
             ThumbnailShot = SHelix.thumbnail_url.format(**{"width":1920, "height":1080})
+            ThumbnailShot = requests.get(ThumbnailShot, allow_redirects=True)
+            open("Thumb.jpg", "wb").write(ThumbnailShot.content)
+            async with pyimgbox.Gallery(title="The Thumbnail") as gallery:
+                Img = await gallery.upload("Thumb.jpg")
+                ThumbnailShot = Img["image_url"]
+            os.remove("Thumb.jpg")
             ThEm = discord.Embed(title = StreamTitle, description = State, url = f'https://www.twitch.tv/{Name}',color = 0x9147FF)
             ThEm.set_author(name=f'{Name} ({Type})', icon_url=PImg)
             ThEm.set_image(url=ThumbnailShot)
@@ -455,11 +462,14 @@ class Socials(commands.Cog):
             ClipEms = []
             for N , Clip in enumerate(VHelix, start=1): 
                 CEm = discord.Embed(title=f'{Clip.title} ({Clip.viewable.capitalize()})', url=Clip.url, description=Clip.description, color=0x9147FF)
-                CEm.set_image(url = Clip.thumbnail_url.format(**{"width":1920, "height":1080}))
+                if Clip.thumbnail_url:
+                    CEm.set_image(url = Clip.thumbnail_url.replace("%","").format(**{"width":1920, "height":1080}))
+                else:
+                    CEm.add_field(name = ":diamond_shape_with_a_dot_inside: Thumbnail not Found", value="\u200b", inline=False)
                 CEm.set_author(name=f'{Name} ({Type})', icon_url=PImg)
                 CEm.add_field(name = f'*Clip:* `[{N}/{TotalClips}]`', value="\u200b", inline=False)
                 CEm.add_field(name = "Views: ", value=f'{Clip.view_count:,}')
-                CEm.add_field(name = "Published On: ", value=f'{re.sub("T", " ", Clip.published_at)[:-1]}')
+                CEm.add_field(name = "Published On: ", value=f'{Clip.published_at.replace("T"," ")[:-1]}')
                 ClipEms.append(CEm)
         except AttributeError:
             await SendWait(ctx, "Not Found")

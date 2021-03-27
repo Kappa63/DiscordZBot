@@ -28,7 +28,7 @@ class Movies(commands.Cog):
             )
 
         await SendWait(ctx, ":tv: Getting Movie/Show...")
-        MVinput = " ".join(args).split(" ")
+        MVinput = list(args)
         if MVinput[0].lower() == "search" and args:
             IDorName = "ID"
             MVinput.pop(0)
