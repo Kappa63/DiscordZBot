@@ -28,7 +28,7 @@ class MongoDB(commands.Cog):
         Missing = [i for i in Stuff if len(Get[i]) < len(Members)]
         for i in Missing:
             for j in Members:
-                if j not in Get[i].keys(): ColT.update_one(Get, {"$set": {f'{i}.{j}':0}})
+                if j not in Get[i].keys(): ColT.update_one(Get, {"$set": {f'{i}.{j}':0}}); print("Mosso")
         await SendWait(ctx, "Up to Date")
 
     @commands.command(name="add")

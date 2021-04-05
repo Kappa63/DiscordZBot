@@ -218,6 +218,7 @@ async def ChVote(ctx):
             Roles.append(discord.utils.get(MemGuild.roles, id=783256987655340043))
             Roles.append(discord.utils.get(MemGuild.roles, id=784123230372757515))
             Roles.append(discord.utils.get(MemGuild.roles, id=784124034559377409))
+            print(Roles)
             for Role in Roles:
                 if Role in Mem.roles:
                     return True

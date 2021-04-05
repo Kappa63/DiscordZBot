@@ -493,7 +493,7 @@ class Socials(commands.Cog):
             TWtimeline = Twitter.user_timeline(
                 TWname, trim_user=True, tweet_mode="extended"
             )
-            Twts = [TwitterbedMaker(TWprofile, IsVerified, ChTwTp(T), T, Tn, len(TWtimeline)) for T, Tn in enumerate(TWtimeline)]
+            Twts = [TwitterbedMaker(TWprofile, IsVerified, ChTwTp(T), T, Tn, len(TWtimeline)) for Tn, T in enumerate(TWtimeline)]
             await Navigator(ctx, Twts, Main=True, MainBed=TEm)
 
         except UnboundLocalError:
