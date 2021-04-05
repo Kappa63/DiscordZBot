@@ -1,8 +1,7 @@
 import discord
 from discord.ext import commands
 import requests
-from Setup import OClient, PClient, Threader
-from Setup import SendWait
+from Setup import OClient, PClient, Threader, SendWait
 
 
 def PUBGDataEmbed(data, name):

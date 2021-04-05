@@ -2,10 +2,7 @@ import discord
 import random
 import requests
 from discord.ext import commands
-from Setup import ChVote, ChVoteUser, ChPatreonT2, ChAdmin
-from Setup import FormatTime, TimeTillMidnight, GetPatreonTier, SendWait
-from Setup import ErrorEmbeds
-from Setup import AQd
+from Setup import ChVote, ChVoteUser, ChPatreonT2, ChAdmin, FormatTime, TimeTillMidnight, GetPatreonTier, SendWait, ErrorEmbeds, Navigator, AQd
 import asyncio
 
 
@@ -101,146 +98,38 @@ class Nasa(commands.Cog):
     @commands.command(name="nasa")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetNasaMars(self, ctx):
-        def MakeEmbed(MarsImagesCH, ImageNum, ImagesExtracted):
+        def MakeEmbed(MarsImage, ImageNum, Total):
             NEm = discord.Embed(
                 title="Mars", description="By: Curiosity Rover (NASA)", color=0xCD5D2E
             )
             NEm.set_thumbnail(url="https://i.imgur.com/xmSmG0f.jpeg")
             NEm.add_field(
                 name="Camera:",
-                value=MarsImagesCH[ImageNum]["camera"]["full_name"],
+                value=MarsImage["camera"]["full_name"],
                 inline=True,
             )
             NEm.add_field(
                 name="Taken on:",
-                value=MarsImagesCH[ImageNum]["earth_date"],
+                value=MarsImage["earth_date"],
                 inline=True,
             )
             NEm.add_field(
-                name=f"`Image: {ImageNum+1}/{ImagesExtracted}`",
+                name=f"`Image: {ImageNum+1}/{Total}`",
                 value="\u200b",
                 inline=False,
             )
-            NEm.set_image(url=MarsImagesCH[ImageNum]["img_src"])
+            NEm.set_image(url=MarsImage["img_src"])
             NEm.set_footer(text="Need help navigating? zhelp navigation")
             return NEm
-
-        def ChCHEm(RcM, RuS):
-            return (
-                RuS.bot == False
-                and RcM.message == NTEm
-                and str(RcM.emoji) in ["⬅️", "❌", "➡️", "#️⃣"]
-            )
-
-        def ChCHEmFN(MSg):
-            MesS = MSg.content.lower()
-            RsT = False
-            try:
-                if int(MSg.content):
-                    RsT = True
-            except ValueError:
-                if (MesS == "cancel") or (MesS == "c"):
-                    RsT = True
-            return (
-                MSg.guild.id == ctx.guild.id
-                and MSg.channel.id == ctx.channel.id
-                and RsT
-            )
 
         NASAmars = requests.get(
             "https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=1000&api_key=0dsw3SiQmYCeNnwKZROSQIyrcZqjoDzMBo4ggCwS",
             headers={"Accept": "application/json"},
         )
         JSONmars = NASAmars.json()
-        MarsImagesCH = random.sample(JSONmars["photos"], k=25)
-        ImagesExtracted = len(MarsImagesCH)
-        ImageNum = 0
-        NTEm = await ctx.message.channel.send(
-            embed=MakeEmbed(MarsImagesCH, ImageNum, ImagesExtracted)
-        )
-        await NTEm.add_reaction("⬅️")
-        await NTEm.add_reaction("❌")
-        await NTEm.add_reaction("➡️")
-        await NTEm.add_reaction("#️⃣")
-        while True:
-            try:
-                Res = await self.DClient.wait_for(
-                    "reaction_add", check=ChCHEm, timeout=120
-                )
-                await NTEm.remove_reaction(Res[0].emoji, Res[1])
-                if Res[0].emoji == "⬅️" and ImageNum != 0:
-                    ImageNum -= 1
-                    await NTEm.edit(
-                        embed=MakeEmbed(MarsImagesCH, ImageNum, ImagesExtracted)
-                    )
-                elif Res[0].emoji == "➡️":
-                    if ImageNum < ImagesExtracted - 1:
-                        ImageNum += 1
-                        await NTEm.edit(
-                            embed=MakeEmbed(MarsImagesCH, ImageNum, ImagesExtracted)
-                        )
-                    else:
-                        await NTEm.edit(
-                            embed=MakeEmbed(MarsImagesCH, ImageNum, ImagesExtracted)
-                        )
-                        await NTEm.remove_reaction("⬅️", self.DClient.user)
-                        await NTEm.remove_reaction("❌", self.DClient.user)
-                        await NTEm.remove_reaction("➡️", self.DClient.user)
-                        await NTEm.remove_reaction("#️⃣", self.DClient.user)
-                        break
-                elif Res[0].emoji == "#️⃣":
-                    if await ChVoteUser(Res[1].id):
-                        TemTw = await ctx.message.channel.send(
-                            'Choose a number to open navigate to page. "c" or "cancel" to exit navigation.\n\n*The Navigation closes automatically after 10sec of inactivity.*'
-                        )
-                        try:
-                            ResE = await self.DClient.wait_for(
-                                "message", check=ChCHEmFN, timeout=10
-                            )
-                            await TemTw.delete()
-                            await ResE.delete()
-                            try:
-                                try:
-                                    pG = int(ResE.content)
-                                    if 0 < pG <= ImagesExtracted - 1:
-                                        ImageNum = pG - 1
-                                    elif pG < 1:
-                                        ImageNum = 0
-                                        pass
-                                    else:
-                                        ImageNum = ImagesExtracted - 1
-                                except TypeError:
-                                    pass
-                            except ValueError:
-                                pass
-                            await NTEm.edit(
-                                embed=MakeEmbed(MarsImagesCH, ImageNum, ImagesExtracted)
-                            )
-                        except asyncio.exceptions.TimeoutError:
-                            await TemTw.edit("Request Timeout")
-                            await asyncio.sleep(5)
-                            await TemTw.delete()
-                    else:
-                        await ctx.message.channel.send(embed=ErrorEmbeds("Vote"))
-                elif Res[0].emoji == "❌":
-                    await NTEm.edit(
-                        embed=MakeEmbed(MarsImagesCH, ImageNum, ImagesExtracted)
-                    )
-                    await NTEm.remove_reaction("⬅️", self.DClient.user)
-                    await NTEm.remove_reaction("❌", self.DClient.user)
-                    await NTEm.remove_reaction("➡️", self.DClient.user)
-                    await NTEm.remove_reaction("#️⃣", self.DClient.user)
-                    break
-            except asyncio.TimeoutError:
-                await NTEm.edit(
-                    embed=MakeEmbed(MarsImagesCH, ImageNum, ImagesExtracted)
-                )
-                await NTEm.remove_reaction("⬅️", self.DClient.user)
-                await NTEm.remove_reaction("❌", self.DClient.user)
-                await NTEm.remove_reaction("➡️", self.DClient.user)
-                await NTEm.remove_reaction("#️⃣", self.DClient.user)
-                break
-
+        MarsImages = random.sample(JSONmars["photos"], k=25)
+        Images = [MakeEmbed(i, v, len(MarsImages)) for v, i in enumerate(MarsImages)]
+        await Navigator(ctx, Images)
 
 def setup(DClient):
     DClient.add_cog(Nasa(DClient))

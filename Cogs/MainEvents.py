@@ -12,16 +12,14 @@ from Setup import (
     IsSetup,
     IsNSFW,
     IsMultiredditLimit,
-)
-from Setup import (
     FormatTime,
     TimeTillMidnight,
     GetPatreonTier,
     ErrorEmbeds,
     ChPatreonUserT2,
     SendWait,
+    AQd
 )
-from Setup import AQd
 import random
 import requests
 import asyncio
@@ -66,17 +64,17 @@ def MakeAPODEmbed():
     return DEm
 
 
-# def MakeQOTDEmbed():
-#     TodayQuote = requests.get(
-#         "https://favqs.com/api/qotd", headers={"Accept": "application/json"}
-#     ).json()
-#     QEm = discord.Embed(
-#         title="Quote Of The Day",
-#         description=TodayQuote["quote"]["body"],
-#         color=0x8D42EE,
-#     )
-#     QEm.set_footer(text=f'By: {TodayQuote["quote"]["author"]}')
-#     return QEm
+#? def MakeQOTDEmbed():
+#?     TodayQuote = requests.get(
+#?         "https://favqs.com/api/qotd", headers={"Accept": "application/json"}
+#?     ).json()
+#?     QEm = discord.Embed(
+#?         title="Quote Of The Day",
+#?         description=TodayQuote["quote"]["body"],
+#?         color=0x8D42EE,
+#?     )
+#?     QEm.set_footer(text=f'By: {TodayQuote["quote"]["author"]}')
+#?     return QEm
 
 
 def MakeCPTDEmbed():
@@ -96,7 +94,7 @@ class MainEvents(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
         self.SendAPODDaily.start()
-        # self.SendQOTDDaily.start()
+        #? self.SendQOTDDaily.start()
         self.SendCPTDDaily.start()
 
     @commands.Cog.listener()

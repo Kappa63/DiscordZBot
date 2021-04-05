@@ -1,13 +1,12 @@
 import discord
 from discord.ext import commands
-from Setup import GiClient
-from Setup import SendWait
+from Setup import GiClient, SendWait, Navigator
 import requests
 import asyncio
 from googlesearch import search
 from bs4 import BeautifulSoup
 import re
-
+import numpy as np
 
 class Google(commands.Cog):
     def __init__(self, DClient):
@@ -20,13 +19,6 @@ class Google(commands.Cog):
             await SendWait(ctx, "No search argument :woozy_face:")
             return
         await SendWait(ctx, ":desktop: Getting Results...")
-
-        def ChCHEm(RcM, RuS):
-            return (
-                RuS.bot == False
-                and RcM.message == ResURL
-                and str(RcM.emoji) in ["⬅️", "❌", "➡️"]
-            )
 
         SearchResults = []
         ResultNum = 1
@@ -41,48 +33,10 @@ class Google(commands.Cog):
             SearchResults.append((IEm, Result))
             ResultNum += 1
         ResultNum = 0
-        ResEmbed = await ctx.message.channel.send(embed=SearchResults[ResultNum][0])
-        ResURL = await ctx.message.channel.send(content=SearchResults[ResultNum][1])
-        await ResURL.add_reaction("⬅️")
-        await ResURL.add_reaction("❌")
-        await ResURL.add_reaction("➡️")
-        while True:
-            try:
-                Res = await self.DClient.wait_for(
-                    "reaction_add", check=ChCHEm, timeout=120
-                )
-                await ResURL.remove_reaction(Res[0].emoji, Res[1])
-                if Res[0].emoji == "⬅️" and ResultNum != 0:
-                    ResultNum -= 1
-                    await ResEmbed.edit(embed=SearchResults[ResultNum][0])
-                    await ResURL.edit(content=SearchResults[ResultNum][1])
-                elif Res[0].emoji == "➡️":
-                    if ResultNum < ResultTotal - 1:
-                        ResultNum += 1
-                        await ResEmbed.edit(embed=SearchResults[ResultNum][0])
-                        await ResURL.edit(content=SearchResults[ResultNum][1])
-                    else:
-                        await ResEmbed.edit(embed=SearchResults[ResultNum][0])
-                        await ResURL.edit(content=SearchResults[ResultNum][1])
-                        await ResURL.remove_reaction("⬅️", self.DClient.user)
-                        await ResURL.remove_reaction("❌", self.DClient.user)
-                        await ResURL.remove_reaction("➡️", self.DClient.user)
-                        break
-                elif Res[0].emoji == "❌":
-                    await ResEmbed.edit(embed=SearchResults[ResultNum][0])
-                    await ResURL.edit(content=SearchResults[ResultNum][1])
-                    await ResURL.remove_reaction("⬅️", self.DClient.user)
-                    await ResURL.remove_reaction("❌", self.DClient.user)
-                    await ResURL.remove_reaction("➡️", self.DClient.user)
-                    break
-            except asyncio.TimeoutError:
-                await ResEmbed.edit(embed=SearchResults[ResultNum][0])
-                await ResURL.edit(content=SearchResults[ResultNum][1])
-                await ResURL.remove_reaction("⬅️", self.DClient.user)
-                await ResURL.remove_reaction("❌", self.DClient.user)
-                await ResURL.remove_reaction("➡️", self.DClient.user)
-                break
-
+        EmbededResults = [i[0] for i in SearchResults]
+        URLResults = [i[1] for i in SearchResults]
+        await Navigator(ctx, EmbededResults, Type="No #", EmbedAndContent=True, ContItems=URLResults)
+ 
     @commands.command(aliases=["gis", "googleimagesearch", "imagesearch"])
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def ImageSearching(self, ctx, *args):
@@ -90,13 +44,6 @@ class Google(commands.Cog):
             await SendWait(ctx, "No search argument :woozy_face:")
             return
         await SendWait(ctx, ":camera_with_flash: Looking for Images...")
-
-        def ChCHEm(RcM, RuS):
-            return (
-                RuS.bot == False
-                and RcM.message == Imager
-                and str(RcM.emoji) in ["⬅️", "❌", "➡️"]
-            )
 
         GiClient.search(
             search_params={"q": " ".join(args), "num": 20, "safeundefined": "high"}
@@ -114,42 +61,7 @@ class Google(commands.Cog):
             IEm.set_image(url=Image.url)
             ImageResults.append(IEm)
             ImageNum += 1
-        ImageNum = 0
-        Imager = await ctx.message.channel.send(embed=ImageResults[ImageNum])
-        await Imager.add_reaction("⬅️")
-        await Imager.add_reaction("❌")
-        await Imager.add_reaction("➡️")
-        while True:
-            try:
-                Res = await self.DClient.wait_for(
-                    "reaction_add", check=ChCHEm, timeout=120
-                )
-                await Imager.remove_reaction(Res[0].emoji, Res[1])
-                if Res[0].emoji == "⬅️" and ImageNum != 0:
-                    ImageNum -= 1
-                    await Imager.edit(embed=ImageResults[ImageNum])
-                elif Res[0].emoji == "➡️":
-                    if ImageNum < ImageTotal - 1:
-                        ImageNum += 1
-                        await Imager.edit(embed=ImageResults[ImageNum])
-                    else:
-                        await Imager.edit(embed=ImageResults[ImageNum])
-                        await Imager.remove_reaction("⬅️", self.DClient.user)
-                        await Imager.remove_reaction("❌", self.DClient.user)
-                        await Imager.remove_reaction("➡️", self.DClient.user)
-                        break
-                elif Res[0].emoji == "❌":
-                    await Imager.edit(embed=ImageResults[ImageNum])
-                    await Imager.remove_reaction("⬅️", self.DClient.user)
-                    await Imager.remove_reaction("❌", self.DClient.user)
-                    await Imager.remove_reaction("➡️", self.DClient.user)
-                    break
-            except asyncio.TimeoutError:
-                await Imager.edit(embed=ImageResults[ImageNum])
-                await Imager.remove_reaction("⬅️", self.DClient.user)
-                await Imager.remove_reaction("❌", self.DClient.user)
-                await Imager.remove_reaction("➡️", self.DClient.user)
-                break
+        await Navigator(ctx, ImageResults, Type="No #")
 
     @commands.command(name="weather")
     @commands.cooldown(1, 2, commands.BucketType.user)

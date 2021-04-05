@@ -546,26 +546,26 @@ class HelpInfo(commands.Cog):
             value="Image and Quote of Taylor Swift",
             inline=False,
         )
-        # HEm.add_field(
-        #     name="zqotd: ",
-        #     value="Quote Of The Day (Voters and Patreons ONLY)",
-        #     inline=False,
-        # )
-        # HEm.add_field(
-        #     name="zqotddaily: ",
-        #     value="Returns when the next QOTD Daily will happen (Tier 2 or more Patreons ONLY)",
-        #     inline=False,
-        # )
-        # HEm.add_field(
-        #     name="zqotddaily start: ",
-        #     value="Start receiving daily QOTDs in the current channel (Tier 2 or more Patreons ONLY)",
-        #     inline=False,
-        # )
-        # HEm.add_field(
-        #     name="zqotddaily end/stop: ",
-        #     value="Stop receiving daily QOTDs (Tier 2 or more Patreons ONLY)",
-        #     inline=False,
-        # )
+        #? HEm.add_field(
+        #?     name="zqotd: ",
+        #?     value="Quote Of The Day (Voters and Patreons ONLY)",
+        #?     inline=False,
+        #? )
+        #? HEm.add_field(
+        #?     name="zqotddaily: ",
+        #?     value="Returns when the next QOTD Daily will happen (Tier 2 or more Patreons ONLY)",
+        #?     inline=False,
+        #? )
+        #? HEm.add_field(
+        #?     name="zqotddaily start: ",
+        #?     value="Start receiving daily QOTDs in the current channel (Tier 2 or more Patreons ONLY)",
+        #?     inline=False,
+        #? )
+        #? HEm.add_field(
+        #?     name="zqotddaily end/stop: ",
+        #?     value="Stop receiving daily QOTDs (Tier 2 or more Patreons ONLY)",
+        #?     inline=False,
+        #? )
         HEm.add_field(name="zinsult: ", value="Returns an insult", inline=False)
         HEm.add_field(
             name="Aliases:",
@@ -644,8 +644,8 @@ class HelpInfo(commands.Cog):
             color=0x3695BA,
         )
         VEm.add_field(name="Dev: ", value="Kappa#5173", inline=False)
-        VEm.add_field(name="Version: ", value="2.7.1a", inline=False)
-        VEm.add_field(name="Version Release: ", value="27/3/2021", inline=False)
+        VEm.add_field(name="Version: ", value="2.7.2a", inline=False)
+        VEm.add_field(name="Version Release: ", value="5/4/2021", inline=False)
         VEm.add_field(name="Initial Release: ", value="21/11/2020", inline=False)
         await ctx.message.channel.send(embed=VEm)
 
@@ -663,6 +663,17 @@ class HelpInfo(commands.Cog):
             text="Make sure to report any bugs you pass by on the official server. Check zbug"
         )
         await ctx.message.channel.send(embed=LEm)
+
+    @commands.command(name="invite")
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def BotInvF(self, ctx):
+        SEm = discord.Embed(
+            title="ZBot Invite",
+            url="https://discord.com/oauth2/authorize?client_id=768397640140062721&scope=bot&permissions=453696",
+            description="**Invite ZBot to your Server**",
+            color=0x000000,
+        )
+        await ctx.message.channel.send(embed=SEm)
 
     @commands.command(name="vote")
     @commands.cooldown(1, 1, commands.BucketType.user)

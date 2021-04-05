@@ -7,7 +7,7 @@ import tweepy
 import malclient
 import COVID19Py
 import twitch
-#- import imgurpython
+import asyncio
 import praw
 import pymongo
 import CBot
@@ -34,7 +34,7 @@ GApi = giphy_client.DefaultApi()
 
 CClient = {"X-CMC_PRO_API_KEY": os.getenv("COINBASE_KEY")}
 
-NClient = {"country":"us", "apiKey":os.getenv("NEWS_KEY")}
+NClient = {"country": "us", "apiKey": os.getenv("NEWS_KEY")}
 
 GiClient = GoogleImagesSearch(os.getenv("GCS_KEY"), os.getenv("CX_ID"))
 
@@ -63,13 +63,14 @@ Reddit = praw.Reddit(
 
 Covid = COVID19Py.COVID19(data_source="jhu")
 
-#- Imgur = imgurpython.ImgurClient(
-#-     client_id=os.getenv("IMGUR_ID"), client_secret=os.getenv("IMGUR_SECRET")
-#- )
-
 YClient = pyyoutube.Api(api_key=os.getenv("YOUTUBE_KEY"))
 
-THelix = twitch.Helix(os.getenv("TWITCH_ID"), os.getenv("TWITCH_SECRET"), use_cache=True, cache_duration= datetime.timedelta(minutes=1))
+THelix = twitch.Helix(
+    os.getenv("TWITCH_ID"),
+    os.getenv("TWITCH_SECRET"),
+    use_cache=True,
+    cache_duration=datetime.timedelta(minutes=1),
+)
 
 IMClient = imdb.IMDb()
 
@@ -142,20 +143,11 @@ def ChSer(ctx):
         return True
     raise IsSetup("Unready")
 
-    #!! DEPRECATED Server Check
-    #! if (
-    #!     Col.count_documents(
-    #!         {"IDd": "GuildInfo", "IDg": str(ctx.guild.id), "Setup": "Done"}
-    #!     )
-    #!     != 0
-    #! ):
-    #!     return True
-    #! raise IsSetup("Unready")
-
 def ChSerGuild(guild):
     if ColT.count_documents({"IDg": str(guild.id)}):
         return True
     return False
+
 
 class IsMultiredditLimit(commands.CheckFailure):
     pass
@@ -219,7 +211,7 @@ async def ChVote(ctx):
         return True
     else:
         try:
-            MemGuild = CBot.DClient.get_guild(783250489843384341)
+            MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
             Mem = MemGuild.get_member(ctx.author.id)
             Roles = []
             Roles.append(discord.utils.get(MemGuild.roles, id=783250729686532126))
@@ -239,7 +231,7 @@ async def ChVoteUser(UserID):
         return True
     else:
         try:
-            MemGuild = CBot.DClient.get_guild(783250489843384341)
+            MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
             Mem = MemGuild.get_member(UserID)
             Roles = []
             Roles.append(discord.utils.get(MemGuild.roles, id=783250729686532126))
@@ -280,7 +272,7 @@ PatreonTiers = {
 
 def GetPatreonTier(UserID):
     try:
-        MemGuild = CBot.DClient.get_guild(783250489843384341)
+        MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(UserID)
         Roles = []
         Roles.append(discord.utils.get(MemGuild.roles, id=783250729686532126))
@@ -296,7 +288,7 @@ def GetPatreonTier(UserID):
 
 def ChPatreon(ctx):
     try:
-        MemGuild = CBot.DClient.get_guild(783250489843384341)
+        MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(ctx.author.id)
         Roles = []
         Roles.append(discord.utils.get(MemGuild.roles, id=783250729686532126))
@@ -313,7 +305,7 @@ def ChPatreon(ctx):
 
 def ChPatreonUser(UserID):
     try:
-        MemGuild = CBot.DClient.get_guild(783250489843384341)
+        MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(UserID)
         Roles = []
         Roles.append(discord.utils.get(MemGuild.roles, id=783250729686532126))
@@ -330,7 +322,7 @@ def ChPatreonUser(UserID):
 
 def ChPatreonT2(ctx):
     try:
-        MemGuild = CBot.DClient.get_guild(783250489843384341)
+        MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(ctx.author.id)
         Roles = []
         Roles.append(discord.utils.get(MemGuild.roles, id=783256987655340043))
@@ -346,7 +338,7 @@ def ChPatreonT2(ctx):
 
 def ChPatreonUserT2(UserID):
     try:
-        MemGuild = CBot.DClient.get_guild(783250489843384341)
+        MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(UserID)
         Roles = []
         Roles.append(discord.utils.get(MemGuild.roles, id=783256987655340043))
@@ -362,7 +354,7 @@ def ChPatreonUserT2(UserID):
 
 def ChPatreonT3(ctx):
     try:
-        MemGuild = CBot.DClient.get_guild(783250489843384341)
+        MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(ctx.author.id)
         Roles = []
         Roles.append(discord.utils.get(MemGuild.roles, id=784123230372757515))
@@ -377,7 +369,7 @@ def ChPatreonT3(ctx):
 
 def ChPatreonUserT3(UserID):
     try:
-        MemGuild = CBot.DClient.get_guild(783250489843384341)
+        MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(UserID)
         Roles = []
         Roles.append(discord.utils.get(MemGuild.roles, id=784123230372757515))
@@ -392,7 +384,7 @@ def ChPatreonUserT3(UserID):
 
 def ChPatreonT4(ctx):
     try:
-        MemGuild = CBot.DClient.get_guild(783250489843384341)
+        MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(ctx.author.id)
         Roles = []
         Roles.append(discord.utils.get(MemGuild.roles, id=784124034559377409))
@@ -406,7 +398,7 @@ def ChPatreonT4(ctx):
 
 def ChPatreonUserT4(UserID):
     try:
-        MemGuild = CBot.DClient.get_guild(783250489843384341)
+        MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(UserID)
         Roles = []
         Roles.append(discord.utils.get(MemGuild.roles, id=784124034559377409))
@@ -440,3 +432,99 @@ def ChNSFW(ctx):
     if ctx.channel.is_nsfw():
         return True
     raise IsNSFW("Not Safe")
+
+
+async def Navigator(ctx, Items, Type="#", EmbedAndContent=False, ContItems=None, Main=False, MainBed=None):
+    def ChCHEm(RcM, RuS):
+        return (
+            RuS.bot == False
+            and RcM.message == Nav
+            and str(RcM.emoji) in ["⬅️", "❌", "➡️", "#️⃣"]
+        )
+
+    def ChCHEmFN(MSg):
+        MesS = MSg.content.lower()
+        RsT = False
+        try:
+            if int(MSg.content):
+                RsT = True
+        except ValueError:
+            if (MesS == "cancel") or (MesS == "c"):
+                RsT = True
+        return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
+
+    ItemNum = 0
+    if not Main: Nav = await ctx.message.channel.send(embed=Items[ItemNum])
+    else: Nav = await ctx.message.channel.send(embed=MainBed)
+    if EmbedAndContent: Cont = await ctx.message.channel.send(content=ContItems[ItemNum])
+    TotalItems = len(Items)
+    await Nav.add_reaction("⬅️")
+    await Nav.add_reaction("❌")
+    await Nav.add_reaction("➡️")
+    if Type == "#": await Nav.add_reaction("#️⃣")
+    while True:
+        try:
+            Res = await CBot.DClient.wait_for("reaction_add", check=ChCHEm, timeout=120)
+            await Nav.remove_reaction(Res[0].emoji, Res[1])
+            if Res[0].emoji == "⬅️":
+                if ItemNum:
+                    ItemNum -= 1
+                    await Nav.edit(embed=Items[ItemNum])
+                    if EmbedAndContent: await Cont.edit(content=ContItems[ItemNum])
+                elif MainBed: await Nav.edit(embed=MainBed); Main = True
+
+            elif Res[0].emoji == "➡️":
+                if ItemNum < TotalItems - 1:
+                    if Main: await Nav.edit(embed=Items[ItemNum]); Main = False
+                    else:
+                        ItemNum += 1
+                        await Nav.edit(embed=Items[ItemNum])
+                        if EmbedAndContent: await Cont.edit(content=ContItems[ItemNum])
+                else:
+                    await Nav.remove_reaction("⬅️", CBot.DClient.user)
+                    await Nav.remove_reaction("❌", CBot.DClient.user)
+                    await Nav.remove_reaction("➡️", CBot.DClient.user)
+                    if Type == "#": await Nav.remove_reaction("#️⃣", CBot.DClient.user)
+                    break
+            elif Res[0].emoji == "#️⃣" and Type == "#":
+                if await ChVoteUser(Res[1].id):
+                    TempNG = await ctx.message.channel.send(
+                        'Choose a number to open navigate to ItemNum. "c" or "cancel" to exit navigation.'
+                    )
+                    try:
+                        ResE = await CBot.DClient.wait_for(
+                            "message", check=ChCHEmFN, timeout=10
+                        )
+                        await TempNG.delete()
+                        await ResE.delete()
+                        try:
+                            pG = int(ResE.content)
+                            if 0 < pG <= TotalItems - 1:
+                                ItemNum = pG - 1
+                            elif pG < 1:
+                                ItemNum = 0
+                                pass
+                            else:
+                                ItemNum = TotalItems - 1
+                        except:
+                            pass
+                        await Nav.edit(embed=Items[ItemNum])
+                        if EmbedAndContent: await Cont.edit(content=ContItems[ItemNum])
+                    except asyncio.TimeoutError:
+                        await TempNG.edit("Request Timeout")
+                        await asyncio.sleep(5)
+                        await TempNG.delete()
+                else:
+                    await ctx.message.channel.send(embed=ErrorEmbeds("Vote"))
+            elif Res[0].emoji == "❌":
+                await Nav.remove_reaction("⬅️", CBot.DClient.user)
+                await Nav.remove_reaction("❌", CBot.DClient.user)
+                await Nav.remove_reaction("➡️", CBot.DClient.user)
+                if Type == "#": await Nav.remove_reaction("#️⃣", CBot.DClient.user)
+                break
+        except asyncio.TimeoutError:
+            await Nav.remove_reaction("⬅️", CBot.DClient.user)
+            await Nav.remove_reaction("❌", CBot.DClient.user)
+            await Nav.remove_reaction("➡️", CBot.DClient.user)
+            if Type == "#": await Nav.remove_reaction("#️⃣", CBot.DClient.user)
+            break

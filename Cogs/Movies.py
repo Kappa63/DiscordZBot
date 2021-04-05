@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
-from Setup import IMClient
-from Setup import SendWait
+from Setup import IMClient, SendWait
 import asyncio
 
 
@@ -114,11 +113,7 @@ class Movies(commands.Cog):
 
         try:
             Plot = IMDbinfo["plot outline"]
-            if len(Plot) > 1000:
-                PlotF = Plot[0:100]
-                PlotF = PlotF + "..."
-            else:
-                PlotF = Plot
+            PlotF = Plot[:100]
         except KeyError:
             pass
 
@@ -128,11 +123,12 @@ class Movies(commands.Cog):
             url=f'https://www.imdb.com/title/tt{IMDbinfo["imdbID"]}',
             color=0xDBA506,
         )
-        YEm.add_field(
-            name="Plot:",
-            value=PlotF + "\n",
-            inline=False,
-        )
+        if PlotF:
+            YEm.add_field(
+                name="Plot:",
+                value=PlotF + "\n",
+                inline=False,
+            )
         try:
             YEm.add_field(
                 name="Original Air Date:",

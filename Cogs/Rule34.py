@@ -1,13 +1,12 @@
 import discord
 from discord.ext import commands
-from Setup import ChVote, ChVoteUser, ChNSFW, SendWait
-from Setup import ErrorEmbeds
+from Setup import ChVote, ChVoteUser, ChNSFW, SendWait, ErrorEmbeds, Navigator
 import asyncio
 import random
 import rule34
 
 
-def MakeEmbed(Rule, Type="R", RuleNum=0, TotalRules=0):
+def MakeEmbed(Rule, RuleNum = 0, Type="R"):
     Tags = ", ".join(Rule.tags)
     if len(Tags) > 253:
         RTags = Tags[0:253]
@@ -17,7 +16,7 @@ def MakeEmbed(Rule, Type="R", RuleNum=0, TotalRules=0):
     REm = discord.Embed(title="Rule34", description=RTags, color=0xDFE31E)
     REm.add_field(name="Score: ", value=Rule.score)
     if Type == "S":
-        REm.add_field(name=f"`Page: {RuleNum+1}/{TotalRules}`", value="\u200b")
+        REm.add_field(name=f"`Page: {RuleNum+1}/{len(Rule)}`", value="\u200b")
     REm.set_image(url=Rule.file_url)
     REm.set_thumbnail(url=Rule.preview_url)
     if Type == "S":
@@ -37,158 +36,44 @@ class Rule34(commands.Cog):
     @commands.check(ChNSFW)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetRule34(self, ctx, *args):
-        if args:
-            try:
-                Rule34 = rule34.Rule34(asyncio.get_event_loop())
-                if ctx.guild.id != 586940644153622550:
-                    Rule34Choices = await Rule34.getImages(
-                        f'-underage -loli -lolicon -lolita -lolita_channel -shota -shotacon {"_".join(args).lower()}'
-                    )
-                else:
-                    Rule34Choices = await Rule34.getImages(f'{"_".join(args).lower()}')
-                ShowRule = random.choice(Rule34Choices)
-            except TypeError:
-                await SendWait(ctx, "Nothing Found :no_mouth:")
-                return
-            print(ShowRule)
-            await ctx.message.channel.send(embed=MakeEmbed(ShowRule))
+        if not args:
+            await SendWait(ctx, "No arguments :no_mouth:")
+            return
+        try:
+            Rule34 = rule34.Rule34(asyncio.get_event_loop())
+            if ctx.guild.id != 586940644153622550:
+                Rule34Choices = await Rule34.getImages(
+                    f'-underage -loli -lolicon -lolita -lolita_channel -shota -shotacon {"_".join(args).lower()}'
+                )
+            else:
+                Rule34Choices = await Rule34.getImages(f'{"_".join(args).lower()}')
+            ShowRule = random.choice(Rule34Choices)
+        except TypeError:
+            await SendWait(ctx, "Nothing Found :no_mouth:")
+            return
+        await ctx.message.channel.send(embed=MakeEmbed(ShowRule))
 
     @GetRule34.command(name="surf")
     @commands.check(ChVote)
     @commands.check(ChNSFW)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SurfRule34(self, ctx, *args):
-        def ChCHEm(RcM, RuS):
-            return (
-                RuS.bot == False
-                and RcM.message == RTEm
-                and str(RcM.emoji) in ["⬅️", "❌", "➡️", "#️⃣"]
-            )
-
-        def ChCHEmFN(MSg):
-            MesS = MSg.content.lower()
-            RsT = False
-            try:
-                if int(MSg.content):
-                    RsT = True
-            except ValueError:
-                if (MesS == "cancel") or (MesS == "c"):
-                    RsT = True
-            return (
-                MSg.guild.id == ctx.guild.id
-                and MSg.channel.id == ctx.channel.id
-                and RsT
-            )
-
-        if args:
-            try:
-                Rule34 = rule34.Rule34(asyncio.get_event_loop())
-                if ctx.guild.id != 586940644153622550:
-                    Rule34Surf = await Rule34.getImages(
-                        f'-underage -loli -lolicon -lolita -lolita_channel -shota -shotacon {"_".join(args).lower()}'
-                    )
-                else:
-                    Rule34Surf = await Rule34.getImages(f'{"_".join(args).lower()}')
-            except TypeError:
-                await SendWait(ctx, "Nothing Found :no_mouth:")
-                return
-        else:
+        if not args:
             await SendWait(ctx, "No arguments :no_mouth:")
             return
-        RuleNum = 0
-        TotalRules = len(Rule34Surf)
-        RTEm = await ctx.message.channel.send(
-            embed=MakeEmbed(Rule34Surf[RuleNum], "S", RuleNum, TotalRules)
-        )
-        await RTEm.add_reaction("⬅️")
-        await RTEm.add_reaction("❌")
-        await RTEm.add_reaction("➡️")
-        await RTEm.add_reaction("#️⃣")
-        while True:
-            try:
-                Res = await self.DClient.wait_for(
-                    "reaction_add", check=ChCHEm, timeout=120
+        try:
+            Rule34 = rule34.Rule34(asyncio.get_event_loop())
+            if ctx.guild.id != 586940644153622550:
+                Rule34Surf = await Rule34.getImages(
+                    f'-underage -loli -lolicon -lolita -lolita_channel -shota -shotacon {"_".join(args).lower()}'
                 )
-                await RTEm.remove_reaction(Res[0].emoji, Res[1])
-                if Res[0].emoji == "⬅️" and RuleNum != 0:
-                    RuleNum -= 1
-                    await RTEm.edit(
-                        embed=MakeEmbed(Rule34Surf[RuleNum], "S", RuleNum, TotalRules)
-                    )
-                elif Res[0].emoji == "➡️":
-                    if RuleNum < TotalRules - 1:
-                        RuleNum += 1
-                        await RTEm.edit(
-                            embed=MakeEmbed(
-                                Rule34Surf[RuleNum], "S", RuleNum, TotalRules
-                            )
-                        )
-                    else:
-                        await RTEm.edit(
-                            embed=MakeEmbed(
-                                Rule34Surf[RuleNum], "S", RuleNum, TotalRules
-                            )
-                        )
-                        await RTEm.remove_reaction("⬅️", self.DClient.user)
-                        await RTEm.remove_reaction("❌", self.DClient.user)
-                        await RTEm.remove_reaction("➡️", self.DClient.user)
-                        await RTEm.remove_reaction("#️⃣", self.DClient.user)
-                        break
-                elif Res[0].emoji == "#️⃣":
-                    if await ChVoteUser(Res[1].id):
-                        TemTw = await ctx.message.channel.send(
-                            'Choose a number to open navigate to page. "c" or "cancel" to exit navigation.'
-                        )
-                        try:
-                            ResE = await self.DClient.wait_for(
-                                "message", check=ChCHEmFN, timeout=10
-                            )
-                            await TemTw.delete()
-                            await ResE.delete()
-                            try:
-                                try:
-                                    pG = int(ResE.content)
-                                    if 0 < pG <= TotalRules - 1:
-                                        RuleNum = pG - 1
-                                    elif pG < 1:
-                                        RuleNum = 0
-                                        pass
-                                    else:
-                                        RuleNum = TotalRules - 1
-                                except TypeError:
-                                    pass
-                            except ValueError:
-                                pass
-                            await RTEm.edit(
-                                embed=MakeEmbed(
-                                    Rule34Surf[RuleNum], "S", RuleNum, TotalRules
-                                )
-                            )
-                        except asyncio.exceptions.TimeoutError:
-                            await TemTw.edit("Request Timeout")
-                            await asyncio.sleep(5)
-                            await TemTw.delete()
-                    else:
-                        await ctx.message.channel.send(embed=ErrorEmbeds("Vote"))
-                elif Res[0].emoji == "❌":
-                    await RTEm.edit(
-                        embed=MakeEmbed(Rule34Surf[RuleNum], "S", RuleNum, TotalRules)
-                    )
-                    await RTEm.remove_reaction("⬅️", self.DClient.user)
-                    await RTEm.remove_reaction("❌", self.DClient.user)
-                    await RTEm.remove_reaction("➡️", self.DClient.user)
-                    await RTEm.remove_reaction("#️⃣", self.DClient.user)
-                    break
-            except asyncio.TimeoutError:
-                await RTEm.edit(
-                    embed=MakeEmbed(Rule34Surf[RuleNum], "S", RuleNum, TotalRules)
-                )
-                await RTEm.remove_reaction("⬅️", self.DClient.user)
-                await RTEm.remove_reaction("❌", self.DClient.user)
-                await RTEm.remove_reaction("➡️", self.DClient.user)
-                await RTEm.remove_reaction("#️⃣", self.DClient.user)
-                break
-
+            else:
+                Rule34Surf = await Rule34.getImages(f'{"_".join(args).lower()}')
+        except TypeError:
+            await SendWait(ctx, "Nothing Found :no_mouth:")
+            return
+        Rules = [MakeEmbed(i, v, Type="S") for v, i in enumerate(Rule34Surf)] 
+        await Navigator(ctx, Rules)
 
 def setup(DClient):
     DClient.add_cog(Rule34(DClient))

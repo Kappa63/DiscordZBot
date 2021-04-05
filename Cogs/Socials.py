@@ -3,9 +3,7 @@ from discord.ext import commands
 from prawcore import NotFound, Forbidden
 import os
 import random
-from Setup import Reddit, Rdt, GetPatreonTier, SendWait, YClient, Twitter, THelix
-from Setup import ChVote, ChVoteUser, ChPatreonT2, ChMaxMultireddits, GetVidDuration
-from Setup import ErrorEmbeds
+from Setup import Reddit, Rdt, GetPatreonTier, SendWait, YClient, Twitter, THelix, ChVote, ChVoteUser, ChPatreonT2, ChMaxMultireddits, GetVidDuration, ErrorEmbeds, Navigator, Threader
 from twitch.helix.resources import StreamNotFound
 import re
 import requests
@@ -17,98 +15,33 @@ import asyncio
 import datetime
 
 
-def RedditbedMaker(ctx, SubCpoS, Subname, Type="R", PostNum=0, TotalPosts=0):
-    if len(SubCpoS.title) > 253:
-        PostTitle = SubCpoS.title[0:253]
-        PostTitle = PostTitle + "..."
-    else:
-        PostTitle = SubCpoS.title
-
-    if len(SubCpoS.selftext) > 1021:
-        PostText = SubCpoS.selftext[0:1021]
-        PostText = PostText + "..."
-    else:
-        PostText = SubCpoS.selftext
-
+def RedditbedMaker(SubCpoS, Subname, Nsfchannel, Type="R", PostNum=0, TotalPosts=0):
+    PostTitle = SubCpoS.title[:253]
+    PostText = SubCpoS.selftext[:1021]
     if PosType(SubCpoS):
-        if SubCpoS.over_18:
-            if ctx.channel.is_nsfw():
-                REm = discord.Embed(
-                    title=PostTitle,
-                    description=f"Upvote Ratio: {SubCpoS.upvote_ratio} // Post is NSFW",
-                    color=0x8B0000,
-                )
-                if Type == "S":
-                    REm.add_field(
-                        name=f"`Page: {PostNum+1}/{TotalPosts}`",
-                        value="\u200b",
-                        inline=True,
-                    )
-                if SubCpoS.selftext != "":
-                    REm.add_field(name="Body", value=PostText, inline=False)
-                REm.add_field(name="Post: ", value=SubCpoS.url, inline=True)
-            else:
-                REm = discord.Embed(
-                    title="***NOT NSFW CHANNEL***",
-                    description="Post is NSFW",
-                    color=0x8B0000,
-                )
-                REm.add_field(
-                    name="NSFW: ",
-                    value="This channel isn't NSFW. No NSFW here",
-                    inline=False,
-                )
+        if SubCpoS.over_18 and Nsfchannel:
+            REm = discord.Embed(title=PostTitle,description=f"Upvote Ratio: {SubCpoS.upvote_ratio} // Post is NSFW",color=0x8B0000)
+            if Type == "S": REm.add_field(name=f"`Page: {PostNum+1}/{TotalPosts}`",value="\u200b",inline=True)
+            if PostText: REm.add_field(name="Body", value=PostText, inline=False)
+            REm.add_field(name="Post: ", value=SubCpoS.url, inline=True)
+        elif not Nsfchannel and SubCpoS.over_18:
+            REm = discord.Embed(title="***NOT NSFW CHANNEL***",description="Post is NSFW",color=0x8B0000,)
+            REm.add_field(name="NSFW: ",value="This channel isn't NSFW. No NSFW here",inline=False,)
         else:
-            REm = discord.Embed(
-                title=PostTitle,
-                description=f"Upvote Ratio: {SubCpoS.upvote_ratio} // Post is Clean",
-                color=0x8B0000,
-            )
-            if Type == "S":
-                REm.add_field(
-                    name=f"`Page: {PostNum+1}/{TotalPosts}`",
-                    value="\u200b",
-                    inline=True,
-                )
-            if SubCpoS.selftext != "":
-                REm.add_field(name="Body", value=PostText, inline=False)
+            REm = discord.Embed(title=PostTitle,description=f"Upvote Ratio: {SubCpoS.upvote_ratio} // Post is Clean",color=0x8B0000,)
+            if Type == "S": REm.add_field(name=f"`Page: {PostNum+1}/{TotalPosts}`",value="\u200b",inline=True)
+            if PostText: REm.add_field(name="Body", value=PostText, inline=False)
             REm.add_field(name="Post: ", value=SubCpoS.url, inline=True)
     else:
-        NSfw = False
-        if SubCpoS.over_18:
-            if ctx.channel.is_nsfw():
-                REm = discord.Embed(
-                    title=PostTitle,
-                    description=f"Upvote Ratio: {SubCpoS.upvote_ratio} // Post is NSFW",
-                    color=0x8B0000,
-                )
-            else:
-                REm = discord.Embed(
-                    title="***NOT NSFW CHANNEL***",
-                    description="Post is NSFW",
-                    color=0x8B0000,
-                )
-            NSfw = True
-            if Type == "S":
-                REm.add_field(
-                    name=f"`Post: {PostNum+1}/{TotalPosts}`",
-                    value="\u200b",
-                    inline=True,
-                )
+        NSfw = SubCpoS.over_18
+        if SubCpoS.over_18 and Nsfchannel:
+            REm = discord.Embed(title=PostTitle,description=f"Upvote Ratio: {SubCpoS.upvote_ratio} // Post is NSFW",color=0x8B0000)
+        elif not Nsfchannel and SubCpoS.over_18:REm = discord.Embed(title="***NOT NSFW CHANNEL***",description="Post is NSFW",color=0x8B0000)
         else:
-            REm = discord.Embed(
-                title=PostTitle,
-                description=f"Upvote Ratio: {SubCpoS.upvote_ratio} // Post is Clean",
-                color=0x8B0000,
-            )
-            if Type == "S":
-                REm.add_field(
-                    name=f"`Post: {PostNum+1}/{TotalPosts}`",
-                    value="\u200b",
-                    inline=True,
-                )
+            REm = discord.Embed(title=PostTitle,description=f"Upvote Ratio: {SubCpoS.upvote_ratio} // Post is Clean",color=0x8B0000)
+        if Type == "S":REm.add_field(name=f"`Post: {PostNum+1}/{TotalPosts}`",value="\u200b",inline=True)
         C = 0
-        if (NSfw and ctx.channel.is_nsfw()) or (NSfw == False):
+        if (NSfw and Nsfchannel) or (NSfw == False):
             try:
                 GaLpos = SubCpoS.gallery_data["items"]
                 for ImgPoGa in GaLpos:
@@ -119,56 +52,29 @@ def RedditbedMaker(ctx, SubCpoS, Subname, Type="R", PostNum=0, TotalPosts=0):
                             value=f"The original post is a gallery [click here]({SubCpoS.url}) to view the rest of the post",
                             inline=False,
                         )
-                        pstR = FiPoS["p"][-1]["u"]
-                        REm.set_image(url=pstR)
+                        REm.set_image(url=FiPoS["p"][-1]["u"])
                         break
             except AttributeError:
-                for ExT in [".png", ".jpg", ".jpeg", ".gif", ".gifv"]:
-                    C += 1
-                    if (SubCpoS.url).endswith(ExT):
-                        pstR = SubCpoS.url
-                        if ExT == ".gifv":
-                            REm.add_field(
-                                name="\u200b",
-                                value=f"The original post is a video(imgur) [click here]({SubCpoS.url}) to view the original",
-                                inline=False,
-                            )
-                            pstR = SubCpoS.url[:-1]
-                        REm.set_image(url=pstR)
-                        break
-                    elif C == 5:
-                        try:
-                            if "v.redd.it" in SubCpoS.url:
-                                EmbOri(REm, "video (reddit)", SubCpoS)
-                            elif (
-                                "youtu.be" in SubCpoS.url
-                                or "youtube.com" in SubCpoS.url
-                            ):
-                                EmbOri(REm, "video (youtube)", SubCpoS)
-                            elif "gfycat" in SubCpoS.url:
-                                EmbOri(REm, "video (gfycat)", SubCpoS)
-                            elif "redgifs" in SubCpoS.url:
-                                EmbOri(REm, "video (redgifs)", SubCpoS)
-                            else:
-                                EmbOri(REm, "webpage", SubCpoS)
-                        except AttributeError:
-                            REm.add_field(
-                                name="Post: ", value=SubCpoS.url, inline=False
-                            )
-                            REm.add_field(
-                                name="Media Preview Unavailable. Sorry!!",
-                                value="\u200b",
-                            )
+                if (SubCpoS.url).endswith(".gifv"):
+                    REm.add_field(name="\u200b",value=f"The original post is a video(imgur) [click here]({SubCpoS.url}) to view the original",inline=False)
+                    REm.set_image(url=SubCpoS.url[:-1])
+                elif SubCpoS.url[-4:] in [".jpg", ".png", ".gif", "jpeg"]:
+                    REm.set_image(url=SubCpoS.url)
+                else:
+                    if "v.redd.it" in SubCpoS.url:
+                        EmbOri(REm, "video (reddit)", SubCpoS)
+                    elif ("youtu.be" in SubCpoS.url or "youtube.com" in SubCpoS.url):
+                        EmbOri(REm, "video (youtube)", SubCpoS)
+                    elif "gfycat" in SubCpoS.url:
+                        EmbOri(REm, "video (gfycat)", SubCpoS)
+                    elif "redgifs" in SubCpoS.url:
+                        EmbOri(REm, "video (redgifs)", SubCpoS)
+                    else:
+                        EmbOri(REm, "webpage", SubCpoS)
         else:
-            REm.add_field(
-                name="NSFW: ",
-                value="This isn't an NSFW channel. No NSFW allowed here.",
-                inline=False,
-            )
+            REm.add_field(name="NSFW: ",value="This isn't an NSFW channel. No NSFW allowed here.",inline=False)
     if Type == "S":
-        REm.set_footer(
-            text=f"From r/{SubCpoS.subreddit.display_name}\n\nNeed help navigating? zhelp navigation"
-        )
+        REm.set_footer(text=f"From r/{SubCpoS.subreddit.display_name}\n\nNeed help navigating? zhelp navigation")
     else:
         REm.set_footer(text=f"From r/{SubCpoS.subreddit.display_name}")
     REm.set_author(name=f"*By u/{SubCpoS.author}*")
@@ -190,7 +96,7 @@ def YoutubebedMaker(VidID, Channel, VidNum, VidsTotal):
         YLEm.add_field(name="**CURRENTLY LIVE**", value="\u200b", inline=True)
     else:
         YLEm.add_field(
-            name=f"Upload Date: {Vid.snippet.publishedAt[0:10]}",
+            name=f"Upload Date: {Vid.snippet.publishedAt[:10]}",
             value="\u200b",
             inline=False,
         )
@@ -343,7 +249,6 @@ def EmbOri(REm, Type, SubCpoS):
     REm.set_image(url=SubCpoS.preview["images"][-1]["source"]["url"])
     return REm
 
-
 def CheckSub(Sub):
     Valid = True
     try:
@@ -352,7 +257,6 @@ def CheckSub(Sub):
     except (NotFound, Forbidden):
         Valid = False
     return Valid
-
 
 def PosType(Sub):
     TextB = False
@@ -396,6 +300,7 @@ class Socials(commands.Cog):
             await SendWait(ctx, "No Username")
             return
         try:
+            await SendWait(ctx, ":busts_in_silhouette: Getting User...")
             UHelix = THelix.user(" ".join(args))
             Name = UHelix.display_name
             Type = UHelix.broadcaster_type.capitalize()
@@ -412,7 +317,7 @@ class Socials(commands.Cog):
                 Img = await gallery.upload("Thumb.jpg")
                 ThumbnailShot = Img["image_url"]
             os.remove("Thumb.jpg")
-            ThEm = discord.Embed(title = StreamTitle, description = State, url = f'https://www.twitch.tv/{Name}',color = 0x9147FF)
+            ThEm = discord.Embed(title = StreamTitle, description = f':red_circle: {State}', url = f'https://www.twitch.tv/{Name}',color = 0x9147FF)
             ThEm.set_author(name=f'{Name} ({Type})', icon_url=PImg)
             ThEm.set_image(url=ThumbnailShot)
             ThEm.add_field(name = "Live Viewers: ", value = f'{CurrentViewers:,}')
@@ -425,28 +330,6 @@ class Socials(commands.Cog):
     @TTwitch.command(name="clips")
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def StreamerClips(self, ctx, *args):
-        def ChCHEm(RcM, RuS):
-            return (
-                RuS.bot == False
-                and RcM.message == CTEm
-                and str(RcM.emoji) in ["⬅️", "❌", "➡️", "#️⃣"]
-            )
-
-        def ChCHEmFN(MSg):
-            MesS = MSg.content.lower()
-            RsT = False
-            try:
-                if int(MSg.content):
-                    RsT = True
-            except ValueError:
-                if (MesS == "cancel") or (MesS == "c"):
-                    RsT = True
-            return (
-                MSg.guild.id == ctx.guild.id
-                and MSg.channel.id == ctx.channel.id
-                and RsT
-            )
-
         if not args:
             await SendWait(ctx, "No Username")
             return
@@ -474,91 +357,7 @@ class Socials(commands.Cog):
         except AttributeError:
             await SendWait(ctx, "Not Found")
             return
-
-        ClipNum = 0
-        CTEm = await ctx.message.channel.send(embed=ClipEms[ClipNum])
-        await CTEm.add_reaction("⬅️")
-        await CTEm.add_reaction("❌")
-        await CTEm.add_reaction("➡️")
-        await CTEm.add_reaction("#️⃣")
-        while True:
-            try:
-                Res = await self.DClient.wait_for(
-                    "reaction_add", check=ChCHEm, timeout=120
-                )
-                await CTEm.remove_reaction(Res[0].emoji, Res[1])
-                if Res[0].emoji == "⬅️" and ClipNum != 0:
-                    ClipNum -= 1
-                    await CTEm.edit(
-                        embed=ClipEms[ClipNum]
-                    )
-                elif Res[0].emoji == "➡️":
-                    if ClipNum < TotalClips - 1:
-                        ClipNum += 1
-                        await CTEm.edit(
-                            embed=ClipEms[ClipNum]
-                        )
-                    else:
-                        await CTEm.edit(
-                            embed=ClipEms[ClipNum]
-                        )
-                        await CTEm.remove_reaction("⬅️", self.DClient.user)
-                        await CTEm.remove_reaction("❌", self.DClient.user)
-                        await CTEm.remove_reaction("➡️", self.DClient.user)
-                        await CTEm.remove_reaction("#️⃣", self.DClient.user)
-                        break
-                elif Res[0].emoji == "#️⃣":
-                    if await ChVoteUser(Res[1].id):
-                        TemTw = await ctx.message.channel.send(
-                            'Choose a number to open navigate to page. "c" or "cancel" to exit navigation.'
-                        )
-                        try:
-                            ResE = await self.DClient.wait_for(
-                                "message", check=ChCHEmFN, timeout=10
-                            )
-                            await TemTw.delete()
-                            await ResE.delete()
-                            try:
-                                try:
-                                    pG = int(ResE.content)
-                                    if 0 < pG <= TotalClips - 1:
-                                        ClipNum = pG - 1
-                                    elif pG < 1:
-                                        ClipNum = 0
-                                        pass
-                                    else:
-                                        ClipNum = TotalClips - 1
-                                except TypeError:
-                                    pass
-                            except ValueError:
-                                pass
-                            await CTEm.edit(
-                                embed=ClipEms[ClipNum]
-                            )
-                        except asyncio.exceptions.TimeoutError:
-                            await TemTw.edit("Request Timeout")
-                            await asyncio.sleep(5)
-                            await TemTw.delete()
-                    else:
-                        await ctx.message.channel.send(embed=ErrorEmbeds("Vote"))
-                elif Res[0].emoji == "❌":
-                    await CTEm.edit(
-                        embed=ClipEms[ClipNum]
-                    )
-                    await CTEm.remove_reaction("⬅️", self.DClient.user)
-                    await CTEm.remove_reaction("❌", self.DClient.user)
-                    await CTEm.remove_reaction("➡️", self.DClient.user)
-                    await CTEm.remove_reaction("#️⃣", self.DClient.user)
-                    break
-            except asyncio.TimeoutError:
-                await CTEm.edit(
-                    embed=ClipEms[ClipNum]
-                )
-                await CTEm.remove_reaction("⬅️", self.DClient.user)
-                await CTEm.remove_reaction("❌", self.DClient.user)
-                await CTEm.remove_reaction("➡️", self.DClient.user)
-                await CTEm.remove_reaction("#️⃣", self.DClient.user)
-                break
+        await Navigator(ctx, ClipEms)
 
     @commands.group(name="twitter", invoke_without_command=True)
     @commands.cooldown(1, 2, commands.BucketType.user)
@@ -577,33 +376,11 @@ class Socials(commands.Cog):
                 and MSg.channel.id == ctx.channel.id
                 and RsT
             )
-
-        def ChCHEm(RcM, RuS):
-            return (
-                RuS.bot == False
-                and RcM.message == TwTsL
-                and str(RcM.emoji) in ["⬅️", "❌", "➡️", "#️⃣"]
-            )
-
-        def ChCHEmFN(MSg):
-            MesS = MSg.content.lower()
-            RsT = False
-            try:
-                if int(MSg.content):
-                    RsT = True
-            except ValueError:
-                if (MesS == "cancel") or (MesS == "c"):
-                    RsT = True
-            return (
-                MSg.guild.id == ctx.guild.id
-                and MSg.channel.id == ctx.channel.id
-                and RsT
-            )
-
-        TWinput = " ".join(args).split(" ")
-        if TWinput[0].lower() == "search" and args:
+        
+        TWinput = list(args)
+        if TWinput and TWinput[0].lower() == "search":
             TWinput.pop(0)
-            if " ".join(TWinput):
+            if TWinput:
                 C = 0
                 SrchTw = []
                 for TWuser in Twitter.search_users(TWinput, count=10):
@@ -668,177 +445,61 @@ class Socials(commands.Cog):
                     )
             else:
                 await SendWait(ctx, "No search argument :woozy_face:")
-
         elif args:
             TWname = " ".join(args)
         else:
             await SendWait(ctx, "No Arguments :no_mouth:")
+            return
         try:
-            try:
-                TWprofile = Twitter.get_user(TWname)
-                IsVerified = ""
-                TWdesc = "\u200b"
-                if TWprofile.verified:
-                    IsVerified = ":ballot_box_with_check: "
-                if TWprofile.description:
-                    TWdesc = TWprofile.description
-                TEm = discord.Embed(
-                    title=f"@{TWprofile.screen_name} / {TWprofile.name} {IsVerified}",
-                    description=TWdesc,
-                    color=0x0384FC,
-                )
-                TEm.set_thumbnail(url=TWprofile.profile_image_url_https)
-                if TWprofile.location:
-                    TEm.add_field(
-                        name="Location: ", value=TWprofile.location, inline=True
-                    )
-                if TWprofile.url:
-                    TEm.add_field(
-                        name="Website: ",
-                        value=(requests.head(TWprofile.url)).headers["Location"],
-                        inline=True,
-                    )
+            TWprofile = Twitter.get_user(TWname)
+            IsVerified = ""
+            TWdesc = "\u200b"
+            if TWprofile.verified:
+                IsVerified = ":ballot_box_with_check: "
+            if TWprofile.description:
+                TWdesc = TWprofile.description
+            TEm = discord.Embed(
+                title=f"@{TWprofile.screen_name} / {TWprofile.name} {IsVerified}",
+                description=TWdesc,
+                color=0x0384FC,
+            )
+            TEm.set_thumbnail(url=TWprofile.profile_image_url_https)
+            if TWprofile.location:
                 TEm.add_field(
-                    name="Created: ",
-                    value=(str(TWprofile.created_at).split(" "))[0],
-                    inline=False,
+                    name="Location: ", value=TWprofile.location, inline=True
                 )
+            if TWprofile.url:
                 TEm.add_field(
-                    name="Following: ",
-                    value=f"{TWprofile.friends_count:,}",
+                    name="Website: ",
+                    value=(requests.head(TWprofile.url)).headers["Location"],
                     inline=True,
                 )
-                TEm.add_field(
-                    name="Followers: ",
-                    value=f"{TWprofile.followers_count:,}",
-                    inline=True,
-                )
-                TEm.set_footer(text="Need help navigating? zhelp navigation")
-                TWtimeline = Twitter.user_timeline(
-                    TWname, trim_user=True, tweet_mode="extended"
-                )
-                TwTsL = await ctx.message.channel.send(embed=TEm)
-                TwTNum = 0
-                OnMain = True
-                await TwTsL.add_reaction("⬅️")
-                await TwTsL.add_reaction("❌")
-                await TwTsL.add_reaction("➡️")
-                await TwTsL.add_reaction("#️⃣")
-                while True:
-                    try:
-                        ReaEm = await self.DClient.wait_for(
-                            "reaction_add", check=ChCHEm, timeout=120
-                        )
-                        await TwTsL.remove_reaction(ReaEm[0].emoji, ReaEm[1])
-                        if ReaEm[0].emoji == "⬅️" and TwTNum == 0:
-                            OnMain = True
-                            await TwTsL.edit(embed=TEm)
-                        elif ReaEm[0].emoji == "⬅️" and TwTNum > 0:
-                            TwTNum -= 1
-                            await TwTsL.edit(
-                                embed=TwitterbedMaker(
-                                    TWprofile,
-                                    IsVerified,
-                                    ChTwTp(TWtimeline[TwTNum]),
-                                    TWtimeline[TwTNum],
-                                    TwTNum,
-                                    len(TWtimeline),
-                                )
-                            )
-                        elif ReaEm[0].emoji == "➡️" and OnMain:
-                            OnMain = False
-                            TwTNum = 0
-                            await TwTsL.edit(
-                                embed=TwitterbedMaker(
-                                    TWprofile,
-                                    IsVerified,
-                                    ChTwTp(TWtimeline[TwTNum]),
-                                    TWtimeline[TwTNum],
-                                    TwTNum,
-                                    len(TWtimeline),
-                                )
-                            )
-                        elif (
-                            ReaEm[0].emoji == "➡️"
-                            and len(TWtimeline) > TwTNum + 1
-                            and TwTNum >= 0
-                        ):
-                            TwTNum += 1
-                            await TwTsL.edit(
-                                embed=TwitterbedMaker(
-                                    TWprofile,
-                                    IsVerified,
-                                    ChTwTp(TWtimeline[TwTNum]),
-                                    TWtimeline[TwTNum],
-                                    TwTNum,
-                                    len(TWtimeline),
-                                )
-                            )
-                        elif ReaEm[0].emoji == "#️⃣":
-                            if await ChVoteUser(ReaEm[1].id):
-                                TemTw = await ctx.message.channel.send(
-                                    'Choose a number to open navigate to page. "c" or "cancel" to exit navigation.'
-                                )
-                                try:
-                                    ResE = await self.DClient.wait_for(
-                                        "message", check=ChCHEmFN, timeout=10
-                                    )
-                                    await ResE.delete()
-                                    await TemTw.delete()
-                                    try:
-                                        try:
-                                            pG = int(ResE.content)
-                                            if 0 < pG <= len(TWtimeline) - 1:
-                                                TwTNum = pG - 1
-                                            elif pG < 1:
-                                                TwTNum = 0
-                                                pass
-                                            else:
-                                                TwTNum = len(TWtimeline) - 1
-                                        except TypeError:
-                                            pass
-                                    except ValueError:
-                                        pass
-                                    await TwTsL.edit(
-                                        embed=TwitterbedMaker(
-                                            TWprofile,
-                                            IsVerified,
-                                            ChTwTp(TWtimeline[TwTNum]),
-                                            TWtimeline[TwTNum],
-                                            TwTNum,
-                                            len(TWtimeline),
-                                        )
-                                    )
-                                except asyncio.TimeoutError:
-                                    await TemTw.edit("Request Timeout")
-                                    await asyncio.sleep(5)
-                                    await TemTw.delete()
-                            else:
-                                await ctx.message.channel.send(
-                                    embed=ErrorEmbeds("Vote")
-                                )
-                        elif ReaEm[0].emoji == "➡️" and len(TWtimeline) == TwTNum + 1:
-                            await TwTsL.remove_reaction("⬅️", self.DClient.user)
-                            await TwTsL.remove_reaction("❌", self.DClient.user)
-                            await TwTsL.remove_reaction("➡️", self.DClient.user)
-                            await TwTsL.remove_reaction("#️⃣", self.DClient.user)
-                            break
-                        elif ReaEm[0].emoji == "❌":
-                            await TwTsL.remove_reaction("⬅️", self.DClient.user)
-                            await TwTsL.remove_reaction("❌", self.DClient.user)
-                            await TwTsL.remove_reaction("➡️", self.DClient.user)
-                            await TwTsL.remove_reaction("#️⃣", self.DClient.user)
-                            break
-                    except asyncio.TimeoutError:
-                        await TwTsL.remove_reaction("⬅️", self.DClient.user)
-                        await TwTsL.remove_reaction("❌", self.DClient.user)
-                        await TwTsL.remove_reaction("➡️", self.DClient.user)
-                        await TwTsL.remove_reaction("#️⃣", self.DClient.user)
-                        break
-            except tweepy.error.TweepError:
-                await SendWait(ctx, "Not Found :expressionless:")
+            TEm.add_field(
+                name="Created: ",
+                value=(str(TWprofile.created_at).split(" "))[0],
+                inline=False,
+            )
+            TEm.add_field(
+                name="Following: ",
+                value=f"{TWprofile.friends_count:,}",
+                inline=True,
+            )
+            TEm.add_field(
+                name="Followers: ",
+                value=f"{TWprofile.followers_count:,}",
+                inline=True,
+            )
+            TEm.set_footer(text="Need help navigating? zhelp navigation")
+            TWtimeline = Twitter.user_timeline(
+                TWname, trim_user=True, tweet_mode="extended"
+            )
+            Twts = [TwitterbedMaker(TWprofile, IsVerified, ChTwTp(T), T, Tn, len(TWtimeline)) for T, Tn in enumerate(TWtimeline)]
+            await Navigator(ctx, Twts, Main=True, MainBed=TEm)
+
         except UnboundLocalError:
             pass
+        except tweepy.error.TweepError:
+            await SendWait(ctx, "Not Found :expressionless:")
 
     @TwitterNav.command(name="trending")
     @commands.cooldown(1, 2, commands.BucketType.user)
@@ -862,28 +523,6 @@ class Socials(commands.Cog):
     @commands.command(aliases=["youtube", "yt"])
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def YoutubeGetter(self, ctx, *args):
-        def ChCHEm(RcM, RuS):
-            return (
-                RuS.bot == False
-                and RcM.message == YTEm
-                and str(RcM.emoji) in ["⬅️", "❌", "➡️", "#️⃣"]
-            )
-
-        def ChCHEmFN(MSg):
-            MesS = MSg.content.lower()
-            RsT = False
-            try:
-                if int(MSg.content):
-                    RsT = True
-            except ValueError:
-                if (MesS == "cancel") or (MesS == "c"):
-                    RsT = True
-            return (
-                MSg.guild.id == ctx.guild.id
-                and MSg.channel.id == ctx.channel.id
-                and RsT
-            )
-
         def ChCHanS(MSg):
             MesS = MSg.content.lower()
             RsT = False
@@ -899,11 +538,11 @@ class Socials(commands.Cog):
                 and RsT
             )
 
-        YTinput = " ".join(args).split(" ")
-        if YTinput[0].lower() == "search" and args:
+        YTinput = list(args)
+        if YTinput and YTinput[0].lower() == "search":
             IDorName = "ID"
             YTinput.pop(0)
-            if " ".join(YTinput):
+            if YTinput:
                 C = 0
                 SrchYT = []
                 for YTchannel in YClient.search(
@@ -996,35 +635,23 @@ class Socials(commands.Cog):
         else:
             await SendWait(ctx, "No Arguments :no_mouth:")
             return
-
+        Info = lambda x:YClient.get_channel_info(channel_id=x)
+        Vids = lambda x:YClient.get_activities_by_channel(channel_id=x, count=20)
         if IDorName == "NAME":
             try:
-                YTtempID = (
-                    YClient.search(q=" ".join(YTinput), count=1, search_type="channel")
-                    .items[0]
-                    .snippet.channelId
-                )
-                YTinfo = YClient.get_channel_info(channel_id=YTtempID)
-                YTVids = YClient.get_activities_by_channel(
-                    channel_id=YTtempID, count=20
-                )
+                YTtempID = YClient.search(q=" ".join(YTinput), count=1, search_type="channel").items[0].snippet.channelId
+                YTinfo, YTVids = Threader([Info, Vids], [[YTtempID]]*2)
             except IndexError:
                 await SendWait(ctx, "Nothing Found :woozy_face:")
                 return
         elif IDorName == "ID":
-            YTinfo = YClient.get_channel_info(channel_id=YTid)
-            YTVids = YClient.get_activities_by_channel(channel_id=YTid, count=20)
+            YTinfo, YTVids = Threader([Info, Vids], [[YTid]]*2)
 
-        YTdesc = YTinfo.items[0].snippet.description
-        if len(YTdesc) > 253:
-            YTcDesc = YTdesc[0:253]
-            YTcDesc = YTcDesc + "..."
-        else:
-            YTcDesc = YTdesc
+        YTdesc = (YTinfo.items[0].snippet.description)[:253]
 
         YEm = discord.Embed(
             title=YTinfo.items[0].snippet.title,
-            description=YTcDesc,
+            description=YTdesc,
             url=f"https://www.youtube.com/channel/{YTinfo.items[0].id}",
             color=0xFF0000,
         )
@@ -1051,115 +678,8 @@ class Socials(commands.Cog):
             inline=True,
         )
         YEm.set_thumbnail(url=YTinfo.items[0].snippet.thumbnails.high.url)
-        YTEm = await ctx.message.channel.send(embed=YEm)
-        Vidnum = 0
-        OnChannel = True
-        await YTEm.add_reaction("⬅️")
-        await YTEm.add_reaction("❌")
-        await YTEm.add_reaction("➡️")
-        await YTEm.add_reaction("#️⃣")
-        while True:
-            try:
-                ReaEm = await self.DClient.wait_for(
-                    "reaction_add", check=ChCHEm, timeout=120
-                )
-                await YTEm.remove_reaction(ReaEm[0].emoji, ReaEm[1])
-                if ReaEm[0].emoji == "⬅️" and VidNum == 0:
-                    OnChannel = True
-                    await YTEm.edit(embed=YEm)
-                elif ReaEm[0].emoji == "⬅️" and VidNum > 0:
-                    VidNum -= 1
-                    await YTEm.edit(
-                        embed=YoutubebedMaker(
-                            YTVids.items[VidNum].contentDetails.upload.videoId,
-                            YTinfo.items[0],
-                            VidNum,
-                            len(YTVids.items),
-                        )
-                    )
-
-                elif ReaEm[0].emoji == "➡️" and OnChannel:
-                    OnChannel = False
-                    VidNum = 0
-                    await YTEm.edit(
-                        embed=YoutubebedMaker(
-                            YTVids.items[VidNum].contentDetails.upload.videoId,
-                            YTinfo.items[0],
-                            VidNum,
-                            len(YTVids.items),
-                        )
-                    )
-                elif (
-                    ReaEm[0].emoji == "➡️"
-                    and len(YTVids.items) > VidNum + 1
-                    and VidNum >= 0
-                ):
-                    VidNum += 1
-                    await YTEm.edit(
-                        embed=YoutubebedMaker(
-                            YTVids.items[VidNum].contentDetails.upload.videoId,
-                            YTinfo.items[0],
-                            VidNum,
-                            len(YTVids.items),
-                        )
-                    )
-                elif ReaEm[0].emoji == "#️⃣":
-                    if await ChVoteUser(ReaEm[1].id):
-                        TempYT = await ctx.message.channel.send(
-                            'Choose a number to open navigate to page. "c" or "cancel" to exit navigation.'
-                        )
-                        try:
-                            ResE = await self.DClient.wait_for(
-                                "message", check=ChCHEmFN, timeout=10
-                            )
-                            await ResE.delete()
-                            await TempYT.delete()
-                            try:
-                                try:
-                                    pG = int(ResE.content)
-                                    if 0 < pG <= len(YTVids.items) - 1:
-                                        VidNum = pG - 1
-                                    elif pG < 1:
-                                        VidNum = 0
-                                        pass
-                                    else:
-                                        VidNum = len(YTVids.items) - 1
-                                except TypeError:
-                                    pass
-                            except ValueError:
-                                pass
-                            await YTEm.edit(
-                                embed=YoutubebedMaker(
-                                    YTVids.items[VidNum].contentDetails.upload.videoId,
-                                    YTinfo.items[0],
-                                    VidNum,
-                                    len(YTVids.items),
-                                )
-                            )
-                        except asyncio.TimeoutError:
-                            await TempYT.edit("Request Timeout")
-                            await asyncio.sleep(5)
-                            await TempYT.delete()
-                    else:
-                        await ctx.message.channel.send(embed=ErrorEmbeds("Vote"))
-                elif ReaEm[0].emoji == "➡️" and len(YTVids.items) == VidNum + 1:
-                    await YTEm.remove_reaction("⬅️", self.DClient.user)
-                    await YTEm.remove_reaction("❌", self.DClient.user)
-                    await YTEm.remove_reaction("➡️", self.DClient.user)
-                    await YTEm.remove_reaction("#️⃣", self.DClient.user)
-                    break
-                elif ReaEm[0].emoji == "❌":
-                    await YTEm.remove_reaction("⬅️", self.DClient.user)
-                    await YTEm.remove_reaction("❌", self.DClient.user)
-                    await YTEm.remove_reaction("➡️", self.DClient.user)
-                    await YTEm.remove_reaction("#️⃣", self.DClient.user)
-                    break
-            except asyncio.TimeoutError:
-                await YTEm.remove_reaction("⬅️", self.DClient.user)
-                await YTEm.remove_reaction("❌", self.DClient.user)
-                await YTEm.remove_reaction("➡️", self.DClient.user)
-                await YTEm.remove_reaction("#️⃣", self.DClient.user)
-                break
+        YTEs = [YoutubebedMaker(Vid, YTinfo.items[0], VNum, len(YTVids.items)) for Vid, VNum in enumerate(YTVids.items)]
+        await Navigator(ctx, YTEs, Main=True, MainBed=YEm)
 
     @commands.group(name="reddit", invoke_without_command=True)
     @commands.cooldown(1, 2, commands.BucketType.user)
@@ -1167,7 +687,6 @@ class Socials(commands.Cog):
         if args:
             if CheckSub("".join(args)):
                 await SendWait(ctx, ":mobile_phone: Finding Post...")
-                #- try:
                 Post = [i for i in list(Reddit.subreddit("".join(args)).hot()) if not i.stickied]
                 if not Post:
                     await ctx.message.channel.send(
@@ -1175,14 +694,8 @@ class Socials(commands.Cog):
                     )
                     return
                 SubCpoS = random.choice(Post)
-                #- except StopIteration:
-                #-     await ctx.message.channel.send(
-                #-         "No posts on that subreddit :no_mouth:"
-                #-     )
-                #-     return
-                await ctx.message.channel.send(
-                    embed=RedditbedMaker(ctx, SubCpoS, "".join(args))
-                )
+                Nsfwcheck=ctx.channel.is_nsfw()
+                await ctx.message.channel.send(embed=RedditbedMaker(SubCpoS, "".join(args), Nsfwcheck))
             else:
                 await ctx.message.channel.send(
                     "Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)"
@@ -1208,427 +721,130 @@ class Socials(commands.Cog):
                 and str(RcM.emoji) in ["🗓️", "🌍", "📅", "❌"]
             )
 
-        def ChCHEm(RcM, RuS):
-            return (
-                RuS.bot == False
-                and RcM.message == KraPosS
-                and str(RcM.emoji) in ["⬅️", "❌", "➡️", "#️⃣"]
+        if not args: await SendWait(ctx, "No arguments :no_mouth:")
+        if not CheckSub("".join(args)):
+        #  or not inspect.stack()[1].function == "__call__"
+            await SendWait(ctx, "Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)")
+            return
+        KraPosS = await ctx.message.channel.send(
+            embed=discord.Embed(
+                title="How would you like to sort the subreddit?",
+                description="🔝 to sort by top.\n📈 to sort by rising.\n🔥 to sort by hot.\n📝 to sort by new.\n❌ to cancel",
+                footer="This timesout in 10s",
             )
-
-        def ChCHEmFN(MSg):
-            MesS = MSg.content.lower()
-            RsT = False
-            try:
-                if int(MSg.content):
-                    RsT = True
-            except ValueError:
-                if (MesS == "cancel") or (MesS == "c"):
-                    RsT = True
-            return (
-                MSg.guild.id == ctx.guild.id
-                and MSg.channel.id == ctx.channel.id
-                and RsT
+        )
+        await KraPosS.add_reaction("🔝")
+        await KraPosS.add_reaction("📈")
+        await KraPosS.add_reaction("🔥")
+        await KraPosS.add_reaction("📝")
+        await KraPosS.add_reaction("❌")
+        try:
+            ResIni = await self.DClient.wait_for(
+                "reaction_add", check=ChCHEmCH, timeout=10
             )
+            if ResIni[0].emoji != "🔝":
+                await KraPosS.edit(
+                    embed=discord.Embed(title=":mobile_phone: Finding Posts...")
+                )
+                await KraPosS.remove_reaction("❌", self.DClient.user)
+            await KraPosS.remove_reaction(ResIni[0].emoji, ResIni[1])
+            await KraPosS.remove_reaction("🔝", self.DClient.user)
+            await KraPosS.remove_reaction("📝", self.DClient.user)
+            await KraPosS.remove_reaction("📈", self.DClient.user)
+            await KraPosS.remove_reaction("🔥", self.DClient.user)
 
-        if args:
-            if CheckSub("".join(args)) or inspect.stack()[1].function == "__call__":
-                KraPosS = await ctx.message.channel.send(
+            if ResIni[0].emoji == "❌":
+                await KraPosS.delete()
+                return
+            elif ResIni[0].emoji == "📝":
+                Post = Reddit.subreddit("".join(args)).new()
+            elif ResIni[0].emoji == "🔥":
+                Post = Reddit.subreddit("".join(args)).hot()
+            elif ResIni[0].emoji == "📈":
+                Post = Reddit.subreddit("".join(args)).rising()
+            elif ResIni[0].emoji == "🔝":
+                await KraPosS.edit(
                     embed=discord.Embed(
-                        title="How would you like to sort the subreddit?",
-                        description="🔝 to sort by top.\n📈 to sort by rising.\n🔥 to sort by hot.\n📝 to sort by new.\n❌ to cancel",
+                        title="How would you like to sort by top?",
+                        description="🌍 to sort by top all time.\n🗓️ to sort by top this month.\n📅 to sort by top today.\n❌ to cancel",
                         footer="This timesout in 10s",
                     )
                 )
-                await KraPosS.add_reaction("🔝")
-                await KraPosS.add_reaction("📈")
-                await KraPosS.add_reaction("🔥")
-                await KraPosS.add_reaction("📝")
-                await KraPosS.add_reaction("❌")
-                try:
-                    ResIni = await self.DClient.wait_for(
-                        "reaction_add", check=ChCHEmCH, timeout=10
-                    )
-                    if ResIni[0].emoji != "🔝":
-                        await KraPosS.edit(
-                            embed=discord.Embed(title=":mobile_phone: Finding Posts...")
-                        )
-                        await KraPosS.remove_reaction("❌", self.DClient.user)
-                    await KraPosS.remove_reaction(ResIni[0].emoji, ResIni[1])
-                    await KraPosS.remove_reaction("🔝", self.DClient.user)
-                    await KraPosS.remove_reaction("📝", self.DClient.user)
-                    await KraPosS.remove_reaction("📈", self.DClient.user)
-                    await KraPosS.remove_reaction("🔥", self.DClient.user)
-
-                    if ResIni[0].emoji == "❌":
-                        await KraPosS.delete()
-                        return
-                    elif ResIni[0].emoji == "📝":
-                        Post = Reddit.subreddit("".join(args)).new()
-                    elif ResIni[0].emoji == "🔥":
-                        Post = Reddit.subreddit("".join(args)).hot()
-                    elif ResIni[0].emoji == "📈":
-                        Post = Reddit.subreddit("".join(args)).rising()
-                    elif ResIni[0].emoji == "🔝":
-                        await KraPosS.edit(
-                            embed=discord.Embed(
-                                title="How would you like to sort by top?",
-                                description="🌍 to sort by top all time.\n🗓️ to sort by top this month.\n📅 to sort by top today.\n❌ to cancel",
-                                footer="This timesout in 10s",
-                            )
-                        )
-                        await KraPosS.add_reaction("🌍")
-                        await KraPosS.add_reaction("🗓️")
-                        await KraPosS.add_reaction("📅")
-                        ResIniT = await self.DClient.wait_for(
-                            "reaction_add", check=ChCHEmCHT, timeout=10
-                        )
-                        await KraPosS.remove_reaction(ResIniT[0].emoji, ResIniT[1])
-                        await KraPosS.edit(
-                            embed=discord.Embed(title=":mobile_phone: Finding Posts...")
-                        )
-                        await KraPosS.remove_reaction("❌", self.DClient.user)
-                        await KraPosS.remove_reaction("🌍", self.DClient.user)
-                        await KraPosS.remove_reaction("🗓️", self.DClient.user)
-                        await KraPosS.remove_reaction("📅", self.DClient.user)
-                        if ResIniT[0].emoji == "❌":
-                            await KraPosS.delete()
-                            return
-                        elif ResIniT[0].emoji == "🌍":
-                            Post = Reddit.subreddit("".join(args)).top("all")
-                        elif ResIniT[0].emoji == "🗓️":
-                            Post = Reddit.subreddit("".join(args)).top("month")
-                        elif ResIniT[0].emoji == "📅":
-                            Post = Reddit.subreddit("".join(args)).top("day")
-                except asyncio.TimeoutError:
-                    await KraPosS.edit(embed=discord.Embed(title="Timeout"))
-                    await asyncio.sleep(5)
+                await KraPosS.add_reaction("🌍")
+                await KraPosS.add_reaction("🗓️")
+                await KraPosS.add_reaction("📅")
+                ResIniT = await self.DClient.wait_for(
+                    "reaction_add", check=ChCHEmCHT, timeout=10
+                )
+                await KraPosS.remove_reaction(ResIniT[0].emoji, ResIniT[1])
+                await KraPosS.edit(
+                    embed=discord.Embed(title=":mobile_phone: Finding Posts...")
+                )
+                await KraPosS.remove_reaction("❌", self.DClient.user)
+                await KraPosS.remove_reaction("🌍", self.DClient.user)
+                await KraPosS.remove_reaction("🗓️", self.DClient.user)
+                await KraPosS.remove_reaction("📅", self.DClient.user)
+                if ResIniT[0].emoji == "❌":
                     await KraPosS.delete()
                     return
+                elif ResIniT[0].emoji == "🌍":
+                    Post = Reddit.subreddit("".join(args)).top("all")
+                elif ResIniT[0].emoji == "🗓️":
+                    Post = Reddit.subreddit("".join(args)).top("month")
+                elif ResIniT[0].emoji == "📅":
+                    Post = Reddit.subreddit("".join(args)).top("day")
+        except asyncio.TimeoutError:
+            await KraPosS.edit(embed=discord.Embed(title="Timeout"))
+            await asyncio.sleep(5)
+            await KraPosS.delete()
+            return
 
-                SubCpoS = [SuTPos for SuTPos in Post if not SuTPos.stickied]
-                # TotalPosts = 0
-                # for SuTPos in Post:
-                #     # TotalPosts += 1
-                #     if not SuTPos.stickied:
-                #         SubCpoS.append(SuTPos)
-                TotalPosts = len(SubCpoS)
-                if TotalPosts == 0:
-                    await SendWait(ctx, "No posts on that subreddit :no_mouth:")
-                    return
-                KraPosS = await ctx.message.channel.send(
-                    embed=RedditbedMaker(ctx, SubCpoS[0], "".join(args), "S", 0, TotalPosts)
-                )
-                PostNum = 0
-                await KraPosS.add_reaction("⬅️")
-                await KraPosS.add_reaction("❌")
-                await KraPosS.add_reaction("➡️")
-                await KraPosS.add_reaction("#️⃣")
-                while True:
-                    try:
-                        Res = await self.DClient.wait_for(
-                            "reaction_add", check=ChCHEm, timeout=120
-                        )
-                        await KraPosS.remove_reaction(Res[0].emoji, Res[1])
-                        if Res[0].emoji == "⬅️" and PostNum != 0:
-                            PostNum -= 1
-                            await KraPosS.edit(
-                                embed=RedditbedMaker(
-                                    ctx,
-                                    SubCpoS[PostNum],
-                                    "".join(args),
-                                    "S",
-                                    PostNum,
-                                    TotalPosts,
-                                )
-                            )
-                        elif Res[0].emoji == "➡️":
-                            if PostNum < TotalPosts - 1:
-                                PostNum += 1
-                                await KraPosS.edit(
-                                    embed=RedditbedMaker(
-                                        ctx,
-                                        SubCpoS[PostNum],
-                                        "".join(args),
-                                        "S",
-                                        PostNum,
-                                        TotalPosts,
-                                    )
-                                )
-                            else:
-                                await KraPosS.edit(
-                                    embed=RedditbedMaker(
-                                        ctx,
-                                        SubCpoS[PostNum],
-                                        "".join(args),
-                                        "S",
-                                        PostNum,
-                                        TotalPosts,
-                                    )
-                                )
-                                await KraPosS.remove_reaction("⬅️", self.DClient.user)
-                                await KraPosS.remove_reaction("❌", self.DClient.user)
-                                await KraPosS.remove_reaction("➡️", self.DClient.user)
-                                await KraPosS.remove_reaction("#️⃣", self.DClient.user)
-                                break
-                        elif Res[0].emoji == "#️⃣":
-                            if await ChVoteUser(Res[1].id):
-                                TemTw = await ctx.message.channel.send(
-                                    'Choose a number to open navigate to page. "c" or "cancel" to exit navigation.'
-                                )
-                                try:
-                                    ResE = await self.DClient.wait_for(
-                                        "message", check=ChCHEmFN, timeout=10
-                                    )
-                                    await TemTw.delete()
-                                    await ResE.delete()
-                                    try:
-                                        try:
-                                            pG = int(ResE.content)
-                                            if 0 < pG <= TotalPosts - 1:
-                                                PostNum = pG - 1
-                                            elif pG < 1:
-                                                PostNum = 0
-                                                pass
-                                            else:
-                                                PostNum = TotalPosts - 1
-                                        except TypeError:
-                                            pass
-                                    except ValueError:
-                                        pass
-                                    await KraPosS.edit(
-                                        embed=RedditbedMaker(
-                                            ctx,
-                                            SubCpoS[PostNum],
-                                            "".join(args),
-                                            "S",
-                                            PostNum,
-                                            TotalPosts,
-                                        )
-                                    )
-                                except asyncio.exceptions.TimeoutError:
-                                    await TemTw.edit("Request Timeout")
-                                    await asyncio.sleep(5)
-                                    await TemTw.delete()
-                            else:
-                                await ctx.message.channel.send(
-                                    embed=ErrorEmbeds("Vote")
-                                )
-                        elif Res[0].emoji == "❌":
-                            await KraPosS.edit(
-                                embed=RedditbedMaker(
-                                    ctx,
-                                    SubCpoS[PostNum],
-                                    "".join(args),
-                                    "S",
-                                    PostNum,
-                                    TotalPosts,
-                                )
-                            )
-                            await KraPosS.remove_reaction("⬅️", self.DClient.user)
-                            await KraPosS.remove_reaction("❌", self.DClient.user)
-                            await KraPosS.remove_reaction("➡️", self.DClient.user)
-                            await KraPosS.remove_reaction("#️⃣", self.DClient.user)
-                            break
-                    except asyncio.TimeoutError:
-                        await KraPosS.edit(
-                            embed=RedditbedMaker(
-                                ctx,
-                                SubCpoS[PostNum],
-                                "".join(args),
-                                "S",
-                                PostNum,
-                                TotalPosts,
-                            )
-                        )
-                        await KraPosS.remove_reaction("⬅️", self.DClient.user)
-                        await KraPosS.remove_reaction("❌", self.DClient.user)
-                        await KraPosS.remove_reaction("➡️", self.DClient.user)
-                        await KraPosS.remove_reaction("#️⃣", self.DClient.user)
-                        break
-            else:
-                await SendWait(
-                    ctx,
-                    "Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)",
-                )
-        else:
-            await SendWait(ctx, "No arguments :no_mouth:")
+        SubCpoS = [SuTPos for SuTPos in Post if not SuTPos.stickied]
+        TotalPosts = len(SubCpoS)
+        if TotalPosts == 0:
+            await SendWait(ctx, "No posts on that subreddit :no_mouth:")
+            return
+        Name = "".join(args)
+        Nsfwcheck=ctx.channel.is_nsfw()
+        PostEms = [RedditbedMaker(P, Name, Nsfchannel=Nsfwcheck, Type="S", PostNum=PNum, TotalPosts=TotalPosts) for PNum, P in enumerate(SubCpoS)]
+        await Navigator(ctx, PostEms)
 
     @commands.command(name="redditor")
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def GetRedditor(self, ctx, *args):
-        def ChCHEm(RcM, RuS):
-            return (
-                RuS.bot == False
-                and RcM.message == RTEm
-                and str(RcM.emoji) in ["⬅️", "❌", "➡️", "#️⃣"]
-            )
-
-        def ChCHEmFN(MSg):
-            MesS = MSg.content.lower()
-            RsT = False
-            try:
-                if int(MSg.content):
-                    RsT = True
-            except ValueError:
-                if (MesS == "cancel") or (MesS == "c"):
-                    RsT = True
-            return (
-                MSg.guild.id == ctx.guild.id
-                and MSg.channel.id == ctx.channel.id
-                and RsT
-            )
-
-        if args:
-            try:
-                User = Reddit.redditor("".join(args))
-                UEm = discord.Embed(
-                    title=f"u/{User.name}",
-                    description=User.subreddit["public_description"],
-                    color=0x8B0000,
-                )
-                UEm.add_field(
-                    name=f"{(User.link_karma + User.awarder_karma + User.awardee_karma + User.comment_karma):,} karma **·** {(datetime.datetime.now() - datetime.datetime.fromtimestamp(User.created_utc)).days} days",
-                    value="\u200b",
-                    inline=False,
-                )
-                UEm.add_field(
-                    name=f'Trophies: `{", ".join([trophy.name for trophy in User.trophies()])}`',
-                    value="\u200b",
-                    inline=False,
-                )
-                UEm.set_thumbnail(url=User.icon_img)
-                RTEm = await ctx.message.channel.send(embed=UEm)
-                PostNum = 0
-                OnRedditor = True
-                SubCpoS = []
-                TotalPosts = 0
-                for SuTPos in User.submissions.new():
-                    TotalPosts += 1
-                    if not SuTPos.stickied:
-                        SubCpoS.append(SuTPos)
-                if TotalPosts == 0:
-                    await SendWait(ctx, "No posts :no_mouth:")
-                    return
-                await RTEm.add_reaction("⬅️")
-                await RTEm.add_reaction("❌")
-                await RTEm.add_reaction("➡️")
-                await RTEm.add_reaction("#️⃣")
-                while True:
-                    try:
-                        ReaEm = await DClient.wait_for(
-                            "reaction_add", check=ChCHEm, timeout=120
-                        )
-                        await RTEm.remove_reaction(ReaEm[0].emoji, ReaEm[1])
-                        if ReaEm[0].emoji == "⬅️" and PostNum == 0:
-                            OnRedditor = True
-                            await RTEm.edit(embed=UEm)
-                        elif ReaEm[0].emoji == "⬅️" and PostNum > 0:
-                            PostNum -= 1
-                            await RTEm.edit(
-                                embed=RedditbedMaker(
-                                    ctx,
-                                    SubCpoS[PostNum],
-                                    "".join(args),
-                                    "S",
-                                    PostNum,
-                                    TotalPosts,
-                                )
-                            )
-
-                        elif ReaEm[0].emoji == "➡️" and OnRedditor:
-                            OnRedditor = False
-                            PostNum = 0
-                            await RTEm.edit(
-                                embed=RedditbedMaker(
-                                    ctx,
-                                    SubCpoS[PostNum],
-                                    "".join(args),
-                                    "S",
-                                    PostNum,
-                                    TotalPosts,
-                                )
-                            )
-                        elif (
-                            ReaEm[0].emoji == "➡️"
-                            and TotalPosts > PostNum + 1
-                            and PostNum >= 0
-                        ):
-                            PostNum += 1
-                            await RTEm.edit(
-                                embed=RedditbedMaker(
-                                    ctx,
-                                    SubCpoS[PostNum],
-                                    "".join(args),
-                                    "S",
-                                    PostNum,
-                                    TotalPosts,
-                                )
-                            )
-                        elif ReaEm[0].emoji == "#️⃣":
-                            if await ChVoteUser(ReaEm[1].id):
-                                TempRdt = await ctx.message.channel.send(
-                                    'Choose a number to open navigate to page. "c" or "cancel" to exit navigation.'
-                                )
-                                try:
-                                    ResE = await DClient.wait_for(
-                                        "message", check=ChCHEmFN, timeout=10
-                                    )
-                                    await ResE.delete()
-                                    await TempRdt.delete()
-                                    try:
-                                        try:
-                                            pG = int(ResE.content)
-                                            if 0 < pG <= TotalPosts - 1:
-                                                PostNum = pG - 1
-                                            elif pG < 1:
-                                                PostNum = 0
-                                                pass
-                                            else:
-                                                PostNum = TotalPosts - 1
-                                        except TypeError:
-                                            pass
-                                    except ValueError:
-                                        pass
-                                    await RTEm.edit(
-                                        embed=RedditbedMaker(
-                                            ctx,
-                                            SubCpoS[PostNum],
-                                            "".join(args),
-                                            "S",
-                                            PostNum,
-                                            TotalPosts,
-                                        )
-                                    )
-                                except asyncio.TimeoutError:
-                                    await TempRdt.edit("Request Timeout")
-                                    await asyncio.sleep(5)
-                                    await TempRdt.delete()
-                            else:
-                                await ctx.message.channel.send(
-                                    embed=ErrorEmbeds("Vote")
-                                )
-                        elif ReaEm[0].emoji == "➡️" and TotalPosts == PostNum + 1:
-                            await RTEm.remove_reaction("⬅️", self.DClient.user)
-                            await RTEm.remove_reaction("❌", self.DClient.user)
-                            await RTEm.remove_reaction("➡️", self.DClient.user)
-                            await RTEm.remove_reaction("#️⃣", self.DClient.user)
-                            break
-                        elif ReaEm[0].emoji == "❌":
-                            await RTEm.remove_reaction("⬅️", self.DClient.user)
-                            await RTEm.remove_reaction("❌", self.DClient.user)
-                            await RTEm.remove_reaction("➡️", self.DClient.user)
-                            await RTEm.remove_reaction("#️⃣", self.DClient.user)
-                            break
-                    except asyncio.TimeoutError:
-                        await RTEm.remove_reaction("⬅️", self.DClient.user)
-                        await RTEm.remove_reaction("❌", self.DClient.user)
-                        await RTEm.remove_reaction("➡️", self.DClient.user)
-                        await RTEm.remove_reaction("#️⃣", self.DClient.user)
-                        break
-            except NotFound:
-                await SendWait(ctx, "Redditor Not Found :no_mouth:")
-        else:
+        if not args:
             await SendWait(ctx, "No arguments :no_mouth:")
+            return
+        try:
+            User = Reddit.redditor("".join(args))
+            UEm = discord.Embed(
+                title=f"u/{User.name}",
+                description=User.subreddit["public_description"],
+                color=0x8B0000,
+            )
+            UEm.add_field(
+                name=f"{(User.link_karma + User.awarder_karma + User.awardee_karma + User.comment_karma):,} karma **·** {(datetime.datetime.now() - datetime.datetime.fromtimestamp(User.created_utc)).days} days",
+                value="\u200b",
+                inline=False,
+            )
+            UEm.add_field(
+                name=f'Trophies: `{", ".join([trophy.name for trophy in User.trophies()])}`',
+                value="\u200b",
+                inline=False,
+            )
+            UEm.set_thumbnail(url=User.icon_img)
+            SubCpoS = [SuTPos for SuTPos in User.submissions.new() if not SuTPos.stickied]
+            TotalPosts = len(SubCpoS)
+            if TotalPosts == 0:
+                await SendWait(ctx, "No posts :no_mouth:")
+                return
+            Name = "".join(args)
+            Nsfwcheck=ctx.channel.is_nsfw()
+            PostEms = [RedditbedMaker(P, Name, Nsfchannel=Nsfwcheck, Type="S", PostNum=PNum, TotalPosts=TotalPosts) for PNum, P in enumerate(SubCpoS)]
+            await Navigator(ctx, PostEms, Main=True, MainBed=UEm)
+        except NotFound:
+            await SendWait(ctx, "Redditor Not Found :no_mouth:")
+            
 
     @commands.group(name="multireddit", invoke_without_command=True)
     @commands.check(ChPatreonT2)

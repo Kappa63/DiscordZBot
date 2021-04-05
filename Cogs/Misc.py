@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
-from Setup import FormatTime, SendWait
-from Setup import CClient
+from Setup import FormatTime, SendWait, Navigator, CClient
 import asyncio
 import requests
 
@@ -110,13 +109,6 @@ class Misc(commands.Cog):
     @commands.command(aliases=["crypto", "cryptocurrency"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetCrypto(self, ctx):
-        def ChCHEm(RcM, RuS):
-            return (
-                RuS.bot == False
-                and RcM.message == Crypter
-                and str(RcM.emoji) in ["⬅️", "❌", "➡️"]
-            )
-
         Crypts = requests.get(
             "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest",
             headers=CClient,
@@ -153,43 +145,8 @@ class Misc(commands.Cog):
                 CrEm.add_field(
                     name=f"Page: `[{CryptNum} / 5]`", value="\u200b", inline=False
                 )
-        CryptNum = 0
-        Crypter = await ctx.message.channel.send(embed=Embeds[CryptNum])
-        await Crypter.add_reaction("⬅️")
-        await Crypter.add_reaction("❌")
-        await Crypter.add_reaction("➡️")
-        while True:
-            try:
-                Res = await self.DClient.wait_for(
-                    "reaction_add", check=ChCHEm, timeout=120
-                )
-                await Crypter.remove_reaction(Res[0].emoji, Res[1])
-                if Res[0].emoji == "⬅️" and CryptNum != 0:
-                    CryptNum -= 1
-                    await Crypter.edit(embed=Embeds[CryptNum])
-                elif Res[0].emoji == "➡️":
-                    if CryptNum < TotalCrypts - 1:
-                        CryptNum += 1
-                        await Crypter.edit(embed=Embeds[CryptNum])
-                    else:
-                        await Crypter.edit(embed=Embeds[CryptNum])
-                        await Crypter.remove_reaction("⬅️", self.DClient.user)
-                        await Crypter.remove_reaction("❌", self.DClient.user)
-                        await Crypter.remove_reaction("➡️", self.DClient.user)
-                        break
-                elif Res[0].emoji == "❌":
-                    await Crypter.edit(embed=Embeds[CryptNum])
-                    await Crypter.remove_reaction("⬅️", self.DClient.user)
-                    await Crypter.remove_reaction("❌", self.DClient.user)
-                    await Crypter.remove_reaction("➡️", self.DClient.user)
-                    break
-            except asyncio.TimeoutError:
-                await Crypter.edit(embed=Embeds[CryptNum])
-                await Crypter.remove_reaction("⬅️", self.DClient.user)
-                await Crypter.remove_reaction("❌", self.DClient.user)
-                await Crypter.remove_reaction("➡️", self.DClient.user)
-                break
-
+        await Navigator(ctx, Embeds, Type="Not #")
+       
     @Calculater.error
     async def CalculateError(self, ctx, error):
         if isinstance(error, commands.UnexpectedQuoteError):

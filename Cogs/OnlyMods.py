@@ -1,9 +1,8 @@
 import discord
 from discord.ext import commands
-from Setup import ChDev, SendWait
+from Setup import ChDev, SendWait, AQd
 import random
 import requests
-from Setup import AQd
 
 Doing = [
     "Playing with the laws of physics",
@@ -13,7 +12,6 @@ Doing = [
     "Chess with god",
     "With Leona",
 ]
-
 
 class OnlyMods(commands.Cog):
     def __init__(self, DClient):

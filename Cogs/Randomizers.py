@@ -5,8 +5,7 @@ import cv2
 import numpy
 import requests
 import os
-from Setup import GClient, GApi
-from Setup import SendWait
+from Setup import GClient, GApi, SendWait
 import pyimgbox
 
 

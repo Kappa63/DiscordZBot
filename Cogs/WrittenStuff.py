@@ -10,9 +10,9 @@ from Setup import (
     FormatTime,
     TimeTillMidnight,
     SendWait,
-    NClient
+    NClient,
+    AQd
 )
-from Setup import AQd
 import re
 
 
@@ -89,74 +89,71 @@ class WrittenStuff(commands.Cog):
             )
         )
 
-    # @commands.command(name="qotd")
-    # @commands.check(ChVote)
-    # @commands.cooldown(1, 1, commands.BucketType.user)
-    # async def QuoteOfTheDay(self, ctx):
-    #     TodayQuote = requests.get(
-    #         "https://favqs.com/api/qotd", headers={"Accept": "application/json"}
-    #     ).json()
-    #     QEm = discord.Embed(
-    #         title="Quote Of The Day",
-    #         description=TodayQuote["quote"]["body"],
-    #         color=0x8D42EE,
-    #     )
-    #     QEm.set_footer(text=f'By: {TodayQuote["quote"]["author"]}')
-    #     await ctx.message.channel.send(embed=QEm)
-
-    # @commands.group(name="qotddaily", invoke_without_command=True)
-    # @commands.cooldown(1, 1, commands.BucketType.user)
-    # async def QotdDAILY(self, ctx):
-    #     TimeLeft = FormatTime(TimeTillMidnight())
-    #     await SendWait(
-    #         ctx,
-    #         f'The next Daily QOTD is in {TimeLeft}.\n You can be added to QOTD Daily with "zqotddaily start" (If patreon tier 2+).\n Check "zhelp qotd" for more info',
-    #     )
-
-    # @QotdDAILY.command(name="start")
-    # @commands.check(ChPatreonT2)
-    # @commands.check(ChAdmin)
-    # @commands.cooldown(1, 1, commands.BucketType.user)
-    # async def StartQotdDAILY(self, ctx):
-    #     TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
-    #     TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
-    #     if AQd.count_documents({"Type": "QOTD", "IDd": ctx.author.id}) >= TierLimit:
-    #         await SendWait(
-    #             ctx,
-    #             "You already added the max amount of channels to QOTD daily.\nDifferent patreon levels get more channels\nCheck 'zpatreon'",
-    #         )
-    #         return
-    #     QOTDUsers = AQd.find({"Type": "QOTD"})
-    #     UserToCheckAdd = {
-    #         "Type": "QOTD",
-    #         "IDd": ctx.author.id,
-    #         "IDg": ctx.guild.id,
-    #         "Channel": ctx.message.channel.id,
-    #     }
-    #     if AQd.count_documents(UserToCheckAdd) == 1:
-    #         await SendWait(ctx, "This channel is already added to QOTD daily")
-    #         return
-    #     AQd.insert_one(UserToCheckAdd)
-    #     await SendWait(ctx, "Added to QOTD daily successfully")
-
-    # @QotdDAILY.command(aliases=["stop", "end"])
-    # @commands.check(ChPatreonT2)
-    # @commands.check(ChAdmin)
-    # @commands.cooldown(1, 1, commands.BucketType.user)
-    # async def RemoveQotddDAILY(self, ctx):
-    #     UserToCheckRemove = {
-    #         "Type": "QOTD",
-    #         "IDd": ctx.author.id,
-    #         "IDg": ctx.guild.id,
-    #         "Channel": ctx.message.channel.id,
-    #     }
-    #     if AQd.count_documents(UserToCheckRemove) == 1:
-    #         Users = AQd.find(UserToCheckRemove)
-    #         for User in Users:
-    #             AQd.delete_one(User)
-    #             await SendWait(ctx, "Removed from QOTD daily successfully")
-    #             return
-    #     await SendWait(ctx, "You are already not in QOTD daily")
+    #? @commands.command(name="qotd")
+    #? @commands.check(ChVote)
+    #? @commands.cooldown(1, 1, commands.BucketType.user)
+    #? async def QuoteOfTheDay(self, ctx):
+    #?     TodayQuote = requests.get(
+    #?         "https://favqs.com/api/qotd", headers={"Accept": "application/json"}
+    #?     ).json()
+    #?     QEm = discord.Embed(
+    #?         title="Quote Of The Day",
+    #?         description=TodayQuote["quote"]["body"],
+    #?         color=0x8D42EE,
+    #?     )
+    #?     QEm.set_footer(text=f'By: {TodayQuote["quote"]["author"]}')
+    #?     await ctx.message.channel.send(embed=QEm)
+    #? @commands.group(name="qotddaily", invoke_without_command=True)
+    #? @commands.cooldown(1, 1, commands.BucketType.user)
+    #? async def QotdDAILY(self, ctx):
+    #?     TimeLeft = FormatTime(TimeTillMidnight())
+    #?     await SendWait(
+    #?         ctx,
+    #?         f'The next Daily QOTD is in {TimeLeft}.\n You can be added to QOTD Daily with "zqotddaily start" (If patreon tier 2+).\n Check "zhelp qotd" for more info',
+    #?     )
+    #? @QotdDAILY.command(name="start")
+    #? @commands.check(ChPatreonT2)
+    #? @commands.check(ChAdmin)
+    #? @commands.cooldown(1, 1, commands.BucketType.user)
+    #? async def StartQotdDAILY(self, ctx):
+    #?     TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
+    #?     TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
+    #?     if AQd.count_documents({"Type": "QOTD", "IDd": ctx.author.id}) >= TierLimit:
+    #?         await SendWait(
+    #?             ctx,
+    #?             "You already added the max amount of channels to QOTD daily.\nDifferent patreon levels get more channels\nCheck 'zpatreon'",
+    #?         )
+    #?         return
+    #?     QOTDUsers = AQd.find({"Type": "QOTD"})
+    #?     UserToCheckAdd = {
+    #?         "Type": "QOTD",
+    #?         "IDd": ctx.author.id,
+    #?         "IDg": ctx.guild.id,
+    #?         "Channel": ctx.message.channel.id,
+    #?     }
+    #?     if AQd.count_documents(UserToCheckAdd) == 1:
+    #?         await SendWait(ctx, "This channel is already added to QOTD daily")
+    #?         return
+    #?     AQd.insert_one(UserToCheckAdd)
+    #?     await SendWait(ctx, "Added to QOTD daily successfully")
+    #? @QotdDAILY.command(aliases=["stop", "end"])
+    #? @commands.check(ChPatreonT2)
+    #? @commands.check(ChAdmin)
+    #? @commands.cooldown(1, 1, commands.BucketType.user)
+    #? async def RemoveQotddDAILY(self, ctx):
+    #?     UserToCheckRemove = {
+    #?         "Type": "QOTD",
+    #?         "IDd": ctx.author.id,
+    #?         "IDg": ctx.guild.id,
+    #?         "Channel": ctx.message.channel.id,
+    #?     }
+    #?     if AQd.count_documents(UserToCheckRemove) == 1:
+    #?         Users = AQd.find(UserToCheckRemove)
+    #?         for User in Users:
+    #?             AQd.delete_one(User)
+    #?             await SendWait(ctx, "Removed from QOTD daily successfully")
+    #?             return
+    #?     await SendWait(ctx, "You are already not in QOTD daily")
 
     @commands.command(name="insult")
     @commands.cooldown(1, 1, commands.BucketType.user)

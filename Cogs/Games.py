@@ -6,9 +6,7 @@ import random
 import time
 import datetime
 import chess
-from Setup import AQd
-from Setup import ChVote, ChPatreonT2, ChAdmin
-from Setup import FormatTime, TimeTillMidnight, GetPatreonTier, SendWait
+from Setup import ChVote, ChPatreonT2, ChAdmin, FormatTime, TimeTillMidnight, GetPatreonTier, SendWait, AQd
 
 
 def SudokuBoardMaker(Title, BoardName, Board, Difficulty):

@@ -32,18 +32,18 @@ async def ChDM(ctx):
     raise Ignore("Ignore")
 
 
-@DClient.check
-async def ChModDown(ctx):
-    OpenState = open("OpenState.txt")
-    State = OpenState.readlines()
-    OpenState.close()
-    if ("".join(State) == "Down") and ctx.author.id not in [
-        507212584634548254,
-        443986051371892746,
-        224809178793771009,
-    ]:
-        raise Ignore("Ignore")
-    return True
+#_ @DClient.check
+#_ async def ChModDown(ctx):
+#_     OpenState = open("OpenState.txt")
+#_     State = OpenState.readlines()
+#_     OpenState.close()
+#_     if ("".join(State) == "Down") and ctx.author.id not in [
+#_         507212584634548254,
+#_         443986051371892746,
+#_         224809178793771009,
+#_     ]:
+#_         raise Ignore("Ignore")
+#_     return True
 
 
 Cogs = [
@@ -52,15 +52,12 @@ Cogs = [
     "Cogs.Covid",
     "Cogs.Nasa",
     "Cogs.Socials",
-    #-"Cogs.RedditCmds",
-    #-"Cogs.TwitterCmds",
     "Cogs.AnimeManga",
     "Cogs.HelpInfo",
     "Cogs.Randomizers",
     "Cogs.OnlyMods",
     "Cogs.MainEvents",
     "Cogs.Rule34",
-    #-"Cogs.Youtube",
     "Cogs.Images",
     "Cogs.WrittenStuff",
     "Cogs.Movies",
