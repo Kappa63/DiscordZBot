@@ -211,7 +211,7 @@ async def ChVote(ctx):
         return True
     else:
         try:
-            MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
+            MemGuild = CBot.DClient.get_guild(783250489843384341)
             Mem = MemGuild.get_member(ctx.author.id)
             Roles = []
             Roles.append(discord.utils.get(MemGuild.roles, id=783250729686532126))
@@ -232,7 +232,7 @@ async def ChVoteUser(UserID):
         return True
     else:
         try:
-            MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
+            MemGuild = CBot.DClient.get_guild(783250489843384341)
             Mem = MemGuild.get_member(UserID)
             Roles = []
             Roles.append(discord.utils.get(MemGuild.roles, id=783250729686532126))
@@ -273,7 +273,7 @@ PatreonTiers = {
 
 def GetPatreonTier(UserID):
     try:
-        MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
+        MemGuild = CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(UserID)
         Roles = []
         Roles.append(discord.utils.get(MemGuild.roles, id=783250729686532126))
@@ -289,7 +289,7 @@ def GetPatreonTier(UserID):
 
 def ChPatreon(ctx):
     try:
-        MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
+        MemGuild = CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(ctx.author.id)
         Roles = []
         Roles.append(discord.utils.get(MemGuild.roles, id=783250729686532126))
@@ -306,7 +306,7 @@ def ChPatreon(ctx):
 
 def ChPatreonUser(UserID):
     try:
-        MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
+        MemGuild = CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(UserID)
         Roles = []
         Roles.append(discord.utils.get(MemGuild.roles, id=783250729686532126))
@@ -323,7 +323,7 @@ def ChPatreonUser(UserID):
 
 def ChPatreonT2(ctx):
     try:
-        MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
+        MemGuild = CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(ctx.author.id)
         Roles = []
         Roles.append(discord.utils.get(MemGuild.roles, id=783256987655340043))
@@ -339,7 +339,7 @@ def ChPatreonT2(ctx):
 
 def ChPatreonUserT2(UserID):
     try:
-        MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
+        MemGuild = CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(UserID)
         Roles = []
         Roles.append(discord.utils.get(MemGuild.roles, id=783256987655340043))
@@ -355,7 +355,7 @@ def ChPatreonUserT2(UserID):
 
 def ChPatreonT3(ctx):
     try:
-        MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
+        MemGuild = CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(ctx.author.id)
         Roles = []
         Roles.append(discord.utils.get(MemGuild.roles, id=784123230372757515))
@@ -370,7 +370,7 @@ def ChPatreonT3(ctx):
 
 def ChPatreonUserT3(UserID):
     try:
-        MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
+        MemGuild = CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(UserID)
         Roles = []
         Roles.append(discord.utils.get(MemGuild.roles, id=784123230372757515))
@@ -385,7 +385,7 @@ def ChPatreonUserT3(UserID):
 
 def ChPatreonT4(ctx):
     try:
-        MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
+        MemGuild = CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(ctx.author.id)
         Roles = []
         Roles.append(discord.utils.get(MemGuild.roles, id=784124034559377409))
@@ -399,7 +399,7 @@ def ChPatreonT4(ctx):
 
 def ChPatreonUserT4(UserID):
     try:
-        MemGuild = CBot.CBot.DClient.get_guild(783250489843384341)
+        MemGuild = CBot.DClient.get_guild(783250489843384341)
         Mem = MemGuild.get_member(UserID)
         Roles = []
         Roles.append(discord.utils.get(MemGuild.roles, id=784124034559377409))
