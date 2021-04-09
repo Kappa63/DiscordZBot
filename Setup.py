@@ -10,7 +10,6 @@ import twitch
 import asyncio
 import praw
 import pymongo
-import CBot
 from pymongo import MongoClient
 from google_images_search import GoogleImagesSearch
 import pyyoutube
@@ -20,11 +19,13 @@ import datetime
 import osuapi
 import concurrent.futures as Cf
 
+if __name__ == "__main__": import CBot
+
 load_dotenv()
 
 Cls = MongoClient(os.getenv("MONGODB_URL"))
 DbM = Cls["CBot"]
-Col = DbM["Ser"]
+#- Col = DbM["Ser"]
 ColT = DbM["SerTwo"]
 AQd = DbM["Daily"]
 Rdt = DbM["Reddit"]
@@ -65,12 +66,7 @@ Covid = COVID19Py.COVID19(data_source="jhu")
 
 YClient = pyyoutube.Api(api_key=os.getenv("YOUTUBE_KEY"))
 
-THelix = twitch.Helix(
-    os.getenv("TWITCH_ID"),
-    os.getenv("TWITCH_SECRET"),
-    use_cache=True,
-    cache_duration=datetime.timedelta(minutes=1),
-)
+THelix = twitch.Helix(os.getenv("TWITCH_ID"),os.getenv("TWITCH_SECRET"),use_cache=True,cache_duration=datetime.timedelta(minutes=1))
 
 IMClient = imdb.IMDb()
 

@@ -1,7 +1,7 @@
 from discord.ext import commands
 import discord
 import FuncMon
-from Setup import Col, ColT, ChAdmin, ChSer, RemoveExtra, SendWait, ChSerGuild
+from Setup import ColT, ChAdmin, ChSer, RemoveExtra, SendWait, ChSerGuild, ChDev
 import asyncio
 import re
 
@@ -24,11 +24,9 @@ class MongoDB(commands.Cog):
     async def SUmsg(self, ctx):
         Members = [str(i.id) for i in ctx.guild.members if not i.bot]
         Get = ColT.find({"IDg":str(ctx.guild.id)})[0]
-        Stuff = [i for i in Get.keys() if i not in ["_id", "IDg"]]
-        Missing = [i for i in Stuff if len(Get[i]) < len(Members)]
-        for i in Missing:
-            for j in Members:
-                if j not in Get[i].keys(): ColT.update_one(Get, {"$set": {f'{i}.{j}':0}}); print("Mosso")
+        Missing = [i for i in Get if i not in ["_id", "IDg"] and len(Get[i]) < len(Members)]
+        Dict = {f'{i}.{j}':0 for i in Missing for j in Members if j not in Get[i]}
+        ColT.update_one(Get, {"$set": Dict})
         await SendWait(ctx, "Up to Date")
 
     @commands.command(name="add")
@@ -67,7 +65,7 @@ class MongoDB(commands.Cog):
     async def LWord(self, ctx):
         LEm = discord.Embed(title="Server List",description="Words/Phrases being tracked",color=0xF59542)
         Get = ColT.find({"IDg":str(ctx.guild.id)})[0]
-        Stuff = [i for i in Get.keys() if i not in ["_id", "IDg"]]
+        Stuff = [i for i in Get if i not in ["_id", "IDg"]]
         for i in Stuff:
             LEm.add_field(name=i, value="\u200b", inline=True)
         await ctx.message.channel.send(embed=LEm)
@@ -126,7 +124,7 @@ class MongoDB(commands.Cog):
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def IMsg(self, ctx, *args):
         Get = ColT.find({"IDg":str(ctx.guild.id)})[0]
-        Stuff = [i for i in Get.keys() if i not in ["_id", "IDg"]]
+        Stuff = [i for i in Get if i not in ["_id", "IDg"]]
         Mentions = ctx.message.mentions
         args = list(args)
         MentionedUser = False
@@ -142,7 +140,7 @@ class MongoDB(commands.Cog):
                 await SendWait(ctx, "Mentioned User Is A Bot")
                 return
         if not args:
-            Stuff = [i for i in Get.keys() if i not in ["_id", "IDg"]]
+            Stuff = [i for i in Get if i not in ["_id", "IDg"]]
             Person = Mentioned if MentionedUser else ctx.author
             IEm = discord.Embed(title=Person.display_name, description="Word Stats", color=0x3252A8)
             for Word in Stuff: IEm.add_field(name=Word, value=f"{Get[Word][str(Person.id)]:,}", inline=True)
@@ -180,7 +178,7 @@ class MongoDB(commands.Cog):
             else:
                 await SendWait(ctx, "Word Doesn't Exist")
         else:
-            Stuff = [i for i in Get.keys() if i not in ["_id", "IDg"]]
+            Stuff = [i for i in Get if i not in ["_id", "IDg"]]
             All = []
             for i in Stuff:
                 for k,v in Get[i].items():
@@ -213,10 +211,21 @@ class MongoDB(commands.Cog):
             else:
                 await SendWait(ctx, "Word Doesn't Exist")
         else:
-            Stuff = [i for i in Get.keys() if i not in ["_id", "IDg"]]
+            Stuff = [i for i in Get if i not in ["_id", "IDg"]]
             IEm = discord.Embed(title=ctx.guild.name, description="Total times repeated", color=0x3252A8)
             for Word in Stuff: IEm.add_field(name=Word, value=f"{sum(Get[Word].values()):,}", inline=True)
             await ctx.message.channel.send(embed=IEm)
+
+    @commands.command(name="updateforall")
+    @commands.check(ChDev)
+    async def UpdateForGuilds(self, ctx):
+        Gets = ColT.find()
+        for Get in Gets:
+            Guild = self.DClient.get_guild(int(Get["IDg"]))
+            Members = [str(i.id) for i in Guild.members if not i.bot]
+            Missing = [i for i in Get if i not in ["_id", "IDg"] and len(Get[i]) < len(Members)]
+            Dict = {f'{i}.{j}':0 for i in Missing for j in Members if j not in Get[i]}
+            ColT.update_one(Get, {"$set": Dict})
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -224,7 +233,7 @@ class MongoDB(commands.Cog):
         Get = list(ColT.find({"IDg":str(message.guild.id)}))
         if Get:
             Get = Get[0]
-            Stuff = [i.center(len(i)+2) for i in Get.keys() if i not in ["_id", "IDg"]]
+            Stuff = [i.center(len(i)+2) for i in Get if i not in ["_id", "IDg"]]
             What = re.sub(r"\.", "\u2024", message.content)
             What = re.sub(r"\$", "\u00A4", What)
             What = What.center(len(What)+2)
@@ -239,8 +248,9 @@ class MongoDB(commands.Cog):
         Get = list(ColT.find({"IDg":str(member.guild.id)}))
         if Get:
             Get = Get[0]
-            Stuff = [i for i in Get.keys() if i not in ["_id", "IDg"]]
-            [ColT.update_one(Get, {"$set": {f'{i}.{member.id}':0}}) for i in Stuff]
+            Stuff = [i for i in Get if i not in ["_id", "IDg"]]
+            Dict = {f'{i}.{member.id}':0 for i in Stuff}
+            ColT.update_one(Get, {"$set": Dict})
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
@@ -248,8 +258,9 @@ class MongoDB(commands.Cog):
         Get = list(ColT.find({"IDg":str(member.guild.id)}))
         if Get:
             Get = Get[0]
-            Stuff = [i for i in Get.keys() if i not in ["_id", "IDg"]]
-            [ColT.update_one(Get, {"$unset": {f'{Word}.{str(member.id)}':""}}) for Word in Stuff if str(member.id) in Get[Word]]
+            Stuff = [i for i in Get if i not in ["_id", "IDg"]]
+            Dict = {f'{Word}.{str(member.id)}':""  for Word in Stuff if str(member.id) in Get[Word]}
+            ColT.update_one(Get, {"$unset": Dict})
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):

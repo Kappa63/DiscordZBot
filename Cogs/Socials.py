@@ -13,7 +13,7 @@ import inspect
 import pyimgbox
 import asyncio
 import datetime
-
+import numpy as np
 
 def RedditbedMaker(SubCpoS, Subname, Nsfchannel, Type="R", PostNum=0, TotalPosts=0):
     PostTitle = SubCpoS.title[:253]
@@ -341,7 +341,7 @@ class Socials(commands.Cog):
             await SendWait(ctx, ":tv: Getting Clips...")
             VHelix = list(UHelix.videos())[:20]
             TotalClips = len(VHelix)
-            print(VHelix)
+            # print(VHelix)
             ClipEms = []
             for N , Clip in enumerate(VHelix, start=1): 
                 CEm = discord.Embed(title=f'{Clip.title} ({Clip.viewable.capitalize()})', url=Clip.url, description=Clip.description, color=0x9147FF)
@@ -721,6 +721,8 @@ class Socials(commands.Cog):
                 and str(RcM.emoji) in ["🗓️", "🌍", "📅", "❌"]
             )
 
+        Embeder = lambda i,*x: [RedditbedMaker(P, Name, Nsfchannel=Nsfwcheck, Type="S", PostNum=i+PNum, TotalPosts=TotalPosts) for PNum, P in enumerate(x)]
+
         if not args: await SendWait(ctx, "No arguments :no_mouth:")
         if not CheckSub("".join(args)):
         #  or not inspect.stack()[1].function == "__call__"
@@ -806,7 +808,9 @@ class Socials(commands.Cog):
             return
         Name = "".join(args)
         Nsfwcheck=ctx.channel.is_nsfw()
-        PostEms = [RedditbedMaker(P, Name, Nsfchannel=Nsfwcheck, Type="S", PostNum=PNum, TotalPosts=TotalPosts) for PNum, P in enumerate(SubCpoS)]
+        Crsd = np.array_split(SubCpoS, len(SubCpoS)//2)
+        Crsd = [np.insert(i, 0, np.where(Crsd == i)[0][0]*2) for i in Crsd]
+        PostEms = sum(Threader([Embeder]*(len(SubCpoS)//2), Crsd), [])
         await Navigator(ctx, PostEms)
 
     @commands.command(name="redditor")
@@ -851,26 +855,25 @@ class Socials(commands.Cog):
     @commands.check(ChMaxMultireddits)
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def GetMultis(self, ctx, *args):
-        if args:
-
-            ArgumentHandle = " ".join(args).split(" ")
-            if Rdt.count_documents({"IDd": ctx.author.id}) > 0:
-                User = Rdt.find({"IDd": ctx.author.id})[0]
-                Multireddits = User.keys()
-                if ArgumentHandle[0] in Multireddits and ArgumentHandle[0] not in [
-                    "IDd",
-                    "_id",
-                ]:
-                    Subreddits = "+".join(User[ArgumentHandle[0]])
-                    await self.RedditNav(ctx, Subreddits)
-                else:
-                    await SendWait(
-                        ctx, f"That Multireddit ({ArgumentHandle[0]}) doesn't exist"
-                    )
-            else:
-                await SendWait(ctx, "No Multireddits Found")
-        else:
+        if not args:
             await SendWait(ctx, "You forgot to add a Multireddit name")
+            return
+        ArgumentHandle = list(args)
+        if Rdt.count_documents({"IDd": ctx.author.id}) > 0:
+            User = Rdt.find({"IDd": ctx.author.id})[0]
+            Multireddits = User.keys()
+            if ArgumentHandle[0] in Multireddits and ArgumentHandle[0] not in [
+                "IDd",
+                "_id",
+            ]:
+                Subreddits = "+".join(User[ArgumentHandle[0]])
+                await self.RedditNav(ctx, Subreddits)
+            else:
+                await SendWait(
+                    ctx, f"That Multireddit ({ArgumentHandle[0]}) doesn't exist"
+                )
+        else:
+            await SendWait(ctx, "No Multireddits Found")
 
     @GetMultis.command(name="list")
     @commands.check(ChPatreonT2)
@@ -896,107 +899,150 @@ class Socials(commands.Cog):
     @commands.check(ChMaxMultireddits)
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def CreateMulti(self, ctx, *args):
-        ArgumentHandle = " ".join(args).split(" ")
-        if args:
-            TierApplicable = {
-                "Tier 2 Super": 1,
-                "Tier 3 Legend": 2,
-                "Tier 4 Ultimate": 4,
-            }
-            TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
-            if Rdt.count_documents({"IDd": ctx.author.id}) > 0:
-                User = Rdt.find({"IDd": ctx.author.id})[0]
-                Multireddits = User.keys()
-                if len(Multireddits) < TierLimit:
-                    for Multireddit in Multireddits:
-                        if Multireddit == ArgumentHandle[0]:
-                            await SendWait(
-                                ctx, f"Multireddit ({ArgumentHandle[0]}) Already Exists"
-                            )
-                            return
-                    FuncMon.DbAdd(Rdt, {"IDd": ctx.author.id}, ArgumentHandle[0], [])
-                    await SendWait(
-                        ctx,
-                        f"Added the Multireddit ({ArgumentHandle[0]}), you can now add and remove subreddits from it.",
-                    )
-                else:
-                    await SendWait(
-                        ctx,
-                        "You already have the maximum amount of Multireddits. You can use 'zmultireddit' to see your multireddits or check 'zpatreon' to know more about limits",
-                    )
-            else:
-                Rdt.insert_one({"IDd": ctx.author.id, ArgumentHandle[0]: []})
+        if not args:
+            await SendWait(ctx, "No Arguments")
+            return
+        ArgumentHandle = list(args)
+        TierApplicable = {
+            "Tier 2 Super": 1,
+            "Tier 3 Legend": 2,
+            "Tier 4 Ultimate": 4,
+        }
+        TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
+        if Rdt.count_documents({"IDd": ctx.author.id}) > 0:
+            User = Rdt.find({"IDd": ctx.author.id})[0]
+            Multireddits = User.keys()
+            if len(Multireddits) < TierLimit:
+                for Multireddit in Multireddits:
+                    if Multireddit == ArgumentHandle[0]:
+                        await SendWait(
+                            ctx, f"Multireddit ({ArgumentHandle[0]}) Already Exists"
+                        )
+                        return
+                FuncMon.DbAdd(Rdt, {"IDd": ctx.author.id}, ArgumentHandle[0], [])
                 await SendWait(
                     ctx,
                     f"Added the Multireddit ({ArgumentHandle[0]}), you can now add and remove subreddits from it.",
                 )
+            else:
+                await SendWait(
+                    ctx,
+                    "You already have the maximum amount of Multireddits. You can use 'zmultireddit' to see your multireddits or check 'zpatreon' to know more about limits",
+                )
         else:
-            await SendWait(ctx, "No Arguments")
+            Rdt.insert_one({"IDd": ctx.author.id, ArgumentHandle[0]: []})
+            await SendWait(
+                ctx,
+                f"Added the Multireddit ({ArgumentHandle[0]}), you can now add and remove subreddits from it.",
+            )       
 
     @GetMultis.command(name="delete")
     @commands.check(ChPatreonT2)
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def DeleteMulti(self, ctx, *args):
-        if args:
-            ArgumentHandle = " ".join(args).split(" ")
-            if Rdt.count_documents({"IDd": ctx.author.id}) > 0:
-                User = Rdt.find({"IDd": ctx.author.id})[0]
-                Multireddits = User.keys()
-                Multis = len(Multireddits) - 2
-                for Multireddit in Multireddits:
-                    if Multireddit == ArgumentHandle[0]:
-                        if Multis == 1:
-                            Rdt.delete_one({"IDd": ctx.author.id})
-                        else:
-                            FuncMon.DbRem(
-                                Rdt, {"IDd": ctx.author.id}, ArgumentHandle[0]
-                            )
-                        await SendWait(
-                            ctx, f"Deleted the Multireddit ({ArgumentHandle[0]})."
-                        )
-                        return
-            else:
-                await SendWait(ctx, "You don't have any Multireddits")
-        else:
+        if not args:
             await SendWait(ctx, "No Arguments")
+            return
+        ArgumentHandle = list(args)
+        if Rdt.count_documents({"IDd": ctx.author.id}) > 0:
+            User = Rdt.find({"IDd": ctx.author.id})[0]
+            Multireddits = User.keys()
+            Multis = len(Multireddits) - 2
+            for Multireddit in Multireddits:
+                if Multireddit == ArgumentHandle[0]:
+                    if Multis == 1:
+                        Rdt.delete_one({"IDd": ctx.author.id})
+                    else:
+                        FuncMon.DbRem(
+                            Rdt, {"IDd": ctx.author.id}, ArgumentHandle[0]
+                        )
+                    await SendWait(
+                        ctx, f"Deleted the Multireddit ({ArgumentHandle[0]})."
+                    )
+                    return
+        else:
+            await SendWait(ctx, "You don't have any Multireddits")
 
     @GetMultis.command(name="add")
     @commands.check(ChPatreonT2)
     @commands.check(ChMaxMultireddits)
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def AddMulti(self, ctx, *args):
-        ArgumentHandle = " ".join(args).split(" ")
-        if args:
+        if not args:
+            await SendWait(ctx, "No Arguments")
+            return
+        ArgumentHandle = list(args)
+        User = Rdt.find({"IDd": ctx.author.id})[0]
+        Multireddits = User.keys()
+        if ArgumentHandle[0] in Multireddits and ArgumentHandle[0] not in [
+            "IDd",
+            "_id",
+        ]:
+            if "".join(ArgumentHandle[1:]) not in User[ArgumentHandle[0]]:
+                if CheckSub("".join(ArgumentHandle[1:])):
+                    User[ArgumentHandle[0]].append("".join(ArgumentHandle[1:]))
+                    if FuncMon.ChangeTo(
+                        Rdt,
+                        {"IDd": ctx.author.id},
+                        ArgumentHandle[0],
+                        User[ArgumentHandle[0]],
+                    ):
+                        await SendWait(
+                            ctx,
+                            f'Added the Subreddit ({"".join(ArgumentHandle[1:])}) to Multireddit ({ArgumentHandle[0]})',
+                        )
+                    else:
+                        await SendWait(ctx, "Something happened... Not sure")
+                else:
+                    await SendWait(
+                        ctx,
+                        f'That Subreddit ({"".join(ArgumentHandle[1:])}) does not exist or is private',
+                    )
+            else:
+                await SendWait(
+                    ctx,
+                    f"Subreddit ({ArgumentHandle[0]}) Already Exists in that Multireddit ({ArgumentHandle[0]})",
+                )
+        else:
+            await SendWait(
+                ctx,
+                f"That Multireddit ({ArgumentHandle[0]}) does not exist. Check if the name is right or create it.",
+            )
+
+    @GetMultis.command(aliases=["remove", "rem"])
+    @commands.check(ChPatreonT2)
+    @commands.check(ChMaxMultireddits)
+    @commands.cooldown(1, 2, commands.BucketType.user)
+    async def RemoveMulti(self, ctx, *args):
+        if not args:
+            await SendWait(ctx, "No Arguments")
+            return
+        ArgumentHandle = list(args)
+        if Rdt.count_documents({"IDd": ctx.author.id}) > 0:
             User = Rdt.find({"IDd": ctx.author.id})[0]
             Multireddits = User.keys()
             if ArgumentHandle[0] in Multireddits and ArgumentHandle[0] not in [
                 "IDd",
                 "_id",
             ]:
-                if "".join(ArgumentHandle[1:]) not in User[ArgumentHandle[0]]:
-                    if CheckSub("".join(ArgumentHandle[1:])):
-                        User[ArgumentHandle[0]].append("".join(ArgumentHandle[1:]))
-                        if FuncMon.ChangeTo(
-                            Rdt,
-                            {"IDd": ctx.author.id},
-                            ArgumentHandle[0],
-                            User[ArgumentHandle[0]],
-                        ):
-                            await SendWait(
-                                ctx,
-                                f'Added the Subreddit ({"".join(ArgumentHandle[1:])}) to Multireddit ({ArgumentHandle[0]})',
-                            )
-                        else:
-                            await SendWait(ctx, "Something happened... Not sure")
-                    else:
+                if "".join(ArgumentHandle[1:]) in User[ArgumentHandle[0]]:
+                    User[ArgumentHandle[0]].remove("".join(ArgumentHandle[1:]))
+                    if FuncMon.ChangeTo(
+                        Rdt,
+                        {"IDd": ctx.author.id},
+                        ArgumentHandle[0],
+                        User[ArgumentHandle[0]],
+                    ):
                         await SendWait(
                             ctx,
-                            f'That Subreddit ({"".join(ArgumentHandle[1:])}) does not exist or is private',
+                            f'Removed the Subreddit ({"".join(ArgumentHandle[1:])}) from Multireddit ({ArgumentHandle[0]})',
                         )
+                    else:
+                        await SendWait(ctx, "Something happened... Not sure")
                 else:
                     await SendWait(
                         ctx,
-                        f"Subreddit ({ArgumentHandle[0]}) Already Exists in that Multireddit ({ArgumentHandle[0]})",
+                        f"Subreddit ({ArgumentHandle[0]}) does not exist in that Multireddit ({ArgumentHandle[0]})",
                     )
             else:
                 await SendWait(
@@ -1004,50 +1050,7 @@ class Socials(commands.Cog):
                     f"That Multireddit ({ArgumentHandle[0]}) does not exist. Check if the name is right or create it.",
                 )
         else:
-            await SendWait(ctx, "No Arguments")
-
-    @GetMultis.command(aliases=["remove", "rem"])
-    @commands.check(ChPatreonT2)
-    @commands.check(ChMaxMultireddits)
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def RemoveMulti(self, ctx, *args):
-        ArgumentHandle = " ".join(args).split(" ")
-        if args:
-            if Rdt.count_documents({"IDd": ctx.author.id}) > 0:
-                User = Rdt.find({"IDd": ctx.author.id})[0]
-                Multireddits = User.keys()
-                if ArgumentHandle[0] in Multireddits and ArgumentHandle[0] not in [
-                    "IDd",
-                    "_id",
-                ]:
-                    if "".join(ArgumentHandle[1:]) in User[ArgumentHandle[0]]:
-                        User[ArgumentHandle[0]].remove("".join(ArgumentHandle[1:]))
-                        if FuncMon.ChangeTo(
-                            Rdt,
-                            {"IDd": ctx.author.id},
-                            ArgumentHandle[0],
-                            User[ArgumentHandle[0]],
-                        ):
-                            await SendWait(
-                                ctx,
-                                f'Removed the Subreddit ({"".join(ArgumentHandle[1:])}) from Multireddit ({ArgumentHandle[0]})',
-                            )
-                        else:
-                            await SendWait(ctx, "Something happened... Not sure")
-                    else:
-                        await SendWait(
-                            ctx,
-                            f"Subreddit ({ArgumentHandle[0]}) does not exist in that Multireddit ({ArgumentHandle[0]})",
-                        )
-                else:
-                    await SendWait(
-                        ctx,
-                        f"That Multireddit ({ArgumentHandle[0]}) does not exist. Check if the name is right or create it.",
-                    )
-            else:
-                await SendWait(ctx, "You don't have any Multireddits")
-        else:
-            await SendWait(ctx, "No Arguments")
+            await SendWait(ctx, "You don't have any Multireddits")
 
 
 def setup(DClient):

@@ -1,3 +1,4 @@
-Whats new in 2.7.2a:
-NEWS I'm back
+Whats new in 2.7.3a:
+FIXES More Bugs Caught
+IMPROVED Speed of zreddit surf
 GENERAL_IMPROVEMENTS Rewriting Stuff
