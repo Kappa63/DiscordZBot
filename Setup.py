@@ -11,6 +11,7 @@ import asyncio
 import praw
 import pymongo
 from pymongo import MongoClient
+import CBot
 from google_images_search import GoogleImagesSearch
 import pyyoutube
 import imdb
@@ -18,8 +19,6 @@ import pafy
 import datetime
 import osuapi
 import concurrent.futures as Cf
-
-if __name__ == "__main__": import CBot
 
 load_dotenv()
 

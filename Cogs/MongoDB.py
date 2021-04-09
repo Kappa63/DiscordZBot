@@ -225,7 +225,7 @@ class MongoDB(commands.Cog):
             Members = [str(i.id) for i in Guild.members if not i.bot]
             Missing = [i for i in Get if i not in ["_id", "IDg"] and len(Get[i]) < len(Members)]
             Dict = {f'{i}.{j}':0 for i in Missing for j in Members if j not in Get[i]}
-            ColT.update_one(Get, {"$set": Dict})
+            if Dict: ColT.update_one(Get, {"$set": Dict})
 
     @commands.Cog.listener()
     async def on_message(self, message):
