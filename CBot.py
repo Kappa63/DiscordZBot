@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-import random
 from Setup import Ignore, IsBot
 import dbl
 from dotenv import load_dotenv
@@ -11,26 +10,19 @@ load_dotenv()
 REqInt = discord.Intents.default()
 REqInt.members = True
 
-DClient = commands.Bot(
-    case_insensitive=True, command_prefix=["z", "Z"], help_command=None, intents=REqInt
-)
+DClient = commands.Bot(case_insensitive=True, command_prefix=["z", "Z"], help_command=None, intents=REqInt)
 
 TClient = dbl.client.DBLClient(bot=DClient, token=os.getenv("DBL_TOKEN"), autopost=True)
 
-
 @DClient.check
 async def ChBot(ctx):
-    if ctx.author.bot:
-        raise IsBot("Bot")
+    if ctx.author.bot: raise IsBot("Bot")
     return True
-
 
 @DClient.check
 async def ChDM(ctx):
-    if ctx.guild:
-        return True
+    if ctx.guild: return True
     raise Ignore("Ignore")
-
 
 #_ @DClient.check
 #_ async def ChModDown(ctx):
@@ -44,7 +36,6 @@ async def ChDM(ctx):
 #_     ]:
 #_         raise Ignore("Ignore")
 #_     return True
-
 
 Cogs = [
     "Cogs.Misc",
@@ -67,8 +58,7 @@ Cogs = [
 ]
 
 if __name__ != "__main__":
-    for Cog in Cogs:
-        DClient.load_extension(Cog)
+    for Cog in Cogs: DClient.load_extension(Cog)
     print("Cogs Loaded...")
 
 DClient.run(os.getenv("DISCORD_SECRET"))

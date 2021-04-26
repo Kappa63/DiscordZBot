@@ -47,6 +47,37 @@ def SudokuBoardMaker(Title, BoardName, Board, Difficulty):
     SEm.set_footer(text='"zhelp sudoku" for more info')
     return SEm
 
+def NextSq(grid, i, j):
+    for x in range(i,9):
+        for y in range(j,9):
+            if grid[x][y] == 0: return x,y
+    for x in range(0,9):
+        for y in range(0,9):
+            if grid[x][y] == 0: return x,y
+    return -1,-1
+
+def CheckSudoku(grid, i, j, e):
+    RowCheck = all([e != grid[i][x] for x in range(9)])
+    if RowCheck:
+        ColumnCheck = all([e != grid[x][j] for x in range(9)])
+        if ColumnCheck:
+            TopX, TopY = 3 *(i//3), 3 *(j//3)
+            for x in range(TopX, TopX+3):
+                for y in range(TopY, TopY+3):
+                    if grid[x][y] == e: return False
+            return True
+    return False
+
+def SudokuSolver(grid, i=0, j=0):
+    i,j = NextSq(grid, i, j)
+    if i == -1: return True
+    for e in range(1,10):
+        if CheckSudoku(grid,i,j,e):
+            grid[i][j] = e
+            if SudokuSolver(grid, i, j): return True
+            grid[i][j] = 0
+    return False
+
 
 def TTTBoardMaker(Board, User1, User2, AnExtra="\u200b"):
     ItemReplace = {
@@ -220,61 +251,28 @@ class Games(commands.Cog):
     @commands.command(name="sudoku")
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def PlaySudoku(self, ctx, *args):
-        def ChCHEm(RcM, RuS):
-            return (
-                RuS.bot == False
-                and RcM.message == OriginalBoard
-                and str(RcM.emoji) in ["👁️", "❌"]
-            )
+        ChCHEm = lambda RcM, RuS: not RuS.bot and RcM.message == OriginalBoard and str(RcM.emoji) in ["👁️", "❌"]
 
-        Difficulty = " ".join(args).split(" ")[0].lower()
+        Difficulty = list(args)[0].lower()
         RanChars = "abcdefghijklmnopqrstuvwxyz1234567890"
         BoardName = "".join((random.choice(RanChars) for i in range(5)))
-        if Difficulty not in ["easy", "hard", "medium", "random"]:
-            await SendWait(ctx, "Not valid difficulty :confused:")
-            return
-        SudokuBoard = requests.get(
-            f"https://sugoku.herokuapp.com/board?difficulty={Difficulty}"
-        )
-        JSONboard = SudokuBoard.json()["board"]
-        OriginalBoard = await ctx.message.channel.send(
-            embed=SudokuBoardMaker("Sudoku", BoardName, JSONboard, Difficulty)
-        )
+        if Difficulty not in ["easy", "hard", "medium", "random"]: await SendWait(ctx, "Not valid difficulty :confused:"); return
+        SudokuBoard = requests.get(f"https://sugoku.herokuapp.com/board?difficulty={Difficulty}").json()["board"]
+        #- JSONboard = SudokuBoard.json()["board"]
+        OriginalBoard = await ctx.message.channel.send(embed=SudokuBoardMaker("Sudoku", BoardName, SudokuBoard, Difficulty))
         await OriginalBoard.add_reaction("👁️")
         await OriginalBoard.add_reaction("❌")
         try:
-            ReaEm = await self.DClient.wait_for(
-                "reaction_add", check=ChCHEm, timeout=3600
-            )
+            ReaEm = await self.DClient.wait_for("reaction_add", check=ChCHEm, timeout=3600)
             await OriginalBoard.remove_reaction(ReaEm[0].emoji, ReaEm[1])
             if ReaEm[0].emoji == "👁️":
-                await ctx.message.channel.send(
-                    embed=SudokuBoardMaker(
-                        "Solution",
-                        BoardName,
-                        requests.post(
-                            "https://sugoku.herokuapp.com/solve",
-                            data=SudokuBoard.content.decode("utf-8"),
-                            headers={"Accept": "x-www-form-urlencoded"},
-                        ).json()["solution"],
-                        Difficulty,
-                    )
-                )
+                SudokuSolver(SudokuBoard)
+                await ctx.message.channel.send(embed=SudokuBoardMaker("Solution", BoardName, SudokuBoard, Difficulty))
             await OriginalBoard.remove_reaction("👁️", self.DClient.user)
             await OriginalBoard.remove_reaction("❌", self.DClient.user)
         except asyncio.TimeoutError:
-            await ctx.message.channel.send(
-                embed=SudokuBoardMaker(
-                    "Solution",
-                    BoardName,
-                    requests.post(
-                        "https://sugoku.herokuapp.com/solve",
-                        data=SudokuBoard.content.decode("utf-8"),
-                        headers={"Accept": "x-www-form-urlencoded"},
-                    ).json()["solution"],
-                    Difficulty,
-                )
-            )
+            SudokuSolver(SudokuBoard)
+            await ctx.message.channel.send(embed=SudokuBoardMaker("Solution", BoardName, SudokuBoard, Difficulty))
 
     @commands.command(aliases=["ttt", "tictactoe"])
     @commands.cooldown(1, 2, commands.BucketType.user)
@@ -286,46 +284,25 @@ class Games(commands.Cog):
                 if 0 < int(MSg.content) < 10:
                     Position = int(MSg.content) - 1
                     PlaceOnBoard = TTTGetForm(Position)
-                    if (
-                        Table[PlaceOnBoard[0]][PlaceOnBoard[1]] != "x"
-                        and Table[PlaceOnBoard[0]][PlaceOnBoard[1]] != "o"
-                    ):
-                        RsT = True
+                    if Table[PlaceOnBoard[0]][PlaceOnBoard[1]] not in ["x", "o"]: RsT = True
             except ValueError:
-                if (MesS == "end") or (MesS == "endgame"):
-                    RsT = True
-            return (
-                MSg.guild.id == ctx.guild.id
-                and MSg.channel.id == ctx.channel.id
-                and RsT
-                and MSg.author == Player
-            )
+                if MesS in ["end", "endgame"]: RsT = True
+            return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT and MSg.author == Player
 
-        if len(ctx.message.mentions) > 0 and ctx.message.mentions[0].bot == False:
+        if len(ctx.message.mentions) > 0 and not ctx.message.mentions[0].bot:
             Table = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
             Players = [ctx.message.author, ctx.message.mentions[0]]
             PlayerAssign = {Players[0]: "x", Players[1]: "o"}
             R = 1
-            Board = await ctx.message.channel.send(
-                embed=TTTBoardMaker(Table, Players[0], Players[1])
-            )
+            Board = await ctx.message.channel.send(embed=TTTBoardMaker(Table, Players[0], Players[1]))
             while True:
-                if R == 10:
-                    await SendWait(ctx, "Its a DRAW!! :partying_face:")
-                    return
-                if R % 2 == 0:
-                    Player = Players[1]
-                else:
-                    Player = Players[0]
-                MentionTurn = await ctx.message.channel.send(
-                    f"{Player.mention} Your turn. Please choose a cell number to play."
-                )
+                if R == 10: await SendWait(ctx, "Its a DRAW!! :partying_face:"); return
+                if R % 2 == 0: Player = Players[1]
+                else: Player = Players[0]
+                MentionTurn = await ctx.message.channel.send(f"{Player.mention} Your turn. Please choose a cell number to play.")
                 try:
-                    if R > 1:
-                        await ResS.delete()
-                    ResS = await self.DClient.wait_for(
-                        "message", check=ChCHanS, timeout=30
-                    )
+                    if R > 1: await ResS.delete()
+                    ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=30)
                     await MentionTurn.delete()
                     await Board.delete()
                     LResS = ResS.content.lower()
@@ -333,51 +310,20 @@ class Games(commands.Cog):
                         if int(ResS.content) < 10:
                             Position = int(ResS.content) - 1
                             PlaceOnBoard = TTTGetForm(Position)
-                            Table[PlaceOnBoard[0]][PlaceOnBoard[1]] = PlayerAssign[
-                                ResS.author
-                            ]
+                            Table[PlaceOnBoard[0]][PlaceOnBoard[1]] = PlayerAssign[ResS.author]
                             if TTTWinCheck(Table):
-                                Board = await ctx.message.channel.send(
-                                    embed=TTTBoardMaker(
-                                        Table,
-                                        Players[0],
-                                        Players[1],
-                                        f"{Player.display_name} WINS",
-                                    )
-                                )
-                                await SendWait(
-                                    ctx, f"{Player.mention} Wins!! :partying_face:"
-                                )
+                                Board = await ctx.message.channel.send(embed=TTTBoardMaker(Table, Players[0], Players[1], f"{Player.display_name} WINS"))
+                                await SendWait(ctx, f"{Player.display_name} Wins!! :partying_face:")
                                 return
-                            Board = await ctx.message.channel.send(
-                                embed=TTTBoardMaker(Table, Players[0], Players[1])
-                            )
+                            Board = await ctx.message.channel.send(embed=TTTBoardMaker(Table, Players[0], Players[1]))
                     except ValueError:
-                        if (LResS == "end") or (LResS == "endgame"):
-                            Board = await ctx.message.channel.send(
-                                embed=TTTBoardMaker(
-                                    Table, Players[0], Players[1], "ENDED"
-                                )
-                            )
-                            return
+                        if LResS in ["end", "endgame"]: Board = await ctx.message.channel.send(embed=TTTBoardMaker(Table, Players[0], Players[1], "ENDED")); return
                 except asyncio.TimeoutError:
-                    Board = await ctx.message.channel.send(
-                        embed=TTTBoardMaker(
-                            Table,
-                            Players[0],
-                            Players[1],
-                            f"{Player.display_name} DID NOT RESPOND",
-                        )
-                    )
-                    await SendWait(
-                        ctx, f"{Player.mention} did not play :slight_frown:!"
-                    )
+                    Board = await ctx.message.channel.send(embed=TTTBoardMaker(Table, Players[0], Players[1], f"{Player.display_name} DID NOT RESPOND"))
+                    await SendWait(ctx, f"{Player.mention} did not play :slight_frown:!")
                     return
                 R += 1
-        else:
-            await SendWait(
-                ctx, "No second player mentioned or Mentioned a bot :slight_frown:!"
-            )
+        else: await SendWait(ctx, "No second player mentioned or Mentioned a bot :slight_frown:!")
 
     @commands.command(name="chess")
     @commands.cooldown(1, 2, commands.BucketType.user)
@@ -385,111 +331,59 @@ class Games(commands.Cog):
         def ChCHanS(MSg):
             MesS = MSg.content.lower()
             RsT = False
-            if MSg.content in LegalMoves:
-                RsT = True
-            elif MesS == "resign":
-                RsT = True
-            elif CanClaimDraw and MesS == "claimdraw":
-                RsT = True
-            return (
-                MSg.guild.id == ctx.guild.id
-                and MSg.channel.id == ctx.channel.id
-                and RsT
-                and MSg.author == Player
-            )
+            if MSg.content in LegalMoves: RsT = True
+            elif MesS == "resign": RsT = True
+            elif CanClaimDraw and MesS == "claimdraw": RsT = True
+            return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT and MSg.author == Player
 
-        if len(ctx.message.mentions) > 0 and ctx.message.mentions[0].bot == False:
+        if len(ctx.message.mentions) > 0 and not ctx.message.mentions[0].bot:
             Players = [ctx.message.author, ctx.message.mentions[0]]
             ChessBoard = chess.Board()
             R = 0
             CanClaimDraw = False
             PlayerTimes = {Players[0]: 600, Players[1]: 600}
-            Board = await ctx.message.channel.send(
-                MakeChessBoard(
-                    ("".join(str(ChessBoard).split(" "))).splitlines(),
-                    PlayerTimes,
-                    Players,
-                )
-            )
+            Board = await ctx.message.channel.send(MakeChessBoard(("".join(str(ChessBoard).split(" "))).splitlines(), PlayerTimes, Players))
             Moves = []
             while True:
                 LegalMoves = [ChessBoard.san(i) for i in list(ChessBoard.legal_moves)]
-                if R % 2 == 0:
-                    Player = Players[1]
-                else:
-                    Player = Players[0]
-                MentionTurn = await ctx.message.channel.send(
-                    f'{Player.mention}Please choose where to play: {", ".join(LegalMoves)}'
-                )
+                if R % 2 == 0: Player = Players[1]
+                else: Player = Players[0]
+                MentionTurn = await ctx.message.channel.send(f'{Player.mention}Please choose where to play: {", ".join(LegalMoves)}')
                 try:
                     TimeTemp = int(time.time())
-                    ResS = await self.DClient.wait_for(
-                        "message", check=ChCHanS, timeout=PlayerTimes[Player]
-                    )
-                    if R > 1:
-                        PlayerTimes[Player] -= int(time.time()) - TimeTemp
+                    ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=PlayerTimes[Player])
+                    if R > 1: PlayerTimes[Player] -= int(time.time()) - TimeTemp
                     Moves.append(ResS)
                     await MentionTurn.delete()
                     LResS = ResS.content.lower()
                     if ResS.content in LegalMoves:
                         await Board.delete()
                         ChessBoard.push_san(ResS.content)
-                        if ChessBoard.is_checkmate():
-                            await SendWait(ctx, f"{Player.mention} WINS by Checkmate!!")
-                            return
-                        elif ChessBoard.is_insufficient_material():
-                            await SendWait(ctx, "DRAW by Insufficient Material!!")
-                            return
-                        elif ChessBoard.is_stalemate():
-                            await SendWait(ctx, "DRAW by Stalemate!!")
-                            return
+                        if ChessBoard.is_checkmate(): await SendWait(ctx, f"{Player.display_name} WINS by Checkmate!!"); return
+                        elif ChessBoard.is_insufficient_material(): await SendWait(ctx, "DRAW by Insufficient Material!!"); return
+                        elif ChessBoard.is_stalemate(): await SendWait(ctx, "DRAW by Stalemate!!"); return
                         elif ChessBoard.can_claim_draw():
                             await SendWait(ctx, "A DRAW Can Now be Claimed")
                             CanClaimDraw = True
-                        Board = await ctx.message.channel.send(
-                            MakeChessBoard(
-                                ("".join(str(ChessBoard).split(" "))).splitlines(),
-                                PlayerTimes,
-                                Players,
-                            )
-                        )
+                        Board = await ctx.message.channel.send(MakeChessBoard(("".join(str(ChessBoard).split(" "))).splitlines(), PlayerTimes, Players))
                     elif LResS == "resign":
-                        if R % 2 == 0:
-                            await SendWait(
-                                ctx, f"{Players[0].mention} WINS by Resignation"
-                            )
-                        else:
-                            await SendWait(
-                                ctx, f"{Players[1].mention} WINS by Resignation"
-                            )
+                        if R % 2 == 0: await SendWait(ctx, f"{Players[0].mention} WINS by Resignation")
+                        else: await SendWait(ctx, f"{Players[1].mention} WINS by Resignation")
                         return
-                    elif LResS == "claimdraw":
-                        await SendWait(ctx, f"{Player.mention} Claims DRAW!!")
-                        return
+                    elif LResS == "claimdraw": await SendWait(ctx, f"{Player.mention} Claims DRAW!!"); return
                 except asyncio.TimeoutError:
-                    if R % 2 == 0:
-                        await SendWait(ctx, f"{Players[0].mention} WINS by Timeout")
-                    else:
-                        await SendWait(ctx, f"{Players[1].mention} WINS by Timeout")
+                    if R % 2 == 0: await SendWait(ctx, f"{Players[0].mention} WINS by Timeout")
+                    else: await SendWait(ctx, f"{Players[1].mention} WINS by Timeout")
                     return
                 R += 1
-        else:
-            await SendWait(
-                ctx, "No second player mentioned or Mentioned a bot :slight_frown:!"
-            )
+        else: await SendWait(ctx, "No second player mentioned or Mentioned a bot :slight_frown:!")
 
     @commands.command(aliases=["cptd", "chesspuzzleoftheday"])
     @commands.check(ChVote)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def SendCPTD(self, ctx):
-        GetCPTD = requests.get(
-            "https://api.chess.com/pub/puzzle", headers={"Accept": "application/json"}
-        ).json()
-        CEm = discord.Embed(
-            title=GetCPTD["title"],
-            description=f'[Daily Puzzle]({GetCPTD["url"]}) from [Chess.com](https://www.chess.com/)',
-            color=0x6C9D41,
-        )
+        GetCPTD = requests.get("https://api.chess.com/pub/puzzle", headers={"Accept": "application/json"}).json()
+        CEm = discord.Embed(title=GetCPTD["title"], description=f'[Daily Puzzle]({GetCPTD["url"]}) from [Chess.com](https://www.chess.com/)', color=0x6C9D41)
         CEm.set_image(url=GetCPTD["image"])
         await ctx.message.channel.send(embed=CEm)
 
@@ -497,10 +391,7 @@ class Games(commands.Cog):
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def CptdDAILY(self, ctx):
         TimeLeft = FormatTime(TimeTillMidnight())
-        await SendWait(
-            ctx,
-            f'The next Daily CPTD is in {TimeLeft}.\n You can be added to CPTD Daily with "zcptddaily start" (If patreon tier 2+).\n Check "zhelp cptd" for more info',
-        )
+        await SendWait(ctx, f'The next Daily CPTD is in {TimeLeft}.\n You can be added to CPTD Daily with "zcptddaily start" (If patreon tier 2+).\n Check "zhelp cptd" for more info')
 
     @CptdDAILY.command(name="start")
     @commands.check(ChPatreonT2)
@@ -510,18 +401,10 @@ class Games(commands.Cog):
         TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
         TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
         if AQd.count_documents({"Type": "CPTD", "IDd": ctx.author.id}) >= TierLimit:
-            await SendWait(
-                ctx,
-                "You already added the max amount of channels to CPTD daily.\nDifferent patreon levels get more channels\nCheck 'zpatreon'",
-            )
+            await SendWait(ctx, "You already added the max amount of channels to CPTD daily.\nDifferent donator levels get more channels\nCheck 'zpatreon'")
             return
-        UserToCheckAdd = {
-            "Type": "CPTD",
-            "IDd": ctx.author.id,
-            "IDg": ctx.guild.id,
-            "Channel": ctx.message.channel.id,
-        }
-        if AQd.count_documents(UserToCheckAdd) == 1:
+        UserToCheckAdd = {"Type": "CPTD", "IDd": ctx.author.id, "IDg": ctx.guild.id, "Channel": ctx.message.channel.id}
+        if AQd.count_documents(UserToCheckAdd):
             await SendWait(ctx, "This channel is already added to CPTD daily")
             return
         AQd.insert_one(UserToCheckAdd)
@@ -532,16 +415,10 @@ class Games(commands.Cog):
     @commands.check(ChAdmin)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RemoveCptdDAILY(self, ctx):
-        UserToCheckRemove = {
-            "Type": "CPTD",
-            "IDd": ctx.author.id,
-            "IDg": ctx.guild.id,
-            "Channel": ctx.message.channel.id,
-        }
-        if AQd.count_documents(UserToCheckRemove) == 1:
+        UserToCheckRemove = {"Type": "CPTD", "IDd": ctx.author.id, "IDg": ctx.guild.id, "Channel": ctx.message.channel.id}
+        if AQd.count_documents(UserToCheckRemove):
             Users = AQd.find(UserToCheckRemove)
-            for User in Users:
-                AQd.delete_one(User)
+            for User in Users: AQd.delete_one(User)
             await SendWait(ctx, "Removed from CPTD daily successfully")
             return
         await SendWait(ctx, "You are already not in CPTD daily")

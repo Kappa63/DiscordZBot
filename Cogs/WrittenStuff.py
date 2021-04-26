@@ -3,15 +3,15 @@ from discord.ext import commands
 import requests
 import randfacts
 from Setup import (
-    ChVote,
-    ChPatreonT2,
-    GetPatreonTier,
+    #? ChVote,
+    #? ChPatreonT2,
+    #? GetPatreonTier,
     ChAdmin,
-    FormatTime,
-    TimeTillMidnight,
+    #? FormatTime,
+    #? TimeTillMidnight,
     SendWait,
     NClient,
-    AQd
+    #? AQd
 )
 import re
 
@@ -23,16 +23,8 @@ class WrittenStuff(commands.Cog):
     @commands.command(name="advice")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RandomAdvice(self, ctx):
-        Advice = requests.get(
-            "https://api.adviceslip.com/advice", headers={"Accept": "application/json"}
-        ).json()
-        await ctx.message.channel.send(
-            embed=discord.Embed(
-                title="Some Advice",
-                description=Advice["slip"]["advice"],
-                color=0x7DD7D8,
-            )
-        )
+        Advice = requests.get("https://api.adviceslip.com/advice", headers={"Accept": "application/json"} ).json()
+        await ctx.message.channel.send(embed=discord.Embed(title="Some Advice", description=Advice["slip"]["advice"], color=0x7DD7D8))
     
     @commands.command(name="news")
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -44,17 +36,11 @@ class WrittenStuff(commands.Cog):
 
     @commands.command(aliases=["funfact", "fact"])
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def GetAFact(self, ctx):
-        await ctx.message.channel.send(
-            embed=discord.Embed(
-                title="Fact", description=randfacts.getFact(), color=0x1F002A
-            )
-        )
+    async def GetAFact(self, ctx): await ctx.message.channel.send(embed=discord.Embed(title="Fact", description=randfacts.getFact(), color=0x1F002A))
 
     @commands.group(aliases=["bin", "binary"])
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def Bins(self, ctx):
-        pass
+    async def Bins(self, ctx): pass
     
     @Bins.command(aliases=["make", "create"])
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -70,24 +56,47 @@ class WrittenStuff(commands.Cog):
             try:
                 requests.get(String)
                 await ctx.message.channel.send(String)
-            except:
-                await ctx.message.channel.send(embed = discord.Embed(title = "Convert To Text", description = String[:2048], color = 0x5ADF44))
-        except ValueError:
-            await SendWait(ctx, "Something went wrong. Check if the binary has any errors.")
+            except: await ctx.message.channel.send(embed = discord.Embed(title = "Convert To Text", description = String[:2048], color = 0x5ADF44))
+        except ValueError: await SendWait(ctx, "Something went wrong. Check if the binary has any errors.")
 
     @commands.command(aliases=["kanye", "kanyewest"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def ShitByKanye(self, ctx):
-        KanyeSays = requests.get(
-            "https://api.kanye.rest", headers={"Accept": "application/json"}
-        ).json()
-        await ctx.message.channel.send(
-            embed=discord.Embed(
-                title="Kanye Says Alot, Here's One",
-                description=KanyeSays["quote"],
-                color=0x53099B,
-            )
-        )
+        KanyeSays = requests.get("https://api.kanye.rest", headers={"Accept": "application/json"}).json()
+        await ctx.message.channel.send(embed=discord.Embed(title="Kanye Says Alot, Here's One", description=KanyeSays["quote"], color=0x53099B))
+
+    @commands.command(name="insult")
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def RandomInsult(self, ctx):
+        InsultGot = requests.get("https://evilinsult.com/generate_insult.php?lang=en&type=json", headers={"Accept": "application/json"}).json()
+        await ctx.message.channel.send(embed=discord.Embed( title="Insult", description=InsultGot["insult"], color=0xBD2DB8))
+
+    @commands.command(name="dadjoke")
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def KillMe(self, ctx):
+        DadJoke = requests.get("https://icanhazdadjoke.com/", headers={"Accept": "application/json"}).json()
+        await ctx.message.channel.send(embed=discord.Embed(title="Dad Joke", description=DadJoke["joke"], color=0x99807E))
+
+    @commands.command(name="joke")
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def Joke(self, ctx):
+        Joke = requests.get("https://sv443.net/jokeapi/v2/joke/Programming,Miscellaneous,Spooky,Christmas?blacklistFlags=nsfw,religious,political,racist,sexist",headers={"Accept": "application/json"}).json()
+        if Joke["type"] == "twopart": await ctx.message.channel.send(embed=discord.Embed(title=f'Joke ({Joke["category"]})', description=f'{Joke["setup"]}\n\n||{Joke["delivery"]}||', color=0xEB88DA))
+        else: await ctx.message.channel.send(embed=discord.Embed(title=f'Joke ({Joke["category"]})', description=Joke["joke"], color=0xEB88DA))
+
+    @commands.command(name="darkjoke")
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def DarkJoke(self, ctx):
+        DarkJoke = requests.get("https://sv443.net/jokeapi/v2/joke/Dark", headers={"Accept": "application/json"}).json()
+        if DarkJoke["type"] == "twopart": await ctx.message.channel.send(embed=discord.Embed(title=f'Joke ({DarkJoke["category"]})', description=f'{DarkJoke["setup"]}\n\n||{DarkJoke["delivery"]}||', color=0xD8DCCD))
+        else: await ctx.message.channel.send(embed=discord.Embed(title=f'Joke ({DarkJoke["category"]})', description=DarkJoke["joke"], color=0xD8DCCD))
+
+    @commands.command(name="pun")
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def Pun(self, ctx):
+        Pun = requests.get("https://sv443.net/jokeapi/v2/joke/Pun", headers={"Accept": "application/json"}).json()
+        if Pun["type"] == "twopart":await ctx.message.channel.send(embed=discord.Embed(title="Pun", description=f'{Pun["setup"]}\n\n||{Pun["delivery"]}||', color=0x05D111))
+        else: await ctx.message.channel.send(embed=discord.Embed(title="Pun", description=Pun["joke"], color=0x05D111))
 
     #? @commands.command(name="qotd")
     #? @commands.check(ChVote)
@@ -154,103 +163,6 @@ class WrittenStuff(commands.Cog):
     #?             await SendWait(ctx, "Removed from QOTD daily successfully")
     #?             return
     #?     await SendWait(ctx, "You are already not in QOTD daily")
-
-    @commands.command(name="insult")
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def RandomInsult(self, ctx):
-        InsultGot = requests.get(
-            "https://evilinsult.com/generate_insult.php?lang=en&type=json",
-            headers={"Accept": "application/json"},
-        )
-        InsultJSON = InsultGot.json()
-        await ctx.message.channel.send(
-            embed=discord.Embed(
-                title="Insult", description=InsultJSON["insult"], color=0xBD2DB8
-            )
-        )
-
-    @commands.command(name="dadjoke")
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def KillMe(self, ctx):
-        DadJoke = requests.get(
-            "https://icanhazdadjoke.com/", headers={"Accept": "application/json"}
-        ).json()
-        await ctx.message.channel.send(
-            embed=discord.Embed(
-                title="Dad Joke", description=DadJoke["joke"], color=0x99807E
-            )
-        )
-
-    @commands.command(name="joke")
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def Joke(self, ctx):
-        Joke = requests.get(
-            "https://sv443.net/jokeapi/v2/joke/Programming,Miscellaneous,Spooky,Christmas?blacklistFlags=nsfw,religious,political,racist,sexist",
-            headers={"Accept": "application/json"},
-        ).json()
-        if Joke["type"] == "twopart":
-            await ctx.message.channel.send(
-                embed=discord.Embed(
-                    title=f'Joke ({Joke["category"]})',
-                    description=f'{Joke["setup"]}\n\n||{Joke["delivery"]}||',
-                    color=0xEB88DA,
-                )
-            )
-        else:
-            await ctx.message.channel.send(
-                embed=discord.Embed(
-                    title=f'Joke ({Joke["category"]})',
-                    description=Joke["joke"],
-                    color=0xEB88DA,
-                )
-            )
-
-    @commands.command(name="darkjoke")
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def DarkJoke(self, ctx):
-        DarkJoke = requests.get(
-            "https://sv443.net/jokeapi/v2/joke/Dark",
-            headers={"Accept": "application/json"},
-        ).json()
-        if DarkJoke["type"] == "twopart":
-            await ctx.message.channel.send(
-                embed=discord.Embed(
-                    title=f'Joke ({DarkJoke["category"]})',
-                    description=f'{DarkJoke["setup"]}\n\n||{DarkJoke["delivery"]}||',
-                    color=0xD8DCCD,
-                )
-            )
-        else:
-            await ctx.message.channel.send(
-                embed=discord.Embed(
-                    title=f'Joke ({DarkJoke["category"]})',
-                    description=DarkJoke["joke"],
-                    color=0xD8DCCD,
-                )
-            )
-
-    @commands.command(name="pun")
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def Pun(self, ctx):
-        Pun = requests.get(
-            "https://sv443.net/jokeapi/v2/joke/Pun",
-            headers={"Accept": "application/json"},
-        ).json()
-        if Pun["type"] == "twopart":
-            await ctx.message.channel.send(
-                embed=discord.Embed(
-                    title="Pun",
-                    description=f'{Pun["setup"]}\n\n||{Pun["delivery"]}||',
-                    color=0x05D111,
-                )
-            )
-        else:
-            await ctx.message.channel.send(
-                embed=discord.Embed(
-                    title="Pun", description=Pun["joke"], color=0x05D111
-                )
-            )
-
 
 def setup(DClient):
     DClient.add_cog(WrittenStuff(DClient))

@@ -1,4 +1,4 @@
-Whats new in 2.7.3a:
-FIXES More Bugs Caught
-IMPROVED Speed of zreddit surf
-GENERAL_IMPROVEMENTS Rewriting Stuff
+Whats new in 2.7.4a:
+NEW You can now use r/ for the reddit commands. (e.g both 'r/memes' and 'memes' would work fine)
+BUG FIXES ..
+INTERNAL_IMPROVEMENTS Complete Rewrite

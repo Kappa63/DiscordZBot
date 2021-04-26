@@ -93,6 +93,8 @@ def MakeCPTDEmbed():
 class MainEvents(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
+        self.StaffChannel = DClient.get_channel(795080325020909598)
+        self.Me = DClient.get_user(443986051371892746)
         self.SendAPODDaily.start()
         #? self.SendQOTDDaily.start()
         self.SendCPTDDaily.start()
@@ -102,65 +104,34 @@ class MainEvents(commands.Cog):
         StateFile = open("OpenState.txt")
         State = StateFile.readlines()
         StateFile.close()
-        if "".join(State) == "Up":
-            await self.DClient.change_presence(
-                activity=discord.Game(f"zhelp || {random.choice(Doing)}")
-            )
-        else:
-            await self.DClient.change_presence(status=discord.Status.invisible)
+        if "".join(State) == "Up": await self.DClient.change_presence(activity=discord.Game(f"zhelp || {random.choice(Doing)}"))
+        else: await self.DClient.change_presence(status=discord.Status.invisible)
         print(f"Online in {len(self.DClient.guilds)}...")
-        StaffChannel = self.DClient.get_channel(795080325020909598)
-        await StaffChannel.send(f"Back Online In {len(self.DClient.guilds)}...")
+        await self.StaffChannel.send(f"Back Online In {len(self.DClient.guilds)}...")
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-        if isinstance(error, commands.CommandOnCooldown):
-            await SendWait(
-                ctx,
-                f'Hold the spam. Wait atleast {FormatTime(round(error.retry_after, 2))}',
-            )
-        elif isinstance(error, IsAdmin):
-            await SendWait(ctx, "Non-admins are not allowed to use this command")
-        elif isinstance(error, IsVote):
-            await ctx.message.channel.send(embed=ErrorEmbeds("Vote"))
-        elif isinstance(error, IsPatreon):
-            await ctx.message.channel.send(embed=ErrorEmbeds("Patreon"))
-        elif isinstance(error, IsPatreonT2):
-            await ctx.message.channel.send(embed=ErrorEmbeds("PatreonT2"))
-        elif isinstance(error, IsPatreonT3):
-            await ctx.message.channel.send(embed=ErrorEmbeds("PatreonT3"))
-        elif isinstance(error, IsPatreonT4):
-            await ctx.message.channel.send(embed=ErrorEmbeds("PatreonT4"))
-        elif isinstance(error, IsSetup):
-            await SendWait(
-                ctx,
-                'Please setup your server first (with "zsetup")! Check all server commands (with "zhelp server")',
-            )
-        elif isinstance(error, IsNSFW):
-            await SendWait(ctx, "This can only be used in NSFW channels.")
-        elif isinstance(error, IsMultiredditLimit):
-            await SendWait(
-                ctx,
-                "You can no longer have this many Multireddits. Remove some to comply with your limit. Until then you cannot use your Multireddits.",
-            )
-        elif (
-            isinstance(error, commands.CommandNotFound)
-            or isinstance(error, Ignore)
-            or isinstance(error, IsBot)
-        ):
-            return
+        if isinstance(error, commands.CommandOnCooldown): await SendWait(ctx, f'Hold the spam. Wait atleast {FormatTime(round(error.retry_after, 2))}')
+        elif isinstance(error, IsAdmin): await SendWait(ctx, "Non-admins are not allowed to use this command")
+        elif isinstance(error, IsVote): await ctx.message.channel.send(embed=ErrorEmbeds("Vote"))
+        elif isinstance(error, IsPatreon): await ctx.message.channel.send(embed=ErrorEmbeds("Patreon"))
+        elif isinstance(error, IsPatreonT2): await ctx.message.channel.send(embed=ErrorEmbeds("PatreonT2"))
+        elif isinstance(error, IsPatreonT3): await ctx.message.channel.send(embed=ErrorEmbeds("PatreonT3"))
+        elif isinstance(error, IsPatreonT4): await ctx.message.channel.send(embed=ErrorEmbeds("PatreonT4"))
+        elif isinstance(error, IsSetup): await SendWait(ctx, 'Please setup your server first (with "zsetup")! Check all server commands (with "zhelp server")')
+        elif isinstance(error, IsNSFW): await SendWait(ctx, "This can only be used in NSFW channels.")
+        elif isinstance(error, IsMultiredditLimit): await SendWait(ctx, "You can no longer have this many Multireddits. Remove some to comply with your limit. Until then you cannot use your Multireddits.")
+        elif isinstance(error, (commands.CommandNotFound, Ignore, IsBot, commands.CommandInvokeError)): return
         else:
-            StaffChannel = self.DClient.get_channel(795080325020909598)
-            Me = self.DClient.get_user(443986051371892746)
-            await StaffChannel.send(Me.mention)
-            await StaffChannel.send(f'In {ctx.command} ({ctx.message.content}): {error}')
+            await self.StaffChannel.send(self.Me.mention)
+            await self.StaffChannel.send(f'In {ctx.command} ({ctx.message.content}): {error} ({type(error)})')
             raise error
 
     @tasks.loop(seconds=TimeTillMidnight())
     async def SendAPODDaily(self):
         print("Sending APOD...")
-        StaffChannel = self.DClient.get_channel(795080325020909598)
-        await StaffChannel.send("Sending APOD...")
+        #- StaffChannel = self.DClient.get_channel(795080325020909598)
+        await self.StaffChannel.send("Sending APOD...")
         TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
         APODEm = MakeAPODEmbed()
         APODUsers = AQd.find({"Type": "APOD"})
@@ -175,26 +146,16 @@ class MainEvents(commands.Cog):
                     Num = 0
                     for TempUser in APODTempUsers:
                         Num += 1
-                        if Num > TierLimit:
-                            ToBeRemoved.append(
-                                TempUser
-                            ) if TempUser not in ToBeRemoved else ToBeRemoved
+                        if Num > TierLimit and TempUser not in ToBeRemoved: ToBeRemoved.append(TempUser) 
                 Channel = self.DClient.get_channel(ChannelID)
                 if User not in ToBeRemoved:
-                    if Channel is None:
-                        AQd.delete_one(User)
-                    else:
-                        await Channel.send(embed=APODEm)
+                    if Channel is None: AQd.delete_one(User)
+                    else: await Channel.send(embed=APODEm)
                 else:
-                    await Channel.send(
-                        "NO LONGER APPLICABLE TO THIS MANY CHANNELS. Daily APOD stopped. :pensive: You can resign up for patreon, check zpatreon"
-                    )
+                    await Channel.send("NO LONGER APPLICABLE TO THIS MANY CHANNELS. Daily APOD stopped. :pensive: You can sign up for donator, check zdonate")
                     AQd.delete_one(User)
-            else:
-                await Channel.send(
-                    "NO LONGER A PATREON. Daily APOD stopped. :pensive: You can resign up for patreon, check zpatreon"
-                )
-        await StaffChannel.send(f"Next APOD in {TimeTillMidnight()}s...")
+            else: await Channel.send("NO LONGER A Donator. Daily APOD stopped. :pensive: You can sign up for donator, check zdonate")
+        await self.StaffChannel.send(f"Next APOD in {TimeTillMidnight()}s...")
         raise ValueError
         self.SendAPODDaily.change_interval(seconds=TimeTillMidnight())
 
@@ -202,15 +163,15 @@ class MainEvents(commands.Cog):
     async def RegulateBeforeAPODLoop(self):
         await self.DClient.wait_until_ready()
         print("APOD Regulating...")
-        StaffChannel = self.DClient.get_channel(795080325020909598)
-        await StaffChannel.send(f"APOD Regulating for {TimeTillMidnight()}s...")
+        #- StaffChannel = self.DClient.get_channel(795080325020909598)
+        await self.StaffChannel.send(f"APOD Regulating for {TimeTillMidnight()}s...")
         await asyncio.sleep(TimeTillMidnight())
 
     @tasks.loop(seconds=TimeTillMidnight())
     async def SendCPTDDaily(self):
         print("Sending CPTD...")
-        StaffChannel = self.DClient.get_channel(795080325020909598)
-        await StaffChannel.send("Sending CPTD...")
+        #- StaffChannel = self.DClient.get_channel(795080325020909598)
+        await self.StaffChannel.send("Sending CPTD...")
         TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
         CPTDEm = MakeCPTDEmbed()
         CPTDUsers = AQd.find({"Type": "CPTD"})
@@ -225,26 +186,16 @@ class MainEvents(commands.Cog):
                     Num = 0
                     for TempUser in CPTDTempUsers:
                         Num += 1
-                        if Num > TierLimit:
-                            ToBeRemoved.append(
-                                TempUser
-                            ) if TempUser not in ToBeRemoved else ToBeRemoved
+                        if Num > TierLimit and TempUser not in ToBeRemoved: ToBeRemoved.append(TempUser) 
                 Channel = self.DClient.get_channel(ChannelID)
                 if User not in ToBeRemoved:
-                    if Channel is None:
-                        AQd.delete_one(User)
-                    else:
-                        await Channel.send(embed=CPTDEm)
+                    if Channel is None: AQd.delete_one(User)
+                    else: await Channel.send(embed=CPTDEm)
                 else:
-                    await Channel.send(
-                        "NO LONGER APPLICABLE TO THIS MANY CHANNELS. Daily CPTD stopped. :pensive: You can resign up for patreon, check zpatreon"
-                    )
+                    await Channel.send("NO LONGER APPLICABLE TO THIS MANY CHANNELS. Daily CPTD stopped. :pensive: You can sign up for donator, check zdonate")
                     AQd.delete_one(User)
-            else:
-                await Channel.send(
-                    "NO LONGER A PATREON. Daily CPTD stopped. :pensive: You can resign up for patreon, check zpatreon"
-                )
-        await StaffChannel.send(f"Next CPTD in {TimeTillMidnight()}s...")
+            else: await Channel.send("NO LONGER A Donator. Daily CPTD stopped. :pensive: You can sign up for donator, check zdonate")
+        await self.StaffChannel.send(f"Next CPTD in {TimeTillMidnight()}s...")
         raise ValueError
         self.SendCPTDDaily.change_interval(seconds=TimeTillMidnight())
 
@@ -252,15 +203,15 @@ class MainEvents(commands.Cog):
     async def RegulateBeforeCPTDLoop(self):
         await self.DClient.wait_until_ready()
         print("CPTD Regulating...")
-        StaffChannel = self.DClient.get_channel(795080325020909598)
-        await StaffChannel.send(f"CPTD Regulating for {TimeTillMidnight()}s...")
+        #- StaffChannel = self.DClient.get_channel(795080325020909598)
+        await self.StaffChannel.send(f"CPTD Regulating for {TimeTillMidnight()}s...")
         await asyncio.sleep(TimeTillMidnight())
 
     # @tasks.loop(seconds=TimeTillMidnight())
     # async def SendQOTDDaily(self):
     #     print("Sending QOTD...")
-    #     StaffChannel = self.DClient.get_channel(795080325020909598)
-    #     await StaffChannel.send("Sending QOTD...")
+    #     # StaffChannel = self.DClient.get_channel(795080325020909598)
+    #     await self.StaffChannel.send("Sending QOTD...")
     #     TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
     #     QOTDEm = MakeQOTDEmbed()
     #     QOTDUsers = AQd.find({"Type": "QOTD"})
@@ -294,7 +245,7 @@ class MainEvents(commands.Cog):
     #             await Channel.send(
     #                 "NO LONGER A PATREON. Daily QOTD stopped. :pensive: You can resign up for patreon, check zpatreon"
     #             )
-    #     await StaffChannel.send(f"Next QOTD in {TimeTillMidnight()}s...")
+    #     await self.StaffChannel.send(f"Next QOTD in {TimeTillMidnight()}s...")
     #     raise ValueError
     #     self.SendQOTDDaily.change_interval(seconds=TimeTillMidnight())
 
@@ -302,8 +253,8 @@ class MainEvents(commands.Cog):
     # async def RegulateBeforeQOTDLoop(self):
     #     await self.DClient.wait_until_ready()
     #     print("QOTD Regulating...")
-    #     StaffChannel = self.DClient.get_channel(795080325020909598)
-    #     await StaffChannel.send(f"QOTD Regulating for {TimeTillMidnight()}s...")
+    #     # StaffChannel = self.DClient.get_channel(795080325020909598)
+    #     await self.StaffChannel.send(f"QOTD Regulating for {TimeTillMidnight()}s...")
     #     await asyncio.sleep(TimeTillMidnight())
 
 

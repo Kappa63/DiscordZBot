@@ -4,14 +4,8 @@ from Setup import ChDev, SendWait, AQd
 import random
 import requests
 
-Doing = [
-    "Playing with the laws of physics",
-    "Torture",
-    "Just Vibin'",
-    "With my toes",
-    "Chess with god",
-    "With Leona",
-]
+Doing = ["Playing with the laws of physics", "Torture", "Just Vibin'", "With my toes",
+         "Chess with god", "With Leona"]
 
 class OnlyMods(commands.Cog):
     def __init__(self, DClient):
@@ -31,12 +25,9 @@ class OnlyMods(commands.Cog):
     async def Embedder(self, ctx, *args):
         args = (" ".join(args)).split("_")
         for i in args:
-            if i[:2].lower() == "-t":
-                Title = i[3:]
-            if i[:2].lower() == "-d":
-                Desc = i[3:]
-            if i[:2].lower() == "-c":
-                Color = 0xff0000 if i[3:].lower() == "red" else 0x3a62d8 if i[3:].lower() == "blue" else 0xc4c4c4
+            if i[:2].lower() == "-t": Title = i[3:]
+            if i[:2].lower() == "-d": Desc = i[3:]
+            if i[:2].lower() == "-c": Color = 0xff0000 if i[3:].lower() == "red" else 0x3a62d8 if i[3:].lower() == "blue" else 0xc4c4c4
         await ctx.message.delete()
         await ctx.message.channel.send(embed=discord.Embed(title=Title, description = Desc, color = Color))
 
@@ -52,10 +43,7 @@ class OnlyMods(commands.Cog):
     @commands.command(name="makeup")
     @commands.check(ChDev)
     async def MakeBotOn(self, ctx):
-        await self.DClient.change_presence(
-            status=discord.Status.online,
-            activity=discord.Game(f"zhelp || {random.choice(Doing)}"),
-        )
+        await self.DClient.change_presence(status=discord.Status.online, activity=discord.Game(f"zhelp || {random.choice(Doing)}"))
         StateFile = open("OpenState.txt", "w+")
         StateFile.write("Up")
         StateFile.close()

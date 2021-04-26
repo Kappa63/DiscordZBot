@@ -1,6 +1,5 @@
 from discord.ext import commands
 import discord
-import FuncMon
 from Setup import ColT, ChAdmin, ChSer, RemoveExtra, SendWait, ChSerGuild, ChDev
 import asyncio
 import re
@@ -66,8 +65,7 @@ class MongoDB(commands.Cog):
         LEm = discord.Embed(title="Server List",description="Words/Phrases being tracked",color=0xF59542)
         Get = ColT.find({"IDg":str(ctx.guild.id)})[0]
         Stuff = [i for i in Get if i not in ["_id", "IDg"]]
-        for i in Stuff:
-            LEm.add_field(name=i, value="\u200b", inline=True)
+        for i in Stuff: LEm.add_field(name=i, value="\u200b", inline=True)
         await ctx.message.channel.send(embed=LEm)
 
     @commands.command(name="clear")
@@ -75,49 +73,23 @@ class MongoDB(commands.Cog):
     @commands.check(ChSer)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def ReAll(self, ctx):
-        def ChCHEm(RcM, RuS):
-            return (
-                RuS.bot == False
-                and RcM.message == ReSConF
-                and str(RcM.emoji) in ["✅", "❌"]
-            )
+        ChCHEm = lambda RcM, RuS: not RuS.bot and RcM.message == ReSConF and str(RcM.emoji) in ["✅", "❌"]
 
-        ResEmF = discord.Embed(
-            title="Clear ALL server data?",
-            description="This is ```IRREVERSIBLE```",
-            color=0xF59542,
-        )
+        ResEmF = discord.Embed(title="Clear ALL server data?", description="This is ```IRREVERSIBLE```", color=0xF59542)
         ResEmF.set_footer(text="*The Clear request timesout in 10secs.*")
         ReSConF = await ctx.message.channel.send(embed=ResEmF)
         await ReSConF.add_reaction("❌")
         await ReSConF.add_reaction("✅")
         try:
-            ReaEm = await self.DClient.wait_for(
-                "reaction_add", check=ChCHEm, timeout=10
-            )
+            ReaEm = await self.DClient.wait_for("reaction_add", check=ChCHEm, timeout=10)
             await ReSConF.remove_reaction("❌", self.DClient.user)
             await ReSConF.remove_reaction("✅", self.DClient.user)
-            if ReaEm[0].emoji == "❌":
-                await ReSConF.edit(
-                    embed=discord.Embed(
-                        title="Cancelled :thumbsup:",
-                        description="Nothing was removed",
-                        color=0xF59542,
-                    )
-                )
-            elif ReaEm[0].emoji == "✅":
-                ColT.delete_one({"IDg":str(ctx.guild.id)})
-
+            if ReaEm[0].emoji == "❌": await ReSConF.edit(embed=discord.Embed(title="Cancelled :thumbsup:", description="Nothing was removed", color=0xF59542))
+            elif ReaEm[0].emoji == "✅": ColT.delete_one({"IDg":str(ctx.guild.id)})
         except asyncio.TimeoutError:
             await ReSConF.remove_reaction("❌", self.DClient.user)
             await ReSConF.remove_reaction("✅", self.DClient.user)
-            await ReSConF.edit(
-                embed=discord.Embed(
-                    title="Timeout :alarm_clock:",
-                    description="Nothing was removed",
-                    color=0xF59542,
-                )
-            )
+            await ReSConF.edit(embed=discord.Embed(title="Timeout :alarm_clock:", description="Nothing was removed", color=0xF59542))
 
     @commands.command(name="stats")
     @commands.check(ChSer)
@@ -128,17 +100,13 @@ class MongoDB(commands.Cog):
         Mentions = ctx.message.mentions
         args = list(args)
         MentionedUser = False
-        if len(Mentions) > 1:
-            await SendWait(ctx, "Too Many Mentions")
-            return
+        if len(Mentions) > 1: await SendWait(ctx, "Too Many Mentions"); return
         if Mentions:
             Mentioned = Mentions[0]
             if Mentioned.mention[2] == "!":
                 args.remove(Mentioned.mention)
                 MentionedUser = True
-            else:
-                await SendWait(ctx, "Mentioned User Is A Bot")
-                return
+            else: await SendWait(ctx, "Mentioned User Is A Bot"); return
         if not args:
             Stuff = [i for i in Get if i not in ["_id", "IDg"]]
             Person = Mentioned if MentionedUser else ctx.author
@@ -153,8 +121,7 @@ class MongoDB(commands.Cog):
                 IEm = discord.Embed(title=Person.display_name, description="All Stats", color=0x3252A8)
                 IEm.add_field(name=Word, value=f"{Get[Word][str(Person.id)]:,}", inline=True)
                 await ctx.message.channel.send(embed=IEm)
-            else:
-                await SendWait(ctx, "Word Doesn't Exist")
+            else: await SendWait(ctx, "Word Doesn't Exist")
 
     @commands.command(name="top")
     @commands.check(ChSer)
@@ -175,14 +142,10 @@ class MongoDB(commands.Cog):
                     Name = Person.nick if Person.nick else Person.name
                     IEm.add_field(name=f"**`{x}. {Name}:`** {Word} = {People[i]:,}", value="\u200b", inline=False)
                 await ctx.message.channel.send(embed=IEm)
-            else:
-                await SendWait(ctx, "Word Doesn't Exist")
+            else: await SendWait(ctx, "Word Doesn't Exist")
         else:
             Stuff = [i for i in Get if i not in ["_id", "IDg"]]
-            All = []
-            for i in Stuff:
-                for k,v in Get[i].items():
-                    All.append({i:{k:v}}) 
+            All = [{i:{k:v}} for i in Stuff for k,v in Get[i].items()]
             Tops = sorted(All, key=lambda x: list(list(x.values())[0].values())[0], reverse = True)[:3]
             IEm = discord.Embed(title=ctx.guild.name, description="Leaderboard", color=0x3252A8)
             x = 0
@@ -208,8 +171,7 @@ class MongoDB(commands.Cog):
                 IEm = discord.Embed(title=ctx.guild.name, description=f"Total times {Word} was repeated", color=0x3252A8)
                 IEm.add_field(name=Word, value=f"{sum(Get[Word].values()):,}", inline=True)
                 await ctx.message.channel.send(embed=IEm)
-            else:
-                await SendWait(ctx, "Word Doesn't Exist")
+            else: await SendWait(ctx, "Word Doesn't Exist")
         else:
             Stuff = [i for i in Get if i not in ["_id", "IDg"]]
             IEm = discord.Embed(title=ctx.guild.name, description="Total times repeated", color=0x3252A8)
@@ -264,10 +226,8 @@ class MongoDB(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
-        try:
-            ColT.delete_one({"IDg":str(guild.id)})
-        except:
-            pass
+        try: ColT.delete_one({"IDg":str(guild.id)})
+        except: pass
 
 def setup(DClient):
     DClient.add_cog(MongoDB(DClient))

@@ -20,12 +20,9 @@ class Images(commands.Cog):
     @commands.command(aliases=["kitten", "kitty", "cat"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RandomCat(self, ctx):
-        CatGot = requests.get(
-            "https://aws.random.cat/meow", headers={"Accept": "application/json"}
-        )
-        CatJSON = CatGot.json()
+        CatGot = requests.get("https://aws.random.cat/meow", headers={"Accept": "application/json"}).json()
         CEm = discord.Embed(title="Meow", color=0xA3D7C1)
-        CEm.set_image(url=CatJSON["file"])
+        CEm.set_image(url=CatGot["file"])
         await ctx.message.channel.send(embed=CEm)
 
     @commands.command(aliases=["pog","poggers", "pogger", "pogchamp"])
@@ -37,23 +34,16 @@ class Images(commands.Cog):
     @commands.command(aliases=["doggo", "dog", "pupper", "puppy"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RandomDoggo(self, ctx):
-        DoggoGot = requests.get(
-            "https://random.dog/woof.json", headers={"Accept": "application/json"}
-        )
-        DoggoJSON = DoggoGot.json()
+        DoggoGot = requests.get("https://random.dog/woof.json", headers={"Accept": "application/json"}).json()
         DEm = discord.Embed(title="Woof Woof", color=0xFF3326)
-        DEm.set_image(url=DoggoJSON["url"])
+        DEm.set_image(url=DoggoGot["url"])
         await ctx.message.channel.send(embed=DEm)
 
-    @commands.command(
-        aliases=["thispersondoesnotexist", "thispersondoesntexist", "tpde"]
-    )
+    @commands.command(aliases=["thispersondoesnotexist", "thispersondoesntexist", "tpde"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetAnImaginedPerson(self, ctx):
         PEm = discord.Embed(title="This Person Does NOT Exist.", color=0x753684)
-        GetTpde = requests.get(
-            "https://thispersondoesnotexist.com/image", allow_redirects=True
-        )
+        GetTpde = requests.get("https://thispersondoesnotexist.com/image", allow_redirects=True)
         This = open("Tpde.png", "wb").write(GetTpde.content)
         TpdeImg = discord.File("Tpde.png")
         PEm.set_image(url="attachment://Tpde.png")
@@ -63,21 +53,15 @@ class Images(commands.Cog):
     @commands.command(name="fox")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RandomFox(self, ctx):
-        FoxGot = requests.get(
-            "https://randomfox.ca/floof/", headers={"Accept": "application/json"}
-        )
-        FoxJSON = FoxGot.json()
+        FoxGot = requests.get("https://randomfox.ca/floof/", headers={"Accept": "application/json"}).json()
         FEm = discord.Embed(title="What does the fox say?", color=0x9DAA45)
-        FEm.set_image(url=FoxJSON["image"])
+        FEm.set_image(url=FoxGot["image"])
         await ctx.message.channel.send(embed=FEm)
 
     @commands.command(aliases=["food", "dishes", "dish"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RandomDishes(self, ctx):
-        Hungry = requests.get(
-            "https://foodish-api.herokuapp.com/api/",
-            headers={"Accept": "application/json"},
-        ).json()
+        Hungry = requests.get("https://foodish-api.herokuapp.com/api/", headers={"Accept": "application/json"}).json()
         FEm = discord.Embed(title="Hungry?", color=0xDE8761)
         FEm.set_image(url=Hungry["image"])
         await ctx.message.channel.send(embed=FEm)
@@ -85,15 +69,9 @@ class Images(commands.Cog):
     @commands.command(aliases=["taylor", "tswift", "taylorswift"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RandomDishes(self, ctx):
-        TaylorImage = requests.get(
-            "https://api.taylor.rest/image", headers={"Accept": "application/json"}
-        ).json()
-        TaylorQuote = requests.get(
-            "https://api.taylor.rest/", headers={"Accept": "application/json"}
-        ).json()
-        TEm = discord.Embed(
-            title="Taylor Swift", description=TaylorQuote["quote"], color=0xD29EC1
-        )
+        TaylorImage = requests.get("https://api.taylor.rest/image", headers={"Accept": "application/json"}).json()
+        TaylorQuote = requests.get("https://api.taylor.rest/", headers={"Accept": "application/json"}).json()
+        TEm = discord.Embed(title="Taylor Swift", description=TaylorQuote["quote"], color=0xD29EC1)
         TEm.set_image(url=TaylorImage["url"])
         await ctx.message.channel.send(embed=TEm)
 
@@ -104,38 +82,26 @@ class Images(commands.Cog):
             MesS = MSg.content.lower()
             RsT = False
             try:
-                if int(MSg.content):
-                    RsT = True
+                if int(MSg.content): RsT = True
             except ValueError:
-                if (MesS == "cancel") or (MesS == "c"):
-                    RsT = True
-            return (
-                MSg.guild.id == ctx.guild.id
-                and MSg.channel.id == ctx.channel.id
-                and RsT
-            )
+                if MesS in ["cancel", "c"]: RsT = True
+            return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
 
-        if (args and ctx.message.attachments):
-            await SendWait(ctx, "No or too many attachments :woozy_face:")
-            return
+        if args and ctx.message.attachments: await SendWait(ctx, "No or too many attachments :woozy_face:"); return
         PDFattach = []
-        if args:
-            PDFattach.append("".join(args))
+        if args: PDFattach.append("".join(args))
         if ctx.message.attachments:
-            for AtT in ctx.message.attachments:
-                PDFattach.append(AtT.url)
+            for AtT in ctx.message.attachments: PDFattach.append(AtT.url)
         GetPDF = PDFattach[0]
         try:
             ChPDF = requests.head(GetPDF).headers.get("content-type").split("/")[1]
-            if ChPDF != "pdf":
-                await SendWait(ctx, "Not a PDF :woozy_face:")
-                return
+            if ChPDF != "pdf": await SendWait(ctx, "Not a PDF :woozy_face:"); return
             RanLetters = "ioewsahkzcldnpq"
             PDFname = "".join((random.choice(RanLetters) for i in range(10)))
             await SendWait(ctx, ":printer: Converting...")
             PDFcontent = requests.get(GetPDF, allow_redirects=True)
             open(f"{PDFname}.pdf", "wb").write(PDFcontent.content)
-            PDFimages = convert_from_path(f"{PDFname}.pdf",500,last_page=40,)
+            PDFimages = convert_from_path(f"{PDFname}.pdf", 500, last_page=40)
             PDFcnvrt = []
             PageNum = 1
             TotalPages = len(PDFimages)
@@ -151,65 +117,46 @@ class Images(commands.Cog):
                 PDFcnvrt.append(PEm)
                 PageNum += 1
             await Navigator(ctx, PDFcnvrt)
-        except requests.exceptions.MissingSchema:
-            await SendWait(ctx, "Not a PDF :woozy_face:")
+        except requests.exceptions.MissingSchema: await SendWait(ctx, "Not a PDF :woozy_face:")
 
     @commands.group(aliases=["fry", "deepfry"], invoke_without_command=True)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def ImageFrier(self, ctx, *args):
-        if args or ctx.message.attachments:
-            Attached = []
-            if args:
-                URLargs = list(args)
-                try:
-                    for url in URLargs:
-                        Attached.append(url)
-                except TypeError:
-                    pass
-            if len(ctx.message.attachments) > 0:
-                for AtT in ctx.message.attachments:
-                    Attached.append(AtT.url)
-            Files = []
-            C = 0
-            for File in Attached:
-                try:
-                    if (
-                        requests.head(File).headers.get("content-type").split("/")[0]
-                        == "image"
-                    ):
-                        C += 1
-                        GetURLimg = requests.get(File, allow_redirects=True)
-                        open("NsRndo.jpg", "wb").write(GetURLimg.content)
-                        Img = Image.open("NsRndo.jpg")
-                        Img = await deeppyer.deepfry(Img, flares=False)
-                        Img.save("NsRndo.jpg")
-                        Files.append(discord.File("NsRndo.jpg"))
-                        await ctx.message.channel.send(files=Files)
-                        Files.pop(0)
-                        os.remove("NsRndo.jpg")
-                    else:
-                        await SendWait(
-                            ctx, f"File({C}) isnt a valid image type :sweat:"
-                        )
-                except requests.exceptions.MissingSchema:
-                    pass
-        else:
-            await SendWait(ctx, "No image(s) or link(s) were attached :woozy_face:")
+        if not args and not ctx.message.attachments: await SendWait(ctx, "No image(s) or link(s) were attached :woozy_face:"); return 
+        Attached = []
+        if args:
+            URLargs = list(args)
+            try:
+                for url in URLargs: Attached.append(url)
+            except TypeError: pass
+        for AtT in ctx.message.attachments: Attached.append(AtT.url)
+        Files = []
+        C = 0
+        for File in Attached:
+            try:
+                if requests.head(File).headers.get("content-type").split("/")[0] == "image":
+                    C += 1
+                    GetURLimg = requests.get(File, allow_redirects=True)
+                    open("NsRndo.jpg", "wb").write(GetURLimg.content)
+                    Img = Image.open("NsRndo.jpg")
+                    Img = await deeppyer.deepfry(Img, flares=False)
+                    Img.save("NsRndo.jpg")
+                    Files.append(discord.File("NsRndo.jpg"))
+                    await ctx.message.channel.send(files=Files)
+                    Files.pop(0)
+                    os.remove("NsRndo.jpg")
+                else: await SendWait(ctx, f"File({C}) isnt a valid image type :sweat:")
+            except requests.exceptions.MissingSchema: pass
 
     @ImageFrier.command(name="profile")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def ProfileFrier(self, ctx):
-        if ctx.message.mentions:
-            Profile = str((ctx.message.mentions[0]).avatar_url)
-        else:
-            Profile = str(ctx.author.avatar_url)
+        if ctx.message.mentions: Profile = str((ctx.message.mentions[0]).avatar_url)
+        else: Profile = str(ctx.author.avatar_url)
         try:
             Files = []
             C = 0
-            if (
-                requests.head(Profile).headers.get("content-type").split("/")[0]
-                == "image"
-            ):
+            if requests.head(Profile).headers.get("content-type").split("/")[0] == "image":
                 C += 1
                 GetURLimg = requests.get(Profile, allow_redirects=True)
                 open("NsRndo.jpg", "wb").write(GetURLimg.content)
@@ -220,56 +167,44 @@ class Images(commands.Cog):
                 await ctx.message.channel.send(files=Files)
                 Files.pop(0)
                 os.remove("NsRndo.jpg")
-            else:
-                await SendWait(ctx, f"File({C}) isnt a valid image type :sweat:")
-        except requests.exceptions.MissingSchema:
-            pass
+            else: await SendWait(ctx, f"File({C}) isnt a valid image type :sweat:")
+        except requests.exceptions.MissingSchema: pass
 
     @commands.group(aliases=["qr", "qrcode"])
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def QRCodes(self,ctx):
-        pass
+    async def QRCodes(self,ctx): pass
 
     @QRCodes.command(aliases=["make", "create"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def QRmake(self, ctx, *args):
-        if args or ctx.message.attachments:
-            Stuff = []
-            Files = []
-            if args: Stuff.append(" ".join(args))
-            [Stuff.append(i.url) for i in ctx.message.attachments]
-            for ToQR in Stuff:
-                QRcode = qrcode.make(ToQR)
-                QRcode.save("QR.png")
-                Files.append(discord.File("QR.png"))
-                await ctx.message.channel.send(files=Files)
-                os.remove("QR.png")
-        else:
-            await SendWait(ctx, "Nothing to QR")
+        if not args and not ctx.message.attachments: await SendWait(ctx, "Nothing to QR"); return
+        Stuff = []
+        Files = []
+        if args: Stuff.append(" ".join(args))
+        for i in ctx.message.attachments: Stuff.append(i.url)
+        for ToQR in Stuff:
+            QRcode = qrcode.make(ToQR)
+            QRcode.save("QR.png")
+            Files.append(discord.File("QR.png"))
+            await ctx.message.channel.send(files=Files)
+            os.remove("QR.png")
 
     @QRCodes.command(name="read")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def QRread(self, ctx, *args):
-        if args or len(ctx.message.attachments) > 0:
+        if args or ctx.message.attachments:
             Attached = []
             if args:
-                URLargs = " ".join(args).split(" ")
+                URLargs = list(args)
                 try:
-                    for url in URLargs:
-                        Attached.append(url)
-                except TypeError:
-                    pass
-            if len(ctx.message.attachments) > 0:
-                for AtT in ctx.message.attachments:
-                    Attached.append(AtT.url)
+                    for url in URLargs: Attached.append(url)
+                except TypeError: pass
+            for AtT in ctx.message.attachments: Attached.append(AtT.url)
             Files = []
             C = 0
             for File in Attached:
                 try:
-                    if (
-                        requests.head(File).headers.get("content-type").split("/")[0]
-                        == "image"
-                    ):
+                    if requests.head(File).headers.get("content-type").split("/")[0] == "image":
                         C += 1
                         GetURLimg = requests.get(File, allow_redirects=True)
                         open("QrStf.png", "wb").write(GetURLimg.content)
@@ -277,17 +212,11 @@ class Images(commands.Cog):
                         try:
                             requests.get(Data)
                             await ctx.message.channel.send(Data)
-                        except:
-                            await SendWait(ctx, Data)
+                        except: await SendWait(ctx, Data)
                         os.remove("QrStf.png")
-                    else:
-                        await SendWait(
-                            ctx, f"File({C}) doesnt contain a qrcode :sweat:"
-                        )
-                except requests.exceptions.MissingSchema:
-                    pass
-        else:
-            await SendWait(ctx, "No image(s) or link(s) were attached :woozy_face:")
+                    else: await SendWait(ctx, f"File({C}) doesnt contain a qrcode :sweat:")
+                except requests.exceptions.MissingSchema: pass
+        else: await SendWait(ctx, "No image(s) or link(s) were attached :woozy_face:")
 
 def setup(DClient):
     DClient.add_cog(Images(DClient))

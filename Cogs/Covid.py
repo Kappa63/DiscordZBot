@@ -19,10 +19,7 @@ class Covid(commands.Cog):
             LocRecovered = 0
             LocDiscovered = False
             for Loc in CovidLocs:
-                if (
-                    Loc["country"].lower() == " ".join(args).lower()
-                    or Loc["country_code"].lower() == " ".join(args).lower()
-                ):
+                if " ".join(args).lower() in [Loc["country_code"].lower(), Loc["country"].lower()]:
                     LocDiscovered = True
                     LocF = Loc["country"]
                     LocPop = Loc["country_population"]
@@ -30,38 +27,19 @@ class Covid(commands.Cog):
                     LocDeaths += Loc["latest"]["deaths"]
                     LocRecovered += Loc["latest"]["recovered"]
             if LocDiscovered:
-                CEm = discord.Embed(
-                    title=f"{LocF} Covid-19 Status",
-                    description=f"This data was requested on {datetime.date.today()}",
-                    color=0xBD9400,
-                )
+                CEm = discord.Embed(title=f"{LocF} Covid-19 Status", description=f"This data was requested on {datetime.date.today()}", color=0xBD9400)
                 CEm.add_field(name="Population: ", value=f"{LocPop:,}", inline=False)
-                CEm.add_field(
-                    name="Confirmed: ", value=f"{LocConfirmed:,}", inline=False
-                )
+                CEm.add_field(name="Confirmed: ", value=f"{LocConfirmed:,}", inline=False)
                 CEm.add_field(name="Deaths: ", value=f"{LocDeaths:,}", inline=False)
-                CEm.add_field(
-                    name="Recovered: ", value=f"{LocRecovered:,}", inline=False
-                )
+                CEm.add_field(name="Recovered: ", value=f"{LocRecovered:,}", inline=False)
                 CEm.set_footer(text="Note: Data may not be completely accurate")
-            else:
-                await SendWait(ctx, "Country not found :pensive:")
+            else: await SendWait(ctx, "Country not found :pensive:")
         else:
             CovidWorld = CVd.getLatest()
-            CEm = discord.Embed(
-                title="Worldwide Covid-19 Status",
-                description=f"This data was requested on {datetime.date.today()}",
-                color=0xBD9400,
-            )
-            CEm.add_field(
-                name="Confirmed: ", value=f'{CovidWorld["confirmed"]:,}', inline=False
-            )
-            CEm.add_field(
-                name="Deaths: ", value=f'{CovidWorld["deaths"]:,}', inline=False
-            )
-            CEm.add_field(
-                name="Recovered: ", value=f'{CovidWorld["recovered"]:,}', inline=False
-            )
+            CEm = discord.Embed(title="Worldwide Covid-19 Status", description=f"This data was requested on {datetime.date.today()}", color=0xBD9400)
+            CEm.add_field(name="Confirmed: ", value=f'{CovidWorld["confirmed"]:,}', inline=False)
+            CEm.add_field(name="Deaths: ", value=f'{CovidWorld["deaths"]:,}', inline=False)
+            CEm.add_field(name="Recovered: ", value=f'{CovidWorld["recovered"]:,}', inline=False)
             CEm.set_footer(text="Note: Data may not be completely accurate")
         await ctx.message.channel.send(embed=CEm)
 
