@@ -93,8 +93,6 @@ def MakeCPTDEmbed():
 class MainEvents(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
-        self.StaffChannel = DClient.get_channel(795080325020909598)
-        self.Me = DClient.get_user(443986051371892746)
         self.SendAPODDaily.start()
         #? self.SendQOTDDaily.start()
         self.SendCPTDDaily.start()
@@ -106,6 +104,8 @@ class MainEvents(commands.Cog):
         StateFile.close()
         if "".join(State) == "Up": await self.DClient.change_presence(activity=discord.Game(f"zhelp || {random.choice(Doing)}"))
         else: await self.DClient.change_presence(status=discord.Status.invisible)
+        self.StaffChannel = self.DClient.get_channel(795080325020909598)
+        self.Me = self.DClient.get_user(443986051371892746)
         print(f"Online in {len(self.DClient.guilds)}...")
         await self.StaffChannel.send(f"Back Online In {len(self.DClient.guilds)}...")
 
