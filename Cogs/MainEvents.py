@@ -104,10 +104,10 @@ class MainEvents(commands.Cog):
         StateFile.close()
         if "".join(State) == "Up": await self.DClient.change_presence(activity=discord.Game(f"zhelp || {random.choice(Doing)}"))
         else: await self.DClient.change_presence(status=discord.Status.invisible)
-        self.StaffChannel = self.DClient.get_channel(795080325020909598)
-        self.Me = self.DClient.get_user(443986051371892746)
+        StaffChannel = self.DClient.get_channel(795080325020909598)
+        Me = self.DClient.get_user(443986051371892746)
         print(f"Online in {len(self.DClient.guilds)}...")
-        await self.StaffChannel.send(f"Back Online In {len(self.DClient.guilds)}...")
+        await StaffChannel.send(f"Back Online In {len(self.DClient.guilds)}...")
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -123,15 +123,17 @@ class MainEvents(commands.Cog):
         elif isinstance(error, IsMultiredditLimit): await SendWait(ctx, "You can no longer have this many Multireddits. Remove some to comply with your limit. Until then you cannot use your Multireddits.")
         elif isinstance(error, (commands.CommandNotFound, Ignore, IsBot, commands.CommandInvokeError)): return
         else:
-            await self.StaffChannel.send(self.Me.mention)
-            await self.StaffChannel.send(f'In {ctx.command} ({ctx.message.content}): {error} ({type(error)})')
+            StaffChannel = self.DClient.get_channel(795080325020909598)
+            Me = self.DClient.get_user(443986051371892746)
+            await StaffChannel.send(Me.mention)
+            await StaffChannel.send(f'In {ctx.command} ({ctx.message.content}): {error} ({type(error)})')
             raise error
 
     @tasks.loop(seconds=TimeTillMidnight())
     async def SendAPODDaily(self):
         print("Sending APOD...")
-        #- StaffChannel = self.DClient.get_channel(795080325020909598)
-        await self.StaffChannel.send("Sending APOD...")
+        StaffChannel = self.DClient.get_channel(795080325020909598)
+        await StaffChannel.send("Sending APOD...")
         TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
         APODEm = MakeAPODEmbed()
         APODUsers = AQd.find({"Type": "APOD"})
@@ -155,7 +157,7 @@ class MainEvents(commands.Cog):
                     await Channel.send("NO LONGER APPLICABLE TO THIS MANY CHANNELS. Daily APOD stopped. :pensive: You can sign up for donator, check zdonate")
                     AQd.delete_one(User)
             else: await Channel.send("NO LONGER A Donator. Daily APOD stopped. :pensive: You can sign up for donator, check zdonate")
-        await self.StaffChannel.send(f"Next APOD in {TimeTillMidnight()}s...")
+        await StaffChannel.send(f"Next APOD in {TimeTillMidnight()}s...")
         raise ValueError
         self.SendAPODDaily.change_interval(seconds=TimeTillMidnight())
 
@@ -163,15 +165,15 @@ class MainEvents(commands.Cog):
     async def RegulateBeforeAPODLoop(self):
         await self.DClient.wait_until_ready()
         print("APOD Regulating...")
-        #- StaffChannel = self.DClient.get_channel(795080325020909598)
-        await self.StaffChannel.send(f"APOD Regulating for {TimeTillMidnight()}s...")
+        StaffChannel = self.DClient.get_channel(795080325020909598)
+        await StaffChannel.send(f"APOD Regulating for {TimeTillMidnight()}s...")
         await asyncio.sleep(TimeTillMidnight())
 
     @tasks.loop(seconds=TimeTillMidnight())
     async def SendCPTDDaily(self):
         print("Sending CPTD...")
-        #- StaffChannel = self.DClient.get_channel(795080325020909598)
-        await self.StaffChannel.send("Sending CPTD...")
+        StaffChannel = self.DClient.get_channel(795080325020909598)
+        await StaffChannel.send("Sending CPTD...")
         TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
         CPTDEm = MakeCPTDEmbed()
         CPTDUsers = AQd.find({"Type": "CPTD"})
@@ -195,7 +197,7 @@ class MainEvents(commands.Cog):
                     await Channel.send("NO LONGER APPLICABLE TO THIS MANY CHANNELS. Daily CPTD stopped. :pensive: You can sign up for donator, check zdonate")
                     AQd.delete_one(User)
             else: await Channel.send("NO LONGER A Donator. Daily CPTD stopped. :pensive: You can sign up for donator, check zdonate")
-        await self.StaffChannel.send(f"Next CPTD in {TimeTillMidnight()}s...")
+        await StaffChannel.send(f"Next CPTD in {TimeTillMidnight()}s...")
         raise ValueError
         self.SendCPTDDaily.change_interval(seconds=TimeTillMidnight())
 
@@ -203,8 +205,8 @@ class MainEvents(commands.Cog):
     async def RegulateBeforeCPTDLoop(self):
         await self.DClient.wait_until_ready()
         print("CPTD Regulating...")
-        #- StaffChannel = self.DClient.get_channel(795080325020909598)
-        await self.StaffChannel.send(f"CPTD Regulating for {TimeTillMidnight()}s...")
+        StaffChannel = self.DClient.get_channel(795080325020909598)
+        await StaffChannel.send(f"CPTD Regulating for {TimeTillMidnight()}s...")
         await asyncio.sleep(TimeTillMidnight())
 
     # @tasks.loop(seconds=TimeTillMidnight())
