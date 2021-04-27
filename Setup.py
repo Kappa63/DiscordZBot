@@ -49,7 +49,8 @@ Twitter = tweepy.API(twitter)
 
 Reddit = praw.Reddit(client_id=os.getenv("REDDIT_ID"), client_secret=os.getenv("REDDIT_SECRET"), user_agent="ZBot by u/Kamlin333", check_for_async=False)
 
-Covid = COVID19Py.COVID19(data_source="jhu")
+try: Covid = COVID19Py.COVID19(data_source="jhu")
+except: pass
 
 YClient = pyyoutube.Api(api_key=os.getenv("YOUTUBE_KEY"))
 
