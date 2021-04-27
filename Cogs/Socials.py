@@ -533,13 +533,15 @@ class Socials(commands.Cog):
         Added, NotAdded = [], []
         if Multi in User and Multi not in ["IDd", "_id"]:
             for Sub in Subs:
+                Sub = Sub[2:] if Sub.startswith("r/") else Sub
                 if Sub not in User[Multi] and Sub not in Added:
                     if not CheckSub(Sub): NotAdded.append(Sub); continue
                     Added.append(Sub) 
+                else: NotAdded.append(Sub)
             if Added:
                 Rdt.update_one(User, {"$set": {Multi: User[Multi]+Added}})
-                await SendWait(ctx, f'Added the following Subreddit(s): {", ".join(Added)}... to Multireddit: {Multi}.. ')
-            if NotAdded: await SendWait(ctx, f"Following Subreddit(s) didn't exist, private, or already added: {', '.join(NotAdded)}")
+                await SendWait(ctx, f'Added the following Subreddit(s) to Multireddit: `{", ".join(Added)}`')
+            if NotAdded: await SendWait(ctx, f"Following Subreddit(s) didn't exist, private, or already added: `{', '.join(NotAdded)}`")
         else: await SendWait(ctx, f"That Multireddit ({Multi}) does not exist. Check if the name is right or create it.")
 
     @GetMultis.command(aliases=["remove", "rem"])
@@ -556,13 +558,14 @@ class Socials(commands.Cog):
             Remover = User[Multi]
             for Sub in Subs:
                 if Sub not in User[Multi] and Sub not in Removed:
+                    Sub = Sub[2:] if Sub.startswith("r/") else Sub
                     if not CheckSub(Sub): NotRemoved.append(Sub); continue
                     Remover.remove(Sub)
                     Removed.append(Sub)
             if Removed: 
                 Rdt.update_one(User, {"$set": {Multi: Remover}})
-                await SendWait(ctx, f'Removed the following Subreddit(s): {", ".join(Removed)}... from Multireddit: {Multi}).. ')
-            if NotRemoved: await SendWait(ctx, f"Following Subreddit(s) didn't exist in Multireddit: {', '.join(NotRemoved)}")
+                await SendWait(ctx, f'Removed the following Subreddit(s) from Multireddit: `{", ".join(Removed)}`')
+            if NotRemoved: await SendWait(ctx, f"Following Subreddit(s) didn't exist in Multireddit: `{', '.join(NotRemoved)}`")
         else: await SendWait(ctx, f"That Multireddit ({Multi}) does not exist. Check if the name is right or create it.")
             
 def setup(DClient):
