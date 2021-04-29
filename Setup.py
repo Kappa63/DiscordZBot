@@ -120,7 +120,7 @@ def FormatTime(SecondsFormat):
     else: return f"{SecondsFormat}s"
 
 async def Navigator(ctx, Items, Type="#", EmbedAndContent=False, ContItems=None, Main=False, MainBed=None):
-    ChCHEm = lambda RcM, RuS: not RuS.bot and RcM.message == Nav and str(RcM.emoji) in ["⬅️", "❌", "➡️", "#️⃣"]
+    ChCHEm = lambda RcM, RuS: (not RuS.bot) and RcM.message == Nav and str(RcM.emoji) in ["⬅️", "❌", "➡️", "#️⃣"]
 
     def ChCHEmFN(MSg):
         MesS = MSg.content.lower()
@@ -128,7 +128,7 @@ async def Navigator(ctx, Items, Type="#", EmbedAndContent=False, ContItems=None,
         try:
             if int(MSg.content): RsT = True
         except ValueError:
-            if (MesS == "cancel") or (MesS == "c"): RsT = True
+            if MesS in ["cancel", "c"]: RsT = True
         return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
 
     ItemNum = 0

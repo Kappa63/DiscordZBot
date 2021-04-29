@@ -262,7 +262,7 @@ class Socials(commands.Cog):
                     except ValueError:
                         if LResS in ["cancel", "c"]: await TwSent.edit(embed=discord.Embed(title=":x: Search Cancelled", description="\u200b", color=0x0384FC))
                 except asyncio.TimeoutError: await TwSent.edit(embed=discord.Embed(title=":hourglass: Search Timeout...", description="\u200b", color=0x0384FC))
-            else: await SendWait(ctx, "No search argument :woozy_face:")
+            else: await SendWait(ctx, "No search argument :woozy_face:"); return
         elif args: TWname = " ".join(args)
         else: await SendWait(ctx, "No Arguments :no_mouth:"); return
         try:
@@ -282,7 +282,7 @@ class Socials(commands.Cog):
             TWtimeline = Twitter.user_timeline(TWname, trim_user=True, tweet_mode="extended")
             Twts = [TwitterbedMaker(TWprofile, IsVerified, ChTwTp(T), T, Tn, len(TWtimeline)) for Tn, T in enumerate(TWtimeline)]
             await Navigator(ctx, Twts, Main=True, MainBed=TEm)
-        except UnboundLocalError: pass
+        # except UnboundLocalError: pass
         except tweepy.error.TweepError: await SendWait(ctx, "Not Found :expressionless:")
 
     @TwitterNav.command(name="trending")
@@ -337,29 +337,30 @@ class Socials(commands.Cog):
                         if LResS in["cancel", "c"]: await YTSent.edit(embed=discord.Embed(title=":x: Search Cancelled", description="\u200b", color=0xFF0000)); return
                 except asyncio.TimeoutError: await YTSent.edit(embed=discord.Embed(title=":hourglass: Search Timeout...", description="\u200b", color=0xFF0000)); return
             else: await SendWait(ctx, "No search argument :woozy_face:"); return
-        elif args:
-            YTname = " ".join(args)
-            IDorName = "NAME"
+        elif YTinput: IDorName = "NAME"; print("olol")
         else: await SendWait(ctx, "No Arguments :no_mouth:"); return
         Info = lambda x:YClient.get_channel_info(channel_id=x)
         Vids = lambda x:YClient.get_activities_by_channel(channel_id=x, count=20)
         if IDorName == "NAME":
+            print("hite")
             try:
                 YTtempID = YClient.search(q=" ".join(YTinput), count=1, search_type="channel").items[0].snippet.channelId
                 YTinfo, YTVids = Threader([Info, Vids], [[YTtempID]]*2)
-            except IndexError: await SendWait(ctx, "Nothing Found :woozy_face:"); return
+            except IndexError: 
+                await SendWait(ctx, "Nothing Found :woozy_face:"); return; print("hiter")
         elif IDorName == "ID": YTinfo, YTVids = Threader([Info, Vids], [[YTid]]*2)
-
+        print("Got it")
         YTdesc = (YTinfo.items[0].snippet.description)[:253]
-
+        print("Got it")
         YEm = discord.Embed(title=YTinfo.items[0].snippet.title, description=YTdesc, url=f"https://www.youtube.com/channel/{YTinfo.items[0].id}", color=0xFF0000)
-        YEm.add_field(name="Created on:", value=YTinfo.items[0].snippet.publishedAt[0:10], inline=False)
+        YEm.add_field(name="Created on:", value=YTinfo.items[0].snippet.publishedAt[:10], inline=False)
         if not YTinfo.items[0].statistics.hiddenSubscriberCount: YEm.add_field(name="Subscribers:", value=f"{int(YTinfo.items[0].statistics.subscriberCount):,}", inline=False)
         YEm.add_field(name="Videos:", value=f"{int(YTinfo.items[0].statistics.videoCount):,}", inline=True)
         YEm.add_field(name="\u200b", value="\u200b", inline=True)
         YEm.add_field(name="Total Views:", value=f"{int(YTinfo.items[0].statistics.viewCount):,}", inline=True)
         YEm.set_thumbnail(url=YTinfo.items[0].snippet.thumbnails.high.url)
         YTEs = [YoutubebedMaker(Vid, YTinfo.items[0], VNum, len(YTVids.items)) for Vid, VNum in enumerate(YTVids.items)]
+        print("ok")
         await Navigator(ctx, YTEs, Main=True, MainBed=YEm)
 
     @commands.group(name="reddit", invoke_without_command=True)
