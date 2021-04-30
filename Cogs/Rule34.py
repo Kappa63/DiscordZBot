@@ -27,7 +27,8 @@ class Rule34(commands.Cog):
         if not args: await SendWait(ctx, "No arguments :no_mouth:"); return
         try:
             Rule34 = rule34.Rule34(asyncio.get_event_loop())
-            if ctx.guild.id != 586940644153622550: Rule34Choices = await Rule34.getImages(f'-underage -loli -lolicon -lolita -lolita_channel -shota -shotacon {"_".join(args).lower()}')
+            if ctx.guild.id != 586940644153622550: 
+                Rule34Choices = await Rule34.getImages(f'-underage -loli -lolicon -lolita -lolita_channel -shota -shotacon {"_".join(args).lower()}')
             else: Rule34Choices = await Rule34.getImages(f'{"_".join(args).lower()}')
             ShowRule = random.choice(Rule34Choices)
         except TypeError: await SendWait(ctx, "Nothing Found :no_mouth:"); return
@@ -41,7 +42,8 @@ class Rule34(commands.Cog):
         if not args: await SendWait(ctx, "No arguments :no_mouth:"); return
         try:
             Rule34 = rule34.Rule34(asyncio.get_event_loop())
-            if ctx.guild.id != 586940644153622550: Rule34Surf = await Rule34.getImages(f'-underage -loli -lolicon -lolita -lolita_channel -shota -shotacon {"_".join(args).lower()}')
+            if ctx.guild.id != 586940644153622550: 
+                Rule34Surf = await Rule34.getImages(f'-underage -loli -lolicon -lolita -lolita_channel -shota -shotacon {"_".join(args).lower()}')
             else: Rule34Surf = await Rule34.getImages(f'{"_".join(args).lower()}')
         except TypeError: await SendWait(ctx, "Nothing Found :no_mouth:"); return
         Rules = [MakeEmbed(i, v, Type="S") for v, i in enumerate(Rule34Surf)] 

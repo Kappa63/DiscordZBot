@@ -69,7 +69,8 @@ class Nasa(commands.Cog):
             NEm.set_image(url=MarsImage["img_src"])
             NEm.set_footer(text="Need help navigating? zhelp navigation")
             return NEm
-        NASAmars = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=1000&api_key=0dsw3SiQmYCeNnwKZROSQIyrcZqjoDzMBo4ggCwS", headers={"Accept": "application/json"}).json()
+        NASAmars = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=1000&api_key=0dsw3SiQmYCeNnwKZROSQIyrcZqjoDzMBo4ggCwS", 
+                                headers={"Accept": "application/json"}).json()
         MarsImages = random.sample(NASAmars["photos"], k=25)
         Images = [MakeEmbed(i, v, len(MarsImages)) for v, i in enumerate(MarsImages)]
         await Navigator(ctx, Images)

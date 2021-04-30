@@ -1,4 +1,4 @@
-Whats new in 2.7.4a:
-NEW You can now use r/ for the reddit commands. (e.g both 'r/memes' and 'memes' would work fine)
-BUG FIXES ..
-INTERNAL_IMPROVEMENTS Complete Rewrite
+Whats new in 2.7.5a:
+NEW You can now add multiple subreddits at once to multireddit (zmultireddit add [multireddit][subreddits (separated by spaces)])
+BUG_FIXES ..
+INTERNAL_IMPROVEMENTS ..

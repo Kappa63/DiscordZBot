@@ -43,7 +43,9 @@ class Movies(commands.Cog):
                     if int(ResS.content) <= 10:
                         IMDbChoice = SrchIMDb[int(ResS.content) - 1]
                         IMDbID = IMDbChoice.movieID
-                        await IMDbSent.edit(embed=discord.Embed(title=":calling: Finding...", description=f'{IMDbChoice.data["title"]} ({IMDbChoice.data["kind"]}) ({IMDbChoice.data["year"]})', color=0xDBA506))
+                        await IMDbSent.edit(embed=discord.Embed(title=":calling: Finding...", 
+                                                                description=f'{IMDbChoice.data["title"]} ({IMDbChoice.data["kind"]}) ({IMDbChoice.data["year"]})',
+                                                                color=0xDBA506))
                 except ValueError:
                     if (LResS == "cancel") or (LResS == "c"):
                         await IMDbSent.edit(embed=discord.Embed(title=":x: Search Cancelled", description="\u200b", color=0xDBA506))
@@ -66,10 +68,13 @@ class Movies(commands.Cog):
         PlotF = None
         if "plot outline" in IMDbinfo: PlotF = IMDbinfo["plot outline"][:100]
 
-        YEm = discord.Embed(title=IMDbinfo["original title"], description=", ".join(IMDbinfo["genres"]), url=f'https://www.imdb.com/title/tt{IMDbinfo["imdbID"]}', color=0xDBA506)
+        YEm = discord.Embed(title=IMDbinfo["original title"], description=", ".join(IMDbinfo["genres"]), url=f'https://www.imdb.com/title/tt{IMDbinfo["imdbID"]}', 
+                            color=0xDBA506)
         if PlotF: YEm.add_field(name="Plot:", value=PlotF + "\n", inline=False)
         if "original air date" in IMDbinfo: YEm.add_field(name="Original Air Date:", value=IMDbinfo["original air date"], inline=False)
-        if "box office" in IMDbinfo: YEm.add_field(name="Box Office:", value=f'Budget: {IMDbinfo["box office"]["Budget"].split(" ")[0]}\nOpening Week: {IMDbinfo["box office"]["Opening Weekend United States"].split(" ")[0]}\nTotal Gross: {IMDbinfo["box office"]["Cumulative Worldwide Gross"].split(" ")[0]}', inline=True)
+        if "box office" in IMDbinfo: YEm.add_field(name="Box Office:",
+                                                   value=f'Budget: {IMDbinfo["box office"]["Budget"].split(" ")[0]}\nOpening Week: {IMDbinfo["box office"]["Opening Weekend United States"].split(" ")[0]}\nTotal Gross: {IMDbinfo["box office"]["Cumulative Worldwide Gross"].split(" ")[0]}',
+                                                   inline=True)
         if "number of seasons" in IMDbinfo: YEm.add_field(name="Seasons:", value=IMDbinfo["number of seasons"], inline=True)
         if "rating" in IMDbinfo: YEm.add_field(name="Rating:", value=IMDbinfo["rating"], inline=True)
         if "cast" in IMDbinfo:

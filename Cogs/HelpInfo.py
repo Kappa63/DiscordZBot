@@ -13,8 +13,12 @@ class HelpInfo(commands.Cog):
         HEm.add_field(name="zversion: ", value="Checks the current running version of ZBot", inline=False)
         HEm.add_field(name="zlog: ", value="Shows the latest update's update log", inline=False)
         HEm.add_field(name="zhelp (Category): ", value="Provides help for the category", inline=False)
-        HEm.add_field(name="Categories: ", value="**`-Social(s)`**\n**`-Anime/Manga/Doujin/Hentai`**\n**`-Rule34`**\n**`-Image`**\n**`-Joke`**\n**`-Quotes/Advice/Insult`**\n**`-Info/Informatics`**\n**`-IMDb`**\n**`-Games`**\n**`-Server/Counting`**\n**`-Misc/Miscellaneous`**\n**`-Navigation/Nav`**", inline=False)
-        HEm.add_field(name="Links: ", value="[Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord) / [Vote](https://top.gg/bot/768397640140062721/vote)")
+        HEm.add_field(name="Categories: ", 
+                      value="**`-Social(s)`**\n**`-Anime/Manga/Doujin/Hentai`**\n**`-Rule34`**\n**`-Image`**\n**`-Joke`**\n**`-Quotes/Advice/Insult`**\n**`-Info/Informatics`**\n**`-IMDb`**\n**`-Games`**\n**`-Server/Counting`**\n**`-Misc/Miscellaneous`**\n**`-Navigation/Nav`**",
+                      inline=False)
+        HEm.add_field(name="Links: ", 
+                      value="[Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord) / [Vote](https://top.gg/bot/768397640140062721/vote)",
+                      inline=False)
         await ctx.message.channel.send(embed=HEm)
 
     @SendH.command(aliases=["server", "counting", "tracking", "count", "track"])
@@ -39,12 +43,15 @@ class HelpInfo(commands.Cog):
         HEm.add_field(name="zreddit [Subreddit Name]: ", value="Returns a RANDOM post from the top 100 posts in hot from any subreddit", inline=False)
         HEm.add_field(name="zreddit surf [Subreddit Name]: ", value="100 Posts of The Subreddit Sorted in Any Format (Voters and donators ONLY)", inline=False)
         HEm.add_field(name="zredditor [Redditor name]: ", value="View a redditor's profile and 100 of their latest posts", inline=False)
-        HEm.add_field(name="zmultireddit [Multireddit Name]: ", value="Opens the multireddit and allows you to scroll through its subreddits all together (For Tier 2 donators or more)", inline=False)
+        HEm.add_field(name="zmultireddit [Multireddit Name]: ", 
+                      value="Opens the multireddit and allows you to scroll through its subreddits all together (For Tier 2 donators or more)", inline=False)
         HEm.add_field(name="zmultireddit list: ", value="List all the Multireddits you created along with the Subreddits in them (For Tier 2 donators or more)", inline=False)
-        HEm.add_field(name="zmultireddit create [Desired Multireddit Name]: ", value="Creates a new Multireddit with the desired name (For Tier 2 donators or more)", inline=False)
+        HEm.add_field(name="zmultireddit create [Desired Multireddit Name]: ", value="Creates a new Multireddit with the desired name (For Tier 2 donators or more)", 
+                      inline=False)
         HEm.add_field(name="zmultireddit delete [Multireddit name]: ", value="Deletes a created Multireddit (For Tier 2 donators or more)", inline=False)
         HEm.add_field(name="zmultireddit add [Multireddit name] [Subreddit name]: ", value="Adds a Subreddit to your multireddit (For Tier 2 donators or more)", inline=False)
-        HEm.add_field(name="zmultireddit remove [Multireddit name] [Subreddit name]: ", value="Removes a subreddit from your Multireddit (For Tier 2 donators or more)", inline=False)
+        HEm.add_field(name="zmultireddit remove [Multireddit name] [Subreddit name]: ", value="Removes a subreddit from your Multireddit (For Tier 2 donators or more)", 
+                      inline=False)
         HEm.add_field(name="ztwitter [User @]: ", value="Details About the User Profile and 20 of Their Latest Tweets", inline=False)
         HEm.add_field(name="ztwitter search [Search Term]: ", value="Searches for 10 Users Related to Search Term", inline=False)
         HEm.add_field(name="ztwitter trending: ", value="Shows whats currently trending (USA)", inline=False)
@@ -71,7 +78,9 @@ class HelpInfo(commands.Cog):
         HEm.add_field(name="zfortnite [Name]: ", value="Get the user's Fortnite stats", inline=False)
         HEm.add_field(name="zpubg all [Name]: ", value="Get the user's lifetime stats", inline=False)
         HEm.add_field(name="zpubg season [Name]: ", value="Get the user's stats in the current season", inline=False)
-        HEm.add_field(name="Note:", value="-In sudoku react with the eye to get the solution or with the X to never get the solution. If X isn't pressed solution is auto given after 1 hour\n\n-In TTT each player has 30sec to play. A player should enter the number of the corresponding square to play there. If a player enters 'end' the game ends\n\n-In Chess a standard 10min time is given to each player. Time starts after each player has made 1 move. Every turn the legal moves are listed. Typing in a move is case sensetive (Must be as listed). Typing in 'resign' will result in loss by resignation. Draws automatically happen if Stalemate or Insufficient Material. A Draw can be Claimed by Typing in 'claimdraw' (Only after a threefold-repition or 50 move-rule). The bot announces if a Draw Claim is allowed. Win by Checkmate.", inline=False)
+        HEm.add_field(name="Note:",
+                      value="-In sudoku react with the eye to get the solution or with the X to never get the solution. If X isn't pressed solution is auto given after 1 hour\n\n-In TTT each player has 30sec to play. A player should enter the number of the corresponding square to play there. If a player enters 'end' the game ends\n\n-In Chess a standard 10min time is given to each player. Time starts after each player has made 1 move. Every turn the legal moves are listed. Typing in a move is case sensetive (Must be as listed). Typing in 'resign' will result in loss by resignation. Draws automatically happen if Stalemate or Insufficient Material. A Draw can be Claimed by Typing in 'claimdraw' (Only after a threefold-repition or 50 move-rule). The bot announces if a Draw Claim is allowed. Win by Checkmate.",
+                      inline=False)
         await ctx.message.channel.send(embed=HEm)
 
     @SendH.command(aliases=["covid", "info", "informatics", "informatic", "information", "nasa", "apod", "facts", "fact", "crypto", "cryptocurrency", 
@@ -92,7 +101,8 @@ class HelpInfo(commands.Cog):
         HEm.add_field(name="znews: ", value="Get some of the top news headlines", inline=False)
         HEm.add_field(name="zapoddaily end/stop: ", value="Stop receiving daily APODs (Tier 2 or more donators ONLY)", inline=False)
         HEm.add_field( name="znasa: ", value="25 RANDOM mars images out of the 100s taken by NASA's Curiosity rover (Different each roll)", inline=False)
-        HEm.add_field(name="Notes", value="**-Covid:** Recovered data seemed to be off in some countries, therefore the recovered data is innacurate most of the time.", inline=False)
+        HEm.add_field(name="Notes", value="**-Covid:** Recovered data seemed to be off in some countries, therefore the recovered data is innacurate most of the time.",
+                      inline=False)
         await ctx.message.channel.send(embed=HEm)
 
     @SendH.command(aliases=["imdb", "shows", "show", "movie", "movies"])
@@ -139,7 +149,9 @@ class HelpInfo(commands.Cog):
         HEm.add_field(name="zqrcode make [Tex/Attachment]: ", value="Converts the Text or Attachments into Qrcodes", inline=False)
         HEm.add_field(name="zqrcode read [Qrcode Url/Attachment]: ", value="Converts the Qrcodes into Text", inline=False)
         HEm.add_field(name="zpdf [PDF Attachment/Url]: ", value="Views the PDF's first 40 pages as images", inline=False)
-        HEm.add_field(name="Aliases:", value="**-Pog =** `pog, poggers, pogger, pogchamp`\n\n**-Cat =** `cat, kitten, kitty`\n\n**-Dog =** `doggo, dog, pupper, puppy`\n\n**-Food =** `food, dishes, dish`\n\n**-QR =** `qrcode, qr`\n\n**-QR Create =** `qrcode create, qrcode make`",)
+        HEm.add_field(name="Aliases:", 
+                      value="**-Pog =** `pog, poggers, pogger, pogchamp`\n\n**-Cat =** `cat, kitten, kitty`\n\n**-Dog =** `doggo, dog, pupper, puppy`\n\n**-Food =** `food, dishes, dish`\n\n**-QR =** `qrcode, qr`\n\n**-QR Create =** `qrcode create, qrcode make`",
+                      inline=False)
         await ctx.message.channel.send(embed=HEm)
 
     @SendH.command(aliases=["joke", "jokes"])
@@ -171,7 +183,9 @@ class HelpInfo(commands.Cog):
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendM(self, ctx):
         HEm = discord.Embed(title="**ZBot Misc. Help**", description="\u200b", color=0x0AF531)
-        HEm.add_field(name="zremind [Arguments]: ", value='Pings you after time is over. Arguments are a number followed by d, h, m, or s for days, hours, minutes, seconds respectively.(Ex. "zremind 2d 3h 52m 14s" is a remind after 2days 3hours 52minutes and 14seconds)', inline=False)
+        HEm.add_field(name="zremind [Arguments]: ",
+                      value='Pings you after time is over. Arguments are a number followed by d, h, m, or s for days, hours, minutes, seconds respectively.(Ex. "zremind 2d 3h 52m 14s" is a remind after 2days 3hours 52minutes and 14seconds)',
+                      inline=False)
         HEm.add_field(name="zcalc [Input]: ", value="Calculates and returns", inline=False)
         HEm.add_field(name="zcolor: ", value="Returns a RANDOM color with its HEX and RGB color codes", inline=False)
         HEm.add_field(name="zroll: ", value="Rolls a dice", inline=False)
@@ -189,8 +203,12 @@ class HelpInfo(commands.Cog):
         HEm.add_field(name="Right Arrow (-->): ", value="Flips to the next image", inline=False)
         HEm.add_field(name="Left Arrow (<--): ", value="Flip to the previous image", inline=False)
         HEm.add_field(name="Red X: ", value="Exits the embed. (No longer navigateable)", inline=False)
-        HEm.add_field(name="Hashtag (#): ", value='After you click it you can input a number of an image to instantly go to it. You can type "c" or "cancel" to cancel(Only for voters/donators)', inline=False)
-        HEm.add_field(name="\nNotes: ", value="-In instant navigation you have 10sec to make an input before its automatically cancelled.\n-Navigateables close automatically after 2mins of not using them.",)
+        HEm.add_field(name="Hashtag (#): ", 
+                      value='After you click it you can input a number of an image to instantly go to it. You can type "c" or "cancel" to cancel(Only for voters/donators)',
+                      inline=False)
+        HEm.add_field(name="\nNotes: ",
+                      value="-In instant navigation you have 10sec to make an input before its automatically cancelled.\n-Navigateables close automatically after 2mins of not using them.",
+                      inline=False)
         await ctx.message.channel.send(embed=HEm)
 
     @commands.command(aliases=["ver", "version"])
@@ -198,8 +216,8 @@ class HelpInfo(commands.Cog):
     async def RetVer(self, ctx):
         VEm = discord.Embed(title="Active Version", description="ZBot build version and info", color=0x3695BA)
         VEm.add_field(name="Dev: ", value="Kappa#5173", inline=False)
-        VEm.add_field(name="Version: ", value="2.7.4a", inline=False)
-        VEm.add_field(name="Version Release: ", value="27/4/2021", inline=False)
+        VEm.add_field(name="Version: ", value="2.7.5a", inline=False)
+        VEm.add_field(name="Version Release: ", value="30/4/2021", inline=False)
         VEm.add_field(name="Initial Release: ", value="21/11/2020", inline=False)
         await ctx.message.channel.send(embed=VEm)
 
@@ -219,26 +237,30 @@ class HelpInfo(commands.Cog):
     @commands.command(name="invite")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def BotInvF(self, ctx):
-        SEm = discord.Embed(title="ZBot Invite", url="https://discord.com/oauth2/authorize?client_id=768397640140062721&scope=bot&permissions=453696", description="**Invite ZBot to your Server**", color=0x000000)
+        SEm = discord.Embed(title="ZBot Invite", url="https://discord.com/oauth2/authorize?client_id=768397640140062721&scope=bot&permissions=453696", 
+                            description="**Invite ZBot to your Server**", color=0x000000)
         await ctx.message.channel.send(embed=SEm)
 
     @commands.command(name="vote")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def BotVotF(self, ctx):
-        SEm = discord.Embed(title="Vote For ZBot", url="https://top.gg/bot/768397640140062721/vote", description="**You can vote once every 12 hours for some perks**", color=0x000000)
+        SEm = discord.Embed(title="Vote For ZBot", url="https://top.gg/bot/768397640140062721/vote", description="**You can vote once every 12 hours for some perks**", 
+                            color=0x000000)
         await ctx.message.channel.send(embed=SEm)
 
     @commands.command(aliases=["patreon", "donate"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def BotPatrF(self, ctx):
-        SEm = discord.Embed(title="Join Patreon or Donate", url="https://www.patreon.com/join/ZBotDiscord", description="**Want to support ZBot's development?**", color=0x000000)
+        SEm = discord.Embed(title="Join Patreon or Donate", url="https://www.patreon.com/join/ZBotDiscord", description="**Want to support ZBot's development?**", 
+                            color=0x000000)
         SEm.set_footer(text="Note: You can also donate via donator bot.")
         await ctx.message.channel.send(embed=SEm)
 
     @commands.command(aliases=["support", "bug", "bugs"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SupportServer(self, ctx):
-        SEm = discord.Embed(title="ZBot Official Server", url="https://discord.gg/V6E6prUBPv", description="**Report Bugs, Get Support, and Join the Community**", color=0x000000)
+        SEm = discord.Embed(title="ZBot Official Server", url="https://discord.gg/V6E6prUBPv", description="**Report Bugs, Get Support, and Join the Community**", 
+                            color=0x000000)
         await ctx.message.channel.send(embed=SEm)
 
 

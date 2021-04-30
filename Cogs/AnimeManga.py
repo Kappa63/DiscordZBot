@@ -51,7 +51,8 @@ class AnimeManga(commands.Cog):
                 try:
                     if int(ResS.content) <= 10:
                         MangaID = SrchManga[int(ResS.content) - 1].mal_id
-                        await MnSrS.edit(embed=discord.Embed(title=":calling: Finding...", description=f"{SrchManga[int(ResS.content)-1].title} **({SrchManga[int(ResS.content)-1].type})**", color=0x3695BA))
+                        await MnSrS.edit(embed=discord.Embed(title=":calling: Finding...", 
+                                                             description=f"{SrchManga[int(ResS.content)-1].title} **({SrchManga[int(ResS.content)-1].type})**", color=0x3695BA))
                 except ValueError:
                     if LResS in ["cancel", "c"]: await MnSrS.edit(embed=discord.Embed(title=":x: Search Cancelled", description="\u200b", color=0x3695BA))
             except asyncio.TimeoutError: await MnSrS.edit(embed=discord.Embed(title=":hourglass: Search Timeout...", description="\u200b", color=0x3695BA))
@@ -65,7 +66,8 @@ class AnimeManga(commands.Cog):
             MangaGetmal = mal.Manga(MangaID)
             MangaGenres = []
             for Genre in MangaGet.genres: MangaGenres.append(Genre.name)
-            AEm = discord.Embed(title=f"{MangaGet.title} / {MangaGet.alternative_titles.ja} **({MangaGetmal.type})**", description=f'{", ".join(MangaGenres)}\n[Mal Page]({MangaGetmal.url})', color=0x3695BA)
+            AEm = discord.Embed(title=f"{MangaGet.title} / {MangaGet.alternative_titles.ja} **({MangaGetmal.type})**", 
+                                description=f'{", ".join(MangaGenres)}\n[Mal Page]({MangaGetmal.url})', color=0x3695BA)
             AEm.set_thumbnail(url=MangaGet.main_picture.large)
 
             MangaSynopsis = MangaGet.synopsis[:1021]
@@ -143,7 +145,8 @@ class AnimeManga(commands.Cog):
                 try:
                     if int(ResS.content) <= 10:
                         AnimeID = SrchAnime[int(ResS.content) - 1].mal_id
-                        await AnSrS.edit(embed=discord.Embed(title=":calling: Finding...", description=f"{SrchAnime[int(ResS.content)-1].title} **({SrchAnime[int(ResS.content)-1].type})**", color=0x3FC0FF))
+                        await AnSrS.edit(embed=discord.Embed(title=":calling: Finding...", 
+                                                             description=f"{SrchAnime[int(ResS.content)-1].title} **({SrchAnime[int(ResS.content)-1].type})**", color=0x3FC0FF))
                 except ValueError:
                     if LResS in ["cancel", "c"]: await AnSrS.edit(embed=discord.Embed(title=":x: Search Cancelled", description="\u200b", color=0x3FC0FF))
             except asyncio.TimeoutError: await AnSrS.edit(embed=discord.Embed(title=":hourglass: Search Timeout...", description="\u200b", color=0x3FC0FF))
@@ -157,7 +160,8 @@ class AnimeManga(commands.Cog):
             AnimeGetmal = mal.Anime(AnimeID)
             AnimeGenres = []
             for Genre in AnimeGet.genres: AnimeGenres.append(Genre.name)
-            AEm = discord.Embed(title=f"{AnimeGet.title} / {AnimeGet.alternative_titles.ja} **({AnimeGetmal.type})**", description=f'{", ".join(AnimeGenres)}\n[Mal Page]({AnimeGetmal.url})', color=0x3FC0FF)
+            AEm = discord.Embed(title=f"{AnimeGet.title} / {AnimeGet.alternative_titles.ja} **({AnimeGetmal.type})**", 
+                                description=f'{", ".join(AnimeGenres)}\n[Mal Page]({AnimeGetmal.url})', color=0x3FC0FF)
             AEm.set_thumbnail(url=AnimeGet.main_picture.large)
             AnimeSynopsis = AnimeGet.synopsis[:1021]
 
@@ -257,7 +261,8 @@ class AnimeManga(commands.Cog):
                             DentAi = Hentai(Srch)
                             await DmSent.edit(embed=discord.Embed(title=":newspaper: Opening...", description=DentAi.title(Format.Pretty), color=0x000000))
                     except ValueError:
-                        if LResS in ["cancel", "c", "zhentai"] or ReseS[0] == "zhentai": await DmSent.edit(embed=discord.Embed(title=":newspaper2: Search Cancelled", description="\u200b", color=0x000000))
+                        if LResS in ["cancel", "c", "zhentai"] or ReseS[0] == "zhentai": await DmSent.edit(embed=discord.Embed(title=":newspaper2: Search Cancelled", 
+                                                                                                                               description="\u200b", color=0x000000))
                 except asyncio.TimeoutError: await DmSent.edit(embed=discord.Embed(title=":hourglass: Search Timeout...", description="\u200b", color=0x000000))
             except UnboundLocalError:
                 SEm = discord.Embed(title=f':mag: Search for "{" ".join(Chlks)}"', description="\u200b", color=0x000000)

@@ -29,33 +29,12 @@ async def ChDM(ctx):
 #_     OpenState = open("OpenState.txt")
 #_     State = OpenState.readlines()
 #_     OpenState.close()
-#_     if ("".join(State) == "Down") and ctx.author.id not in [
-#_         507212584634548254,
-#_         443986051371892746,
-#_         224809178793771009,
-#_     ]:
-#_         raise Ignore("Ignore")
+#_     if ("".join(State) == "Down") and ctx.author.id not in [507212584634548254, 443986051371892746, 224809178793771009]: raise Ignore("Ignore")
 #_     return True
 
-Cogs = [
-    "Cogs.Misc",
-    "Cogs.MongoDB",
-    "Cogs.Covid",
-    "Cogs.Nasa",
-    "Cogs.Socials",
-    "Cogs.AnimeManga",
-    "Cogs.HelpInfo",
-    "Cogs.Randomizers",
-    "Cogs.OnlyMods",
-    "Cogs.MainEvents",
-    "Cogs.Rule34",
-    "Cogs.Images",
-    "Cogs.WrittenStuff",
-    "Cogs.Movies",
-    "Cogs.Games",
-    "Cogs.GameAPIs",
-    "Cogs.Google",
-]
+Cogs = ["Cogs.Misc", "Cogs.MongoDB", "Cogs.Covid", "Cogs.Nasa", "Cogs.Socials", "Cogs.AnimeManga",
+        "Cogs.HelpInfo", "Cogs.Randomizers", "Cogs.OnlyMods", "Cogs.MainEvents", "Cogs.Rule34",
+        "Cogs.Images","Cogs.WrittenStuff", "Cogs.Movies", "Cogs.Games", "Cogs.GameAPIs", "Cogs.Google"]
 
 if __name__ != "__main__":
     for Cog in Cogs: DClient.load_extension(Cog)

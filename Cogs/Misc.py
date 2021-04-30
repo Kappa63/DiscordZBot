@@ -77,7 +77,9 @@ class Misc(commands.Cog):
         Embeds = []
         CrEm.add_field(name=f"Page: [{CryptNum} / 5]", value="\u200b", inline=False)
         for i in Crypts["data"][:50]:
-            CrEm.add_field(name=f'{i["name"]} ({i["symbol"]}): `${i["quote"]["USD"]["price"]}`', value=f'**%Change (24h):** *`{i["quote"]["USD"]["percent_change_24h"]}%`* // **%Change (7d):** *`{i["quote"]["USD"]["percent_change_7d"]}%`* // **Market Cap:** *`{i["quote"]["USD"]["market_cap"]}`*', inline=False)
+            CrEm.add_field(name=f'{i["name"]} ({i["symbol"]}): `${i["quote"]["USD"]["price"]}`', 
+                           value=f'**%Change (24h):** *`{i["quote"]["USD"]["percent_change_24h"]}%`* // **%Change (7d):** *`{i["quote"]["USD"]["percent_change_7d"]}%`* // **Market Cap:** *`{i["quote"]["USD"]["market_cap"]}`*',
+                           inline=False)
             C += 1
             if C == 10:
                 C = 0

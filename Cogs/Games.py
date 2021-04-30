@@ -6,27 +6,14 @@ import random
 import time
 import datetime
 import chess
+import numpy as np
 from Setup import ChVote, ChPatreonT2, ChAdmin, FormatTime, TimeTillMidnight, GetPatreonTier, SendWait, AQd
 
 
 def SudokuBoardMaker(Title, BoardName, Board, Difficulty):
-    DigitReplace = [
-        ":white_large_square:",
-        ":one:",
-        ":two:",
-        ":three:",
-        ":four:",
-        ":five:",
-        ":six:",
-        ":seven:",
-        ":eight:",
-        ":nine:",
-    ]
-    SEm = discord.Embed(
-        title=f"{Title} (ID: {BoardName})",
-        description=f"`Difficulty: {Difficulty.upper()}`",
-        color=0x83E42C,
-    )
+    DigitReplace = [":white_large_square:", ":one:", ":two:", ":three:", ":four:", ":five:", 
+                    ":six:", ":seven:", ":eight:", ":nine:"]
+    SEm = discord.Embed(title=f"{Title} (ID: {BoardName})", description=f"`Difficulty: {Difficulty.upper()}`", color=0x83E42C)
     R = 0
     FormSq1 = ""
     for Row in Board:
@@ -38,8 +25,7 @@ def SudokuBoardMaker(Title, BoardName, Board, Difficulty):
                 FormSq1 += " \u200b "
                 D = 1
             FormSq1 += DigitReplace[Digit]
-        if R < 3:
-            FormSq1 += "\n"
+        if R < 3: FormSq1 += "\n"
         else:
             R = 0
             SEm.add_field(name="\u200b", value=FormSq1, inline=False)
@@ -80,28 +66,12 @@ def SudokuSolver(grid, i=0, j=0):
 
 
 def TTTBoardMaker(Board, User1, User2, AnExtra="\u200b"):
-    ItemReplace = {
-        "1": ":one:",
-        "2": ":two:",
-        "3": ":three:",
-        "4": ":four:",
-        "5": ":five:",
-        "6": ":six:",
-        "7": ":seven:",
-        "8": ":eight:",
-        "9": ":nine:",
-        "x": ":x:",
-        "o": ":o:",
-    }
-    TEm = discord.Embed(
-        title="Tic-Tac-Toe",
-        description=f"`{User1.display_name} vs {User2.display_name}`",
-        color=0x6AB4AA,
-    )
+    ItemReplace = {"1": ":one:", "2": ":two:", "3": ":three:", "4": ":four:", "5": ":five:", "6": ":six:",
+                   "7": ":seven:", "8": ":eight:", "9": ":nine:", "x": ":x:", "o": ":o:"}
+    TEm = discord.Embed(title="Tic-Tac-Toe", description=f"`{User1.display_name} vs {User2.display_name}`", color=0x6AB4AA)
     FormTable = ""
     for Row in Board:
-        for Item in Row:
-            FormTable += ItemReplace[Item]
+        for Item in Row: FormTable += ItemReplace[Item]
         FormTable += "\n"
     TEm.add_field(name=AnExtra, value=FormTable, inline=False)
     TEm.set_footer(text='"zhelp ttt" for more info')
@@ -109,74 +79,8 @@ def TTTBoardMaker(Board, User1, User2, AnExtra="\u200b"):
 
 
 def TTTWinCheck(Board):
-    BoardSimplified = []
-    for Row in Board:
-        BoardSimplified.append("".join(Row))
-    if (
-        (BoardSimplified[0] == "xxx")
-        or (BoardSimplified[1] == "xxx")
-        or (BoardSimplified[2] == "xxx")
-        or (
-            (BoardSimplified[0][0] == "x")
-            and (BoardSimplified[1][0] == "x")
-            and (BoardSimplified[2][0] == "x")
-        )
-        or (
-            (BoardSimplified[0][1] == "x")
-            and (BoardSimplified[1][1] == "x")
-            and (BoardSimplified[2][1] == "x")
-        )
-        or (
-            (BoardSimplified[0][2] == "x")
-            and (BoardSimplified[1][2] == "x")
-            and (BoardSimplified[2][2] == "x")
-        )
-        or (
-            (BoardSimplified[0][2] == "x")
-            and (BoardSimplified[1][1] == "x")
-            and (BoardSimplified[2][0] == "x")
-        )
-        or (
-            (BoardSimplified[0][0] == "x")
-            and (BoardSimplified[1][1] == "x")
-            and (BoardSimplified[2][2] == "x")
-        )
-    ):
-        return True
-    elif (
-        (BoardSimplified[0] == "ooo")
-        or (BoardSimplified[1] == "ooo")
-        or (BoardSimplified[2] == "ooo")
-        or (
-            (BoardSimplified[0][0] == "o")
-            and (BoardSimplified[1][0] == "o")
-            and (BoardSimplified[2][0] == "o")
-        )
-        or (
-            (BoardSimplified[0][1] == "o")
-            and (BoardSimplified[1][1] == "o")
-            and (BoardSimplified[2][1] == "o")
-        )
-        or (
-            (BoardSimplified[0][2] == "o")
-            and (BoardSimplified[1][2] == "o")
-            and (BoardSimplified[2][2] == "o")
-        )
-        or (
-            (BoardSimplified[0][2] == "o")
-            and (BoardSimplified[1][1] == "o")
-            and (BoardSimplified[2][0] == "o")
-        )
-        or (
-            (BoardSimplified[0][0] == "o")
-            and (BoardSimplified[1][1] == "o")
-            and (BoardSimplified[2][2] == "o")
-        )
-    ):
-        return True
-    else:
-        return False
-
+    if any(any(i in k for k in [Board, np.dstack(Board), np.concatenate((np.diag(np.fliplr(Board)),np.diag(Board)))]) for i in [["o"]*3, ["x"]*3]): return True
+    return False
 
 def TTTGetForm(Input):
     NumInput = int(Input)
@@ -185,60 +89,24 @@ def TTTGetForm(Input):
 
 
 def MakeChessBoard(Board, PlayerTimes, Players):
-    OnWhite = {
-        ".": "<:10:793974818286469120>",
-        "P": "<:24:793974817648541707>",
-        "R": "<:9_:793974818302853170>",
-        "N": "<:22:793974817715781633>",
-        "B": "<:19:793974817912258580>",
-        "Q": "<:26:793974817496891424>",
-        "K": "<:12:793974818269298689>",
-        "p": "<:18:793974818013577266>",
-        "r": "<:14:793974818172829716>",
-        "n": "<:7_:793974818416492564>",
-        "b": "<:16:793974818106114118>",
-        "q": "<:15:793974818126168065>",
-        "k": "<:8_:793974818335883265>",
-    }
-    OnGrey = {
-        ".": "<:11:793974818269560882>",
-        "P": "<:5_:793974818449784882>",
-        "R": "<:3_:793987203721723915>",
-        "N": "<:2_:793974819535847434>",
-        "B": "<:1_:793974819518677013>",
-        "Q": "<:25:793974817627570188>",
-        "K": "<:13:793974818252783616>",
-        "p": "<:23:793974817706868737>",
-        "r": "<:21:793974817794555923>",
-        "n": "<:6_:793974818436939826>",
-        "b": "<:17:793974818105720842>",
-        "q": "<:4_:793974818453848074>",
-        "k": "<:20:793974817883422751>",
-    }
-    RowMarker = [
-        "8\u2002",
-        "7\u2002",
-        "6\u2002",
-        "5\u2002",
-        "4\u2002",
-        "3\u2002",
-        "2\u2002",
-        "1\u2002",
-    ]
+    OnWhite = {".": "<:10:793974818286469120>", "P": "<:24:793974817648541707>", "R": "<:9_:793974818302853170>", "N": "<:22:793974817715781633>",
+               "B": "<:19:793974817912258580>", "Q": "<:26:793974817496891424>", "K": "<:12:793974818269298689>", "p": "<:18:793974818013577266>",
+               "r": "<:14:793974818172829716>", "n": "<:7_:793974818416492564>", "b": "<:16:793974818106114118>", "q": "<:15:793974818126168065>",
+               "k": "<:8_:793974818335883265>"}
+    OnGrey = {".": "<:11:793974818269560882>", "P": "<:5_:793974818449784882>", "R": "<:3_:793987203721723915>", "N": "<:2_:793974819535847434>",
+              "B": "<:1_:793974819518677013>", "Q": "<:25:793974817627570188>", "K": "<:13:793974818252783616>", "p": "<:23:793974817706868737>",
+              "r": "<:21:793974817794555923>", "n": "<:6_:793974818436939826>", "b": "<:17:793974818105720842>", "q": "<:4_:793974818453848074>",
+              "k": "<:20:793974817883422751>"}
+    RowMarker = ["8\u2002", "7\u2002", "6\u2002", "5\u2002", "4\u2002", "3\u2002", "2\u2002", "1\u2002"]
     Sub = 1
     EmBoard = f'Stuck? "zhelp chess"\n\n{Players[0].display_name} vs {Players[1].display_name}\n\u2002 Time: P1: {str(datetime.timedelta(seconds = PlayerTimes[Players[0]]))[2:]} / P2: {str(datetime.timedelta(seconds = PlayerTimes[Players[1]]))[2:]}\n'
     for Row in range(8):
         for Sq in range(8):
-            if Sq == 0:
-                EmBoard += RowMarker[Row]
-            if (Sq - Sub) % 2 == 0:
-                EmBoard += OnGrey[Board[Row][Sq]]
-            else:
-                EmBoard += OnWhite[Board[Row][Sq]]
-        if Row % 2 == 0:
-            Sub = 0
-        else:
-            Sub = 1
+            if Sq == 0: EmBoard += RowMarker[Row]
+            if (Sq - Sub) % 2 == 0: EmBoard += OnGrey[Board[Row][Sq]]
+            else: EmBoard += OnWhite[Board[Row][Sq]]
+        if Row % 2 == 0: Sub = 0
+        else: Sub = 1
         EmBoard += "\n"
     EmBoard += "\u2003a\u2003b\u2003c\u2003d\u2003e\u2003f\u2003g\u2003h"
     return EmBoard

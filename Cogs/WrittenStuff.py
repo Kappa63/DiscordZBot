@@ -31,7 +31,8 @@ class WrittenStuff(commands.Cog):
     async def TheNews(self, ctx):
         News = requests.get("https://newsapi.org/v2/top-headlines", params=NClient).json()
         NEm = discord.Embed(title = "News", color = 0x0F49B2)
-        for Num, Article in enumerate(News["articles"], start=1): NEm.add_field(name = f'`{Num}.` {Article["title"]}. **Published On:** {re.sub("T", " ", Article["publishedAt"])[:-1]}', value=Article["url"])
+        for Num, Article in enumerate(News["articles"], start=1): 
+            NEm.add_field(name = f'`{Num}.` {Article["title"]}. **Published On:** {re.sub("T", " ", Article["publishedAt"])[:-1]}', value=Article["url"])
         await ctx.message.channel.send(embed = NEm)
 
     @commands.command(aliases=["funfact", "fact"])
@@ -80,22 +81,26 @@ class WrittenStuff(commands.Cog):
     @commands.command(name="joke")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def Joke(self, ctx):
-        Joke = requests.get("https://sv443.net/jokeapi/v2/joke/Programming,Miscellaneous,Spooky,Christmas?blacklistFlags=nsfw,religious,political,racist,sexist",headers={"Accept": "application/json"}).json()
-        if Joke["type"] == "twopart": await ctx.message.channel.send(embed=discord.Embed(title=f'Joke ({Joke["category"]})', description=f'{Joke["setup"]}\n\n||{Joke["delivery"]}||', color=0xEB88DA))
+        Joke = requests.get("https://sv443.net/jokeapi/v2/joke/Programming,Miscellaneous,Spooky,Christmas?blacklistFlags=nsfw,religious,political,racist,sexist", 
+                            headers={"Accept": "application/json"}).json()
+        if Joke["type"] == "twopart": 
+            await ctx.message.channel.send(embed=discord.Embed(title=f'Joke ({Joke["category"]})', description=f'{Joke["setup"]}\n\n||{Joke["delivery"]}||', color=0xEB88DA))
         else: await ctx.message.channel.send(embed=discord.Embed(title=f'Joke ({Joke["category"]})', description=Joke["joke"], color=0xEB88DA))
 
     @commands.command(name="darkjoke")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def DarkJoke(self, ctx):
         DarkJoke = requests.get("https://sv443.net/jokeapi/v2/joke/Dark", headers={"Accept": "application/json"}).json()
-        if DarkJoke["type"] == "twopart": await ctx.message.channel.send(embed=discord.Embed(title=f'Joke ({DarkJoke["category"]})', description=f'{DarkJoke["setup"]}\n\n||{DarkJoke["delivery"]}||', color=0xD8DCCD))
+        if DarkJoke["type"] == "twopart": 
+            await ctx.message.channel.send(embed=discord.Embed(title=f'Joke ({DarkJoke["category"]})', description=f'{DarkJoke["setup"]}\n\n||{DarkJoke["delivery"]}||',
+                                                               color=0xD8DCCD))
         else: await ctx.message.channel.send(embed=discord.Embed(title=f'Joke ({DarkJoke["category"]})', description=DarkJoke["joke"], color=0xD8DCCD))
 
     @commands.command(name="pun")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def Pun(self, ctx):
         Pun = requests.get("https://sv443.net/jokeapi/v2/joke/Pun", headers={"Accept": "application/json"}).json()
-        if Pun["type"] == "twopart":await ctx.message.channel.send(embed=discord.Embed(title="Pun", description=f'{Pun["setup"]}\n\n||{Pun["delivery"]}||', color=0x05D111))
+        if Pun["type"] == "twopart": await ctx.message.channel.send(embed=discord.Embed(title="Pun", description=f'{Pun["setup"]}\n\n||{Pun["delivery"]}||', color=0x05D111))
         else: await ctx.message.channel.send(embed=discord.Embed(title="Pun", description=Pun["joke"], color=0x05D111))
 
     #? @commands.command(name="qotd")

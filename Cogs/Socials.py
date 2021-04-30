@@ -3,11 +3,13 @@ from discord.ext import commands
 from prawcore import NotFound, Forbidden
 import os
 import random
-from Setup import Reddit, Rdt, GetPatreonTier, SendWait, YClient, Twitter, THelix, ChVote, ChVoteUser, ChPatreonT2, ChMaxMultireddits, GetVidDuration, ErrorEmbeds, Navigator, Threader
+from Setup import (Reddit, Rdt, GetPatreonTier, SendWait, YClient, Twitter, THelix, ChVote, ChVoteUser,
+                   ChPatreonT2, ChMaxMultireddits, GetVidDuration, ErrorEmbeds, Navigator, Threader)
 from twitch.helix.resources import StreamNotFound
 import requests
 import tweepy
 import pyimgbox
+import inspect
 import asyncio
 import datetime
 import numpy as np
@@ -63,22 +65,16 @@ def RedditbedMaker(SubCpoS, Subname, Nsfchannel, Type="R", PostNum=0, TotalPosts
     return REm
 
 def YoutubebedMaker(VidID, Channel, VidNum, VidsTotal):
-    print("kk")
     Vid = YClient.get_video_by_id(video_id=VidID).items[0]
-    print("lpp")
     YLEm = discord.Embed(title=Vid.snippet.title, description=Vid.snippet.description.split("\n")[0], url=f"https://www.youtube.com/watch?v={VidID}", color=0xFF0000)
-    print("zabber")
     YLEm.set_thumbnail(url=Vid.snippet.thumbnails.high.url)
     YLEm.add_field(name=f"`Video: {VidNum+1}/{VidsTotal}`", value="\u200b", inline=False)
-    print("daddy")
     if Vid.snippet.liveBroadcastContent == "live": YLEm.add_field(name="**CURRENTLY LIVE**", value="\u200b", inline=True)
     else:
         YLEm.add_field(name=f"Upload Date: {Vid.snippet.publishedAt[:10]}", value="\u200b", inline=False)
         YLEm.add_field(name=f"Duration: {GetVidDuration(VidID)}", value="\u200b", inline=False)
-    print("hey daddy")
     if hasattr(Vid.statistics, "viewCount"): YLEm.add_field(name="Views :eye:", value=f"{int(Vid.statistics.viewCount):,}", inline=True)
     else: YLEm.add_field(name="Views :eye:", value="Disabled", inline=True)
-    print("Fuck")
     YLEm.add_field(name="\u200b", value="\u200b", inline=True)
     if hasattr(Vid.statistics, "commentCount"): YLEm.add_field(name="Comments :speech_balloon:", value=f"{int(Vid.statistics.commentCount):,}", inline=True)
     else: YLEm.add_field(name="Comments :speech_balloon:", value="Disabled", inline=True)
@@ -88,10 +84,12 @@ def YoutubebedMaker(VidID, Channel, VidNum, VidsTotal):
     if hasattr(Vid.statistics, "dislikeCount"): YLEm.add_field(name="Dislikes :thumbsdown:", value=f"{int(Vid.statistics.dislikeCount):,}", inline=True)
     else: YLEm.add_field(name="Dislikes :thumbsdown:", value="Disabled", inline=True)
     YLEm.add_field(name="\u200b", value="\u200b", inline=False)
-    print("rape")
-    if not Channel.statistics.hiddenSubscriberCount: YLEm.set_footer(text=f"{Channel.snippet.title} / Subs: {int(Channel.statistics.subscriberCount):,} / Videos: {int(Channel.statistics.videoCount):,}", icon_url=Channel.snippet.thumbnails.high.url)
-    else: YLEm.set_footer(text=f"{Channel.snippet.title} / Videos: {int(Channel.statistics.videoCount):,}\n\nNeed help navigating? zhelp navigation", icon_url=Channel.snippet.thumbnails.high.url)
-    print("oh yeh")
+    if not Channel.statistics.hiddenSubscriberCount: 
+        YLEm.set_footer(text=f"{Channel.snippet.title} / Subs: {int(Channel.statistics.subscriberCount):,} / Videos: {int(Channel.statistics.videoCount):,}", 
+                        icon_url=Channel.snippet.thumbnails.high.url)
+    else: 
+        YLEm.set_footer(text=f"{Channel.snippet.title} / Videos: {int(Channel.statistics.videoCount):,}\n\nNeed help navigating? zhelp navigation", 
+                        icon_url=Channel.snippet.thumbnails.high.url)
     return YLEm
 
 def TwitterbedMaker(TWprofile, IsVerified, TwTtype, TWtimeline, TwTNum, TwTtotal):
@@ -104,13 +102,15 @@ def TwitterbedMaker(TWprofile, IsVerified, TwTtype, TWtimeline, TwTNum, TwTtotal
     if TwTtype == "Retweet":
         try:
             if hasattr(TWtimeline.retweeted_status, "extended_entities"): TEmE.set_image(url=TWtimeline.retweeted_status.extended_entities["media"][0]["media_url_https"])
-            TEmE.add_field(name=f"Retweeted Body (By: {Twitter.get_user(user_id = TWtimeline.retweeted_status.user.id).screen_name}): ", value=TWtimeline.retweeted_status.full_text, inline=False)
+            TEmE.add_field(name=f"Retweeted Body (By: {Twitter.get_user(user_id = TWtimeline.retweeted_status.user.id).screen_name}): ", 
+                           value=TWtimeline.retweeted_status.full_text, inline=False)
         except tweepy.error.TweepError: TEmE.add_field(name="On (By: --Deleted--): ", value="--Deleted--", inline=False)
     elif TwTtype == "Quote":
         try:
             if hasattr(TWtimeline.quoted_status, "extended_entities"): TEmE.set_image(url=TWtimeline.quoted_status.extended_entities["media"][0]["media_url_https"])
             TEmE.add_field(name="Main Body: ", value=TWtimeline.full_text, inline=False)
-            TEmE.add_field(name=f"Quoted Body (By: {Twitter.get_user(user_id = TWtimeline.quoted_status.user.id).screen_name}): ", value=TWtimeline.quoted_status.full_text, inline=False)
+            TEmE.add_field(name=f"Quoted Body (By: {Twitter.get_user(user_id = TWtimeline.quoted_status.user.id).screen_name}): ", 
+                           value=TWtimeline.quoted_status.full_text, inline=False)
         except tweepy.error.TweepError: TEmE.add_field(name="On (By: --Deleted--): ", value="--Deleted--", inline=False)
     elif TwTtype == "Tweet":
         if hasattr(TWtimeline, "extended_entities"): TEmE.set_image(url=TWtimeline.extended_entities["media"][0]["media_url_https"])
@@ -128,7 +128,7 @@ def TwitterbedMaker(TWprofile, IsVerified, TwTtype, TWtimeline, TwTNum, TwTtotal
 def ChTwTp(TWtimeline):
     if hasattr(TWtimeline, "retweeted_status") and TWtimeline.retweeted_status: return "Retweet"
     elif hasattr(TWtimeline, "quoted_status") and TWtimeline.quoted_status: return "Quote"
-    elif hasattr(TWtimeline, "in_reply_to_status_id" and TWtimeline.in_reply_to_status_id): return "Comment"
+    elif hasattr(TWtimeline, "in_reply_to_status_id") and TWtimeline.in_reply_to_status_id: return "Comment"
     else: return "Tweet"
 
 def EmbOri(REm, Type, SubCpoS):
@@ -238,7 +238,7 @@ class Socials(commands.Cog):
             try:
                 if int(MSg.content) <= 10: RsT = True
             except ValueError:
-                if (MesS == "cancel") or (MesS == "c"): RsT = True
+                if MesS in ["cancel", "c"]: RsT = True
             return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
 
         TWinput = list(args)
@@ -350,28 +350,21 @@ class Socials(commands.Cog):
         Info = lambda x:YClient.get_channel_info(channel_id=x)
         Vids = lambda x:YClient.get_activities_by_channel(channel_id=x, count=20)
         if IDorName == "NAME":
-            print("hite")
             try:
                 YTtempID = YClient.search(q=" ".join(YTinput), count=1, search_type="channel").items[0].snippet.channelId
                 YTinfo, YTVids = Threader([Info, Vids], [[YTtempID]]*2)
             except IndexError: 
                 await SendWait(ctx, "Nothing Found :woozy_face:"); return; print("hiter")
         elif IDorName == "ID": YTinfo, YTVids = Threader([Info, Vids], [[YTid]]*2)
-        print("Got it")
         YTdesc = (YTinfo.items[0].snippet.description)[:253]
-        print("Got it")
         YEm = discord.Embed(title=YTinfo.items[0].snippet.title, description=YTdesc, url=f"https://www.youtube.com/channel/{YTinfo.items[0].id}", color=0xFF0000)
         YEm.add_field(name="Created on:", value=YTinfo.items[0].snippet.publishedAt[:10], inline=False)
-        print("yo")
         if not YTinfo.items[0].statistics.hiddenSubscriberCount: YEm.add_field(name="Subscribers:", value=f"{int(YTinfo.items[0].statistics.subscriberCount):,}", inline=False)
-        print("daddy")
         YEm.add_field(name="Videos:", value=f"{int(YTinfo.items[0].statistics.videoCount):,}", inline=True)
         YEm.add_field(name="\u200b", value="\u200b", inline=True)
         YEm.add_field(name="Total Views:", value=f"{int(YTinfo.items[0].statistics.viewCount):,}", inline=True)
         YEm.set_thumbnail(url=YTinfo.items[0].snippet.thumbnails.high.url)
-        print("lol")
-        YTEs = [YoutubebedMaker(Vid, YTinfo.items[0], VNum, len(YTVids.items)) for Vid, VNum in enumerate(YTVids.items)]
-        print("ok")
+        YTEs = [YoutubebedMaker(Vid.contentDetails.upload.videoId, YTinfo.items[0], VNum, len(YTVids.items)) for VNum, Vid in enumerate(YTVids.items)]
         await Navigator(ctx, YTEs, Main=True, MainBed=YEm)
 
     @commands.group(name="reddit", invoke_without_command=True)
@@ -398,7 +391,7 @@ class Socials(commands.Cog):
 
         if not args: await SendWait(ctx, "No arguments :no_mouth:")
         args = "".join(args)[2:] if "".join(args).startswith("r/") else "".join(args)
-        if not CheckSub(args): await SendWait(ctx, "Sub doesn't exist or private :expressionless:"); return
+        if not CheckSub(args) or not inspect.stack()[1].function == "__call__": await SendWait(ctx, "Sub doesn't exist or private :expressionless:"); return
         KraPosS = await ctx.message.channel.send(embed=discord.Embed(title="How would you like to sort the subreddit?", description="🔝 to sort by top.\n📈 to sort by rising.\n🔥 to sort by hot.\n📝 to sort by new.\n❌ to cancel", footer="This timesout in 10s"))
         await KraPosS.add_reaction("🔝")
         await KraPosS.add_reaction("📈")
@@ -482,6 +475,7 @@ class Socials(commands.Cog):
         User = Rdt.find({"IDd": ctx.author.id})[0]
         if ArgumentHandle[0] in User and ArgumentHandle[0] not in ["IDd","_id"]:
             Subreddits = "+".join(User[ArgumentHandle[0]])
+            print(Subreddits)
             await self.RedditNav(ctx, Subreddits)
         else: await SendWait(ctx, f"That Multireddit ({ArgumentHandle[0]}) doesn't exist")
 
