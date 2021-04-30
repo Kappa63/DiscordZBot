@@ -447,7 +447,7 @@ class Socials(commands.Cog):
         Name = args
         Nsfwcheck=ctx.channel.is_nsfw()
         Crsd = np.array_split(SubCpoS, len(SubCpoS)//2)
-        Crsd = [np.insert(i, 0, v*2) for v,i in enumerate(Crsd)]
+        Crsd = [np.insert(i, 0, np.where(Crsd == i)[0][0]*2) for i in Crsd]
         PostEms = sum(Threader([Embeder]*(len(SubCpoS)//2), Crsd), [])
         await Navigator(ctx, PostEms)
 
