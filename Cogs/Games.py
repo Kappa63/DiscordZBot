@@ -79,7 +79,7 @@ def TTTBoardMaker(Board, User1, User2, AnExtra="\u200b"):
 
 
 def TTTWinCheck(Board):
-    if any(any(i in k for k in [Board, np.dstack(Board), np.concatenate((np.diag(np.fliplr(Board)),np.diag(Board)))]) for i in [["o"]*3, ["x"]*3]): return True
+    if any(any(i in [Board, np.dstack(Board).tolist(), [np.diag(Board).tolist(), np.diag(np.fliplr(Board)).tolist()]]) for i in [["o"]*3, ["x"]*3]): return True
     return False
 
 def TTTGetForm(Input):
