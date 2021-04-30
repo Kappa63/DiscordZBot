@@ -116,7 +116,7 @@ class MainEvents(commands.Cog):
         await self.DClient.wait_until_ready()
         print("APOD Regulating...")
         # StaffChannel = self.DClient.get_channel(795080325020909598)
-        await self.StaffChannel.send(f"APOD Regulating for {TimeTillMidnight()}s...")
+        # await self.StaffChannel.send(f"APOD Regulating for {TimeTillMidnight()}s...")
         await asyncio.sleep(TimeTillMidnight())
 
     @tasks.loop(seconds=TimeTillMidnight())
@@ -156,7 +156,7 @@ class MainEvents(commands.Cog):
         await self.DClient.wait_until_ready()
         print("CPTD Regulating...")
         # StaffChannel = self.DClient.get_channel(795080325020909598)
-        await self.StaffChannel.send(f"CPTD Regulating for {TimeTillMidnight()}s...")
+        # await self.StaffChannel.send(f"CPTD Regulating for {TimeTillMidnight()}s...")
         await asyncio.sleep(TimeTillMidnight())
 
     #? @tasks.loop(seconds=TimeTillMidnight())
