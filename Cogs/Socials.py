@@ -356,6 +356,7 @@ class Socials(commands.Cog):
             except IndexError: 
                 await SendWait(ctx, "Nothing Found :woozy_face:"); return; print("hiter")
         elif IDorName == "ID": YTinfo, YTVids = Threader([Info, Vids], [[YTid]]*2)
+        await SendWait(ctx, "Getting Channel...")
         YTdesc = (YTinfo.items[0].snippet.description)[:253]
         YEm = discord.Embed(title=YTinfo.items[0].snippet.title, description=YTdesc, url=f"https://www.youtube.com/channel/{YTinfo.items[0].id}", color=0xFF0000)
         YEm.add_field(name="Created on:", value=YTinfo.items[0].snippet.publishedAt[:10], inline=False)
