@@ -180,15 +180,15 @@ class Games(commands.Cog):
                             PlaceOnBoard = TTTGetForm(Position)
                             Table[PlaceOnBoard[0]][PlaceOnBoard[1]] = PlayerAssign[ResS.author]
                             if TTTWinCheck(Table):
-                                Board = await ctx.message.channel.send(embed=TTTBoardMaker(Table, Players[0], Players[1], f"{Player.display_name} WINS"))
-                                await SendWait(ctx, f"{Player.display_name} Wins!! :partying_face:")
+                                Board = await ctx.message.channel.send(embed=TTTBoardMaker(Table, Players[0], Players[1], f"`{Player.display_name}` WINS"))
+                                await SendWait(ctx, f"`{Player.display_name}` Wins!! :partying_face:")
                                 return
                             Board = await ctx.message.channel.send(embed=TTTBoardMaker(Table, Players[0], Players[1]))
                     except ValueError:
                         if LResS in ["end", "endgame"]: Board = await ctx.message.channel.send(embed=TTTBoardMaker(Table, Players[0], Players[1], "ENDED")); return
                 except asyncio.TimeoutError:
-                    Board = await ctx.message.channel.send(embed=TTTBoardMaker(Table, Players[0], Players[1], f"{Player.display_name} DID NOT RESPOND"))
-                    await SendWait(ctx, f"{Player.mention} did not play :slight_frown:!")
+                    Board = await ctx.message.channel.send(embed=TTTBoardMaker(Table, Players[0], Players[1], f"`{Player.display_name}` DID NOT RESPOND"))
+                    await SendWait(ctx, f"`{Player.display_name}` did not play :slight_frown:!")
                     return
                 R += 1
         else: await SendWait(ctx, "No second player mentioned or Mentioned a bot :slight_frown:!")
@@ -216,7 +216,7 @@ class Games(commands.Cog):
                 LegalMoves = [ChessBoard.san(i) for i in list(ChessBoard.legal_moves)]
                 if R % 2 == 0: Player = Players[1]
                 else: Player = Players[0]
-                MentionTurn = await ctx.message.channel.send(f'{Player.mention}Please choose where to play: {", ".join(LegalMoves)}')
+                MentionTurn = await ctx.message.channel.send(f'{Player.mention} Please choose where to play: {", ".join(LegalMoves)}')
                 try:
                     TimeTemp = int(time.time())
                     ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=PlayerTimes[Player])
@@ -227,7 +227,7 @@ class Games(commands.Cog):
                     if ResS.content in LegalMoves:
                         await Board.delete()
                         ChessBoard.push_san(ResS.content)
-                        if ChessBoard.is_checkmate(): await SendWait(ctx, f"{Player.display_name} WINS by Checkmate!!"); return
+                        if ChessBoard.is_checkmate(): await SendWait(ctx, f"`{Player.display_name}` WINS by Checkmate!!"); return
                         elif ChessBoard.is_insufficient_material(): await SendWait(ctx, "DRAW by Insufficient Material!!"); return
                         elif ChessBoard.is_stalemate(): await SendWait(ctx, "DRAW by Stalemate!!"); return
                         elif ChessBoard.can_claim_draw():
@@ -235,13 +235,13 @@ class Games(commands.Cog):
                             CanClaimDraw = True
                         Board = await ctx.message.channel.send(MakeChessBoard(("".join(str(ChessBoard).split(" "))).splitlines(), PlayerTimes, Players))
                     elif LResS == "resign":
-                        if R % 2 == 0: await SendWait(ctx, f"{Players[0].mention} WINS by Resignation")
-                        else: await SendWait(ctx, f"{Players[1].mention} WINS by Resignation")
+                        if R % 2 == 0: await SendWait(ctx, f"`{Players[0].display_name}` WINS by Resignation")
+                        else: await SendWait(ctx, f"`{Players[1].display_name}` WINS by Resignation")
                         return
-                    elif LResS == "claimdraw": await SendWait(ctx, f"{Player.mention} Claims DRAW!!"); return
+                    elif LResS == "claimdraw": await SendWait(ctx, f"`{Player.display_name}` Claims DRAW!!"); return
                 except asyncio.TimeoutError:
-                    if R % 2 == 0: await SendWait(ctx, f"{Players[0].mention} WINS by Timeout")
-                    else: await SendWait(ctx, f"{Players[1].mention} WINS by Timeout")
+                    if R % 2 == 0: await SendWait(ctx, f"`{Players[0].display_name}` WINS by Timeout")
+                    else: await SendWait(ctx, f"`{Players[1].display_name}` WINS by Timeout")
                     return
                 R += 1
         else: await SendWait(ctx, "No second player mentioned or Mentioned a bot :slight_frown:!")

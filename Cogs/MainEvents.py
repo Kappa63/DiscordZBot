@@ -108,7 +108,7 @@ class MainEvents(commands.Cog):
                     AQd.delete_one(User)
             else: await Channel.send("NO LONGER A Donator. Daily APOD stopped. :pensive: You can sign up for donator, check zdonate")
         await self.StaffChannel.send(f"Next APOD in {TimeTillMidnight()}s...")
-        # raise ValueError
+        raise ValueError
         # self.SendAPODDaily.change_interval(seconds=TimeTillMidnight())
 
     @SendAPODDaily.before_loop
@@ -148,7 +148,7 @@ class MainEvents(commands.Cog):
                     AQd.delete_one(User)
             else: await Channel.send("NO LONGER A Donator. Daily CPTD stopped. :pensive: You can sign up for donator, check zdonate")
         await self.StaffChannel.send(f"Next CPTD in {TimeTillMidnight()}s...")
-        # raise ValueError
+        raise ValueError
         # self.SendCPTDDaily.change_interval(seconds=TimeTillMidnight())
 
     @SendCPTDDaily.before_loop
