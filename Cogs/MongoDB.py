@@ -104,7 +104,8 @@ class MongoDB(commands.Cog):
         if Mentions:
             Mentioned = Mentions[0]
             if Mentioned.mention[2] == "!":
-                args.remove(Mentioned.mention)
+                if f"<@!{Mentioned.id}>" in args: args.remove(f"<@!{Mentioned.id}>"); print("id")
+                else: args = args[1:]; print("random")
                 MentionedUser = True
             else: await SendWait(ctx, "Mentioned User Is A Bot"); return
         if not args:
