@@ -20,6 +20,8 @@ class Movies(commands.Cog):
                 if (MesS == "cancel") or (MesS == "c"): RsT = True
             return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
 
+        if not args: await SendWait(ctx, "No Arguments :no_mouth:"); return
+        
         await SendWait(ctx, ":tv: Getting Movie/Show...")
         MVinput = list(args)
         if MVinput[0].lower() == "search" and args:
@@ -31,7 +33,11 @@ class Movies(commands.Cog):
             for Movie in IMClient.search_movie(" ".join(MVinput), results=10):
                 C += 1
                 if C == 1: SYem = discord.Embed(title=f':mag: Search for "{" ".join(MVinput)}"', description="\u200b", color=0xDBA506)
-                SYem.add_field(name="\u200b", value=f'{C}. `{Movie.data["title"]} ({Movie.data["kind"]}) ({Movie.data["year"]})`', inline=False)
+                Md = ""
+                if "kind" in Movie.data: Mk = Movie.data["kind"]
+                My = ""
+                if "year" in Movie.data: My = Movie.data["year"]
+                SYem.add_field(name="\u200b", value=f'{C}. `{Movie.data["title"]} ({Mk}) ({My})`', inline=False)
                 SrchIMDb.append(Movie)
             if not C: await SendWait(ctx, "Nothing Found :woozy_face:"); return
             SYem.set_footer(text='Choose a number to check Movie or Series. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
@@ -43,8 +49,12 @@ class Movies(commands.Cog):
                     if int(ResS.content) <= 10:
                         IMDbChoice = SrchIMDb[int(ResS.content) - 1]
                         IMDbID = IMDbChoice.movieID
+                        Md = ""
+                        if "kind" in IMDbChoice.data: Mk = IMDbChoice.data["kind"]
+                        My = ""
+                        if "year" in IMDbChoice.data: My = IMDbChoice.data["year"]
                         await IMDbSent.edit(embed=discord.Embed(title=":calling: Finding...", 
-                                                                description=f'{IMDbChoice.data["title"]} ({IMDbChoice.data["kind"]}) ({IMDbChoice.data["year"]})',
+                                                                description=f'{IMDbChoice.data["title"]} ({Mk}) ({My})',
                                                                 color=0xDBA506))
                 except ValueError:
                     if (LResS == "cancel") or (LResS == "c"):
@@ -56,7 +66,6 @@ class Movies(commands.Cog):
         elif args:
             MVname = " ".join(args)
             IDorName = "NAME"
-        else: await SendWait(ctx, "No Arguments :no_mouth:"); return
 
         if IDorName == "NAME":
             try:
@@ -72,9 +81,12 @@ class Movies(commands.Cog):
                             color=0xDBA506)
         if PlotF: YEm.add_field(name="Plot:", value=PlotF + "\n", inline=False)
         if "original air date" in IMDbinfo: YEm.add_field(name="Original Air Date:", value=IMDbinfo["original air date"], inline=False)
-        if "box office" in IMDbinfo: YEm.add_field(name="Box Office:",
-                                                   value=f'Budget: {IMDbinfo["box office"]["Budget"].split(" ")[0]}\nOpening Week: {IMDbinfo["box office"]["Opening Weekend United States"].split(" ")[0]}\nTotal Gross: {IMDbinfo["box office"]["Cumulative Worldwide Gross"].split(" ")[0]}',
-                                                   inline=True)
+        if "box office" in IMDbinfo:
+            Box = ""
+            if "Budget" in IMDbinfo["box office"]: Box += f'Budget: {IMDbinfo["box office"]["Budget"].split(" ")[0]}'
+            if "Opening Weekend United States" in IMDbinfo["box office"]: Box += f'\nOpening Week: {IMDbinfo["box office"]["Opening Weekend United States"].split(" ")[0]}'
+            if "Cumulative Worldwide Gross" in IMDbinfo["box office"]: Box += f'\nTotal Gross: {IMDbinfo["box office"]["Cumulative Worldwide Gross"].split(" ")[0]}'
+            if Box: YEm.add_field(name="Box Office:", value=Box, inline=True)
         if "number of seasons" in IMDbinfo: YEm.add_field(name="Seasons:", value=IMDbinfo["number of seasons"], inline=True)
         if "rating" in IMDbinfo: YEm.add_field(name="Rating:", value=IMDbinfo["rating"], inline=True)
         if "cast" in IMDbinfo:

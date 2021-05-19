@@ -120,8 +120,8 @@ class Games(commands.Cog):
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def PlaySudoku(self, ctx, *args):
         ChCHEm = lambda RcM, RuS: not RuS.bot and RcM.message == OriginalBoard and str(RcM.emoji) in ["👁️", "❌"]
-
-        Difficulty = list(args)[0].lower()
+        
+        Difficulty = list(args)[0].lower() if args else "random"
         RanChars = "abcdefghijklmnopqrstuvwxyz1234567890"
         BoardName = "".join((random.choice(RanChars) for i in range(5)))
         if Difficulty not in ["easy", "hard", "medium", "random"]: await SendWait(ctx, "Not valid difficulty :confused:"); return
