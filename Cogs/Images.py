@@ -66,14 +66,14 @@ class Images(commands.Cog):
         FEm.set_image(url=Hungry["image"])
         await ctx.message.channel.send(embed=FEm)
 
-    @commands.command(aliases=["taylor", "tswift", "taylorswift"])
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def RandomDishes(self, ctx):
-        TaylorImage = requests.get("https://api.taylor.rest/image", headers={"Accept": "application/json"}).json()
-        TaylorQuote = requests.get("https://api.taylor.rest/", headers={"Accept": "application/json"}).json()
-        TEm = discord.Embed(title="Taylor Swift", description=TaylorQuote["quote"], color=0xD29EC1)
-        TEm.set_image(url=TaylorImage["url"])
-        await ctx.message.channel.send(embed=TEm)
+    # @commands.command(aliases=["taylor", "tswift", "taylorswift"])
+    # @commands.cooldown(1, 1, commands.BucketType.user)
+    # async def RandomTSwift(self, ctx):
+    #     TaylorImage = requests.get("https://api.taylor.rest/image", headers={"Accept": "application/json"}).json()
+    #     TaylorQuote = requests.get("https://api.taylor.rest/", headers={"Accept": "application/json"}).json()
+    #     TEm = discord.Embed(title="Taylor Swift", description=TaylorQuote["quote"], color=0xD29EC1)
+    #     TEm.set_image(url=TaylorImage["url"])
+    #     await ctx.message.channel.send(embed=TEm)
 
     @commands.command(name="pdf")
     @commands.cooldown(1, 5, commands.BucketType.user)

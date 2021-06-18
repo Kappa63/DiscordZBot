@@ -65,7 +65,8 @@ def RedditbedMaker(SubCpoS, Subname, Nsfchannel, Type="R", PostNum=0, TotalPosts
     return REm
 
 def YoutubebedMaker(VidID, Channel, VidNum, VidsTotal):
-    Vid = YClient.get_video_by_id(video_id=VidID).items[0]
+    try: Vid = YClient.get_video_by_id(video_id=VidID).items[0]
+    except: return
     YLEm = discord.Embed(title=Vid.snippet.title, description=Vid.snippet.description.split("\n")[0], url=f"https://www.youtube.com/watch?v={VidID}", color=0xFF0000)
     YLEm.set_thumbnail(url=Vid.snippet.thumbnails.high.url)
     YLEm.add_field(name=f"`Video: {VidNum+1}/{VidsTotal}`", value="\u200b", inline=False)
@@ -392,7 +393,7 @@ class Socials(commands.Cog):
 
         if not args: await SendWait(ctx, "No arguments :no_mouth:")
         args = "".join(args)[2:] if "".join(args).startswith("r/") else "".join(args)
-        if not CheckSub(args) or not inspect.stack()[1].function == "__call__": await SendWait(ctx, "Sub doesn't exist or private :expressionless:"); return
+        if not CheckSub(args) and not inspect.stack()[1].function == "__call__": await SendWait(ctx, "Sub doesn't exist or private :expressionless:"); return
         KraPosS = await ctx.message.channel.send(embed=discord.Embed(title="How would you like to sort the subreddit?", description="🔝 to sort by top.\n📈 to sort by rising.\n🔥 to sort by hot.\n📝 to sort by new.\n❌ to cancel", footer="This timesout in 10s"))
         await KraPosS.add_reaction("🔝")
         await KraPosS.add_reaction("📈")

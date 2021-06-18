@@ -47,6 +47,7 @@ class Google(commands.Cog):
             IEm.set_image(url=Image.url)
             ImageResults.append(IEm)
             ImageNum += 1
+        if not ImageResults: await SendWait(ctx, "No Images Found..."); return
         await Navigator(ctx, ImageResults, Type="No #")
 
     @commands.command(name="weather")

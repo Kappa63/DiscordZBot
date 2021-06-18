@@ -76,7 +76,7 @@ class MainEvents(commands.Cog):
             # StaffChannel = self.DClient.get_channel(795080325020909598)
             # Me = self.DClient.get_user(443986051371892746)
             await self.StaffChannel.send(self.Me.mention)
-            await self.StaffChannel.send(f'In {ctx.command} ({ctx.message.content}): {error} ({type(error)})')
+            await self.StaffChannel.send(f'In {ctx.command} ({ctx.message.content}): {error}')
             raise error
 
     @tasks.loop(seconds=TimeTillMidnight())

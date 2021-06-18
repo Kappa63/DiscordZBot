@@ -64,7 +64,7 @@ class Misc(commands.Cog):
                     await asyncio.sleep(2)
                     await ConfirmAwait.delete()
             else: await SendWait(ctx, "zremind is limited to waiting for 1day max. :cry:")
-        except ValueError: await SendWait(ctx, 'Argument was improper. Check "zhelp misc" to check how to use it. :no_mouth:')
+        except (ValueError, IndexError): await SendWait(ctx, 'Argument was improper. Check "zhelp misc" to check how to use it. :no_mouth:')
 
     @commands.command(aliases=["crypto", "cryptocurrency"])
     @commands.cooldown(1, 1, commands.BucketType.user)

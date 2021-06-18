@@ -170,7 +170,7 @@ class HelpInfo(commands.Cog):
         HEm = discord.Embed(title="**ZBot Quotes/Advice/Insult Help**", description="\u200b", color=0x0AF531)
         HEm.add_field(name="zadvice: ", value="Good old advice", inline=False)
         HEm.add_field(name="zkanye: ", value="Words by Kanye", inline=False)
-        HEm.add_field(name="ztaylor: ", value="Image and Quote of Taylor Swift", inline=False)
+        # HEm.add_field(name="ztaylor: ", value="Image and Quote of Taylor Swift", inline=False)
         #? HEm.add_field(name="zqotd: ", value="Quote Of The Day (Voters and donators ONLY)", inline=False)
         #? HEm.add_field(name="zqotddaily: ", value="Returns when the next QOTD Daily will happen (Tier 2 or more donators ONLY)", inline=False)
         #? HEm.add_field(name="zqotddaily start: ", value="Start receiving daily QOTDs in the current channel (Tier 2 or more donators ONLY)", inline=False)

@@ -5,11 +5,11 @@ import asyncio
 import random
 import rule34
 
-def MakeEmbed(Rule, RuleNum = 0, Type="R"):
+def MakeEmbed(Rule, Total=0, RuleNum = 0, Type="R"):
     Tags = ", ".join(Rule.tags)[0:253]
     REm = discord.Embed(title="Rule34", description=Tags, color=0xDFE31E)
     REm.add_field(name="Score: ", value=Rule.score)
-    if Type == "S": REm.add_field(name=f"`Page: {RuleNum+1}/{len(Rule)}`", value="\u200b")
+    if Type == "S": REm.add_field(name=f"`Page: {RuleNum+1}/{Total}`", value="\u200b")
     REm.set_image(url=Rule.file_url)
     REm.set_thumbnail(url=Rule.preview_url)
     if Type == "S": REm.set_footer(text=f"{Rule.created_at}\n\nNeed help navigating? zhelp navigation")
@@ -46,7 +46,8 @@ class Rule34(commands.Cog):
                 Rule34Surf = await Rule34.getImages(f'-underage -loli -lolicon -lolita -lolita_channel -shota -shotacon {"_".join(args).lower()}')
             else: Rule34Surf = await Rule34.getImages(f'{"_".join(args).lower()}')
         except TypeError: await SendWait(ctx, "Nothing Found :no_mouth:"); return
-        Rules = [MakeEmbed(i, v, Type="S") for v, i in enumerate(Rule34Surf)] 
+        Rule34Total = len(Rule34Surf)
+        Rules = [MakeEmbed(i, Total=Rule34Total, RuleNum=v, Type="S") for v, i in enumerate(Rule34Surf)] 
         await Navigator(ctx, Rules)
 
 def setup(DClient):
