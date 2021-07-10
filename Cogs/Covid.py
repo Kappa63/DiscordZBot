@@ -18,7 +18,7 @@ class Covid(commands.Cog):
         CountryPages = []
         for n, i in enumerate(Countries):
             if not n%20: CountryPages.append(discord.Embed(title=f"Country Codes", color=0xBD9400))
-            CountryPages[-1].add_field(name=f"{i[0]}:  {i[1]}", inline=False)
+            CountryPages[-1].add_field(name=f"{i[0]}:  {i[1]}", value="\u200b", inline=False)
         Navigator(ctx, CountryPages, Type="Not #")
 
     @commands.command(name="covid")
