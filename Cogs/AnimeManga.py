@@ -56,7 +56,7 @@ class AnimeManga(commands.Cog):
                 except ValueError:
                     if LResS in ["cancel", "c"]: await MnSrS.edit(embed=discord.Embed(title=":x: Search Cancelled", description="\u200b", color=0x3695BA))
             except asyncio.TimeoutError: await MnSrS.edit(embed=discord.Embed(title=":hourglass: Search Timeout...", description="\u200b", color=0x3695BA))
-        except UnboundLocalError:
+        except (UnboundLocalError, ValueError) as e:
             SAEm = discord.Embed(title=f':mag: Search for "{MangaInput}"', description="\u200b", color=0x3695BA)
             SAEm.add_field(name="\u200b", value="No Results found :woozy_face:", inline=False)
             await MnSrS.edit(embed=SAEm)
@@ -150,7 +150,7 @@ class AnimeManga(commands.Cog):
                 except ValueError:
                     if LResS in ["cancel", "c"]: await AnSrS.edit(embed=discord.Embed(title=":x: Search Cancelled", description="\u200b", color=0x3FC0FF))
             except asyncio.TimeoutError: await AnSrS.edit(embed=discord.Embed(title=":hourglass: Search Timeout...", description="\u200b", color=0x3FC0FF))
-        except UnboundLocalError:
+        except (UnboundLocalError, ValueError) as e:
             SAEm = discord.Embed(title=f':mag: Search for "{AnimeInput}"', description="\u200b", color=0x3FC0FF)
             SAEm.add_field(name="\u200b", value="No Results found :woozy_face:", inline=False)
             await AnSrS.edit(embed=SAEm)

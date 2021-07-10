@@ -1,13 +1,25 @@
 import discord
 from discord.ext import commands
 from Setup import Covid as CVd
-from Setup import SendWait
+from Setup import SendWait, Navigator
 import datetime
-
+import json
 
 class Covid(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
+
+    @commands.command(name="covidcodes")
+    @commands.cooldown(1, 3, commands.BucketType.guild)
+    async def Covid19Codes(self, ctx):
+        CountryFile = open("countries.json")
+        Countries = json.load(CountryFile).items
+        CountryFile.close()
+        CountryPages = []
+        for n, i in enumerate(Countries):
+            if not n%20: CountryPages.append(discord.Embed(title=f"Country Codes", color=0xBD9400))
+            CountryPages[-1].add_field(name=f"{i[0]}:  {i[1]}", inline=False)
+        Navigator(ctx, CountryPages, Type="Not #")
 
     @commands.command(name="covid")
     @commands.cooldown(1, 3, commands.BucketType.guild)
@@ -33,7 +45,7 @@ class Covid(commands.Cog):
                 CEm.add_field(name="Deaths: ", value=f"{LocDeaths:,}", inline=False)
                 CEm.add_field(name="Recovered: ", value=f"{LocRecovered:,}", inline=False)
                 CEm.set_footer(text="Note: Data may not be completely accurate")
-            else: await SendWait(ctx, "Country not found :pensive:")
+            else: await SendWait(ctx, "Country not found :pensive:"); return
         else:
             CovidWorld = CVd.getLatest()
             CEm = discord.Embed(title="Worldwide Covid-19 Status", description=f"This data was requested on {datetime.date.today()}", color=0xBD9400)

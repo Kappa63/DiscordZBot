@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from Setup import GiClient, SendWait, Navigator
+from Setup import GiClient, SendWait, Navigator, RefreshGISClient
 import requests
 import asyncio
 from googlesearch import search
@@ -36,7 +36,7 @@ class Google(commands.Cog):
     async def ImageSearching(self, ctx, *args):
         if not args: await SendWait(ctx, "No search argument :woozy_face:"); return
         await SendWait(ctx, ":camera_with_flash: Looking for Images...")
-
+        RefreshGISClient()
         GiClient.search(search_params={"q": " ".join(args), "num": 20, "safeundefined": "high"})
         ImageResults = []
         ImageNum = 1

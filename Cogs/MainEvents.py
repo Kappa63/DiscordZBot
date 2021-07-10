@@ -71,7 +71,7 @@ class MainEvents(commands.Cog):
         elif isinstance(error, IsSetup): await SendWait(ctx, 'Please setup your server first (with "zsetup")! Check all server commands (with "zhelp server")')
         elif isinstance(error, IsNSFW): await SendWait(ctx, "This can only be used in NSFW channels.")
         elif isinstance(error, IsMultiredditLimit): await SendWait(ctx, "You can no longer have this many Multireddits. Remove some to comply with your limit. Until then you cannot use your Multireddits.")
-        elif isinstance(error, (commands.CommandNotFound, Ignore, IsBot)): print("Instance"); return
+        elif isinstance(error, (commands.CommandNotFound, Ignore, IsBot, commands.MessageNotFound)): return
         else:
             # StaffChannel = self.DClient.get_channel(795080325020909598)
             # Me = self.DClient.get_user(443986051371892746)

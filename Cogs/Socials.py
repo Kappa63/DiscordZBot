@@ -65,33 +65,41 @@ def RedditbedMaker(SubCpoS, Subname, Nsfchannel, Type="R", PostNum=0, TotalPosts
     return REm
 
 def YoutubebedMaker(VidID, Channel, VidNum, VidsTotal):
-    try: Vid = YClient.get_video_by_id(video_id=VidID).items[0]
-    except: return
-    YLEm = discord.Embed(title=Vid.snippet.title, description=Vid.snippet.description.split("\n")[0], url=f"https://www.youtube.com/watch?v={VidID}", color=0xFF0000)
-    YLEm.set_thumbnail(url=Vid.snippet.thumbnails.high.url)
-    YLEm.add_field(name=f"`Video: {VidNum+1}/{VidsTotal}`", value="\u200b", inline=False)
-    if Vid.snippet.liveBroadcastContent == "live": YLEm.add_field(name="**CURRENTLY LIVE**", value="\u200b", inline=True)
-    else:
-        YLEm.add_field(name=f"Upload Date: {Vid.snippet.publishedAt[:10]}", value="\u200b", inline=False)
-        YLEm.add_field(name=f"Duration: {GetVidDuration(VidID)}", value="\u200b", inline=False)
-    if hasattr(Vid.statistics, "viewCount"): YLEm.add_field(name="Views :eye:", value=f"{int(Vid.statistics.viewCount):,}", inline=True)
-    else: YLEm.add_field(name="Views :eye:", value="Disabled", inline=True)
-    YLEm.add_field(name="\u200b", value="\u200b", inline=True)
-    if hasattr(Vid.statistics, "commentCount"): YLEm.add_field(name="Comments :speech_balloon:", value=f"{int(Vid.statistics.commentCount):,}", inline=True)
-    else: YLEm.add_field(name="Comments :speech_balloon:", value="Disabled", inline=True)
-    if hasattr(Vid.statistics, "likeCount"): YLEm.add_field(name="Likes :thumbsup:", value=f"{int(Vid.statistics.likeCount):,}", inline=True)
-    else: YLEm.add_field(name="Likes :thumbsup:", value="Disabled", inline=True)
-    YLEm.add_field(name="\u200b", value="\u200b", inline=True)
-    if hasattr(Vid.statistics, "dislikeCount"): YLEm.add_field(name="Dislikes :thumbsdown:", value=f"{int(Vid.statistics.dislikeCount):,}", inline=True)
-    else: YLEm.add_field(name="Dislikes :thumbsdown:", value="Disabled", inline=True)
-    YLEm.add_field(name="\u200b", value="\u200b", inline=False)
-    if not Channel.statistics.hiddenSubscriberCount: 
-        YLEm.set_footer(text=f"{Channel.snippet.title} / Subs: {int(Channel.statistics.subscriberCount):,} / Videos: {int(Channel.statistics.videoCount):,}", 
-                        icon_url=Channel.snippet.thumbnails.high.url)
-    else: 
-        YLEm.set_footer(text=f"{Channel.snippet.title} / Videos: {int(Channel.statistics.videoCount):,}\n\nNeed help navigating? zhelp navigation", 
-                        icon_url=Channel.snippet.thumbnails.high.url)
+    try:
+        try: Vid = YClient.get_video_by_id(video_id=VidID).items[0]
+        except: return
+        YLEm = discord.Embed(title=Vid.snippet.title, description=Vid.snippet.description.split("\n")[0], url=f"https://www.youtube.com/watch?v={VidID}", color=0xFF0000)
+        YLEm.set_thumbnail(url=Vid.snippet.thumbnails.high.url)
+        YLEm.add_field(name=f"`Video: {VidNum+1}/{VidsTotal}`", value="\u200b", inline=False)
+        if Vid.snippet.liveBroadcastContent == "live": YLEm.add_field(name="**CURRENTLY LIVE**", value="\u200b", inline=True)
+        else:
+            YLEm.add_field(name=f"Upload Date: {Vid.snippet.publishedAt[:10]}", value="\u200b", inline=False)
+            YLEm.add_field(name=f"Duration: {GetVidDuration(VidID)}", value="\u200b", inline=False)
+        if hasattr(Vid.statistics, "viewCount"): YLEm.add_field(name="Views :eye:", value=f"{int(Vid.statistics.viewCount):,}", inline=True)
+        else: YLEm.add_field(name="Views :eye:", value="Disabled", inline=True)
+        YLEm.add_field(name="\u200b", value="\u200b", inline=True)
+        if hasattr(Vid.statistics, "commentCount"): YLEm.add_field(name="Comments :speech_balloon:", value=f"{int(Vid.statistics.commentCount):,}", inline=True)
+        else: YLEm.add_field(name="Comments :speech_balloon:", value="Disabled", inline=True)
+        try:
+            if hasattr(Vid.statistics, "likeCount"): YLEm.add_field(name="Likes :thumbsup:", value=f"{int(Vid.statistics.likeCount):,}", inline=True)
+            else: YLEm.add_field(name="Likes :thumbsup:", value="Disabled", inline=True)
+        except KeyError: pass
+        YLEm.add_field(name="\u200b", value="\u200b", inline=True)
+        try:
+            if hasattr(Vid.statistics, "dislikeCount"): YLEm.add_field(name="Dislikes :thumbsdown:", value=f"{int(Vid.statistics.dislikeCount):,}", inline=True)
+            else: YLEm.add_field(name="Dislikes :thumbsdown:", value="Disabled", inline=True)
+        except KeyError: pass
+        YLEm.add_field(name="\u200b", value="\u200b", inline=False)
+        if not Channel.statistics.hiddenSubscriberCount: 
+            YLEm.set_footer(text=f"{Channel.snippet.title} / Subs: {int(Channel.statistics.subscriberCount):,} / Videos: {int(Channel.statistics.videoCount):,}", 
+                            icon_url=Channel.snippet.thumbnails.high.url)
+        else: 
+            YLEm.set_footer(text=f"{Channel.snippet.title} / Videos: {int(Channel.statistics.videoCount):,}\n\nNeed help navigating? zhelp navigation", 
+                            icon_url=Channel.snippet.thumbnails.high.url)
+
+    except OSError: YLEm = discord.Embed(title="Video Age Restricted", description="", color=0xFF0000)
     return YLEm
+    
 
 def TwitterbedMaker(TWprofile, IsVerified, TwTtype, TWtimeline, TwTNum, TwTtotal):
     TEmE = discord.Embed(title=f"@{TWprofile.screen_name} / {TWprofile.name} {IsVerified}", description=TwTtype, color=0x0384FC)

@@ -88,6 +88,7 @@ class HelpInfo(commands.Cog):
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendC(self, ctx):
         HEm = discord.Embed(title="**ZBot Informatics Help**", description="\u200b", color=0x0AF531)
+        HEm.add_field(name="zcovidcodes: ", value="Countries and their codes to use with zcovid", inline=False)
         HEm.add_field(name="zcovid: ", value="Worldwide status of Covid-19", inline=False)
         HEm.add_field(name="zcovid [Country]: ", value="Status of Covid-19 in country", inline=False)
         HEm.add_field(name="zcrypto: ", value="Top 50 Cryptocurrencies by Market Cap", inline=False)
@@ -215,9 +216,9 @@ class HelpInfo(commands.Cog):
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RetVer(self, ctx):
         VEm = discord.Embed(title="Active Version", description="ZBot build version and info", color=0x3695BA)
-        VEm.add_field(name="Dev: ", value="Kappa#5173", inline=False)
-        VEm.add_field(name="Version: ", value="2.7.5a", inline=False)
-        VEm.add_field(name="Version Release: ", value="30/4/2021", inline=False)
+        VEm.add_field(name="Dev: ", value="Kappa#0069", inline=False)
+        VEm.add_field(name="Version: ", value="2.7.6a", inline=False)
+        VEm.add_field(name="Version Release: ", value="10/7/2021", inline=False)
         VEm.add_field(name="Initial Release: ", value="21/11/2020", inline=False)
         await ctx.message.channel.send(embed=VEm)
 

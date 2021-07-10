@@ -1,4 +1,4 @@
-Whats new in 2.7.5a:
-NEW You can now add multiple subreddits at once to multireddit (zmultireddit add [multireddit][subreddits (separated by spaces)])
+Whats new in 2.7.6a:
+NEW zcovidcodes command: Shows countries and their alpha 2 codes for zcovid
 BUG_FIXES ..
 INTERNAL_IMPROVEMENTS ..

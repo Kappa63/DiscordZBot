@@ -83,6 +83,11 @@ def Threader(FunctionList, ParameterList):
         Results = [Execution.result() for Execution in Pool]
     return Results
 
+def RefreshGISClient(Client):
+    global GiClient
+    del GiClient
+    GiClient = GoogleImagesSearch(os.getenv("GCS_KEY"), os.getenv("CX_ID"))
+
 def ErrorEmbeds(Type):
     Descs = {"Vote": "This command is only for voters or patreon! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord) / [Vote](https://top.gg/bot/768397640140062721/vote)",
              "Patreon": "This command is only for patreons supporters! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord)",
