@@ -63,7 +63,7 @@ class HelpInfo(commands.Cog):
         HEm.add_field(name="Aliases:", value="**-Youtube =** `youtube, yt`", inline=False)
         await ctx.message.channel.send(embed=HEm)
 
-    @SendH.command(aliases=["game", "osu", "fortnite", "pubg", "games", "sudoku", "ttt", "tictactoe", "chess", "cptd"])
+    @SendH.command(aliases=["game", "osu", "fortnite", "pubg", "games", "sudoku", "ttt", "tictactoe", "roblox","chess", "cptd"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def SendG(self, ctx):
         HEm = discord.Embed(title="**ZBot Game Help**", description="\u200b", color=0x0AF531)
@@ -78,6 +78,7 @@ class HelpInfo(commands.Cog):
         HEm.add_field(name="zfortnite [Name]: ", value="Get the user's Fortnite stats", inline=False)
         HEm.add_field(name="zpubg all [Name]: ", value="Get the user's lifetime stats", inline=False)
         HEm.add_field(name="zpubg season [Name]: ", value="Get the user's stats in the current season", inline=False)
+        HEm.add_field(name="zroblox [Username]: ", value="Get the user's Roblox profile", inline=False)
         HEm.add_field(name="Note:",
                       value="-In sudoku react with the eye to get the solution or with the X to never get the solution. If X isn't pressed solution is auto given after 1 hour\n\n-In TTT each player has 30sec to play. A player should enter the number of the corresponding square to play there. If a player enters 'end' the game ends\n\n-In Chess a standard 10min time is given to each player. Time starts after each player has made 1 move. Every turn the legal moves are listed. Typing in a move is case sensetive (Must be as listed). Typing in 'resign' will result in loss by resignation. Draws automatically happen if Stalemate or Insufficient Material. A Draw can be Claimed by Typing in 'claimdraw' (Only after a threefold-repition or 50 move-rule). The bot announces if a Draw Claim is allowed. Win by Checkmate.",
                       inline=False)

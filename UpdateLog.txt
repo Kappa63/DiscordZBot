@@ -1,4 +1,5 @@
 Whats new in 2.7.6a:
-NEW zcovidcodes command: Shows countries and their alpha 2 codes for zcovid
+NEW roblox command: Data about a Roblox Player (zroblox [username])
+NEW country codes command: Shows countries and their alpha 2 codes for zcovid (zcovidcodes)
 BUG_FIXES ..
 INTERNAL_IMPROVEMENTS ..

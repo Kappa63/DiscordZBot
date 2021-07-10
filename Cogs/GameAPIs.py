@@ -1,7 +1,8 @@
 import discord
 from discord.ext import commands
 import requests
-from Setup import OClient, PClient, Threader, SendWait
+from Setup import OClient, PClient, Threader, SendWait, RLox
+from ro_py.utilities.errors import UserDoesNotExistError
 
 
 def PUBGDataEmbed(data, name):
@@ -87,6 +88,34 @@ class GameAPIs(commands.Cog):
             await ctx.message.channel.send(embed=PUBGDataEmbed(SeasonData, PlayerName))
         except KeyError: await SendWait(ctx, "No User Found. Try a Valid Username")
 
+    @commands.command(name="Roblox")
+    @commands.cooldown(1, 2, commands.BucketType.user)
+    async def GetRobPlayer(self, ctx, *args):
+        if not args: await SendWait(ctx, "No Username Given. Try add a Username First."); return
+        try:
+            NameInput = " ".join(args)
+            User = await RLox.get_user_by_username(NameInput)
+        except UserDoesNotExistError: await SendWait(ctx, "No User Found. Try a Valid Username"); return
+
+        ImageUser = await User.thumbnails.get_avatar_image()
+        FollowingN = await User.get_followings_count()
+        FollowerN = await User.get_followers_count()
+        FriendsN = await User.get_friends_count()
+        Status = await User.get_status()
+        Badges = "\n".join(i.name for i in await User.get_roblox_badges())
+
+        REm = discord.Embed(title=f'{User.display_name} --- ID({User.id})',
+                            description=User.description,
+                            url=User.profile_url, color=0x33A3D7)
+        REm.set_thumbnail(url=ImageUser)
+        if User.is_banned: REm.add_field(name="***USER IS BANNED***", value=FollowingN, inline=False)
+        if Status: REm.add_field(name="Status: ", value=Status, inline=False)
+        REm.add_field(name="Following: ", value=FollowingN, inline=True)
+        REm.add_field(name="Followers: ", value=FollowerN, inline=True)
+        REm.add_field(name="Friends: ", value=FriendsN, inline=True)
+        REm.add_field(name="Badges: ", value=f'_*{Badges}*_', inline=False)          
+        await ctx.message.channel.send(embed=REm)
+        
 
 def setup(DClient):
     DClient.add_cog(GameAPIs(DClient))

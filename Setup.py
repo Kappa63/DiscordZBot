@@ -19,6 +19,7 @@ import pafy
 import datetime
 import osuapi
 import concurrent.futures as Cf
+from ro_py import Client as Roblox
 
 load_dotenv()
 
@@ -58,6 +59,8 @@ THelix = twitch.Helix(os.getenv("TWITCH_ID"), os.getenv("TWITCH_SECRET"), use_ca
 IMClient = imdb.IMDb()
 
 OClient = osuapi.OsuApi(os.getenv("OSU_KEY"), connector=osuapi.ReqConnector())
+
+RLox = Roblox(os.getenv("ROBLOX_SECRET"))
 
 PatreonTiers = {
     783250729686532126: "Tier 1 Casual",
