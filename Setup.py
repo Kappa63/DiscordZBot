@@ -85,7 +85,7 @@ def Threader(FunctionList, ParameterList):
         Results = [Execution.result() for Execution in Pool]
     return Results
 
-def RefreshGISClient(Client):
+def RefreshGISClient():
     global GiClient
     del GiClient
     GiClient = GoogleImagesSearch(os.getenv("GCS_KEY"), os.getenv("CX_ID"))
