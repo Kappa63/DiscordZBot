@@ -34,3 +34,4 @@ google==3.0.0
 twitch-python==0.0.19
 aiohttp
 ratelimiter
+ro-py==1.2.0.5
