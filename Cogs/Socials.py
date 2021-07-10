@@ -83,12 +83,12 @@ def YoutubebedMaker(VidID, Channel, VidNum, VidsTotal):
         try:
             if hasattr(Vid.statistics, "likeCount"): YLEm.add_field(name="Likes :thumbsup:", value=f"{int(Vid.statistics.likeCount):,}", inline=True)
             else: YLEm.add_field(name="Likes :thumbsup:", value="Disabled", inline=True)
-        except KeyError: pass
+        except: pass
         YLEm.add_field(name="\u200b", value="\u200b", inline=True)
         try:
             if hasattr(Vid.statistics, "dislikeCount"): YLEm.add_field(name="Dislikes :thumbsdown:", value=f"{int(Vid.statistics.dislikeCount):,}", inline=True)
             else: YLEm.add_field(name="Dislikes :thumbsdown:", value="Disabled", inline=True)
-        except KeyError: pass
+        except: pass
         YLEm.add_field(name="\u200b", value="\u200b", inline=False)
         if not Channel.statistics.hiddenSubscriberCount: 
             YLEm.set_footer(text=f"{Channel.snippet.title} / Subs: {int(Channel.statistics.subscriberCount):,} / Videos: {int(Channel.statistics.videoCount):,}", 
@@ -97,7 +97,9 @@ def YoutubebedMaker(VidID, Channel, VidNum, VidsTotal):
             YLEm.set_footer(text=f"{Channel.snippet.title} / Videos: {int(Channel.statistics.videoCount):,}\n\nNeed help navigating? zhelp navigation", 
                             icon_url=Channel.snippet.thumbnails.high.url)
 
-    except OSError: YLEm = discord.Embed(title="Video Age Restricted", description="", color=0xFF0000)
+    except OSError: 
+        YLEm = discord.Embed(title="Video Age Restricted", description="", color=0xFF0000)
+        YLEm.add_field(name=f"`Video: {VidNum+1}/{VidsTotal}`", value="\u200b", inline=False)
     return YLEm
     
 

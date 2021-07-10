@@ -13,7 +13,7 @@ class Covid(commands.Cog):
     @commands.cooldown(1, 3, commands.BucketType.guild)
     async def Covid19Codes(self, ctx):
         CountryFile = open("countries.json")
-        Countries = json.load(CountryFile).items
+        Countries = json.load(CountryFile).items()
         CountryFile.close()
         CountryPages = []
         for n, i in enumerate(Countries):

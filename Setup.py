@@ -69,7 +69,6 @@ PatreonTiers = {
 RemoveExtra = lambda listRm, val: [value for value in listRm if value != val]
 
 GetVidDuration = lambda VidId: pafy.new(f"https://www.youtube.com/watch?v={VidId}").duration
-#- return Vid
 
 async def SendWait(ctx, Notice): await ctx.message.channel.send(embed=discord.Embed(title=Notice))
 
