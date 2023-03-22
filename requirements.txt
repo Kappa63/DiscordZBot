@@ -15,7 +15,7 @@ malclient==0.1.5
 COVID19Py==0.3.0
 pdf2image==1.14.0
 pyimgbox==1.0.3
-numpy==1.19.4
+numpy==1.22.0
 opencv-python-headless==4.4.0.46
 randfacts==0.2.4
 python-dotenv==0.15.0
