@@ -94,7 +94,13 @@ class Misc(commands.Cog):
     async def CalculateError(self, ctx, error):
         if isinstance(error, commands.UnexpectedQuoteError): await SendWait(ctx, "Failed to calculate :confused:")
         raise error
+    
+    async def cog_load(self):
+        print(f"{self.__class__.__name__} loaded!")
+
+    async def cog_unload(self):
+        print(f"{self.__class__.__name__} unloaded!")
 
 
-def setup(DClient):
-    DClient.add_cog(Misc(DClient))
+async def setup(DClient):
+    await DClient.add_cog(Misc(DClient))

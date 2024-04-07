@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-from Setup import ChVote, ChVoteUser, ChNSFW, SendWait, ErrorEmbeds, Navigator
+# from Setup import ChVote, ChVoteUser, ChNSFW, SendWait, ErrorEmbeds, Navigator
+from Setup import Navigator, SendWait
 import asyncio
 import random
 import rule34
@@ -21,8 +22,6 @@ class Rule34(commands.Cog):
         self.DClient = DClient
 
     @commands.group(aliases=["rule34", "r34"], invoke_without_command=True)
-    @commands.check(ChNSFW)
-    @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetRule34(self, ctx, *args):
         if not args: await SendWait(ctx, "No arguments :no_mouth:"); return
         try:
@@ -34,10 +33,10 @@ class Rule34(commands.Cog):
         except TypeError: await SendWait(ctx, "Nothing Found :no_mouth:"); return
         await ctx.message.channel.send(embed=MakeEmbed(ShowRule))
 
+    # @commands.check(ChVote)
+    # @commands.check(ChNSFW)
+    # @commands.cooldown(1, 1, commands.BucketType.user)
     @GetRule34.command(name="surf")
-    @commands.check(ChVote)
-    @commands.check(ChNSFW)
-    @commands.cooldown(1, 1, commands.BucketType.user)
     async def SurfRule34(self, ctx, *args):
         if not args: await SendWait(ctx, "No arguments :no_mouth:"); return
         try:
@@ -50,5 +49,11 @@ class Rule34(commands.Cog):
         Rules = [MakeEmbed(i, Total=Rule34Total, RuleNum=v, Type="S") for v, i in enumerate(Rule34Surf)] 
         await Navigator(ctx, Rules)
 
-def setup(DClient):
-    DClient.add_cog(Rule34(DClient))
+    async def cog_load(self):
+        print(f"{self.__class__.__name__} loaded!")
+
+    async def cog_unload(self):
+        print(f"{self.__class__.__name__} unloaded!")
+
+async def setup(DClient):
+    await DClient.add_cog(Rule34(DClient))

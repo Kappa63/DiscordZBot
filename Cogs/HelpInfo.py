@@ -265,6 +265,12 @@ class HelpInfo(commands.Cog):
                             color=0x000000)
         await ctx.message.channel.send(embed=SEm)
 
+    async def cog_load(self):
+        print(f"{self.__class__.__name__} loaded!")
 
-def setup(DClient):
-    DClient.add_cog(HelpInfo(DClient))
+    async def cog_unload(self):
+        print(f"{self.__class__.__name__} unloaded!")
+
+
+async def setup(DClient):
+    await DClient.add_cog(HelpInfo(DClient))

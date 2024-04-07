@@ -1,11 +1,12 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
 import random
 import cv2
 import numpy
 import requests
 import os
-from Setup import GClient, GApi, SendWait
+# from Setup import GClient, GApi, SendWait
 import pyimgbox
 
 
@@ -14,8 +15,8 @@ class Randomizers(commands.Cog):
         self.DClient = DClient
 
     @commands.command(name="roll")
-    @commands.cooldown(1, 1, commands.BucketType.user)
     async def RollTheDice(self, ctx):
+        print("ANAL")
         DiceFaces = {1: "https://i.imgur.com/A3winYh.png", 2: "https://i.imgur.com/JFuawqi.png",
                      3: "https://i.imgur.com/2tufStP.png", 4: "https://i.imgur.com/GdtEPw4.png",
                      5: "https://i.imgur.com/7hgCUOq.png", 6: "https://i.imgur.com/5iyDeF1.png"}
@@ -26,7 +27,6 @@ class Randomizers(commands.Cog):
         await ctx.message.channel.send(embed=DEm)
 
     @commands.command(aliases=["cf", "coinflip"])
-    @commands.cooldown(1, 1, commands.BucketType.user)
     async def FlipTheCoin(self, ctx):
         CoinFaces = {"Heads": "https://cdn.discordapp.com/attachments/768718636583747584/823561367000842350/Heads.png",
                      "Tails": "https://cdn.discordapp.com/attachments/768718636583747584/823561369990332416/Tails.png"}
@@ -35,8 +35,9 @@ class Randomizers(commands.Cog):
         CEm.set_thumbnail(url=CoinFaces[Face])
         await ctx.message.channel.send(embed=CEm)
 
+    # @commands.cooldown(1, 1, commands.BucketType.user)
+
     @commands.command(aliases=["color", "colour"])
-    @commands.cooldown(1, 1, commands.BucketType.user)
     async def ColorRandom(self, ctx):
         MakeClear = numpy.zeros((360, 360, 3), numpy.uint8)
         R = random.randint(0, 255)
@@ -53,17 +54,23 @@ class Randomizers(commands.Cog):
         CEm.set_thumbnail(url=ColoredImage)
         await ctx.message.channel.send(embed=CEm)
 
-    @commands.command(name="giphy")
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def RandomGif(self, ctx, *args):
-        if not args: await SendWait(ctx, "No search term given :confused:"); return
-        try:
-            QRGifs = GApi.gifs_search_get(GClient, " ".join(args), limit=50)
-            GifSAl = list(QRGifs.data)
-            GifF = random.choices(GifSAl)
-            await ctx.message.channel.send(GifF[0].url)
-        except IndexError: await SendWait(ctx, "No gifs found :expressionless:")
+    async def cog_load(self):
+        print(f"{self.__class__.__name__} loaded!")
+
+    async def cog_unload(self):
+        print(f"{self.__class__.__name__} unloaded!")
+
+    # @commands.command(name="giphy")
+    # @commands.cooldown(1, 1, commands.BucketType.user)
+    # async def RandomGif(self, ctx, *args):
+    #     if not args: await SendWait(ctx, "No search term given :confused:"); return
+    #     try:
+    #         QRGifs = GApi.gifs_search_get(GClient, " ".join(args), limit=50)
+    #         GifSAl = list(QRGifs.data)
+    #         GifF = random.choices(GifSAl)
+    #         await ctx.message.channel.send(GifF[0].url)
+    #     except IndexError: await SendWait(ctx, "No gifs found :expressionless:")
 
 
-def setup(DClient):
-    DClient.add_cog(Randomizers(DClient))
+async def setup(DClient):
+    await DClient.add_cog(Randomizers(DClient))

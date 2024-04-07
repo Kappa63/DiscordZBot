@@ -96,6 +96,11 @@ class Movies(commands.Cog):
         if "cover url" in IMDbinfo: YEm.set_thumbnail(url=IMDbinfo["cover url"])
         await ctx.message.channel.send(embed=YEm)
 
+    async def cog_load(self):
+        print(f"{self.__class__.__name__} loaded!")
 
-def setup(DClient):
-    DClient.add_cog(Movies(DClient))
+    async def cog_unload(self):
+        print(f"{self.__class__.__name__} unloaded!")
+
+async def setup(DClient):
+    await DClient.add_cog(Movies(DClient))

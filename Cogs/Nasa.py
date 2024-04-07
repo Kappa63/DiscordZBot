@@ -2,7 +2,8 @@ import discord
 import random
 import requests
 from discord.ext import commands
-from Setup import ChVote, ChVoteUser, ChPatreonT2, ChAdmin, FormatTime, TimeTillMidnight, GetPatreonTier, SendWait, ErrorEmbeds, Navigator, AQd
+# from Setup import ChVote, ChVoteUser, ChPatreonT2, ChAdmin, FormatTime, TimeTillMidnight, GetPatreonTier, SendWait, ErrorEmbeds, Navigator, AQd
+from Setup import Navigator
 import asyncio
 
 
@@ -11,7 +12,7 @@ class Nasa(commands.Cog):
         self.DClient = DClient
 
     @commands.command(name="apod")
-    @commands.check(ChVote)
+    # @commands.check(ChVote)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetNasaApod(self, ctx):
         NASAapod = requests.get("https://api.nasa.gov/planetary/apod?api_key=0dsw3SiQmYCeNnwKZROSQIyrcZqjoDzMBo4ggCwS", headers={"Accept": "application/json"}).json()
@@ -23,39 +24,39 @@ class Nasa(commands.Cog):
         if "copyright" in NASAapod: DEm.set_footer(text=f'Copyright: {NASAapod["copyright"]}')
         await ctx.message.channel.send(embed=DEm)
 
-    @commands.group(name="apoddaily", invoke_without_command=True)
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def NasaApodDAILY(self, ctx):
-        TimeLeft = FormatTime(TimeTillMidnight())
-        await SendWait(ctx, f'The next Daily APOD is in {TimeLeft}.\n You can be added to APOD Daily with "zapoddaily start" (If donator tier 2+).\n Check "zhelp apod" for more info')
+    # @commands.group(name="apoddaily", invoke_without_command=True)
+    # @commands.cooldown(1, 1, commands.BucketType.user)
+    # async def NasaApodDAILY(self, ctx):
+    #     TimeLeft = FormatTime(TimeTillMidnight())
+    #     await SendWait(ctx, f'The next Daily APOD is in {TimeLeft}.\n You can be added to APOD Daily with "zapoddaily start" (If donator tier 2+).\n Check "zhelp apod" for more info')
 
-    @NasaApodDAILY.command(name="start")
-    @commands.check(ChPatreonT2)
-    @commands.check(ChAdmin)
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def StartNasaApodDAILY(self, ctx):
-        TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
-        TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
-        if AQd.count_documents({"Type": "APOD", "IDd": ctx.author.id}) >= TierLimit:
-            await SendWait(ctx, "You already added the max amount of channels to APOD daily.\nDifferent donator levels get more channels\nCheck 'zpatreon'")
-            return
-        UserToCheckAdd = {"Type": "APOD", "IDd": ctx.author.id, "IDg": ctx.guild.id, "Channel": ctx.message.channel.id}
-        if AQd.count_documents(UserToCheckAdd): await SendWait(ctx, "This channel is already added to APOD daily"); return
-        AQd.insert_one(UserToCheckAdd)
-        await SendWait(ctx, "Added to APOD daily successfully")
+    # @NasaApodDAILY.command(name="start")
+    # @commands.check(ChPatreonT2)
+    # @commands.check(ChAdmin)
+    # @commands.cooldown(1, 1, commands.BucketType.user)
+    # async def StartNasaApodDAILY(self, ctx):
+    #     TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
+    #     TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
+    #     if AQd.count_documents({"Type": "APOD", "IDd": ctx.author.id}) >= TierLimit:
+    #         await SendWait(ctx, "You already added the max amount of channels to APOD daily.\nDifferent donator levels get more channels\nCheck 'zpatreon'")
+    #         return
+    #     UserToCheckAdd = {"Type": "APOD", "IDd": ctx.author.id, "IDg": ctx.guild.id, "Channel": ctx.message.channel.id}
+    #     if AQd.count_documents(UserToCheckAdd): await SendWait(ctx, "This channel is already added to APOD daily"); return
+    #     AQd.insert_one(UserToCheckAdd)
+    #     await SendWait(ctx, "Added to APOD daily successfully")
 
-    @NasaApodDAILY.command(aliases=["stop", "end"])
-    @commands.check(ChPatreonT2)
-    @commands.check(ChAdmin)
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def RemoveNasaApodDAILY(self, ctx):
-        UserToCheckRemove = {"Type": "APOD", "IDd": ctx.author.id, "IDg": ctx.guild.id, "Channel": ctx.message.channel.id}
-        if AQd.count_documents(UserToCheckRemove):
-            User = AQd.find(UserToCheckRemove)[0]
-            AQd.delete_one(User)
-            await SendWait(ctx, "Removed from APOD daily successfully")
-            return
-        await SendWait(ctx, "You are already not in APOD daily")
+    # @NasaApodDAILY.command(aliases=["stop", "end"])
+    # @commands.check(ChPatreonT2)
+    # @commands.check(ChAdmin)
+    # @commands.cooldown(1, 1, commands.BucketType.user)
+    # async def RemoveNasaApodDAILY(self, ctx):
+    #     UserToCheckRemove = {"Type": "APOD", "IDd": ctx.author.id, "IDg": ctx.guild.id, "Channel": ctx.message.channel.id}
+    #     if AQd.count_documents(UserToCheckRemove):
+    #         User = AQd.find(UserToCheckRemove)[0]
+    #         AQd.delete_one(User)
+    #         await SendWait(ctx, "Removed from APOD daily successfully")
+    #         return
+    #     await SendWait(ctx, "You are already not in APOD daily")
 
     @commands.command(name="nasa")
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -75,5 +76,11 @@ class Nasa(commands.Cog):
         Images = [MakeEmbed(i, v, len(MarsImages)) for v, i in enumerate(MarsImages)]
         await Navigator(ctx, Images)
 
-def setup(DClient):
-    DClient.add_cog(Nasa(DClient))
+    async def cog_load(self):
+        print(f"{self.__class__.__name__} loaded!")
+
+    async def cog_unload(self):
+        print(f"{self.__class__.__name__} unloaded!")
+
+async def setup(DClient):
+    await DClient.add_cog(Nasa(DClient))

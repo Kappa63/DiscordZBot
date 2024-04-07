@@ -2,8 +2,9 @@ import discord
 from discord.ext import commands
 import requests
 import pyimgbox
-from Setup import ChVoteUser, SendWait, Threader, ErrorEmbeds, Navigator
-from pdf2image import convert_from_path
+# from Setup import ChVoteUser, SendWait, Threader, ErrorEmbeds, Navigator
+from Setup import SendWait, Threader, Navigator
+# from pdf2image import convert_from_path
 import random
 from PIL import Image
 import deeppyer
@@ -20,16 +21,16 @@ class Images(commands.Cog):
     @commands.command(aliases=["kitten", "kitty", "cat"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RandomCat(self, ctx):
-        CatGot = requests.get("https://aws.random.cat/meow", headers={"Accept": "application/json"}).json()
+        CatGot = requests.get("https://cataas.com/cat", headers={"Accept": "application/json"}, timeout=5).json()
         CEm = discord.Embed(title="Meow", color=0xA3D7C1)
-        CEm.set_image(url=CatGot["file"])
+        CEm.set_image(url=f'https://cataas.com/cat/{CatGot["_id"]}')
         await ctx.message.channel.send(embed=CEm)
 
-    @commands.command(aliases=["pog","poggers", "pogger", "pogchamp"])
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def POOOGGERRRS(self, ctx):
-        Pog = random.choice(open("Pog.txt").readlines())
-        await ctx.message.channel.send(Pog)
+    # @commands.command(aliases=["pog","poggers", "pogger", "pogchamp"])
+    # @commands.cooldown(1, 1, commands.BucketType.user)
+    # async def POOOGGERRRS(self, ctx):
+    #     Pog = random.choice(open("Pog.txt").readlines())
+    #     await ctx.message.channel.send(Pog)
 
     @commands.command(aliases=["doggo", "dog", "pupper", "puppy"])
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -75,49 +76,49 @@ class Images(commands.Cog):
     #     TEm.set_image(url=TaylorImage["url"])
     #     await ctx.message.channel.send(embed=TEm)
 
-    @commands.command(name="pdf")
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    async def PDFreader(self, ctx, *args):
-        def ChCHEmFN(MSg):
-            MesS = MSg.content.lower()
-            RsT = False
-            try:
-                if int(MSg.content): RsT = True
-            except ValueError:
-                if MesS in ["cancel", "c"]: RsT = True
-            return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
+    # @commands.command(name="pdf")
+    # @commands.cooldown(1, 5, commands.BucketType.user)
+    # async def PDFreader(self, ctx, *args):
+    #     def ChCHEmFN(MSg):
+    #         MesS = MSg.content.lower()
+    #         RsT = False
+    #         try:
+    #             if int(MSg.content): RsT = True
+    #         except ValueError:
+    #             if MesS in ["cancel", "c"]: RsT = True
+    #         return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
 
-        if args and ctx.message.attachments: await SendWait(ctx, "No or too many attachments :woozy_face:"); return
-        PDFattach = []
-        if args: PDFattach.append("".join(args))
-        if ctx.message.attachments:
-            for AtT in ctx.message.attachments: PDFattach.append(AtT.url)
-        GetPDF = PDFattach[0]
-        try:
-            ChPDF = requests.head(GetPDF).headers.get("content-type").split("/")[1]
-            if ChPDF != "pdf": await SendWait(ctx, "Not a PDF :woozy_face:"); return
-            RanLetters = "ioewsahkzcldnpq"
-            PDFname = "".join((random.choice(RanLetters) for i in range(10)))
-            await SendWait(ctx, ":printer: Converting...")
-            PDFcontent = requests.get(GetPDF, allow_redirects=True)
-            open(f"{PDFname}.pdf", "wb").write(PDFcontent.content)
-            PDFimages = convert_from_path(f"{PDFname}.pdf", 500, last_page=40)
-            PDFcnvrt = []
-            PageNum = 1
-            TotalPages = len(PDFimages)
-            Sub = []
-            async with pyimgbox.Gallery(title=PDFname) as gallery:
-                for i in PDFimages:
-                    i.save(f"{PDFname}.jpg", "JPEG")
-                    Sub.append(await gallery.upload(f"{PDFname}.jpg"))
+    #     if args and ctx.message.attachments: await SendWait(ctx, "No or too many attachments :woozy_face:"); return
+    #     PDFattach = []
+    #     if args: PDFattach.append("".join(args))
+    #     if ctx.message.attachments:
+    #         for AtT in ctx.message.attachments: PDFattach.append(AtT.url)
+    #     GetPDF = PDFattach[0]
+    #     try:
+    #         ChPDF = requests.head(GetPDF).headers.get("content-type").split("/")[1]
+    #         if ChPDF != "pdf": await SendWait(ctx, "Not a PDF :woozy_face:"); return
+    #         RanLetters = "ioewsahkzcldnpq"
+    #         PDFname = "".join((random.choice(RanLetters) for i in range(10)))
+    #         await SendWait(ctx, ":printer: Converting...")
+    #         PDFcontent = requests.get(GetPDF, allow_redirects=True)
+    #         open(f"{PDFname}.pdf", "wb").write(PDFcontent.content)
+    #         PDFimages = convert_from_path(f"{PDFname}.pdf", 500, last_page=40)
+    #         PDFcnvrt = []
+    #         PageNum = 1
+    #         TotalPages = len(PDFimages)
+    #         Sub = []
+    #         async with pyimgbox.Gallery(title=PDFname) as gallery:
+    #             for i in PDFimages:
+    #                 i.save(f"{PDFname}.jpg", "JPEG")
+    #                 Sub.append(await gallery.upload(f"{PDFname}.jpg"))
 
-            for Up in Sub:
-                PEm = discord.Embed(title="PDF Viewer", description=f"**`{PageNum}/{TotalPages}`**")
-                PEm.set_image(url=Up["image_url"])
-                PDFcnvrt.append(PEm)
-                PageNum += 1
-            await Navigator(ctx, PDFcnvrt)
-        except requests.exceptions.MissingSchema: await SendWait(ctx, "Not a PDF :woozy_face:")
+    #         for Up in Sub:
+    #             PEm = discord.Embed(title="PDF Viewer", description=f"**`{PageNum}/{TotalPages}`**")
+    #             PEm.set_image(url=Up["image_url"])
+    #             PDFcnvrt.append(PEm)
+    #             PageNum += 1
+    #         await Navigator(ctx, PDFcnvrt)
+    #     except requests.exceptions.MissingSchema: await SendWait(ctx, "Not a PDF :woozy_face:")
 
     @commands.group(aliases=["fry", "deepfry"], invoke_without_command=True)
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -218,5 +219,11 @@ class Images(commands.Cog):
                 except requests.exceptions.MissingSchema: pass
         else: await SendWait(ctx, "No image(s) or link(s) were attached :woozy_face:")
 
-def setup(DClient):
-    DClient.add_cog(Images(DClient))
+    async def cog_load(self):
+        print(f"{self.__class__.__name__} loaded!")
+
+    async def cog_unload(self):
+        print(f"{self.__class__.__name__} unloaded!")
+
+async def setup(DClient):
+    await DClient.add_cog(Images(DClient))

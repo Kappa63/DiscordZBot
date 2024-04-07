@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-from Setup import ChDev, SendWait, AQd
+# from Setup import ChDev, SendWait, AQd
+from Setup import SendWait, Cogs
 import random
 import requests
 
@@ -12,18 +13,21 @@ class OnlyMods(commands.Cog):
         self.DClient = DClient
 
     @commands.command(name="checkzbot")
-    @commands.check(ChDev)
+    # @commands.check(ChDev)
     async def BotStatus(self, ctx):
         SEm = discord.Embed(title="Current ZBot Status", color=0x000000)
         SEm.add_field(name="Guilds in: ", value=len(self.DClient.guilds), inline=False)
         SEm.add_field(name="Latency: ", value=self.DClient.latency * 100, inline=False)
         SEm.add_field(name="ShardCount: ", value=self.DClient.shard_count, inline=False)
+        SEm.add_field(name="Loaded Cogs: ", value="\n".join(Cogs), inline=False)
         await ctx.message.channel.send(embed=SEm)
 
     @commands.command(name="embed")
-    @commands.check(ChDev)
+    # @commands.check(ChDev)
     async def Embedder(self, ctx, *args):
+        # print(args)
         args = (" ".join(args)).split("_")
+        # print(args)
         for i in args:
             if i[:2].lower() == "-t": Title = i[3:]
             if i[:2].lower() == "-d": Desc = i[3:]
@@ -31,39 +35,44 @@ class OnlyMods(commands.Cog):
         await ctx.message.delete()
         await ctx.message.channel.send(embed=discord.Embed(title=Title, description = Desc, color = Color))
 
-    @commands.command(name="makedown")
-    @commands.check(ChDev)
-    async def MakeBotOff(self, ctx):
-        await self.DClient.change_presence(status=discord.Status.invisible)
-        StateFile = open("OpenState.txt", "w+")
-        StateFile.write("Down")
-        StateFile.close()
-        await SendWait(ctx, "Bot Invisible (Down)")
+    # @commands.command(name="makedown")
+    # @commands.check(ChDev)
+    # async def MakeBotOff(self, ctx):
+    #     await self.DClient.change_presence(status=discord.Status.invisible)
+    #     StateFile = open("OpenState.txt", "w+")
+    #     StateFile.write("Down")
+    #     StateFile.close()
+    #     await SendWait(ctx, "Bot Invisible (Down)")
 
-    @commands.command(name="makeup")
-    @commands.check(ChDev)
-    async def MakeBotOn(self, ctx):
-        await self.DClient.change_presence(status=discord.Status.online, activity=discord.Game(f"zhelp || {random.choice(Doing)}"))
-        StateFile = open("OpenState.txt", "w+")
-        StateFile.write("Up")
-        StateFile.close()
-        await SendWait(ctx, "Bot Visible (Up)")
+    # @commands.command(name="makeup")
+    # @commands.check(ChDev)
+    # async def MakeBotOn(self, ctx):
+    #     await self.DClient.change_presence(status=discord.Status.online, activity=discord.Game(f"zhelp || {random.choice(Doing)}"))
+    #     StateFile = open("OpenState.txt", "w+")
+    #     StateFile.write("Up")
+    #     StateFile.close()
+    #     await SendWait(ctx, "Bot Visible (Up)")
 
-    @commands.command(name="numapod")
-    @commands.check(ChDev)
-    async def GetAPODNum(self, ctx):
-        await SendWait(ctx, f'{AQd.count_documents({"Type":"APOD"})} in APOD Daily')
+    # @commands.command(name="numapod")
+    # @commands.check(ChDev)
+    # async def GetAPODNum(self, ctx):
+    #     await SendWait(ctx, f'{AQd.count_documents({"Type":"APOD"})} in APOD Daily')
 
-    @commands.command(name="numqotd")
-    @commands.check(ChDev)
-    async def GetQOTDNum(self, ctx):
-        await SendWait(ctx, f'{AQd.count_documents({"Type":"QOTD"})} in QOTD Daily')
+    # @commands.command(name="numqotd")
+    # @commands.check(ChDev)
+    # async def GetQOTDNum(self, ctx):
+    #     await SendWait(ctx, f'{AQd.count_documents({"Type":"QOTD"})} in QOTD Daily')
 
-    @commands.command(name="numcptd")
-    @commands.check(ChDev)
-    async def GetCPTDNum(self, ctx):
-        await SendWait(ctx, f'{AQd.count_documents({"Type":"CPTD"})} in CPTD Daily')
+    # @commands.command(name="numcptd")
+    # @commands.check(ChDev)
+    # async def GetCPTDNum(self, ctx):
+    #     await SendWait(ctx, f'{AQd.count_documents({"Type":"CPTD"})} in CPTD Daily')
 
+    async def cog_load(self):
+        print(f"{self.__class__.__name__} loaded!")
 
-def setup(DClient):
-    DClient.add_cog(OnlyMods(DClient))
+    async def cog_unload(self):
+        print(f"{self.__class__.__name__} unloaded!")
+
+async def setup(DClient):
+    await DClient.add_cog(OnlyMods(DClient))
