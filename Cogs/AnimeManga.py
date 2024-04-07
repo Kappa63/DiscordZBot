@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 # import mal
-from hentai import Utils, Sort, Hentai, Format
+from CustomLibs.nHentai import Utils, Sort, Hentai, Format
 # from Setup import MClient, ErrorEmbeds, Navigator, ChVote, ChVoteUser, ChNSFW, SendWait
 from Setup import SendWait, Navigator
 import asyncio

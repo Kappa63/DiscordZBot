@@ -149,27 +149,27 @@ class Images(commands.Cog):
                 else: await SendWait(ctx, f"File({C}) isnt a valid image type :sweat:")
             except requests.exceptions.MissingSchema: pass
 
-    @ImageFrier.command(name="profile")
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def ProfileFrier(self, ctx):
-        if ctx.message.mentions: Profile = str((ctx.message.mentions[0]).avatar_url)
-        else: Profile = str(ctx.author.avatar_url)
-        try:
-            Files = []
-            C = 0
-            if requests.head(Profile).headers.get("content-type").split("/")[0] == "image":
-                C += 1
-                GetURLimg = requests.get(Profile, allow_redirects=True)
-                open("NsRndo.jpg", "wb").write(GetURLimg.content)
-                Img = Image.open("NsRndo.jpg")
-                Img = await deeppyer.deepfry(Img, flares=False)
-                Img.save("NsRndo.jpg")
-                Files.append(discord.File("NsRndo.jpg"))
-                await ctx.message.channel.send(files=Files)
-                Files.pop(0)
-                os.remove("NsRndo.jpg")
-            else: await SendWait(ctx, f"File({C}) isnt a valid image type :sweat:")
-        except requests.exceptions.MissingSchema: pass
+    # @ImageFrier.command(name="profile")
+    # @commands.cooldown(1, 1, commands.BucketType.user)
+    # async def ProfileFrier(self, ctx):
+    #     if ctx.message.mentions: Profile = str((ctx.message.mentions[0]).avatar_url)
+    #     else: Profile = str(ctx.author.avatar_url)
+    #     try:
+    #         Files = []
+    #         C = 0
+    #         if requests.head(Profile).headers.get("content-type").split("/")[0] == "image":
+    #             C += 1
+    #             GetURLimg = requests.get(Profile, allow_redirects=True)
+    #             open("NsRndo.jpg", "wb").write(GetURLimg.content)
+    #             Img = Image.open("NsRndo.jpg")
+    #             Img = await deeppyer.deepfry(Img, flares=False)
+    #             Img.save("NsRndo.jpg")
+    #             Files.append(discord.File("NsRndo.jpg"))
+    #             await ctx.message.channel.send(files=Files)
+    #             Files.pop(0)
+    #             os.remove("NsRndo.jpg")
+    #         else: await SendWait(ctx, f"File({C}) isnt a valid image type :sweat:")
+    #     except requests.exceptions.MissingSchema: pass
 
     @commands.group(aliases=["qr", "qrcode"])
     @commands.cooldown(1, 1, commands.BucketType.user)

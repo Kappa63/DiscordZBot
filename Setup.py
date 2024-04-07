@@ -14,7 +14,7 @@ import praw
 import CBot
 # from google_images_search import GoogleImagesSearch
 # import pyyoutube
-from imdby.imdb import imdb as IMClient
+import imdb
 # import pafy
 import datetime
 # import osuapi
@@ -59,7 +59,7 @@ Reddit = praw.Reddit(client_id=os.getenv("REDDIT_ID"), client_secret=os.getenv("
 
 # THelix = twitch.Helix(os.getenv("TWITCH_ID"), os.getenv("TWITCH_SECRET"), use_cache=True, cache_duration=datetime.timedelta(minutes=3))
 
-# IMClient = imdb
+IMClient = imdb.IMDb()
 
 # OClient = osuapi.OsuApi(os.getenv("OSU_KEY"), connector=osuapi.ReqConnector())
 
@@ -83,9 +83,12 @@ def TimeTillMidnight():
     return (10 + ((24 - Now.hour - 1) * 60 * 60) + ((60 - Now.minute - 1) * 60) + (60 - Now.second))
 
 def Threader(FunctionList, ParameterList):
-    with Cf.ThreadPoolExecutor() as Execute:
-        Pool = [Execute.submit(Func, *Param) for Func, Param in zip(FunctionList, ParameterList)]
-        Results = [Execution.result() for Execution in Pool]
+    try:
+        with Cf.ThreadPoolExecutor() as Execute:
+            Pool = [Execute.submit(Func, *Param) for Func, Param in zip(FunctionList, ParameterList)]
+            Results = [Execution.result() for Execution in Pool]
+    except:
+        return False
     return Results
 
 # def RefreshGISClient():
@@ -350,10 +353,10 @@ async def Navigator(ctx, Items, Type="#", EmbedAndContent=False, ContItems=None,
 #     return False
 
 
-# class Ignore(commands.CheckFailure): pass
-# def ChDev(ctx):
-#     if ctx.author.id == 443986051371892746: return True
-#     raise Ignore("Ignore")
+class Ignore(commands.CheckFailure): pass
+def ChDev(ctx):
+    if ctx.author.id == 443986051371892746: return True
+    raise Ignore("Ignore")
 
 
 # class IsNSFW(commands.CheckFailure): pass

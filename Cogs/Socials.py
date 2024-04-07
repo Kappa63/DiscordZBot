@@ -145,7 +145,10 @@ def RedditbedMaker(SubCpoS, Subname, Nsfchannel, Type="R", PostNum=0, TotalPosts
 
 def EmbOri(REm, Type, SubCpoS):
     REm.add_field(name="\u200b", value=f"The original post is a {Type} [click here]({SubCpoS.url}) to view the original", inline=False)
-    REm.set_image(url=SubCpoS.preview["images"][-1]["source"]["url"])
+    try:
+        REm.set_image(url=SubCpoS.preview["images"][-1]["source"]["url"])
+    except: 
+        return REm
     return REm
 
 def CheckSub(Sub):
@@ -457,7 +460,9 @@ class Socials(commands.Cog):
         Nsfwcheck=ctx.channel.is_nsfw()
         Crsd = np.array_split(SubCpoS, len(SubCpoS)//2)
         Crsd = [np.insert(i, 0, v*2) for v,i in enumerate(Crsd)]
-        PostEms = sum(Threader([Embeder]*(len(SubCpoS)//2), Crsd), [])
+        Thread = Threader([Embeder]*(len(SubCpoS)//2), Crsd)
+        if(Thread == False):  await SendWait(ctx, "Failed to Thread subreddit :no_mouth:"); return
+        PostEms = sum(Thread, [])
         await Navigator(ctx, PostEms)
 
     @commands.command(name="redditor")

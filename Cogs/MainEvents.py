@@ -81,7 +81,7 @@ class MainEvents(commands.Cog):
         else:
             await self.StaffChannel.send(self.Me.mention)
             await self.StaffChannel.send(f'In {ctx.command} ({ctx.message.content}): {error}')
-
+            return
     # @tasks.loop(seconds=TimeTillMidnight())
     # async def SendAPODDaily(self):
     #     print("Sending APOD...")
