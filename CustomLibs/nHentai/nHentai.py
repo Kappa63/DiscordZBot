@@ -463,7 +463,6 @@ class RequestHandler(object):
         that are exposed in the RequestHandler methods in form of parameters
         and keyword arguments.
         """
-        print("a")
         session = requests.Session()
         session.mount("https://", HTTPAdapter(max_retries=self.retry_strategy))
         session.hooks['response'] = [lambda response, *args, **kwargs: response.raise_for_status()]
@@ -479,11 +478,6 @@ class RequestHandler(object):
         Returns the GET request encoded in `utf-8`. Adds proxies to this session
         on the fly if urllib is able to pick up the system's proxy settings.
         """
-        print("b")
-        print([i for i in self.session.cookies])
-        print(self.session.headers)
-
-        print(url)
         response = self.session.get(url, timeout=self.timeout, proxies=self.proxies or getproxies(), **kwargs)
         response.encoding = 'utf-8'
         return response

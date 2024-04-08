@@ -22,7 +22,7 @@ import concurrent.futures as Cf
 # from ro_py import Client as Roblox
 
 load_dotenv()
-Cogs = ["Cogs.Randomizers", "Cogs.MainEvents", "Cogs.Rule34", "Cogs.AnimeManga", 
+Cogs = ["Cogs.Randomizers", "Cogs.MainEvents", "Cogs.Rule34", "Cogs.AnimeManga", "Cogs.WrittenStuff",
         #  "Cogs.HelpInfo", 
         "Cogs.Socials", "Cogs.OnlyMods", "Cogs.Nasa", "Cogs.Movies", "Cogs.Misc", "Cogs.Images"]
 
@@ -37,7 +37,7 @@ Cogs = ["Cogs.Randomizers", "Cogs.MainEvents", "Cogs.Rule34", "Cogs.AnimeManga",
 
 CClient = {"X-CMC_PRO_API_KEY": os.getenv("COINBASE_KEY")}
 
-# NClient = {"country": "us", "apiKey": os.getenv("NEWS_KEY")}
+NClient = {"country": "us", "apiKey": os.getenv("NEWS_KEY")}
 
 # GiClient = GoogleImagesSearch(os.getenv("GCS_KEY"), os.getenv("CX_ID"))
 
@@ -365,4 +365,4 @@ def ChDev(ctx):
 #     raise IsNSFW("Not Safe")
 
 
-# class IsBot(commands.CheckFailure): pass
+class IsBot(commands.CheckFailure): pass

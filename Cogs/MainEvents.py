@@ -3,7 +3,7 @@ import discord
 # from Setup import (IsBot, IsVote, IsPatreon, IsPatreonT2, IsPatreonT3, IsPatreonT4, Ignore, IsAdmin,
 #                    IsSetup, IsNSFW, IsMultiredditLimit, FormatTime, TimeTillMidnight, GetPatreonTier,
 #                    ErrorEmbeds, ChPatreonUserT2, SendWait, AQd)
-from Setup import SendWait, FormatTime
+from Setup import SendWait, FormatTime, Ignore, IsBot
 import random
 import requests
 import asyncio
@@ -57,8 +57,7 @@ class MainEvents(commands.Cog):
         # StateFile.close()
         # if "".join(State) == "Up": a
         await self.DClient.change_presence(activity=discord.Game(f"zhelp || {random.choice(Doing)}"))
-        self.StaffChannel = self.DClient.get_channel(768461226996662302)
-        self.Me = self.DClient.get_user(443986051371892746)
+        
         # else: await self.DClient.change_presence(status=discord.Status.invisible)
         # self.StaffChannel = self.DClient.get_channel(795080325020909598)
         # self.Me = self.DClient.get_user(443986051371892746)
@@ -77,7 +76,7 @@ class MainEvents(commands.Cog):
         # elif isinstance(error, IsSetup): await SendWait(ctx, 'Please setup your server first (with "zsetup")! Check all server commands (with "zhelp server")')
         # elif isinstance(error, IsNSFW): await SendWait(ctx, "This can only be used in NSFW channels.")
         # elif isinstance(error, IsMultiredditLimit): await SendWait(ctx, "You can no longer have this many Multireddits. Remove some to comply with your limit. Until then you cannot use your Multireddits.")
-        # elif isinstance(error, (commands.CommandNotFound, Ignore, IsBot, commands.MessageNotFound)): return
+        elif isinstance(error, (commands.CommandNotFound, Ignore, IsBot, commands.MessageNotFound)):print(error); return
         else:
             await self.StaffChannel.send(self.Me.mention)
             await self.StaffChannel.send(f'In {ctx.command} ({ctx.message.content}): {error}')
@@ -213,6 +212,8 @@ class MainEvents(commands.Cog):
     #?     await asyncio.sleep(TimeTillMidnight())
 
     async def cog_load(self):
+        self.StaffChannel = self.DClient.get_channel(768461226996662302)
+        self.Me = self.DClient.get_user(443986051371892746)
         print(f"{self.__class__.__name__} loaded!")
 
     async def cog_unload(self):

@@ -12,16 +12,44 @@ class DClient(commands.Bot):
     def __init__(self, Cogs):
         REqInt = discord.Intents.all()
         REqInt.members = True
-        self.Cogs = Cogs
+        self.LoadedCogs = Cogs
         super().__init__(case_insensitive=True, command_prefix=["Z","z"], intents=REqInt)
    
     async def setup_hook(self) -> None:
-        for Cog in self.Cogs: 
+        for Cog in self.LoadedCogs: 
             await self.load_extension(Cog)
         print("Cogs Loaded...")
-        # print(self.guilds)
         return await super().setup_hook()
     
+    async def reload_all_cogs(self):
+        for Cog in self.LoadedCogs: 
+            await self.reload_extension(Cog)
+        print("Cogs Reloaded...")
+
+    async def reload_cogs(self, cogsRe):
+        for Cog in cogsRe: 
+            await self.reload_extension(Cog)
+        print("Cogs Reloaded...")
+
+    async def unload_cogs(self, cogsRe):
+        for Cog in cogsRe: 
+            try:
+                await self.unload_extension(Cog)
+                self.LoadedCogs.remove(Cog)
+            except:
+                pass
+
+        print("Cogs Unloaded...")
+
+    async def load_cogs(self, cogsRe):
+        for Cog in cogsRe: 
+            try:
+                await self.load_extension(Cog)
+                self.LoadedCogs.add(Cog)
+            except:
+                pass
+
+        print("Cogs Loaded...")
 
     # DClient = commands.Bot()
 

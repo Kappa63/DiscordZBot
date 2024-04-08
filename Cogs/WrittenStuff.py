@@ -6,7 +6,7 @@ from Setup import (
     #? ChVote,
     #? ChPatreonT2,
     #? GetPatreonTier,
-    ChAdmin,
+    # ChAdmin,
     #? FormatTime,
     #? TimeTillMidnight,
     SendWait,
@@ -81,7 +81,7 @@ class WrittenStuff(commands.Cog):
     @commands.command(name="joke")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def Joke(self, ctx):
-        Joke = requests.get("https://sv443.net/jokeapi/v2/joke/Programming,Miscellaneous,Spooky,Christmas?blacklistFlags=nsfw,religious,political,racist,sexist", 
+        Joke = requests.get("https://sv443.net/jokeapi/v2/joke/Any", #?blacklistFlags=
                             headers={"Accept": "application/json"}).json()
         if Joke["type"] == "twopart": 
             await ctx.message.channel.send(embed=discord.Embed(title=f'Joke ({Joke["category"]})', description=f'{Joke["setup"]}\n\n||{Joke["delivery"]}||', color=0xEB88DA))
@@ -103,20 +103,19 @@ class WrittenStuff(commands.Cog):
         if Pun["type"] == "twopart": await ctx.message.channel.send(embed=discord.Embed(title="Pun", description=f'{Pun["setup"]}\n\n||{Pun["delivery"]}||', color=0x05D111))
         else: await ctx.message.channel.send(embed=discord.Embed(title="Pun", description=Pun["joke"], color=0x05D111))
 
-    #? @commands.command(name="qotd")
-    #? @commands.check(ChVote)
-    #? @commands.cooldown(1, 1, commands.BucketType.user)
-    #? async def QuoteOfTheDay(self, ctx):
-    #?     TodayQuote = requests.get(
-    #?         "https://favqs.com/api/qotd", headers={"Accept": "application/json"}
-    #?     ).json()
-    #?     QEm = discord.Embed(
-    #?         title="Quote Of The Day",
-    #?         description=TodayQuote["quote"]["body"],
-    #?         color=0x8D42EE,
-    #?     )
-    #?     QEm.set_footer(text=f'By: {TodayQuote["quote"]["author"]}')
-    #?     await ctx.message.channel.send(embed=QEm)
+    @commands.command(name="qotd")
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def QuoteOfTheDay(self, ctx):
+        TodayQuote = requests.get(
+            "https://favqs.com/api/qotd", headers={"Accept": "application/json"}
+        ).json()
+        QEm = discord.Embed(
+            title="Quote Of The Day",
+            description=TodayQuote["quote"]["body"],
+            color=0x8D42EE,
+        )
+        QEm.set_footer(text=f'By: {TodayQuote["quote"]["author"]}')
+        await ctx.message.channel.send(embed=QEm)
     #? @commands.group(name="qotddaily", invoke_without_command=True)
     #? @commands.cooldown(1, 1, commands.BucketType.user)
     #? async def QotdDAILY(self, ctx):
@@ -168,6 +167,11 @@ class WrittenStuff(commands.Cog):
     #?             await SendWait(ctx, "Removed from QOTD daily successfully")
     #?             return
     #?     await SendWait(ctx, "You are already not in QOTD daily")
+    async def cog_load(self):
+        print(f"{self.__class__.__name__} loaded!")
 
-def setup(DClient):
-    DClient.add_cog(WrittenStuff(DClient))
+    async def cog_unload(self):
+        print(f"{self.__class__.__name__} unloaded!")
+
+async def setup(DClient):
+    await DClient.add_cog(WrittenStuff(DClient))
