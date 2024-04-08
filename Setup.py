@@ -13,9 +13,9 @@ import praw
 # from pymongo import MongoClient
 import CBot
 # from google_images_search import GoogleImagesSearch
-# import pyyoutube
+import pyyoutube
 import imdb
-# import pafy
+import pafy
 import datetime
 # import osuapi
 import concurrent.futures as Cf
@@ -55,7 +55,7 @@ Reddit = praw.Reddit(client_id=os.getenv("REDDIT_ID"), client_secret=os.getenv("
 
 # Covid = COVID19Py.COVID19()
 
-# YClient = pyyoutube.Api(api_key=os.getenv("YOUTUBE_KEY"))
+YClient = pyyoutube.Api(api_key=os.getenv("YOUTUBE_KEY"))
 
 # THelix = twitch.Helix(os.getenv("TWITCH_ID"), os.getenv("TWITCH_SECRET"), use_cache=True, cache_duration=datetime.timedelta(minutes=3))
 
@@ -74,7 +74,7 @@ PatreonTiers = {
 
 RemoveExtra = lambda listRm, val: [value for value in listRm if value != val]
 
-# GetVidDuration = lambda VidId: pafy.new(f"https://www.youtube.com/watch?v={VidId}").duration
+GetVidDuration = lambda VidId: pafy.new(f"https://www.youtube.com/watch?v={VidId}").duration
 
 async def SendWait(ctx, Notice): await ctx.message.channel.send(embed=discord.Embed(title=Notice))
 

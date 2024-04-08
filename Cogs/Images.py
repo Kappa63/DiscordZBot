@@ -123,14 +123,33 @@ class Images(commands.Cog):
     @commands.group(aliases=["fry", "deepfry"], invoke_without_command=True)
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def ImageFrier(self, ctx, *args):
-        if not args and not ctx.message.attachments: await SendWait(ctx, "No image(s) or link(s) were attached :woozy_face:"); return 
+        if not args and not ctx.message.attachments and not (ctx.message.reference.resolved.attachments if ctx.message.type == discord.MessageType.reply else False): await SendWait(ctx, "No image(s) or link(s) were attached :woozy_face:"); return 
         Attached = []
         if args:
             URLargs = list(args)
             try:
                 for url in URLargs: Attached.append(url)
             except TypeError: pass
-        for AtT in ctx.message.attachments: Attached.append(AtT.url)
+        elif ctx.message.attachments:
+            for AtT in ctx.message.attachments: Attached.append(AtT.url)
+            Files = []
+            C = 0
+            for File in Attached:
+                try:
+                    if requests.head(File).headers.get("content-type").split("/")[0] == "image":
+                        C += 1
+                        GetURLimg = requests.get(File, allow_redirects=True)
+                        open("NsRndo.jpg", "wb").write(GetURLimg.content)
+                        Img = Image.open("NsRndo.jpg")
+                        Img = await deeppyer.deepfry(Img, flares=False)
+                        Img.save("NsRndo.jpg")
+                        Files.append(discord.File("NsRndo.jpg"))
+                        await ctx.message.channel.send(files=Files)
+                        Files.pop(0)
+                        os.remove("NsRndo.jpg")
+                    else: await SendWait(ctx, f"File({C}) isnt a valid image type :sweat:")
+                except requests.exceptions.MissingSchema: pass
+        for AtT in ctx.message.reference.resolved.attachments: Attached.append(AtT.url)
         Files = []
         C = 0
         for File in Attached:
