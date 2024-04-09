@@ -1,4 +1,5 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
 # from Setup import ChVote, ChVoteUser, ChNSFW, SendWait, ErrorEmbeds, Navigator
 from Setup import Navigator, SendWait
@@ -21,8 +22,12 @@ class Rule34(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
 
-    @commands.group(aliases=["rule34", "r34"], invoke_without_command=True)
-    async def GetRule34(self, ctx, *args):
+    @commands.hybrid_group(name="rule34", aliases=["r34"], invoke_without_command=True, description="For all you Kinky Bastards.")
+    @app_commands.rename(srch="search")
+    @app_commands.describe(srch="Degenerate Search Term")
+    @commands.cooldown(1, 2, commands.BucketType.user)
+    async def GetRule34(self, ctx, *, srch:str):
+        args = srch.split(" ")
         if not args: await SendWait(ctx, "No arguments :no_mouth:"); return
         try:
             Rule34 = rule34.Rule34(asyncio.get_event_loop())
@@ -31,13 +36,17 @@ class Rule34(commands.Cog):
             else: Rule34Choices = await Rule34.getImages(f'{"_".join(args).lower()}')
             ShowRule = random.choice(Rule34Choices)
         except TypeError: await SendWait(ctx, "Nothing Found :no_mouth:"); return
-        await ctx.message.channel.send(embed=MakeEmbed(ShowRule))
+        await ctx.send(embed=MakeEmbed(ShowRule))
 
     # @commands.check(ChVote)
     # @commands.check(ChNSFW)
     # @commands.cooldown(1, 1, commands.BucketType.user)
-    @GetRule34.command(name="surf")
-    async def SurfRule34(self, ctx, *args):
+    @GetRule34.command(name="surf", description="For all you Even Kinkier Bastards.")
+    @app_commands.rename(srch="search")
+    @app_commands.describe(srch="Degenerate Search Term")
+    @commands.cooldown(1, 4, commands.BucketType.user)
+    async def SurfRule34(self, ctx, *, srch:str):
+        args = srch.split(" ")
         if not args: await SendWait(ctx, "No arguments :no_mouth:"); return
         try:
             Rule34 = rule34.Rule34(asyncio.get_event_loop())

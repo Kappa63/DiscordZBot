@@ -8,7 +8,7 @@ class Movies(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
 
-    @commands.command(name="imdb")
+    @commands.command(name="imdb", description="Search and Find Info About Your Favourite Movies.")
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def MovieGetter(self, ctx, *args):
         def ChCHanS(MSg):
@@ -41,7 +41,7 @@ class Movies(commands.Cog):
                 SrchIMDb.append(Movie)
             if not C: await SendWait(ctx, "Nothing Found :woozy_face:"); return
             SYem.set_footer(text='Choose a number to check Movie or Series. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
-            IMDbSent = await ctx.message.channel.send(embed=SYem)
+            IMDbSent = await ctx.send(embed=SYem)
             try:
                 ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=20)
                 LResS = ResS.content.lower()
@@ -94,7 +94,7 @@ class Movies(commands.Cog):
             Note = "\n**And more...**" if len(IMDbinfo["cast"]) > 10 else ""
             YEm.add_field(name="Cast:", value="\n".join(Cast[:10]) + Note, inline=False)
         if "cover url" in IMDbinfo: YEm.set_thumbnail(url=IMDbinfo["cover url"])
-        await ctx.message.channel.send(embed=YEm)
+        await ctx.send(embed=YEm)
 
     async def cog_load(self):
         print(f"{self.__class__.__name__} loaded!")

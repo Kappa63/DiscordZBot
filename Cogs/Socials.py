@@ -1,4 +1,5 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
 from prawcore import NotFound, Forbidden
 import os
@@ -182,7 +183,7 @@ class Socials(commands.Cog):
     #         ThEm.set_thumbnail(url=HImg)
     #         ThEm.add_field(name = "Total Views: ", value = f'{TViews:,}', inline=False)
     #         if IsLive: ThEm.add_field(name = ":red_circle: CURRENTLY LIVE :red_circle:", value="\u200b", inline=False)
-    #         await ctx.message.channel.send(embed = ThEm)
+    #         await ctx.send(embed = ThEm)
     #     except AttributeError: await SendWait(ctx, "User Not Found")
 
     # @TTwitch.command(name="stream")
@@ -212,7 +213,7 @@ class Socials(commands.Cog):
     #         ThEm.set_image(url=ThumbnailShot)
     #         ThEm.add_field(name = "Live Viewers: ", value = f'{CurrentViewers:,}')
     #         ThEm.add_field(name = "Started At: ", value = StartTime)
-    #         await ctx.message.channel.send(embed = ThEm)
+    #         await ctx.send(embed = ThEm)
     #     except Exception as error:
     #         if error.__class__ == StreamNotFound: await SendWait(ctx, "Streamer is not currently LIVE")
     #         if error.__class__ == AttributeError: await SendWait(ctx, "User Not Found")
@@ -271,7 +272,7 @@ class Socials(commands.Cog):
     #                 SrchTw.append(TWuser)
     #             if not C: await SendWait(ctx, "Not Found :expressionless:"); return
     #             STEm.set_footer(text='Choose a number to open Twitter User Profile. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
-    #             TwSent = await ctx.message.channel.send(embed=STEm)
+    #             TwSent = await ctx.send(embed=STEm)
     #             try:
     #                 ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=20)
     #                 LResS = ResS.content.lower()
@@ -316,7 +317,7 @@ class Socials(commands.Cog):
     #     for Trend in Trends[0]["trends"]:
     #         if Trend["tweet_volume"]: TEm.add_field(name=Trend["name"], value=f'{Trend["tweet_volume"]:,} Tweets', inline=False)
     #         else: TEm.add_field(name=Trend["name"], value=f"\u200b", inline=False)
-    #     await ctx.message.channel.send(embed=TEm)
+    #     await ctx.send(embed=TEm)
 
     # @commands.command(aliases=["youtube", "yt"])
     # @commands.cooldown(1, 2, commands.BucketType.user)
@@ -346,7 +347,7 @@ class Socials(commands.Cog):
     #                 SrchYT.append(ChannelGetter)
     #             if C == 0: await SendWait(ctx, "Nothing Found :woozy_face:"); return
     #             SYem.set_footer(text='Choose a number to open Youtube Channel. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
-    #             YTSent = await ctx.message.channel.send(embed=SYem)
+    #             YTSent = await ctx.send(embed=SYem)
     #             try:
     #                 ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=20)
     #                 LResS = ResS.content.lower()
@@ -383,33 +384,37 @@ class Socials(commands.Cog):
     #     YTEs = [YoutubebedMaker(Vid.contentDetails.upload.videoId, YTinfo.items[0], VNum, len(YTVids.items)) for VNum, Vid in enumerate(YTVids.items)]
     #     await Navigator(ctx, YTEs, Main=True, MainBed=YEm)
 
-    @commands.group(name="reddit", invoke_without_command=True)
+    @commands.hybrid_group(name="reddit", invoke_without_command=True, description="Get a Post from a Subreddits's HOT Posts.")
+    @app_commands.rename(sub="subreddit")
+    @app_commands.describe(sub="Name of Subreddit")
     @commands.cooldown(1, 2, commands.BucketType.user)
-    async def RedditRand(self, ctx, *args):
-        if not args: await ctx.message.channel.send("No arguments :no_mouth:"); return
-        args = "".join(args)[2:] if "".join(args).startswith("r/") else "".join(args)
+    async def RedditRand(self, ctx, sub:str):
+        if not sub: await ctx.send("No arguments :no_mouth:"); return
+        args = sub[2:] if sub.startswith("r/") else sub
         if CheckSub(args):
             await SendWait(ctx, ":mobile_phone: Finding Post...")
             Post = [i for i in list(Reddit.subreddit(args).hot()) if not i.stickied]
-            if not Post: await ctx.message.channel.send("No posts on that subreddit :no_mouth:"); return
+            if not Post: await ctx.send("No posts on that subreddit :no_mouth:"); return
             SubCpoS = random.choice(Post)
             Nsfwcheck=ctx.channel.is_nsfw()
-            await ctx.message.channel.send(embed=RedditbedMaker(SubCpoS, args, Nsfwcheck))
-        else: await ctx.message.channel.send("Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)")
+            await ctx.send(embed=RedditbedMaker(SubCpoS, args, Nsfwcheck))
+        else: await ctx.send("Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)")
 
-    @RedditRand.command(name="surf")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def RedditNav(self, ctx, *args):
+    @RedditRand.command(name="surf", description="Navigate a Subreddit on Discord.")
+    @app_commands.rename(sub="subreddit")
+    @app_commands.describe(sub="Name of Subreddit")
+    @commands.cooldown(1, 4, commands.BucketType.user)
+    async def RedditNav(self, ctx, sub:str):
         ChCHEmCH = lambda RcM, RuS: not RuS.bot and RcM.message == KraPosS and str(RcM.emoji) in ["🔝", "📈", "🔥", "📝", "❌"]
         ChCHEmCHT = lambda RcM, RuS: not RuS.bot and RcM.message == KraPosS and str(RcM.emoji) in ["🗓️", "🌍", "📅", "❌"]
         Embeder = lambda i,*x: [RedditbedMaker(P, Name, Nsfchannel=Nsfwcheck, Type="S", PostNum=i+PNum, TotalPosts=TotalPosts) for PNum, P in enumerate(x)]
 
-        if not args: await SendWait(ctx, "No arguments :no_mouth:")
-        args = "".join(args)[2:] if "".join(args).startswith("r/") else "".join(args)
+        if not sub: await SendWait(ctx, "No arguments :no_mouth:")
+        args = sub[2:] if sub.startswith("r/") else sub
         if not CheckSub(args) and not inspect.stack()[1].function == "__call__": await SendWait(ctx, "Sub doesn't exist or private :expressionless:"); return
         ebd = discord.Embed(title="How would you like to sort the subreddit?", description="🔝 to sort by top.\n📈 to sort by rising.\n🔥 to sort by hot.\n📝 to sort by new.\n❌ to cancel")
         ebd.set_footer(text="This timesout in 10s")
-        KraPosS = await ctx.message.channel.send(embed=ebd)
+        KraPosS = await ctx.send(embed=ebd)
         await KraPosS.add_reaction("🔝")
         await KraPosS.add_reaction("📈")
         await KraPosS.add_reaction("🔥")
@@ -465,11 +470,13 @@ class Socials(commands.Cog):
         PostEms = sum(Thread, [])
         await Navigator(ctx, PostEms)
 
-    @commands.command(name="redditor")
+    @commands.hybrid_command(name="redditor", description="View a Redditors Profile.")
+    @app_commands.rename(rdtr="redditor")
+    @app_commands.describe(rdtr="Name of Redditor")
     @commands.cooldown(1, 2, commands.BucketType.user)
-    async def GetRedditor(self, ctx, *args):
-        if not args: await SendWait(ctx, "No arguments :no_mouth:"); return
-        args = "".join(args)[2:] if "".join(args).startswith("u/") else "".join(args)
+    async def GetRedditor(self, ctx, rdtr:str):
+        if not rdtr: await SendWait(ctx, "No arguments :no_mouth:"); return
+        args = rdtr[2:] if rdtr.startswith("u/") else rdtr
         try:
             User = Reddit.redditor(args)
             UEm = discord.Embed(title=f"u/{User.name}", description=User.subreddit["public_description"], color=0x8B0000)
@@ -509,7 +516,7 @@ class Socials(commands.Cog):
     #     MEm = discord.Embed(title=f"{ctx.author.display_name}'s MultiReddits", color=0x8B0000)
     #     for Multireddit in User:
     #         if Multireddit not in ["IDd", "_id"]: MEm.add_field(name=Multireddit, value=f'`{", ".join(User[Multireddit])}`')
-    #     await ctx.message.channel.send(embed=MEm)
+    #     await ctx.send(embed=MEm)
 
     # @GetMultis.command(name="create")
     # @commands.check(ChPatreonT2)

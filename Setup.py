@@ -76,7 +76,7 @@ RemoveExtra = lambda listRm, val: [value for value in listRm if value != val]
 
 GetVidDuration = lambda VidId: pafy.new(f"https://www.youtube.com/watch?v={VidId}").duration
 
-async def SendWait(ctx, Notice): await ctx.message.channel.send(embed=discord.Embed(title=Notice))
+async def SendWait(ctx, Notice): await ctx.send(embed=discord.Embed(title=Notice))
 
 def TimeTillMidnight():
     Now = datetime.datetime.now()
@@ -145,9 +145,9 @@ async def Navigator(ctx, Items, Type="#", EmbedAndContent=False, ContItems=None,
         return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
 
     ItemNum = 0
-    if not Main: Nav = await ctx.message.channel.send(embed=Items[ItemNum])
-    else: Nav = await ctx.message.channel.send(embed=MainBed)
-    if EmbedAndContent: Cont = await ctx.message.channel.send(content=ContItems[ItemNum])
+    if not Main: Nav = await ctx.send(embed=Items[ItemNum])
+    else: Nav = await ctx.send(embed=MainBed)
+    if EmbedAndContent: Cont = await ctx.send(content=ContItems[ItemNum])
     TotalItems = len(Items)
     await Nav.add_reaction("⬅️")
     await Nav.add_reaction("❌")
@@ -179,7 +179,7 @@ async def Navigator(ctx, Items, Type="#", EmbedAndContent=False, ContItems=None,
                     break
             elif Res[0].emoji == "#️⃣" and Type == "#":
                 # if await ChVoteUser(Res[1].id):
-                TempNG = await ctx.message.channel.send('Choose a number to open navigate to ItemNum. "c" or "cancel" to exit navigation.')
+                TempNG = await ctx.send('Choose a number to open navigate to ItemNum. "c" or "cancel" to exit navigation.')
                 try:
                     ResE = await CBot.BotClient.wait_for("message", check=ChCHEmFN, timeout=10)
                     await TempNG.delete()
@@ -198,7 +198,7 @@ async def Navigator(ctx, Items, Type="#", EmbedAndContent=False, ContItems=None,
                     await TempNG.edit("Request Timeout")
                     await asyncio.sleep(5)
                     await TempNG.delete()
-                # else: await ctx.message.channel.send(embed=ErrorEmbeds("Vote"))
+                # else: await ctx.send(embed=ErrorEmbeds("Vote"))
             elif Res[0].emoji == "❌":
                 await Nav.remove_reaction("⬅️", CBot.BotClient.user)
                 await Nav.remove_reaction("❌", CBot.BotClient.user)

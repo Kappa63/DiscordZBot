@@ -37,7 +37,7 @@ class AnimeManga(commands.Cog):
     #         MangaInput = " ".join(args)
     #         C = 0
     #         SrchManga = []
-    #         MnSrS = await ctx.message.channel.send(embed=discord.Embed(title=":mag: Searching...", description="\u200b", color=0x3695BA))
+    #         MnSrS = await ctx.send(embed=discord.Embed(title=":mag: Searching...", description="\u200b", color=0x3695BA))
     #         SAEm = discord.Embed(title=f":mag: Results for '{MangaInput}'", description="\u200b", color=0x3695BA)
     #         for MangaResult in mal.MangaSearch(MangaInput).results:
     #             C += 1
@@ -111,7 +111,7 @@ class AnimeManga(commands.Cog):
     #         if MangaSideC: AEm.add_field(name="Side Story:", value=MangaSideC, inline=False)
     #         if MangaSummaryC: AEm.add_field(name="Summary:", value=MangaSummaryC, inline=False)
     #         if MangaSpinC: AEm.add_field(name="Spin Off:", value=MangaSpinC, inline=False)
-    #         await ctx.message.channel.send(embed=AEm)
+    #         await ctx.send(embed=AEm)
     #     except UnboundLocalError: pass   
 
     # @commands.command(name="anime")
@@ -131,7 +131,7 @@ class AnimeManga(commands.Cog):
     #         AnimeInput = " ".join(args)
     #         C = 0
     #         SrchAnime = []
-    #         AnSrS = await ctx.message.channel.send(embed=discord.Embed(title=":mag: Searching...", description="\u200b", color=0x3FC0FF))
+    #         AnSrS = await ctx.send(embed=discord.Embed(title=":mag: Searching...", description="\u200b", color=0x3FC0FF))
     #         SAEm = discord.Embed(title=f':mag: Results for "{AnimeInput}"', description="\u200b", color=0x3FC0FF)
     #         for AnimeResult in mal.AnimeSearch(AnimeInput).results:
     #             C += 1
@@ -215,10 +215,11 @@ class AnimeManga(commands.Cog):
     #             AnimeEnding = ("\n".join(AnimeGetmal.ending_themes))[:950]
     #             AEm.add_field(name="Ending Theme(s):", value=AnimeEnding, inline=True)
     #         except TypeError: pass
-    #         await ctx.message.channel.send(embed=AEm)
+    #         await ctx.send(embed=AEm)
     #     except UnboundLocalError: pass
         
-    @commands.command(name="hentai")
+    @commands.command(name="hentai", description="nHentai \"Manga\" (Cause THATS what You're Looking for).")
+    @commands.cooldown(1, 3, commands.BucketType.guild)
     async def nHentaiReader(self, ctx, *args):
         def ChCHanS(MSg):
             MesS = MSg.content.lower()
@@ -248,7 +249,7 @@ class AnimeManga(commands.Cog):
                     SrchDen.append(DeOujin)
                     if C == 10: break
                 SEm.set_footer(text='Choose a number to open doujin. "c" or "cancel" to exit search. \n\n*The Search closes automatically after 20sec of inactivity.*')
-                DmSent = await ctx.message.channel.send(embed=SEm)
+                DmSent = await ctx.send(embed=SEm)
                 try:
                     ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=20)
                     LResS = ResS.content.lower()
@@ -266,7 +267,7 @@ class AnimeManga(commands.Cog):
             except UnboundLocalError:
                 SEm = discord.Embed(title=f':mag: Search for "{" ".join(Chlks)}"', description="\u200b", color=0x000000)
                 SEm.add_field(name="\u200b", value="No Results found :woozy_face:", inline=False)
-                await ctx.message.channel.send(embed=SEm)
+                await ctx.send(embed=SEm)
                 
         else:
             try: Srch = int(" ".join(args))

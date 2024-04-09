@@ -11,8 +11,7 @@ class Nasa(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
 
-    @commands.command(name="apod")
-    # @commands.check(ChVote)
+    @commands.hybrid_command(name="apod", description="A Daily Astrology Post by NASA.")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetNasaApod(self, ctx):
         NASAapod = requests.get("https://api.nasa.gov/planetary/apod?api_key=0dsw3SiQmYCeNnwKZROSQIyrcZqjoDzMBo4ggCwS", headers={"Accept": "application/json"}).json()
@@ -22,7 +21,7 @@ class Nasa(commands.Cog):
         if "hdurl" in NASAapod: DEm.set_image(url=NASAapod["hdurl"])
         else: DEm.add_field(name="\u200b", value=f'[Video Url]({NASAapod["url"]})', inline=False)
         if "copyright" in NASAapod: DEm.set_footer(text=f'Copyright: {NASAapod["copyright"]}')
-        await ctx.message.channel.send(embed=DEm)
+        await ctx.send(embed=DEm)
 
     # @commands.group(name="apoddaily", invoke_without_command=True)
     # @commands.cooldown(1, 1, commands.BucketType.user)
@@ -58,7 +57,7 @@ class Nasa(commands.Cog):
     #         return
     #     await SendWait(ctx, "You are already not in APOD daily")
 
-    @commands.command(name="nasa")
+    @commands.hybrid_command(name="mars", description="Images From Mars.")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetNasaMars(self, ctx):
         def MakeEmbed(MarsImage, ImageNum, Total):

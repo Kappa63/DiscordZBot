@@ -52,6 +52,8 @@ from requests.models import Response
 from tqdm import tqdm
 from urllib3.util.retry import Retry
 
+# import cloudscraper
+
 __version__ = "3.2.10"
 package_name = "hentai"
 python_major = "3"
@@ -463,12 +465,34 @@ class RequestHandler(object):
         that are exposed in the RequestHandler methods in form of parameters
         and keyword arguments.
         """
+        # session = cloudscraper.create_scraper()
         session = requests.Session()
+        
         session.mount("https://", HTTPAdapter(max_retries=self.retry_strategy))
         session.hooks['response'] = [lambda response, *args, **kwargs: response.raise_for_status()]
+        # session.headers.update({
+        #     'Cookie': 'cf_clearance=G2zLtiFJ2THgutCXRjq9jRAf0C65Wa3rIF1sRivcF2w-1712612016-1.0.1.1-_aZvRiluJC7JaK233KX7zmSz5Rg88dBwnkS0Bmxo8Nb5UBwqsRrtO4Lf2VfE1w2d5abWr7DeaHylvC6C1jJf.w',
+        #     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+            # 'Origin':'https://nhentai.net',
+            # 'Pragma': 'no-cache',
+            # 'Referer': 'https://nhentai.net/?__cf_chl_tk=t5BnXsTft5VbjxpCes7uedsZiDXyQNLewq2AmHk_E8w-1712612016-0.0.1.1-1471',
+            # 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+            # 'Accept-Encoding': 'gzip, deflate, br',
+            # 'Accept-Language': 'en-US,en;q=0.9',
+            # 'Cache-Control': 'no-cache',
+        #     # 'Content-Length':'5137',
+        #     # 'Content-Type':'application/x-www-form-urlencoded'
+        # })
         session.headers.update({
-            'Cookie': 'csrftoken=2BKCEOqXMi7x9tfqz0xYcN8e1Olbv2UzlOaoSmxKY2D1AVV8aqnH6BllGotbLK2F; cf_clearance=x.84U2PUo3oGm3QhGQ31vGlcFIVVtnfhzLMdH._xw_w-1712249634-1.0.1.1-Fcigkouucww.XNLNhXPv9caX118t4C530qutQ3Dtm_sU7nppXgTPkAvRTWsYxCWnpk5BNUbTf8ouOv3czJ01cA',
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
+            'Cookie': 'csrftoken=2BKCEOqXMi7x9tfqz0xYcN8e1Olbv2UzlOaoSmxKY2D1AVV8aqnH6BllGotbLK2F; cf_clearance=G2zLtiFJ2THgutCXRjq9jRAf0C65Wa3rIF1sRivcF2w-1712612016-1.0.1.1-_aZvRiluJC7JaK233KX7zmSz5Rg88dBwnkS0Bmxo8Nb5UBwqsRrtO4Lf2VfE1w2d5abWr7DeaHylvC6C1jJf.w',
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+            'Origin':'https://nhentai.net',
+            'Pragma': 'no-cache',
+            'Referer': 'https://nhentai.net/?__cf_chl_tk=t5BnXsTft5VbjxpCes7uedsZiDXyQNLewq2AmHk_E8w-1712612016-0.0.1.1-1471',
+            # 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+            # 'Accept-Encoding': 'gzip, deflate, br',
+            # 'Accept-Language': 'en-US,en;q=0.9',
+            'Cache-Control': 'no-cache'
             # self.user_agent or _build_ua_string()
         })
         return session
@@ -478,6 +502,7 @@ class RequestHandler(object):
         Returns the GET request encoded in `utf-8`. Adds proxies to this session
         on the fly if urllib is able to pick up the system's proxy settings.
         """
+        # print("a")
         response = self.session.get(url, timeout=self.timeout, proxies=self.proxies or getproxies(), **kwargs)
         response.encoding = 'utf-8'
         return response
@@ -842,10 +867,10 @@ class Hentai(RequestHandler):
         """
         try:
             urln = urljoin(Hentai._API, str(id_))
-            print(urln)
+            # print(urln)
             a = RequestHandler().get(urln)
-            print(a)
-            print("hi")
+            # print(a)
+            # print("hi")
             return a.ok
         except HTTPError:
             return False

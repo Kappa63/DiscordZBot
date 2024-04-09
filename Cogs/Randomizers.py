@@ -14,9 +14,9 @@ class Randomizers(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
 
-    @commands.command(name="roll")
+    @commands.hybrid_command(name="roll", description="Roll a Dice.")
     async def RollTheDice(self, ctx):
-        print("ANAL")
+        # print("ANAL")
         DiceFaces = {1: "https://i.imgur.com/A3winYh.png", 2: "https://i.imgur.com/JFuawqi.png",
                      3: "https://i.imgur.com/2tufStP.png", 4: "https://i.imgur.com/GdtEPw4.png",
                      5: "https://i.imgur.com/7hgCUOq.png", 6: "https://i.imgur.com/5iyDeF1.png"}
@@ -24,20 +24,20 @@ class Randomizers(commands.Cog):
         FaceNumber = random.randint(1, 6)
         DEm = discord.Embed(title="Dice Roll", description=f"**The Dice Rolled a:** *{FaceNumber} ({DiceRolls[FaceNumber]})*", color=0xFAC62D)
         DEm.set_thumbnail(url=DiceFaces[FaceNumber])
-        await ctx.message.channel.send(embed=DEm)
+        await ctx.send(embed=DEm)
 
-    @commands.command(aliases=["cf", "coinflip"])
+    @commands.command(name = "coinflip", aliases=["cf"], description="Flip a Coin.")
     async def FlipTheCoin(self, ctx):
-        CoinFaces = {"Heads": "https://cdn.discordapp.com/attachments/768718636583747584/823561367000842350/Heads.png",
-                     "Tails": "https://cdn.discordapp.com/attachments/768718636583747584/823561369990332416/Tails.png"}
+        CoinFaces = {"Heads": "https://i.imgur.com/U6BxOan.png",
+                     "Tails": "https://i.imgur.com/zWvC1Ao.png"}
         Face = random.choice(list(CoinFaces.keys()))
         CEm = discord.Embed(title="Coin Flip", description=f"**The Coin Landed on:** *{Face}*", color=0xFAC62D)
         CEm.set_thumbnail(url=CoinFaces[Face])
-        await ctx.message.channel.send(embed=CEm)
+        await ctx.send(embed=CEm)
 
     # @commands.cooldown(1, 1, commands.BucketType.user)
 
-    @commands.command(aliases=["color", "colour"])
+    @commands.command(name="color", aliases=["colour"], description="Generates a Random Color.")
     async def ColorRandom(self, ctx):
         MakeClear = numpy.zeros((360, 360, 3), numpy.uint8)
         R = random.randint(0, 255)
@@ -52,7 +52,7 @@ class Randomizers(commands.Cog):
         ColorObject = discord.Color(value=int(RGBtoHEX, 16))
         CEm = discord.Embed(title="Color", description=f"```-Hex: #{RGBtoHEX}\n-RGB: ({R},{G},{B})```", color=ColorObject)
         CEm.set_thumbnail(url=ColoredImage)
-        await ctx.message.channel.send(embed=CEm)
+        await ctx.send(embed=CEm)
 
     async def cog_load(self):
         print(f"{self.__class__.__name__} loaded!")
@@ -68,7 +68,7 @@ class Randomizers(commands.Cog):
     #         QRGifs = GApi.gifs_search_get(GClient, " ".join(args), limit=50)
     #         GifSAl = list(QRGifs.data)
     #         GifF = random.choices(GifSAl)
-    #         await ctx.message.channel.send(GifF[0].url)
+    #         await ctx.send(GifF[0].url)
     #     except IndexError: await SendWait(ctx, "No gifs found :expressionless:")
 
 

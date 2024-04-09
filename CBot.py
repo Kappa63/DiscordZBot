@@ -5,10 +5,18 @@ from discord.ext import commands
 from dotenv import load_dotenv
 import os
 from Setup import Cogs
+# import random
+# import requests
+# import asyncio
+
+# Doing = ["Playing With The Laws Of Physics", "Getting Tortured", "Just Vibin'", "Playing With My Toes",
+#          "Playing Chess With God", "Playing With Leona", "Yeeting People"]
+
 load_dotenv()
 
-
 class DClient(commands.Bot):
+    StaffChannel = None
+    Me = None
     def __init__(self, Cogs):
         REqInt = discord.Intents.all()
         REqInt.members = True
@@ -38,7 +46,6 @@ class DClient(commands.Bot):
                 self.LoadedCogs.remove(Cog)
             except:
                 pass
-
         print("Cogs Unloaded...")
 
     async def load_cogs(self, cogsRe):

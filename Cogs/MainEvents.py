@@ -5,8 +5,8 @@ import discord
 #                    ErrorEmbeds, ChPatreonUserT2, SendWait, AQd)
 from Setup import SendWait, FormatTime, Ignore, IsBot
 import random
-import requests
-import asyncio
+# import requests
+# import asyncio
 
 Doing = ["Playing With The Laws Of Physics", "Getting Tortured", "Just Vibin'", "Playing With My Toes",
          "Playing Chess With God", "Playing With Leona", "Yeeting People"]
@@ -49,37 +49,34 @@ class MainEvents(commands.Cog):
         # self.SendAPODDaily.start()
         #? self.SendQOTDDaily.start()
         # self.SendCPTDDaily.start()
-
+# 
     @commands.Cog.listener("on_ready")
     async def on_ready(self):
-        # StateFile = open("OpenState.txt")
-        # State = StateFile.readlines()
-        # StateFile.close()
-        # if "".join(State) == "Up": a
         await self.DClient.change_presence(activity=discord.Game(f"zhelp || {random.choice(Doing)}"))
-        
-        # else: await self.DClient.change_presence(status=discord.Status.invisible)
-        # self.StaffChannel = self.DClient.get_channel(795080325020909598)
-        # self.Me = self.DClient.get_user(443986051371892746)
         print(f"Online in {len(self.DClient.guilds)}...")
+        self.DClient.StaffChannel = self.DClient.get_channel(768461226996662302)
+        self.DClient.Me = self.DClient.get_user(443986051371892746)
+    
+        
         # await self.StaffChannel.send(f"Back Online In {len(self.DClient.guilds)}...")
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown): await SendWait(ctx, f'Hold the spam. Wait atleast {FormatTime(round(error.retry_after, 2))}')
         # elif isinstance(error, IsAdmin): await SendWait(ctx, "Non-admins are not allowed to use this command")
-        # elif isinstance(error, IsVote): await ctx.message.channel.send(embed=ErrorEmbeds("Vote"))
-        # elif isinstance(error, IsPatreon): await ctx.message.channel.send(embed=ErrorEmbeds("Patreon"))
-        # elif isinstance(error, IsPatreonT2): await ctx.message.channel.send(embed=ErrorEmbeds("PatreonT2"))
-        # elif isinstance(error, IsPatreonT3): await ctx.message.channel.send(embed=ErrorEmbeds("PatreonT3"))
-        # elif isinstance(error, IsPatreonT4): await ctx.message.channel.send(embed=ErrorEmbeds("PatreonT4"))
+        # elif isinstance(error, IsVote): await ctx.send(embed=ErrorEmbeds("Vote"))
+        # elif isinstance(error, IsPatreon): await ctx.send(embed=ErrorEmbeds("Patreon"))
+        # elif isinstance(error, IsPatreonT2): await ctx.send(embed=ErrorEmbeds("PatreonT2"))
+        # elif isinstance(error, IsPatreonT3): await ctx.send(embed=ErrorEmbeds("PatreonT3"))
+        # elif isinstance(error, IsPatreonT4): await ctx.send(embed=ErrorEmbeds("PatreonT4"))
         # elif isinstance(error, IsSetup): await SendWait(ctx, 'Please setup your server first (with "zsetup")! Check all server commands (with "zhelp server")')
         # elif isinstance(error, IsNSFW): await SendWait(ctx, "This can only be used in NSFW channels.")
         # elif isinstance(error, IsMultiredditLimit): await SendWait(ctx, "You can no longer have this many Multireddits. Remove some to comply with your limit. Until then you cannot use your Multireddits.")
         elif isinstance(error, (commands.CommandNotFound, Ignore, IsBot, commands.MessageNotFound)):print(error); return
         else:
-            await self.StaffChannel.send(self.Me.mention)
-            await self.StaffChannel.send(f'In {ctx.command} ({ctx.message.content}): {error}')
+            print(error)
+            await self.DClient.StaffChannel.send(self.DClient.Me.mention)
+            await self.DClient.StaffChannel.send(f'In {ctx.command} ({ctx.message.content}): {error}')
             return
     # @tasks.loop(seconds=TimeTillMidnight())
     # async def SendAPODDaily(self):
@@ -212,8 +209,6 @@ class MainEvents(commands.Cog):
     #?     await asyncio.sleep(TimeTillMidnight())
 
     async def cog_load(self):
-        self.StaffChannel = self.DClient.get_channel(768461226996662302)
-        self.Me = self.DClient.get_user(443986051371892746)
         print(f"{self.__class__.__name__} loaded!")
 
     async def cog_unload(self):
