@@ -26,7 +26,7 @@ class Randomizers(commands.Cog):
         DEm.set_thumbnail(url=DiceFaces[FaceNumber])
         await ctx.send(embed=DEm)
 
-    @commands.command(name = "coinflip", aliases=["cf"], description="Flip a Coin.")
+    @commands.hybrid_command(name = "coinflip", aliases=["cf"], description="Flip a Coin.")
     async def FlipTheCoin(self, ctx):
         CoinFaces = {"Heads": "https://i.imgur.com/U6BxOan.png",
                      "Tails": "https://i.imgur.com/zWvC1Ao.png"}
@@ -37,7 +37,7 @@ class Randomizers(commands.Cog):
 
     # @commands.cooldown(1, 1, commands.BucketType.user)
 
-    @commands.command(name="color", aliases=["colour"], description="Generates a Random Color.")
+    @commands.hybrid_command(name="color", aliases=["colour"], description="Generates a Random Color.")
     async def ColorRandom(self, ctx):
         MakeClear = numpy.zeros((360, 360, 3), numpy.uint8)
         R = random.randint(0, 255)
@@ -46,13 +46,16 @@ class Randomizers(commands.Cog):
         MakeClear[:, 0:360] = (B, G, R)
         RGBtoHEX = "%02x%02x%02x" % (R, G, B)
         cv2.imwrite("Color.png", MakeClear)
-        async with pyimgbox.Gallery(title="The Color") as gallery: Img = await gallery.upload("Color.png")
-        ColoredImage = Img["image_url"]
-        os.remove("Color.png")
+        ClrImg = discord.File("Color.png")
+        # PEm.set_image(url="attachment://Color.png")
+        # await ctx.send(file=TpdeImg, embed=PEm)
+        # async with pyimgbox.Gallery(title="The Color") as gallery: Img = await gallery.upload("Color.png")
+        # ColoredImage = Img["image_url"]
         ColorObject = discord.Color(value=int(RGBtoHEX, 16))
         CEm = discord.Embed(title="Color", description=f"```-Hex: #{RGBtoHEX}\n-RGB: ({R},{G},{B})```", color=ColorObject)
-        CEm.set_thumbnail(url=ColoredImage)
-        await ctx.send(embed=CEm)
+        CEm.set_thumbnail(url="attachment://Color.png")
+        await ctx.send(file=ClrImg, embed=CEm)
+        os.remove("Color.png")
 
     async def cog_load(self):
         print(f"{self.__class__.__name__} loaded!")
