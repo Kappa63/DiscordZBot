@@ -1,12 +1,14 @@
 import discord
 from discord.ext import commands
 import requests
-from Setup import OClient, PClient, Threader, SendWait
+from Setup import OClient, Threader, SendWait, FClient, PClient
+from CBot import DClient as CBotDClient
+from discord import app_commands
 # , RLox
 # from ro_py.utilities.errors import UserDoesNotExistError
 
 
-def PUBGDataEmbed(data, name):
+def PUBGDataEmbed(data, name) -> discord.Embed:
     PEm = discord.Embed(title=name, color=0x32110A)
     Combiner = lambda x, y: {k: x.get(k, 0) + y.get(k, 0) for k in set(x) | set(y)}
     Duo, Solo, Squad = Threader([Combiner]*3, [[data["duo"], data["duo-fpp"]], [data["solo"], data["solo-fpp"]], [data["squad"], data["squad-fpp"]]])
@@ -25,68 +27,77 @@ def PUBGDataEmbed(data, name):
 
 
 class GameAPIs(commands.Cog):
-    def __init__(self, DClient):
+    def __init__(self, DClient:CBotDClient) -> None:
         self.DClient = DClient
 
-    @commands.command(name="osu")
+    @commands.hybrid_command(name="osu", description="Profile of an OSU Player.")
+    @app_commands.rename(usr="username")
+    @app_commands.describe(usr="Player Username")
     @commands.cooldown(1, 2, commands.BucketType.user)
-    async def OSUuser(self, ctx, *args):
-        if not args: await SendWait(ctx, "No Username Given. Try add a Username First."); return
-        SearchUser = OClient.get_user("".join(args))
-        if SearchUser:
-            User = SearchUser[0]
+    async def OSUuser(self, ctx:commands.Context, *, usr:str) -> None:
+        if not usr: await SendWait(ctx, "No Username Given. Try add a Username First."); return
+        User = OClient.get_user(usr)
+        if User:
             OEm = discord.Embed(title=User.username,
-                                description=f"**PP:** `{User.pp_raw:,}`\n**Level:** `{round(User.level,1)}`\n\n**Total Time Played:** `{round(User.total_seconds_played/3600,2):,}`\n**Country({User.country}) Rank:** `{User.pp_country_rank:,}`\n**Global Rank:** `{User.pp_rank:,}`",
-                                url=User.url, color=0xDA5B93)
+                                description=f"**PP:** `{User.pp_raw:,}`\n**Level:** `{round(User.level,1)}`\n\n**Total Hours Played:** `{round(User.seconds_played/3600,2):,}`\n**Country({User.country}) Rank:** `{User.country_rank:,}`\n**Global Rank:** `{User.rank:,}`",
+                                url=f"https://osu.ppy.sh/users/{User.user_id}", color=0xDA5B93)
             OEm.add_field(name="\u200b", value=f"**Ranked Score:** `{User.ranked_score:,}`\n**Total Score:** `{User.total_score:,}`", inline=False)
             OEm.add_field(name="\u200b", 
-                          value=f"**Play Count:** `{User.playcount}`\n**50 Hits:** `{User.count50:,}`\n**100 Hits:** `{User.count100:,}`\n**300 Hits:** `{User.count300:,}`\n**Total Hits:** `{User.total_hits:,}`\n**Accuracy:** `{round(User.accuracy, 2)}`",
+                          value=f"**Play Count:** `{User.playcount}`\n**50 Hits:** `{User.count_50:,}`\n**100 Hits:** `{User.count_100:,}`\n**300 Hits:** `{User.count_300:,}`\n**Total Hits:** `{User.count_300+User.count_100+User.count_50:,}`\n**Accuracy:** `{round(User.accuracy, 2)}`",
                           inline=True)
             OEm.add_field(name="\u200b", value="\u200b", inline=True)
             OEm.add_field(name="\u200b", 
                           value=f"**SS:** `{User.count_rank_ss:,}`\n**SSH:** `{User.count_rank_ssh:,}`\n**S:** `{User.count_rank_s:,}`\n**SH:** `{User.count_rank_sh:,}`\n**A:** `{User.count_rank_a:,}`",
                           inline=True)
-            OEm.set_thumbnail(url=User.profile_image)
+            OEm.set_thumbnail(url=f"http://s.ppy.sh/a/{User.user_id}")
             OEm.set_footer(text=f"User ({User.username}) joined on {str(User.join_date)[:10]}")
-            await ctx.message.channel.send(embed=OEm)
+            await ctx.send(embed=OEm)
         else: await SendWait(ctx, "No User Found. Try a Valid Username")
             
-    @commands.command(name="fortnite")
+    @commands.hybrid_command(name="fortnite", description="Profile of a Fortnite Player.")
+    @app_commands.rename(usr="username")
+    @app_commands.describe(usr="Player Username")
     @commands.cooldown(1, 2, commands.BucketType.user)
-    async def FortniteUser(self, ctx, *args):
-        if not args: await SendWait(ctx, "No Username Given. Try add a Username First."); return
+    async def FortniteUser(self, ctx:commands.Context, *, usr:str):
+        if not usr: await SendWait(ctx, "No Username Given. Try add a Username First."); return
         try:
-            ImageStats = requests.get("https://fortnite-api.com/v1/stats/br/v2", params={"name": " ".join(args), "image": "all"}, ).json()["data"]["image"]
-            FEm = discord.Embed(title=f'Fortnite BR Stats for **`{" ".join(args)}`**', color=0x00D8EB)
+            ImageStats = requests.get("https://fortnite-api.com/v1/stats/br/v2", params={"name": usr, "image": "all"}, headers=FClient).json()["data"]["image"]
+            FEm = discord.Embed(title=f'Fortnite BR Stats for **`{usr}`**', color=0x00D8EB)
             FEm.set_image(url=ImageStats)
-            await ctx.message.channel.send(embed=FEm)
+            await ctx.send(embed=FEm)
         except KeyError: await SendWait(ctx, "No User Found. Try a Valid Username")
 
-    @commands.group(name="pubg")
+    @commands.hybrid_group(name="pubg",  description="Profile of a PUBG Player.")
     @commands.cooldown(1, 2, commands.BucketType.user)
-    async def PUBGUser(self, ctx): pass
+    async def PUBGUser(self, ctx:commands.Context): pass
 
-    @PUBGUser.command(name="all")
+    @PUBGUser.command(name="all", description="All Time Profile of a PUBG Player.")
+    @app_commands.rename(usr="username")
+    @app_commands.describe(usr="Player Username")
     @commands.cooldown(1, 2, commands.BucketType.user)
-    async def GetAllTime(self, ctx, *args):
-        if not args: await SendWait(ctx, "No Username Given. Try add a Username First."); return
+    async def GetAllTime(self, ctx:commands.Context, *, usr:str):
+        if not usr: await SendWait(ctx, "No Username Given. Try add a Username First."); return
         try:
-            Player = requests.get("https://api.pubg.com/shards/steam/players", headers=PClient, params={"filter[playerNames]": " ".join(args)}).json()["data"][0]
+            a = requests.get("https://api.pubg.com/shards/steam/players", headers=PClient, params={"filter[playerNames]": usr}).json()
+            print(a)
+            Player = a["data"][0]
             PlayerID, PlayerName = Player["id"], Player["attributes"]["name"]
             AllData = requests.get(f"https://api.pubg.com/shards/steam/players/{PlayerID}/seasons/lifetime", headers=PClient).json()["data"]["attributes"]["gameModeStats"]
-            await ctx.message.channel.send(embed=PUBGDataEmbed(AllData, PlayerName))
+            await ctx.send(embed=PUBGDataEmbed(AllData, PlayerName))
         except KeyError: await SendWait(ctx, "No User Found. Try a Valid Username")
 
-    @PUBGUser.command(name="season")
+    @PUBGUser.command(name="season",  description="Season Profile of a PUBG Player.")
+    @app_commands.rename(usr="username")
+    @app_commands.describe(usr="Player Username")
     @commands.cooldown(1, 2, commands.BucketType.user)
-    async def GetSeason(self, ctx, *args):
-        if not args: await SendWait(ctx, "No Username Given. Try add a Username First."); return
+    async def GetSeason(self, ctx:commands.Context, *, usr:str):
+        if not usr: await SendWait(ctx, "No Username Given. Try add a Username First."); return
         try:
-            Player = requests.get("https://api.pubg.com/shards/steam/players", headers=PClient, params={"filter[playerNames]": " ".join(args)}).json()["data"][0]
+            Player = requests.get("https://api.pubg.com/shards/steam/players", headers=PClient, params={"filter[playerNames]": usr}).json()["data"][0]
             PlayerID, PlayerName = Player["id"], Player["attributes"]["name"]
             SeasonID = requests.get("https://api.pubg.com/shards/steam/seasons", headers=PClient).json()["data"][-1]["id"]
             SeasonData = requests.get(f"https://api.pubg.com/shards/steam/players/{PlayerID}/seasons/{SeasonID}", headers=PClient).json()["data"]["attributes"]["gameModeStats"]
-            await ctx.message.channel.send(embed=PUBGDataEmbed(SeasonData, PlayerName))
+            await ctx.send(embed=PUBGDataEmbed(SeasonData, PlayerName))
         except KeyError: await SendWait(ctx, "No User Found. Try a Valid Username")
 
     # @commands.command(name="Roblox")
@@ -118,5 +129,5 @@ class GameAPIs(commands.Cog):
     #     await ctx.message.channel.send(embed=REm)
         
 
-def setup(DClient):
-    DClient.add_cog(GameAPIs(DClient))
+async def setup(DClient) -> None:
+    await DClient.add_cog(GameAPIs(DClient))

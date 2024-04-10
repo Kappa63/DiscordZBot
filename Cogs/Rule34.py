@@ -2,8 +2,8 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from CBot import DClient as CBotDClient
-# from Setup import ChVote, ChVoteUser, ChNSFW, SendWait, ErrorEmbeds, Navigator
-from Setup import SendWait
+# from Setup import ChVote, ChVoteUser, , SendWait, ErrorEmbeds, Navigator
+from Setup import SendWait, ChNSFW
 import asyncio
 import random
 import rule34
@@ -28,6 +28,7 @@ class Rule34(commands.Cog):
     @app_commands.rename(srch="search")
     @app_commands.describe(srch="Degenerate Search Term")
     @commands.cooldown(1, 2, commands.BucketType.user)
+    @commands.check(ChNSFW)
     async def GetRule34(self, ctx:commands.Context, *, srch:str) -> None:
         args = srch.split(" ")
         if not args: await SendWait(ctx, "No arguments :no_mouth:"); return
@@ -41,24 +42,27 @@ class Rule34(commands.Cog):
         await ctx.send(embed=MakeEmbed(ShowRule))
 
     # @commands.check(ChVote)
-    # @commands.check(ChNSFW)
     # @commands.cooldown(1, 1, commands.BucketType.user)
     @GetRule34.command(name="surf", description="For all you Even Kinkier Bastards.")
     @app_commands.rename(srch="search")
     @app_commands.describe(srch="Degenerate Search Term")
     @commands.cooldown(1, 4, commands.BucketType.user)
+    @commands.check(ChNSFW)
     async def SurfRule34(self, ctx:commands.Context, *, srch:str) -> None:
         args = srch.split(" ")
         if not args: await SendWait(ctx, "No arguments :no_mouth:"); return
+        await ctx.defer()
         try:
             Rule34 = rule34.Rule34(asyncio.get_event_loop())
             if ctx.guild.id != 586940644153622550: 
                 Rule34Surf = await Rule34.getImages(f'-underage -loli -lolicon -lolita -lolita_channel -shota -shotacon {"_".join(args).lower()}')
             else: Rule34Surf = await Rule34.getImages(f'{"_".join(args).lower()}')
         except TypeError: await SendWait(ctx, "Nothing Found :no_mouth:"); return
-        Rule34Total = len(Rule34Surf)
-        Rules = [MakeEmbed(i, Total=Rule34Total, RuleNum=v, Type="S") for v, i in enumerate(Rule34Surf)] 
-        await Navigator(ctx, Rules).autoRun()
+        try:
+            Rule34Total = len(Rule34Surf)
+            Rules = [MakeEmbed(i, Total=Rule34Total, RuleNum=v, Type="S") for v, i in enumerate(Rule34Surf)] 
+            await Navigator(ctx, Rules).autoRun()
+        except TypeError: await SendWait(ctx, "Nothing Found :no_mouth:"); return
 
     async def cog_load(self) -> None:
         print(f"{self.__class__.__name__} loaded!")

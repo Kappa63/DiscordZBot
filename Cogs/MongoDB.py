@@ -1,26 +1,29 @@
 from discord.ext import commands
 import discord
+from discord import app_commands
 from Setup import ColT, ChAdmin, ChSer, RemoveExtra, SendWait, ChSerGuild, ChDev
 import asyncio
 import re
+from CBot import DClient as CBotDClient
+from typing import Optional
 
 
 class MongoDB(commands.Cog):
-    def __init__(self, DClient):
+    def __init__(self, DClient:CBotDClient):
         self.DClient = DClient
 
-    @commands.command(name="setup")
+    @commands.hybrid_command(name="setup", description="Sets up the Word Counter in Server")
     @commands.check(ChAdmin)
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def SMsg(self, ctx):
+    async def SMsg(self, ctx:commands.Context):
         if not ColT.count_documents({"IDg":str(ctx.guild.id)}):ColT.insert_one({"IDg":str(ctx.guild.id)})
         await SendWait(ctx, "Setup Complete!")
 
-    @commands.command(name="update")
+    @commands.hybrid_command(name="update", description="Update to Make Sure All Users are Updated.")
     @commands.check(ChSer)
     @commands.check(ChAdmin)
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def SUmsg(self, ctx):
+    async def SUmsg(self, ctx:commands.Context):
         Members = [str(i.id) for i in ctx.guild.members if not i.bot]
         Get = ColT.find({"IDg":str(ctx.guild.id)})[0]
         Missing = [i for i in Get if i not in ["_id", "IDg"] and len(Get[i]) < len(Members)]
@@ -28,12 +31,14 @@ class MongoDB(commands.Cog):
         ColT.update_one(Get, {"$set": Dict})
         await SendWait(ctx, "Up to Date")
 
-    @commands.command(name="add")
+    @commands.hybrid_command(name="add", description="Adds New Words to the Counter.")
     @commands.check(ChAdmin)
     @commands.check(ChSer)
+    @app_commands.rename(wrd="word")
+    @app_commands.describe(wrd="Word to Add to Counter")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def AWord(self, ctx, *args):
-        Word = re.sub(r"\.", "\u2024", ' '.join(args))
+    async def AWord(self, ctx:commands.Context, wrd:str):
+        Word = re.sub(r"\.", "\u2024", wrd.split(" ")[0])
         Word = re.sub(r"\$", "\u00A4", Word)
         Get = ColT.find({"IDg":str(ctx.guild.id)})[0]
         if Word not in Get and Word not in ["_id", "IDg"]:    
@@ -44,12 +49,14 @@ class MongoDB(commands.Cog):
             return
         await SendWait(ctx, "Already Exists!")
 
-    @commands.command(aliases=["rem", "remove"])
+    @commands.hybrid_command(name="remove", aliases=["rem"], description="Removes New Words from the Counter.")
     @commands.check(ChAdmin)
     @commands.check(ChSer)
+    @app_commands.rename(wrd="word")
+    @app_commands.describe(wrd="Word to Remove from Counter")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def RWord(self, ctx, *args):
-        Word = re.sub(r"\.", "\u2024", ' '.join(args))
+    async def RWord(self, ctx:commands.Context, wrd:str):
+        Word = re.sub(r"\.", "\u2024", wrd.split(" ")[0])
         Word = re.sub(r"\$", "\u00A4", Word)
         Get = ColT.find({"IDg":str(ctx.guild.id)})[0]
         if Word in Get and Word not in ["_id", "IDg"]:    
@@ -58,26 +65,26 @@ class MongoDB(commands.Cog):
             return
         await SendWait(ctx, "Doesn't Exist!")
 
-    @commands.command(name="list")
+    @commands.hybrid_command(name="list", description="Lists All Words in the Counter.")
     @commands.check(ChSer)
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def LWord(self, ctx):
+    async def LWord(self, ctx:commands.Context):
         LEm = discord.Embed(title="Server List",description="Words/Phrases being tracked",color=0xF59542)
         Get = ColT.find({"IDg":str(ctx.guild.id)})[0]
         Stuff = [i for i in Get if i not in ["_id", "IDg"]]
         for i in Stuff: LEm.add_field(name=i, value="\u200b", inline=True)
-        await ctx.message.channel.send(embed=LEm)
+        await ctx.send(embed=LEm)
 
-    @commands.command(name="clear")
+    @commands.hybrid_command(name="clear", description="Completely Removes Counter Data.")
     @commands.check(ChAdmin)
     @commands.check(ChSer)
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def ReAll(self, ctx):
+    async def ReAll(self, ctx:commands.Context):
         ChCHEm = lambda RcM, RuS: not RuS.bot and RcM.message == ReSConF and str(RcM.emoji) in ["✅", "❌"]
 
         ResEmF = discord.Embed(title="Clear ALL server data?", description="This is ```IRREVERSIBLE```", color=0xF59542)
         ResEmF.set_footer(text="*The Clear request timesout in 10secs.*")
-        ReSConF = await ctx.message.channel.send(embed=ResEmF)
+        ReSConF = await ctx.send(embed=ResEmF)
         await ReSConF.add_reaction("❌")
         await ReSConF.add_reaction("✅")
         try:
@@ -91,19 +98,21 @@ class MongoDB(commands.Cog):
             await ReSConF.remove_reaction("✅", self.DClient.user)
             await ReSConF.edit(embed=discord.Embed(title="Timeout :alarm_clock:", description="Nothing was removed", color=0xF59542))
 
-    @commands.command(name="stats")
+    @commands.command(name="stats", description="All/Word Stats for a User.")
     @commands.check(ChSer)
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def IMsg(self, ctx, *args):
+    async def IMsg(self, ctx:commands.Context, *, wd:str):
+        print(wd)
         Get = ColT.find({"IDg":str(ctx.guild.id)})[0]
         Stuff = [i for i in Get if i not in ["_id", "IDg"]]
         Mentions = ctx.message.mentions
-        args = list(args)
+        args = list(wd.split(" "))
         MentionedUser = False
         if len(Mentions) > 1: await SendWait(ctx, "Too Many Mentions"); return
         if Mentions:
-            Mentioned = Mentions[0]
-            if Mentioned.mention[2] == "!":
+            print(Mentions)
+            Mentioned:discord.Member = Mentions[0]
+            if not Mentioned.bot:
                 if f"<@!{Mentioned.id}>" in args: args.remove(f"<@!{Mentioned.id}>"); print("id")
                 else: args = args[1:]; print("random")
                 MentionedUser = True
@@ -113,7 +122,7 @@ class MongoDB(commands.Cog):
             Person = Mentioned if MentionedUser else ctx.author
             IEm = discord.Embed(title=Person.display_name, description="Word Stats", color=0x3252A8)
             for Word in Stuff: IEm.add_field(name=Word, value=f"{Get[Word][str(Person.id)]:,}", inline=True)
-            await ctx.message.channel.send(embed=IEm)
+            await ctx.send(embed=IEm)
         else:
             Word = re.sub(r"\.", "\u2024", ' '.join(args))
             Word = re.sub(r"\$", "\u00A4", Word)
@@ -121,16 +130,18 @@ class MongoDB(commands.Cog):
             if Word in Get and Word not in ["_id", "IDg"]:
                 IEm = discord.Embed(title=Person.display_name, description="All Stats", color=0x3252A8)
                 IEm.add_field(name=Word, value=f"{Get[Word][str(Person.id)]:,}", inline=True)
-                await ctx.message.channel.send(embed=IEm)
+                await ctx.send(embed=IEm)
             else: await SendWait(ctx, "Word Doesn't Exist")
 
-    @commands.command(name="top")
+    @commands.hybrid_command(name="top", description="Leaderboard for Word(s).")
     @commands.check(ChSer)
+    @app_commands.rename(wrd="word")
+    @app_commands.describe(wrd="Word to Show Leaderboard for")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def ToTMsg(self, ctx, *args):
+    async def ToTMsg(self, ctx:commands.Context, wrd:Optional[str]):
         Get = ColT.find({"IDg":str(ctx.guild.id)})[0]
-        if args:
-            Word = re.sub(r"\.", "\u2024", ' '.join(args))
+        if wrd:
+            Word = re.sub(r"\.", "\u2024", wrd.split(" ")[0])
             Word = re.sub(r"\$", "\u00A4", Word)
             if Word in Get and Word not in ["_id", "IDg"]:
                 People = Get[Word]
@@ -142,7 +153,7 @@ class MongoDB(commands.Cog):
                     Person = ctx.guild.get_member(int(i))
                     Name = Person.nick if Person.nick else Person.name
                     IEm.add_field(name=f"**`{x}. {Name}:`** {Word} = {People[i]:,}", value="\u200b", inline=False)
-                await ctx.message.channel.send(embed=IEm)
+                await ctx.send(embed=IEm)
             else: await SendWait(ctx, "Word Doesn't Exist")
         else:
             Stuff = [i for i in Get if i not in ["_id", "IDg"]]
@@ -158,30 +169,32 @@ class MongoDB(commands.Cog):
                 Person = ctx.guild.get_member(Pid)
                 Name = Person.nick if Person.nick else Person.name
                 IEm.add_field(name=f"**`{x}. {Name}:`** {Word} = {Num:,}", value="\u200b", inline=False)
-            await ctx.message.channel.send(embed=IEm)
+            await ctx.send(embed=IEm)
 
-    @commands.command(name="total")
+    @commands.hybrid_command(name="total", description="Total Times a Word was Counted by Everyone.")
     @commands.check(ChSer)
+    @app_commands.rename(wrd="word")
+    @app_commands.describe(wrd="Word to Show Total for")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def TMsg(self, ctx, *args):
+    async def TMsg(self, ctx:commands.Context, wrd:Optional[str]):
         Get = ColT.find({"IDg":str(ctx.guild.id)})[0]
-        if args:
-            Word = re.sub(r"\.", "\u2024", ' '.join(args))
+        if wrd:
+            Word = re.sub(r"\.", "\u2024", wrd.split(" ")[0])
             Word = re.sub(r"\$", "\u00A4", Word)
             if Word in Get and Word not in ["_id", "IDg"]:
                 IEm = discord.Embed(title=ctx.guild.name, description=f"Total times {Word} was repeated", color=0x3252A8)
                 IEm.add_field(name=Word, value=f"{sum(Get[Word].values()):,}", inline=True)
-                await ctx.message.channel.send(embed=IEm)
+                await ctx.send(embed=IEm)
             else: await SendWait(ctx, "Word Doesn't Exist")
         else:
             Stuff = [i for i in Get if i not in ["_id", "IDg"]]
             IEm = discord.Embed(title=ctx.guild.name, description="Total times repeated", color=0x3252A8)
             for Word in Stuff: IEm.add_field(name=Word, value=f"{sum(Get[Word].values()):,}", inline=True)
-            await ctx.message.channel.send(embed=IEm)
+            await ctx.send(embed=IEm)
 
     @commands.command(name="updateforall")
     @commands.check(ChDev)
-    async def UpdateForGuilds(self, ctx):
+    async def UpdateForGuilds(self, ctx:commands.Context):
         Gets = ColT.find()
         for Get in Gets:
             Guild = self.DClient.get_guild(int(Get["IDg"]))
@@ -190,7 +203,7 @@ class MongoDB(commands.Cog):
             Dict = {f'{i}.{j}':0 for i in Missing for j in Members if j not in Get[i]}
             if Dict: ColT.update_one(Get, {"$set": Dict})
 
-    @commands.Cog.listener()
+    @commands.Cog.listener("on_message")
     async def on_message(self, message):
         if message.author.bot: return
         Get = list(ColT.find({"IDg":str(message.guild.id)}))
@@ -205,7 +218,7 @@ class MongoDB(commands.Cog):
                 i = i[1:-1]
                 if Amount > 0: ColT.update_one(Get, {"$set": {f'{i}.{str(message.author.id)}':Get[i][str(message.author.id)]+Amount}})
 
-    @commands.Cog.listener()
+    @commands.Cog.listener("on_member_join")
     async def on_member_join(self, member):
         if member.bot: return
         Get = list(ColT.find({"IDg":str(member.guild.id)}))
@@ -215,7 +228,7 @@ class MongoDB(commands.Cog):
             Dict = {f'{i}.{member.id}':0 for i in Stuff}
             ColT.update_one(Get, {"$set": Dict})
 
-    @commands.Cog.listener()
+    @commands.Cog.listener("on_member_remove")
     async def on_member_remove(self, member):
         if member.bot: return
         Get = list(ColT.find({"IDg":str(member.guild.id)}))
@@ -230,5 +243,5 @@ class MongoDB(commands.Cog):
         try: ColT.delete_one({"IDg":str(guild.id)})
         except: pass
 
-def setup(DClient):
-    DClient.add_cog(MongoDB(DClient))
+async def setup(DClient:CBotDClient):
+    await DClient.add_cog(MongoDB(DClient))

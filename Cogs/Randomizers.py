@@ -1,5 +1,5 @@
 import discord
-# from discord import app_commands
+from discord import app_commands
 from discord.ext import commands
 import random
 import cv2
@@ -7,7 +7,7 @@ import numpy
 from CBot import DClient as CBotDClient
 # import requests
 import os
-# from Setup import GClient, GApi, SendWait
+from Setup import GClient, GApi, SendWait
 # import pyimgbox
 
 
@@ -36,9 +36,9 @@ class Randomizers(commands.Cog):
         CEm.set_thumbnail(url=CoinFaces[Face])
         await ctx.send(embed=CEm)
 
-    # @commands.cooldown(1, 1, commands.BucketType.user)
 
     @commands.hybrid_command(name="color", aliases=["colour"], description="Generates a Random Color.")
+    @commands.cooldown(1, 1, commands.BucketType.user)
     async def ColorRandom(self, ctx:commands.Context) -> None:
         MakeClear = numpy.zeros((360, 360, 3), numpy.uint8)
         R = random.randint(0, 255)
@@ -64,16 +64,16 @@ class Randomizers(commands.Cog):
     async def cog_unload(self) -> None:
         print(f"{self.__class__.__name__} unloaded!")
 
-    # @commands.command(name="giphy")
-    # @commands.cooldown(1, 1, commands.BucketType.user)
-    # async def RandomGif(self, ctx, *args):
-    #     if not args: await SendWait(ctx, "No search term given :confused:"); return
-    #     try:
-    #         QRGifs = GApi.gifs_search_get(GClient, " ".join(args), limit=50)
-    #         GifSAl = list(QRGifs.data)
-    #         GifF = random.choices(GifSAl)
-    #         await ctx.send(GifF[0].url)
-    #     except IndexError: await SendWait(ctx, "No gifs found :expressionless:")
+    @commands.hybrid_command(name="giphy", description="A Random GIF Based on Search Term")
+    @app_commands.rename(srch="search")
+    @app_commands.describe(srch="Gif Search Term")
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def RandomGif(self, ctx:commands.Context, *, srch:str) -> None:
+        if not srch: await SendWait(ctx, "No search term given :confused:"); return
+        try:
+            GifF = GApi.search_gifs(srch, api_key=GClient, serialize=True, limit=50).data
+            await ctx.send(random.choice(GifF).url)
+        except: await SendWait(ctx, "No gifs found :expressionless:")
 
 
 async def setup(DClient:CBotDClient) -> None:

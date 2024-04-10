@@ -12,7 +12,7 @@ class Nasa(commands.Cog):
     def __init__(self, DClient:CBotDClient) -> None:
         self.DClient = DClient
 
-    @commands.hybrid_command(name="apod", description="A Daily Astrology Post by NASA.")
+    @commands.hybrid_command(name="apod", description="A Daily Astronomy Post by NASA.")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetNasaApod(self, ctx:commands.Context) -> None:
         NASAapod = requests.get("https://api.nasa.gov/planetary/apod?api_key=0dsw3SiQmYCeNnwKZROSQIyrcZqjoDzMBo4ggCwS", headers={"Accept": "application/json"}).json()
@@ -61,6 +61,7 @@ class Nasa(commands.Cog):
     @commands.hybrid_command(name="mars", description="Images From Mars.")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetNasaMars(self, ctx:commands.Context) -> None:
+        await ctx.defer()
         def MakeEmbed(MarsImage, ImageNum, Total) -> discord.Embed:
             NEm = discord.Embed(title="Mars", description="By: Curiosity Rover (NASA)", color=0xCD5D2E)
             NEm.set_thumbnail(url="https://i.imgur.com/xmSmG0f.jpeg")

@@ -9,8 +9,9 @@ import discord
 # import twitch
 import asyncio
 import praw
-# import pymongo
-# from pymongo import MongoClient
+import giphpy as GApi
+import pymongo
+from pymongo import MongoClient
 import CBot
 # from google_images_search import GoogleImagesSearch
 import pyyoutube
@@ -18,21 +19,22 @@ import imdb
 import pafy
 import datetime
 # import osuapi
+from ossapi import OssapiV1
 import concurrent.futures as Cf
 # from ro_py import Client as Roblox
 
 load_dotenv()
-Cogs = ["Cogs.Randomizers", "Cogs.MainEvents", "Cogs.Rule34", "Cogs.AnimeManga", "Cogs.WrittenStuff",
+Cogs = ["Cogs.Randomizers", "Cogs.MainEvents", "Cogs.Rule34", "Cogs.AnimeManga", "Cogs.WrittenStuff", "Cogs.GameAPIs", "Cogs.Games", "Cogs.MongoDB",
         #  "Cogs.HelpInfo", 
         "Cogs.Socials", "Cogs.OnlyMods", "Cogs.Nasa", "Cogs.Movies", "Cogs.Misc", "Cogs.Images"]
 
-# Cls = MongoClient(os.getenv("MONGODB_URL"))
-# DbM = Cls["CBot"]
-# ColT = DbM["SerTwo"]
-# AQd = DbM["Daily"]
-# Rdt = DbM["Reddit"]
+Cls = MongoClient(os.getenv("MONGODB_URL"))
+DbM = Cls["CBot"]
+ColT = DbM["SerTwo"]
+AQd = DbM["Daily"]
+Rdt = DbM["Reddit"]
 
-# GClient = os.getenv("GIPHY_KEY")
+GClient = os.getenv("GIPHY_KEY")
 # GApi = giphy_client.DefaultApi()
 
 CClient = {"X-CMC_PRO_API_KEY": os.getenv("COINBASE_KEY")}
@@ -45,7 +47,9 @@ NClient = {"country": "us", "apiKey": os.getenv("NEWS_KEY")}
 # MClient.init(access_token=os.getenv("MAL_ACCESS_TOKEN"))
 # MClient.refresh_bearer_token(client_id=os.getenv("MAL_ID"), client_secret=os.getenv("MAL_SECRET"), refresh_token=os.getenv("MAL_REFRESH_TOKEN"))
 
-# PClient = {"Authorization": os.getenv("PUBG_KEY"), "accept": "application/vnd.api+json"}
+PClient = {"Authorization": os.getenv("PUBG_KEY"), "accept": "application/vnd.api+json"}
+
+FClient = {"Authorization": os.getenv("FORTNITE_KEY")}
 
 # twitter = tweepy.OAuthHandler(os.getenv("TWITTER_KEY"), os.getenv("TWITTER_SECRET"))
 # twitter.set_access_token(os.getenv("TWITTER_ACCESS_TOKEN"), os.getenv("TWITTER_ACCESS_SECRET"))
@@ -61,7 +65,8 @@ YClient = pyyoutube.Api(api_key=os.getenv("YOUTUBE_KEY"))
 
 IMClient = imdb.IMDb()
 
-# OClient = osuapi.OsuApi(os.getenv("OSU_KEY"), connector=osuapi.ReqConnector())
+OClient = OssapiV1(os.getenv("OSU_KEY"))
+
 
 # RLox = Roblox(os.getenv("ROBLOX_SECRET"))
 
@@ -213,11 +218,11 @@ def FormatTime(SecondsFormat:int) -> str:
 #             break
 
 
-# class IsSetup(commands.CheckFailure): pass
-# def ChSer(ctx):
-#     if ColT.count_documents({"IDg": str(ctx.guild.id)}): return True
-#     raise IsSetup("Unready")
-# ChSerGuild = lambda guild: ColT.count_documents({"IDg": str(guild.id)})
+class IsSetup(commands.CheckFailure): pass
+def ChSer(ctx):
+    if ColT.count_documents({"IDg": str(ctx.guild.id)}): return True
+    raise IsSetup("Unready")
+ChSerGuild = lambda guild: ColT.count_documents({"IDg": str(guild.id)})
 
 
 # class IsMultiredditLimit(commands.CheckFailure): pass
@@ -230,10 +235,10 @@ def FormatTime(SecondsFormat:int) -> str:
 #     return True
 
 
-# class IsAdmin(commands.CheckFailure): pass
-# def ChAdmin(ctx):
-#     if ctx.author.guild_permissions.administrator: return True
-#     raise IsAdmin("Normie")
+class IsAdmin(commands.CheckFailure): pass
+def ChAdmin(ctx):
+    if ctx.author.guild_permissions.administrator: return True
+    raise IsAdmin("Normie")
 
 
 # class IsVote(commands.CheckFailure): pass
@@ -359,10 +364,10 @@ def ChDev(ctx:commands.Context) -> bool:
     raise Ignore("Ignore")
 
 
-# class IsNSFW(commands.CheckFailure): pass
-# def ChNSFW(ctx):
-#     if ctx.channel.is_nsfw(): return True
-#     raise IsNSFW("Not Safe")
+class IsNSFW(commands.CheckFailure): pass
+def ChNSFW(ctx):
+    if ctx.channel.is_nsfw(): return True
+    raise IsNSFW("Not Safe")
 
 
 class IsBot(commands.CheckFailure): pass

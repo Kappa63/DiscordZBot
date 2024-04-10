@@ -24,6 +24,11 @@ class Misc(commands.Cog):
         Calculated = Calc("".join(args))
         await SendWait(ctx, Calculated)
 
+    @commands.command(name="kys")
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def Killself(self, ctx:commands.Context) -> None:
+        await ctx.send(embed=discord.Embed(title="YOU KYS YOU FUCKING NIGGER", description="WORTHLESS PIECE OF SHIT"))
+
     @commands.command(name="remind")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RemindAfter(self, ctx:commands.Context, *args) -> None:
@@ -70,6 +75,7 @@ class Misc(commands.Cog):
     @commands.command(aliases=["crypto", "cryptocurrency"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetCrypto(self, ctx:commands.Context) -> None:
+        await ctx.defer()
         Crypts = requests.get("https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest", headers=CClient).json()
         CrEm = discord.Embed(title="Markets", description="Today's Cryptocurrency Prices by Market Cap.", color=0xF3F18A)
         C = 0

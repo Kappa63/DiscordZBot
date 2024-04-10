@@ -4,7 +4,7 @@ from CBot import DClient as CBotDClient
 # from Setup import (IsBot, IsVote, IsPatreon, IsPatreonT2, IsPatreonT3, IsPatreonT4, Ignore, IsAdmin,
 #                    IsSetup, IsNSFW, IsMultiredditLimit, FormatTime, TimeTillMidnight, GetPatreonTier,
 #                    ErrorEmbeds, ChPatreonUserT2, SendWait, AQd)
-from Setup import SendWait, FormatTime, Ignore, IsBot
+from Setup import SendWait, FormatTime, Ignore, IsBot, IsNSFW, IsAdmin, IsSetup
 import random
 # import requests
 # import asyncio
@@ -64,14 +64,14 @@ class MainEvents(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx:commands.Context, error) -> None:
         if isinstance(error, commands.CommandOnCooldown): await SendWait(ctx, f'Hold the spam. Wait atleast {FormatTime(round(error.retry_after, 2))}')
-        # elif isinstance(error, IsAdmin): await SendWait(ctx, "Non-admins are not allowed to use this command")
+        elif isinstance(error, IsAdmin): await SendWait(ctx, "Non-admins are not allowed to use this command")
         # elif isinstance(error, IsVote): await ctx.send(embed=ErrorEmbeds("Vote"))
         # elif isinstance(error, IsPatreon): await ctx.send(embed=ErrorEmbeds("Patreon"))
         # elif isinstance(error, IsPatreonT2): await ctx.send(embed=ErrorEmbeds("PatreonT2"))
         # elif isinstance(error, IsPatreonT3): await ctx.send(embed=ErrorEmbeds("PatreonT3"))
         # elif isinstance(error, IsPatreonT4): await ctx.send(embed=ErrorEmbeds("PatreonT4"))
-        # elif isinstance(error, IsSetup): await SendWait(ctx, 'Please setup your server first (with "zsetup")! Check all server commands (with "zhelp server")')
-        # elif isinstance(error, IsNSFW): await SendWait(ctx, "This can only be used in NSFW channels.")
+        elif isinstance(error, IsSetup): await SendWait(ctx, 'Please setup your server first (with "zsetup")! Check all server commands (with "zhelp server")')
+        elif isinstance(error, IsNSFW): await SendWait(ctx, "This can only be used in NSFW channels.")
         # elif isinstance(error, IsMultiredditLimit): await SendWait(ctx, "You can no longer have this many Multireddits. Remove some to comply with your limit. Until then you cannot use your Multireddits.")
         elif isinstance(error, (commands.CommandNotFound, Ignore, IsBot, commands.MessageNotFound)):print(error); return
         else:

@@ -33,9 +33,9 @@ class OnlyMods(commands.Cog):
         except Exception as e:
             print(e)
 
-    @commands.command(name="test") # Create a command inside a cog
+    @commands.command(name="test") 
     async def button(self, ctx:commands.Context) -> None:
-        print(type(ctx))
+        # print(type(ctx))
         # view = discord.ui.View() # Establish an instance of the discord.ui.View class
         # style = discord.ButtonStyle.blurple  # The button will be gray in color
         # item = discord.ui.Button(style=style, label="Read the docs!")  # Create an item to pass into the view class.
@@ -60,8 +60,8 @@ class OnlyMods(commands.Cog):
     @app_commands.describe(d="Description Text of the Embed")
     @app_commands.rename(c="color")
     @app_commands.describe(c="Embed's Bar Color in HEX")
-    async def slash_Embedder(self, ctx, t:str, d:str, c:str) -> None:
-        await ctx.send(embed=discord.Embed(title=t, description = d, color = int(c, 16)))
+    async def slash_Embedder(self, ctx:discord.Interaction, t:str, d:str, c:str) -> None:
+        await ctx.response.send_message(embed=discord.Embed(title=t, description=d, color=int(c, 16)))
 
 
     @commands.command(name="reloadall")

@@ -4,10 +4,11 @@ from discord.ext import commands
 from prawcore import NotFound, Forbidden
 # import os
 import random
+# from typing import List
 # from Setup import (Reddit, Rdt, GetPatreonTier, SendWait, YClient, Twitter, THelix, ChVote, ChVoteUser,
 #                    ChPatreonT2, ChMaxMultireddits, GetVidDuration, ErrorEmbeds, Navigator, Threader)
 from CBot import DClient as CBotDClient
-from Setup import SendWait, Threader, Reddit
+from Setup import SendWait, Threader, Reddit, Rdt
 # from twitch.helix.resources import StreamNotFound
 # import requests
 # import tweepy
@@ -386,7 +387,7 @@ class Socials(commands.Cog):
     #     YTEs = [YoutubebedMaker(Vid.contentDetails.upload.videoId, YTinfo.items[0], VNum, len(YTVids.items)) for VNum, Vid in enumerate(YTVids.items)]
     #     await Navigator(ctx, YTEs, Main=True, MainBed=YEm)
 
-    @commands.hybrid_group(name="reddit", invoke_without_command=True, description="Get a Post from a Subreddits's HOT Posts.")
+    @commands.hybrid_group(name="reddit", invoke_without_command=True, fallback="get", description="Get a Post from a Subreddits's HOT Posts.")
     @app_commands.rename(sub="subreddit")
     @app_commands.describe(sub="Name of Subreddit")
     @commands.cooldown(1, 2, commands.BucketType.user)
@@ -412,6 +413,7 @@ class Socials(commands.Cog):
         Embeder = lambda i,*x: [RedditbedMaker(P, Name, Nsfchannel=Nsfwcheck, Type="S", PostNum=i+PNum, TotalPosts=TotalPosts) for PNum, P in enumerate(x)]
 
         if not sub: await SendWait(ctx, "No arguments :no_mouth:")
+        await ctx.defer()
         args = sub[2:] if sub.startswith("r/") else sub
         if not CheckSub(args) and not inspect.stack()[1].function == "__call__": await SendWait(ctx, "Sub doesn't exist or private :expressionless:"); return
         ebd = discord.Embed(title="How would you like to sort the subreddit?", description="🔝 to sort by top.\n📈 to sort by rising.\n🔥 to sort by hot.\n📝 to sort by new.\n❌ to cancel")
@@ -494,115 +496,131 @@ class Socials(commands.Cog):
             await Navigator(ctx, PostEms, Main=True, MainBed=UEm).autoRun()
         except NotFound: await SendWait(ctx, "Redditor Not Found :no_mouth:")
             
-    # @commands.group(name="multireddit", invoke_without_command=True)
+    @commands.hybrid_group(name="multireddit", aliases=["mltr"], invoke_without_command=True, fallback="get", description="Navigate a Multireddit on Discord.")
     # @commands.check(ChPatreonT2)
     # @commands.check(ChMaxMultireddits)
-    # @commands.cooldown(1, 2, commands.BucketType.user)
-    # async def GetMultis(self, ctx, *args):
-    #     if not args: await SendWait(ctx, "You forgot to add a Multireddit name"); return
-    #     ArgumentHandle = list(args)
-    #     if not Rdt.count_documents({"IDd": ctx.author.id}) > 0: await SendWait(ctx, "No Multireddits Found"); return
-    #     User = Rdt.find({"IDd": ctx.author.id})[0]
-    #     if ArgumentHandle[0] in User and ArgumentHandle[0] not in ["IDd","_id"]:
-    #         Subreddits = "+".join(User[ArgumentHandle[0]])
-    #         print(Subreddits)
-    #         await self.RedditNav(ctx, Subreddits)
-    #     else: await SendWait(ctx, f"That Multireddit ({ArgumentHandle[0]}) doesn't exist")
+    @app_commands.rename(mltr="multireddit")
+    @app_commands.describe(mltr="Name of Multireddit")
+    @commands.cooldown(1, 2, commands.BucketType.user)
+    async def GetMultis(self, ctx:commands.Context, mltr:str):
+        if not mltr: await SendWait(ctx, "You forgot to add a Multireddit name"); return
+        if not Rdt.count_documents({"IDd": ctx.author.id}) > 0: await SendWait(ctx, "No Multireddits Found"); return
+        User = Rdt.find({"IDd": ctx.author.id})[0]
+        if mltr in User and mltr not in ["IDd","_id"]:
+            Subreddits = "+".join(User[mltr])
+            print(Subreddits)
+            await self.RedditNav(ctx, Subreddits)
+        else: await SendWait(ctx, f"That Multireddit ({mltr}) doesn't exist")
 
-    # @GetMultis.command(name="list")
+    @GetMultis.command(name="list", description="Lists your Multireddit and Contained Subreddits.")
     # @commands.check(ChPatreonT2)
-    # @commands.cooldown(1, 2, commands.BucketType.user)
-    # async def ListMultis(self, ctx):
-    #     if not Rdt.count_documents({"IDd": ctx.author.id}): await SendWait(ctx, "No Multireddits Found"); return
-    #     User = Rdt.find({"IDd": ctx.author.id})[0]
-    #     MEm = discord.Embed(title=f"{ctx.author.display_name}'s MultiReddits", color=0x8B0000)
-    #     for Multireddit in User:
-    #         if Multireddit not in ["IDd", "_id"]: MEm.add_field(name=Multireddit, value=f'`{", ".join(User[Multireddit])}`')
-    #     await ctx.send(embed=MEm)
+    @commands.cooldown(1, 2, commands.BucketType.user)
+    async def ListMultis(self, ctx:commands.Context):
+        if not Rdt.count_documents({"IDd": ctx.author.id}): await SendWait(ctx, "No Multireddits Found"); return
+        User = Rdt.find({"IDd": ctx.author.id})[0]
+        MEm = discord.Embed(title=f"{ctx.author.display_name}'s MultiReddits", color=0x8B0000)
+        for Multireddit in User:
+            if Multireddit not in ["IDd", "_id"]: MEm.add_field(name=Multireddit, value=f'`{", ".join(User[Multireddit])}`')
+        await ctx.send(embed=MEm)
 
-    # @GetMultis.command(name="create")
-    # @commands.check(ChPatreonT2)
-    # @commands.check(ChMaxMultireddits)
-    # @commands.cooldown(1, 2, commands.BucketType.user)
-    # async def CreateMulti(self, ctx, *args):
-    #     if not args: await SendWait(ctx, "No Arguments"); return
-    #     ArgumentHandle = list(args)
-    #     TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
-    #     TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
-    #     if not Rdt.count_documents({"IDd": ctx.author.id}):
-    #         Rdt.insert_one({"IDd": ctx.author.id, ArgumentHandle[0]: []})
-    #         await SendWait(ctx, f"Added the Multireddit ({ArgumentHandle[0]}), you can now add and remove subreddits from it.")  
-    #         return
-    #     User = Rdt.find({"IDd": ctx.author.id})[0]
-    #     if len(User) < TierLimit:
-    #         #- for Multireddit in User:
-    #         if ArgumentHandle[0] in User: await SendWait(ctx, f"Multireddit ({ArgumentHandle[0]}) Already Exists"); return
-    #         else: Rdt.update_one(User, {"$set": {ArgumentHandle[0]: []}})
-    #         await SendWait(ctx, f"Added the Multireddit ({ArgumentHandle[0]}), you can now add and remove subreddits from it.")
-    #     else: await SendWait(ctx, "You already have the maximum amount of Multireddits. You can use 'zmultireddit' to see your multireddits or check 'zpatreon' to know more about limits") 
-
-    # @GetMultis.command(name="delete")
-    # @commands.check(ChPatreonT2)
-    # @commands.cooldown(1, 2, commands.BucketType.user)
-    # async def DeleteMulti(self, ctx, *args):
-    #     if not args: await SendWait(ctx, "No Arguments"); return
-    #     ArgumentHandle = list(args)
-    #     if not Rdt.count_documents({"IDd": ctx.author.id}): await SendWait(ctx, "You don't have any Multireddits"); return
-    #     User = Rdt.find({"IDd": ctx.author.id})[0]
-    #     Multis = len(User) - 2
-    #     #- for Multireddit in User:
-    #     if ArgumentHandle[0] in User and ArgumentHandle[0] not in ["_id", "IDd"]:
-    #         if Multis == 1: Rdt.delete_one({"IDd": ctx.author.id})
-    #         else: Rdt.update_one(User, {"$unset": {ArgumentHandle[0]: ""}})
-    #         await SendWait(ctx, f"Deleted the Multireddit ({ArgumentHandle[0]}).")
-    #         return
-    #     else: await SendWait(ctx, "That Multireddit Doesn't Exist"); return
-
-    # @GetMultis.command(name="add")
+    @GetMultis.command(name="create", description="Create a New Multireddit.")
     # @commands.check(ChPatreonT2)
     # @commands.check(ChMaxMultireddits)
-    # @commands.cooldown(1, 2, commands.BucketType.user)
-    # async def AddMulti(self, ctx, *args):
-    #     if not args: await SendWait(ctx, "No Arguments"); return
-    #     Multi, Subs = args[0], list(args[1:])
-    #     User = Rdt.find({"IDd": ctx.author.id})[0]
-    #     Added, NotAdded = [], []
-    #     if Multi in User and Multi not in ["IDd", "_id"]:
-    #         for Sub in Subs:
-    #             Sub = Sub[2:] if Sub.startswith("r/") else Sub
-    #             if Sub not in User[Multi] and Sub not in Added:
-    #                 if not CheckSub(Sub): NotAdded.append(Sub); continue
-    #                 Added.append(Sub) 
-    #             else: NotAdded.append(Sub)
-    #         if Added:
-    #             Rdt.update_one(User, {"$set": {Multi: User[Multi]+Added}})
-    #             await SendWait(ctx, f'Added the following Subreddit(s) to Multireddit: `{", ".join(Added)}`')
-    #         if NotAdded: await SendWait(ctx, f"Following Subreddit(s) didn't exist, private, or already added: `{', '.join(NotAdded)}`")
-    #     else: await SendWait(ctx, f"That Multireddit ({Multi}) does not exist. Check if the name is right or create it.")
+    @app_commands.rename(mltr="multireddit")
+    @app_commands.describe(mltr="Name of Multireddit")
+    @commands.cooldown(1, 2, commands.BucketType.user)
+    async def CreateMulti(self, ctx:commands.Context, mltr:str):
+        if not mltr: await SendWait(ctx, "No Arguments"); return
+        # ArgumentHandle = list(args)
+        TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
+        # TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
+        TierLimit = 4
+        if not Rdt.count_documents({"IDd": ctx.author.id}):
+            Rdt.insert_one({"IDd": ctx.author.id, mltr: []})
+            await SendWait(ctx, f"Added the Multireddit ({mltr}), you can now add and remove subreddits from it.")  
+            return
+        User = Rdt.find({"IDd": ctx.author.id})[0]
+        if len(User) < TierLimit:
+            #- for Multireddit in User:
+            if mltr in User: await SendWait(ctx, f"Multireddit ({mltr}) Already Exists"); return
+            else: Rdt.update_one(User, {"$set": {mltr: []}})
+            await SendWait(ctx, f"Added the Multireddit ({mltr}), you can now add and remove subreddits from it.")
+        else: await SendWait(ctx, "You already have the maximum amount of Multireddits. You can use 'zmultireddit' to see your multireddits or check 'zpatreon' to know more about limits") 
 
-    # @GetMultis.command(aliases=["remove", "rem"])
+    @GetMultis.command(name="delete", aliases=["del"], description="Delete an Existing Multireddit.")
+    # @commands.check(ChPatreonT2)
+    @app_commands.rename(mltr="multireddit")
+    @app_commands.describe(mltr="Name of Multireddit")
+    @commands.cooldown(1, 2, commands.BucketType.user)
+    async def DeleteMulti(self, ctx:commands.Context, mltr:str):
+        if not mltr: await SendWait(ctx, "No Arguments"); return
+        # ArgumentHandle = list(args)
+        if not Rdt.count_documents({"IDd": ctx.author.id}): await SendWait(ctx, "You don't have any Multireddits"); return
+        User = Rdt.find({"IDd": ctx.author.id})[0]
+        Multis = len(User) - 2
+        #- for Multireddit in User:
+        if mltr in User and mltr not in ["_id", "IDd"]:
+            if Multis == 1: Rdt.delete_one({"IDd": ctx.author.id})
+            else: Rdt.update_one(User, {"$unset": {mltr: ""}})
+            await SendWait(ctx, f"Deleted the Multireddit ({mltr}).")
+            return
+        else: await SendWait(ctx, "That Multireddit Doesn't Exist"); return
+
+    @GetMultis.command(name="add", description="Add Subreddits to Multireddit.")
     # @commands.check(ChPatreonT2)
     # @commands.check(ChMaxMultireddits)
-    # @commands.cooldown(1, 2, commands.BucketType.user)
-    # async def RemoveMulti(self, ctx, *args):
-    #     if not args: await SendWait(ctx, "No Arguments"); return
-    #     Multi, Subs = args[0], list(args[1:])
-    #     Removed, NotRemoved = [], []
-    #     if not Rdt.count_documents({"IDd": ctx.author.id}): await SendWait(ctx, "You don't have any Multireddits"); return
-    #     User = Rdt.find({"IDd": ctx.author.id})[0]
-    #     if Multi in User and Multi not in ["IDd","_id"]:
-    #         Remover = User[Multi]
-    #         for Sub in Subs:
-    #             if Sub not in User[Multi] and Sub not in Removed:
-    #                 Sub = Sub[2:] if Sub.startswith("r/") else Sub
-    #                 if not CheckSub(Sub): NotRemoved.append(Sub); continue
-    #                 Remover.remove(Sub)
-    #                 Removed.append(Sub)
-    #         if Removed: 
-    #             Rdt.update_one(User, {"$set": {Multi: Remover}})
-    #             await SendWait(ctx, f'Removed the following Subreddit(s) from Multireddit: `{", ".join(Removed)}`')
-    #         if NotRemoved: await SendWait(ctx, f"Following Subreddit(s) didn't exist in Multireddit: `{', '.join(NotRemoved)}`")
-    #     else: await SendWait(ctx, f"That Multireddit ({Multi}) does not exist. Check if the name is right or create it.")
+    @app_commands.rename(mltr="multireddit")
+    @app_commands.describe(mltr="Name of Multireddit")
+    @app_commands.rename(subs="subreddits")
+    @app_commands.describe(subs="Names of Subreddits (Spaced)")
+    @commands.cooldown(1, 2, commands.BucketType.user)
+    async def AddMulti(self, ctx:commands.Context, mltr:str, *, subs:str):
+        if not mltr or not subs: await SendWait(ctx, "No Arguments"); return
+        # Multi, Subs = args[0], list(args[1:])
+        subs = subs.split(" ")
+        User = Rdt.find({"IDd": ctx.author.id})[0]
+        Added, NotAdded = [], []
+        if mltr in User and mltr not in ["IDd", "_id"]:
+            for Sub in subs:
+                Sub = Sub[2:] if Sub.startswith("r/") else Sub
+                if Sub not in User[mltr] and Sub not in Added:
+                    if not CheckSub(Sub): NotAdded.append(Sub); continue
+                    Added.append(Sub) 
+                else: NotAdded.append(Sub)
+            if Added:
+                Rdt.update_one(User, {"$set": {mltr: User[mltr]+Added}})
+                await SendWait(ctx, f'Added the following Subreddit(s) to Multireddit: `{", ".join(Added)}`')
+            if NotAdded: await SendWait(ctx, f"Following Subreddit(s) didn't exist, private, or already added: `{', '.join(NotAdded)}`")
+        else: await SendWait(ctx, f"That Multireddit ({mltr}) does not exist. Check if the name is right or create it.")
+
+    @GetMultis.command(name="remove", aliases=["rem"], description="Remove Subreddits from Multireddit")
+    # @commands.check(ChPatreonT2)
+    # @commands.check(ChMaxMultireddits)
+    @app_commands.rename(mltr="multireddit")
+    @app_commands.describe(mltr="Name of Multireddit")
+    @app_commands.rename(subs="subreddits")
+    @app_commands.describe(subs="Names of Subreddits (Spaced)")
+    @commands.cooldown(1, 2, commands.BucketType.user)
+    async def RemMulti(self, ctx:commands.Context, mltr:str, *, subs:str):
+        if not mltr or not subs: await SendWait(ctx, "No Arguments"); return
+        # Multi, Subs = args[0], list(args[1:])
+        subs = subs.split(" ")
+        Removed, NotRemoved = [], []
+        if not Rdt.count_documents({"IDd": ctx.author.id}): await SendWait(ctx, "You don't have any Multireddits"); return
+        User = Rdt.find({"IDd": ctx.author.id})[0]
+        if mltr in User and mltr not in ["IDd","_id"]:
+            Remover = User[mltr]
+            for Sub in subs:
+                if Sub not in User[mltr] and Sub not in Removed:
+                    Sub = Sub[2:] if Sub.startswith("r/") else Sub
+                    if not CheckSub(Sub): NotRemoved.append(Sub); continue
+                    Remover.remove(Sub)
+                    Removed.append(Sub)
+            if Removed: 
+                Rdt.update_one(User, {"$set": {mltr: Remover}})
+                await SendWait(ctx, f'Removed the following Subreddit(s) from Multireddit: `{", ".join(Removed)}`')
+            if NotRemoved: await SendWait(ctx, f"Following Subreddit(s) didn't exist in Multireddit: `{', '.join(NotRemoved)}`")
+        else: await SendWait(ctx, f"That Multireddit ({mltr}) does not exist. Check if the name is right or create it.")
             
     async def cog_load(self) -> None:
         print(f"{self.__class__.__name__} loaded!")
