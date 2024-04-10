@@ -2,18 +2,19 @@ import discord
 import random
 import requests
 from discord.ext import commands
+from CBot import DClient as CBotDClient
 # from Setup import ChVote, ChVoteUser, ChPatreonT2, ChAdmin, FormatTime, TimeTillMidnight, GetPatreonTier, SendWait, ErrorEmbeds, Navigator, AQd
-from Setup import Navigator
-import asyncio
+from Customs.Navigators import ReactionNavigator as Navigator
+# import asyncio
 
 
 class Nasa(commands.Cog):
-    def __init__(self, DClient):
+    def __init__(self, DClient:CBotDClient) -> None:
         self.DClient = DClient
 
     @commands.hybrid_command(name="apod", description="A Daily Astrology Post by NASA.")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def GetNasaApod(self, ctx):
+    async def GetNasaApod(self, ctx:commands.Context) -> None:
         NASAapod = requests.get("https://api.nasa.gov/planetary/apod?api_key=0dsw3SiQmYCeNnwKZROSQIyrcZqjoDzMBo4ggCwS", headers={"Accept": "application/json"}).json()
         Explanation = NASAapod["explanation"][:1021]
         DEm = discord.Embed(title=NASAapod["title"], description=f'Date {NASAapod["date"]}', color=0xA9775A)
@@ -59,8 +60,8 @@ class Nasa(commands.Cog):
 
     @commands.hybrid_command(name="mars", description="Images From Mars.")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def GetNasaMars(self, ctx):
-        def MakeEmbed(MarsImage, ImageNum, Total):
+    async def GetNasaMars(self, ctx:commands.Context) -> None:
+        def MakeEmbed(MarsImage, ImageNum, Total) -> discord.Embed:
             NEm = discord.Embed(title="Mars", description="By: Curiosity Rover (NASA)", color=0xCD5D2E)
             NEm.set_thumbnail(url="https://i.imgur.com/xmSmG0f.jpeg")
             NEm.add_field(name="Camera:", value=MarsImage["camera"]["full_name"], inline=True)
@@ -73,13 +74,13 @@ class Nasa(commands.Cog):
                                 headers={"Accept": "application/json"}).json()
         MarsImages = random.sample(NASAmars["photos"], k=25)
         Images = [MakeEmbed(i, v, len(MarsImages)) for v, i in enumerate(MarsImages)]
-        await Navigator(ctx, Images)
+        await Navigator(ctx, Images).autoRun()
 
-    async def cog_load(self):
+    async def cog_load(self) -> None:
         print(f"{self.__class__.__name__} loaded!")
 
-    async def cog_unload(self):
+    async def cog_unload(self) -> None:
         print(f"{self.__class__.__name__} unloaded!")
 
-async def setup(DClient):
+async def setup(DClient:CBotDClient) -> None:
     await DClient.add_cog(Nasa(DClient))

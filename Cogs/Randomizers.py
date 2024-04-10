@@ -1,21 +1,22 @@
 import discord
-from discord import app_commands
+# from discord import app_commands
 from discord.ext import commands
 import random
 import cv2
 import numpy
-import requests
+from CBot import DClient as CBotDClient
+# import requests
 import os
 # from Setup import GClient, GApi, SendWait
-import pyimgbox
+# import pyimgbox
 
 
 class Randomizers(commands.Cog):
-    def __init__(self, DClient):
+    def __init__(self, DClient:CBotDClient) -> None:
         self.DClient = DClient
 
     @commands.hybrid_command(name="roll", description="Roll a Dice.")
-    async def RollTheDice(self, ctx):
+    async def RollTheDice(self, ctx:commands.Context) -> None:
         # print("ANAL")
         DiceFaces = {1: "https://i.imgur.com/A3winYh.png", 2: "https://i.imgur.com/JFuawqi.png",
                      3: "https://i.imgur.com/2tufStP.png", 4: "https://i.imgur.com/GdtEPw4.png",
@@ -27,7 +28,7 @@ class Randomizers(commands.Cog):
         await ctx.send(embed=DEm)
 
     @commands.hybrid_command(name = "coinflip", aliases=["cf"], description="Flip a Coin.")
-    async def FlipTheCoin(self, ctx):
+    async def FlipTheCoin(self, ctx:commands.Context) -> None:
         CoinFaces = {"Heads": "https://i.imgur.com/U6BxOan.png",
                      "Tails": "https://i.imgur.com/zWvC1Ao.png"}
         Face = random.choice(list(CoinFaces.keys()))
@@ -38,7 +39,7 @@ class Randomizers(commands.Cog):
     # @commands.cooldown(1, 1, commands.BucketType.user)
 
     @commands.hybrid_command(name="color", aliases=["colour"], description="Generates a Random Color.")
-    async def ColorRandom(self, ctx):
+    async def ColorRandom(self, ctx:commands.Context) -> None:
         MakeClear = numpy.zeros((360, 360, 3), numpy.uint8)
         R = random.randint(0, 255)
         G = random.randint(0, 255)
@@ -57,10 +58,10 @@ class Randomizers(commands.Cog):
         await ctx.send(file=ClrImg, embed=CEm)
         os.remove("Color.png")
 
-    async def cog_load(self):
+    async def cog_load(self) -> None:
         print(f"{self.__class__.__name__} loaded!")
 
-    async def cog_unload(self):
+    async def cog_unload(self) -> None:
         print(f"{self.__class__.__name__} unloaded!")
 
     # @commands.command(name="giphy")
@@ -75,5 +76,5 @@ class Randomizers(commands.Cog):
     #     except IndexError: await SendWait(ctx, "No gifs found :expressionless:")
 
 
-async def setup(DClient):
+async def setup(DClient:CBotDClient) -> None:
     await DClient.add_cog(Randomizers(DClient))

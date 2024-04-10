@@ -65,24 +65,24 @@ IMClient = imdb.IMDb()
 
 # RLox = Roblox(os.getenv("ROBLOX_SECRET"))
 
-PatreonTiers = {
-    783250729686532126: "Tier 1 Casual",
-    783256987655340043: "Tier 2 Super",
-    784123230372757515: "Tier 3 Legend",
-    784124034559377409: "Tier 4 Ultimate",
-}
+# PatreonTiers = {
+#     783250729686532126: "Tier 1 Casual",
+#     783256987655340043: "Tier 2 Super",
+#     784123230372757515: "Tier 3 Legend",
+#     784124034559377409: "Tier 4 Ultimate",
+# }
 
 RemoveExtra = lambda listRm, val: [value for value in listRm if value != val]
 
 GetVidDuration = lambda VidId: pafy.new(f"https://www.youtube.com/watch?v={VidId}").duration
 
-async def SendWait(ctx, Notice): await ctx.send(embed=discord.Embed(title=Notice))
+async def SendWait(ctx:commands.Context, Notice:str) -> None: await ctx.send(embed=discord.Embed(title=Notice))
 
-def TimeTillMidnight():
+def TimeTillMidnight() -> int:
     Now = datetime.datetime.now()
     return (10 + ((24 - Now.hour - 1) * 60 * 60) + ((60 - Now.minute - 1) * 60) + (60 - Now.second))
 
-def Threader(FunctionList, ParameterList):
+def Threader(FunctionList, ParameterList) -> (list | bool):
     try:
         with Cf.ThreadPoolExecutor() as Execute:
             Pool = [Execute.submit(Func, *Param) for Func, Param in zip(FunctionList, ParameterList)]
@@ -114,7 +114,7 @@ def Threader(FunctionList, ParameterList):
 #             if Role in Mem.roles: return PatreonTiers[Role.id]
 #     except AttributeError: pass
 
-def FormatTime(SecondsFormat):
+def FormatTime(SecondsFormat:int) -> str:
     Day = 0
     Hour = 0
     Min = 0
@@ -132,85 +132,85 @@ def FormatTime(SecondsFormat):
     elif Min != 0: return f"{Min}m {SecondsFormat}s"
     else: return f"{SecondsFormat}s"
 
-async def Navigator(ctx, Items, Type="#", EmbedAndContent=False, ContItems=None, Main=False, MainBed=None):
-    # ChCHEm = lambda RcM, RuS: (not RuS.bot) and RcM.message == Nav and str(RcM.emoji) in ["⬅️", "❌", "➡️", "#️⃣"]
+# async def Navigator(ctx:commands.Context, Items:discord.Embed, Type:str="#", EmbedAndContent:bool=False, ContItems:str=None, Main:bool=False, MainBed:discord.Embed=None) -> None:
+#     ChCHEm = lambda RcM, RuS: (not RuS.bot) and RcM.message == Nav and str(RcM.emoji) in ["⬅️", "❌", "➡️", "#️⃣"]
 
-    def ChCHEmFN(MSg):
-        MesS = MSg.content.lower()
-        RsT = False
-        try:
-            if int(MSg.content): RsT = True
-        except ValueError:
-            if MesS in ["cancel", "c"]: RsT = True
-        return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
+#     def ChCHEmFN(MSg) -> bool:
+#         MesS = MSg.content.lower()
+#         RsT = False
+#         try:
+#             if int(MSg.content): RsT = True
+#         except ValueError:
+#             if MesS in ["cancel", "c"]: RsT = True
+#         return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
 
-    ItemNum = 0
-    if not Main: Nav = await ctx.send(embed=Items[ItemNum])
-    else: Nav = await ctx.send(embed=MainBed)
-    if EmbedAndContent: Cont = await ctx.send(content=ContItems[ItemNum])
-    TotalItems = len(Items)
-    await Nav.add_reaction("⬅️")
-    await Nav.add_reaction("❌")
-    await Nav.add_reaction("➡️")
-    if Type == "#": await Nav.add_reaction("#️⃣")
-    while True:
-        try:
-            Res = await CBot.BotClient.wait_for("reaction_add", timeout=120)
-            await Nav.remove_reaction(Res[0].emoji, Res[1])
-            if Res[0].emoji == "⬅️":
-                if ItemNum:
-                    ItemNum -= 1
-                    await Nav.edit(embed=Items[ItemNum])
-                    if EmbedAndContent: await Cont.edit(content=ContItems[ItemNum])
-                elif MainBed: await Nav.edit(embed=MainBed); Main = True
+#     ItemNum = 0
+#     if not Main: Nav = await ctx.send(embed=Items[ItemNum])
+#     else: Nav = await ctx.send(embed=MainBed)
+#     if EmbedAndContent: Cont = await ctx.send(content=ContItems[ItemNum])
+#     TotalItems = len(Items)
+#     await Nav.add_reaction("⬅️")
+#     await Nav.add_reaction("❌")
+#     await Nav.add_reaction("➡️")
+#     if Type == "#": await Nav.add_reaction("#️⃣")
+#     while True:
+#         try:
+#             Res = await CBot.BotClient.wait_for("reaction_add", check=ChCHEm, timeout=120)
+#             await Nav.remove_reaction(Res[0].emoji, Res[1])
+#             if Res[0].emoji == "⬅️":
+#                 if ItemNum:
+#                     ItemNum -= 1
+#                     await Nav.edit(embed=Items[ItemNum])
+#                     if EmbedAndContent: await Cont.edit(content=ContItems[ItemNum])
+#                 elif MainBed: await Nav.edit(embed=MainBed); Main = True
 
-            elif Res[0].emoji == "➡️":
-                if ItemNum < TotalItems - 1:
-                    if Main: await Nav.edit(embed=Items[ItemNum]); Main = False
-                    else:
-                        ItemNum += 1
-                        await Nav.edit(embed=Items[ItemNum])
-                        if EmbedAndContent: await Cont.edit(content=ContItems[ItemNum])
-                else:
-                    await Nav.remove_reaction("⬅️", CBot.BotClient.user)
-                    await Nav.remove_reaction("❌", CBot.BotClient.user)
-                    await Nav.remove_reaction("➡️", CBot.BotClient.user)
-                    if Type == "#": await Nav.remove_reaction("#️⃣", CBot.BotClient.user)
-                    break
-            elif Res[0].emoji == "#️⃣" and Type == "#":
-                # if await ChVoteUser(Res[1].id):
-                TempNG = await ctx.send('Choose a number to open navigate to ItemNum. "c" or "cancel" to exit navigation.')
-                try:
-                    ResE = await CBot.BotClient.wait_for("message", check=ChCHEmFN, timeout=10)
-                    await TempNG.delete()
-                    await ResE.delete()
-                    try:
-                        pG = int(ResE.content)
-                        if 0 < pG <= TotalItems - 1: ItemNum = pG - 1
-                        elif pG < 1:
-                            ItemNum = 0
-                            pass
-                        else: ItemNum = TotalItems - 1
-                    except: pass
-                    await Nav.edit(embed=Items[ItemNum])
-                    if EmbedAndContent: await Cont.edit(content=ContItems[ItemNum])
-                except asyncio.TimeoutError:
-                    await TempNG.edit("Request Timeout")
-                    await asyncio.sleep(5)
-                    await TempNG.delete()
-                # else: await ctx.send(embed=ErrorEmbeds("Vote"))
-            elif Res[0].emoji == "❌":
-                await Nav.remove_reaction("⬅️", CBot.BotClient.user)
-                await Nav.remove_reaction("❌", CBot.BotClient.user)
-                await Nav.remove_reaction("➡️", CBot.BotClient.user)
-                if Type == "#": await Nav.remove_reaction("#️⃣", CBot.BotClient.user)
-                break
-        except asyncio.TimeoutError:
-            await Nav.remove_reaction("⬅️", CBot.BotClient.user)
-            await Nav.remove_reaction("❌", CBot.BotClient.user)
-            await Nav.remove_reaction("➡️", CBot.BotClient.user)
-            if Type == "#": await Nav.remove_reaction("#️⃣", CBot.BotClient.user)
-            break
+#             elif Res[0].emoji == "➡️":
+#                 if ItemNum < TotalItems - 1:
+#                     if Main: await Nav.edit(embed=Items[ItemNum]); Main = False
+#                     else:
+#                         ItemNum += 1
+#                         await Nav.edit(embed=Items[ItemNum])
+#                         if EmbedAndContent: await Cont.edit(content=ContItems[ItemNum])
+#                 else:
+#                     await Nav.remove_reaction("⬅️", CBot.BotClient.user)
+#                     await Nav.remove_reaction("❌", CBot.BotClient.user)
+#                     await Nav.remove_reaction("➡️", CBot.BotClient.user)
+#                     if Type == "#": await Nav.remove_reaction("#️⃣", CBot.BotClient.user)
+#                     break
+#             elif Res[0].emoji == "#️⃣" and Type == "#":
+#                 # if await ChVoteUser(Res[1].id):
+#                 TempNG = await ctx.send('Choose a number to open navigate to ItemNum. "c" or "cancel" to exit navigation.')
+#                 try:
+#                     ResE = await CBot.BotClient.wait_for("message", check=ChCHEmFN, timeout=10)
+#                     await TempNG.delete()
+#                     await ResE.delete()
+#                     try:
+#                         pG = int(ResE.content)
+#                         if 0 < pG <= TotalItems - 1: ItemNum = pG - 1
+#                         elif pG < 1:
+#                             ItemNum = 0
+#                             pass
+#                         else: ItemNum = TotalItems - 1
+#                     except: pass
+#                     await Nav.edit(embed=Items[ItemNum])
+#                     if EmbedAndContent: await Cont.edit(content=ContItems[ItemNum])
+#                 except asyncio.TimeoutError:
+#                     await TempNG.edit("Request Timeout")
+#                     await asyncio.sleep(5)
+#                     await TempNG.delete()
+#                 # else: await ctx.send(embed=ErrorEmbeds("Vote"))
+#             elif Res[0].emoji == "❌":
+#                 await Nav.remove_reaction("⬅️", CBot.BotClient.user)
+#                 await Nav.remove_reaction("❌", CBot.BotClient.user)
+#                 await Nav.remove_reaction("➡️", CBot.BotClient.user)
+#                 if Type == "#": await Nav.remove_reaction("#️⃣", CBot.BotClient.user)
+#                 break
+#         except asyncio.TimeoutError:
+#             await Nav.remove_reaction("⬅️", CBot.BotClient.user)
+#             await Nav.remove_reaction("❌", CBot.BotClient.user)
+#             await Nav.remove_reaction("➡️", CBot.BotClient.user)
+#             if Type == "#": await Nav.remove_reaction("#️⃣", CBot.BotClient.user)
+#             break
 
 
 # class IsSetup(commands.CheckFailure): pass
@@ -354,7 +354,7 @@ async def Navigator(ctx, Items, Type="#", EmbedAndContent=False, ContItems=None,
 
 
 class Ignore(commands.CheckFailure): pass
-def ChDev(ctx):
+def ChDev(ctx:commands.Context) -> bool:
     if ctx.author.id == 443986051371892746: return True
     raise Ignore("Ignore")
 

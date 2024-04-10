@@ -3,9 +3,9 @@ from discord.ext import commands
 import requests
 import asyncio
 import random
-import time
+# import time
 import datetime
-import chess
+# import chess
 import numpy as np
 from Setup import ChVote, ChPatreonT2, ChAdmin, FormatTime, TimeTillMidnight, GetPatreonTier, SendWait, AQd
 
@@ -193,58 +193,58 @@ class Games(commands.Cog):
                 R += 1
         else: await SendWait(ctx, "No second player mentioned or Mentioned a bot :slight_frown:!")
 
-    @commands.command(name="chess")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def PlayChess(self, ctx, *args):
-        def ChCHanS(MSg):
-            MesS = MSg.content.lower()
-            RsT = False
-            if MSg.content in LegalMoves: RsT = True
-            elif MesS == "resign": RsT = True
-            elif CanClaimDraw and MesS == "claimdraw": RsT = True
-            return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT and MSg.author == Player
+    # @commands.command(name="chess")
+    # @commands.cooldown(1, 2, commands.BucketType.user)
+    # async def PlayChess(self, ctx, *args):
+    #     def ChCHanS(MSg):
+    #         MesS = MSg.content.lower()
+    #         RsT = False
+    #         if MSg.content in LegalMoves: RsT = True
+    #         elif MesS == "resign": RsT = True
+    #         elif CanClaimDraw and MesS == "claimdraw": RsT = True
+    #         return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT and MSg.author == Player
 
-        if len(ctx.message.mentions) > 0 and not ctx.message.mentions[0].bot:
-            Players = [ctx.message.author, ctx.message.mentions[0]]
-            ChessBoard = chess.Board()
-            R = 0
-            CanClaimDraw = False
-            PlayerTimes = {Players[0]: 600, Players[1]: 600}
-            Board = await ctx.message.channel.send(MakeChessBoard(("".join(str(ChessBoard).split(" "))).splitlines(), PlayerTimes, Players))
-            Moves = []
-            while True:
-                LegalMoves = [ChessBoard.san(i) for i in list(ChessBoard.legal_moves)]
-                if R % 2 == 0: Player = Players[1]
-                else: Player = Players[0]
-                MentionTurn = await ctx.message.channel.send(f'{Player.mention} Please choose where to play: {", ".join(LegalMoves)}')
-                try:
-                    TimeTemp = int(time.time())
-                    ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=PlayerTimes[Player])
-                    if R > 1: PlayerTimes[Player] -= int(time.time()) - TimeTemp
-                    Moves.append(ResS)
-                    await MentionTurn.delete()
-                    LResS = ResS.content.lower()
-                    if ResS.content in LegalMoves:
-                        await Board.delete()
-                        ChessBoard.push_san(ResS.content)
-                        if ChessBoard.is_checkmate(): await SendWait(ctx, f"`{Player.display_name}` WINS by Checkmate!!"); return
-                        elif ChessBoard.is_insufficient_material(): await SendWait(ctx, "DRAW by Insufficient Material!!"); return
-                        elif ChessBoard.is_stalemate(): await SendWait(ctx, "DRAW by Stalemate!!"); return
-                        elif ChessBoard.can_claim_draw():
-                            await SendWait(ctx, "A DRAW Can Now be Claimed")
-                            CanClaimDraw = True
-                        Board = await ctx.message.channel.send(MakeChessBoard(("".join(str(ChessBoard).split(" "))).splitlines(), PlayerTimes, Players))
-                    elif LResS == "resign":
-                        if R % 2 == 0: await SendWait(ctx, f"`{Players[0].display_name}` WINS by Resignation")
-                        else: await SendWait(ctx, f"`{Players[1].display_name}` WINS by Resignation")
-                        return
-                    elif LResS == "claimdraw": await SendWait(ctx, f"`{Player.display_name}` Claims DRAW!!"); return
-                except asyncio.TimeoutError:
-                    if R % 2 == 0: await SendWait(ctx, f"`{Players[0].display_name}` WINS by Timeout")
-                    else: await SendWait(ctx, f"`{Players[1].display_name}` WINS by Timeout")
-                    return
-                R += 1
-        else: await SendWait(ctx, "No second player mentioned or Mentioned a bot :slight_frown:!")
+    #     if len(ctx.message.mentions) > 0 and not ctx.message.mentions[0].bot:
+    #         Players = [ctx.message.author, ctx.message.mentions[0]]
+    #         ChessBoard = chess.Board()
+    #         R = 0
+    #         CanClaimDraw = False
+    #         PlayerTimes = {Players[0]: 600, Players[1]: 600}
+    #         Board = await ctx.message.channel.send(MakeChessBoard(("".join(str(ChessBoard).split(" "))).splitlines(), PlayerTimes, Players))
+    #         Moves = []
+    #         while True:
+    #             LegalMoves = [ChessBoard.san(i) for i in list(ChessBoard.legal_moves)]
+    #             if R % 2 == 0: Player = Players[1]
+    #             else: Player = Players[0]
+    #             MentionTurn = await ctx.message.channel.send(f'{Player.mention} Please choose where to play: {", ".join(LegalMoves)}')
+    #             try:
+    #                 TimeTemp = int(time.time())
+    #                 ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=PlayerTimes[Player])
+    #                 if R > 1: PlayerTimes[Player] -= int(time.time()) - TimeTemp
+    #                 Moves.append(ResS)
+    #                 await MentionTurn.delete()
+    #                 LResS = ResS.content.lower()
+    #                 if ResS.content in LegalMoves:
+    #                     await Board.delete()
+    #                     ChessBoard.push_san(ResS.content)
+    #                     if ChessBoard.is_checkmate(): await SendWait(ctx, f"`{Player.display_name}` WINS by Checkmate!!"); return
+    #                     elif ChessBoard.is_insufficient_material(): await SendWait(ctx, "DRAW by Insufficient Material!!"); return
+    #                     elif ChessBoard.is_stalemate(): await SendWait(ctx, "DRAW by Stalemate!!"); return
+    #                     elif ChessBoard.can_claim_draw():
+    #                         await SendWait(ctx, "A DRAW Can Now be Claimed")
+    #                         CanClaimDraw = True
+    #                     Board = await ctx.message.channel.send(MakeChessBoard(("".join(str(ChessBoard).split(" "))).splitlines(), PlayerTimes, Players))
+    #                 elif LResS == "resign":
+    #                     if R % 2 == 0: await SendWait(ctx, f"`{Players[0].display_name}` WINS by Resignation")
+    #                     else: await SendWait(ctx, f"`{Players[1].display_name}` WINS by Resignation")
+    #                     return
+    #                 elif LResS == "claimdraw": await SendWait(ctx, f"`{Player.display_name}` Claims DRAW!!"); return
+    #             except asyncio.TimeoutError:
+    #                 if R % 2 == 0: await SendWait(ctx, f"`{Players[0].display_name}` WINS by Timeout")
+    #                 else: await SendWait(ctx, f"`{Players[1].display_name}` WINS by Timeout")
+    #                 return
+    #             R += 1
+    #     else: await SendWait(ctx, "No second player mentioned or Mentioned a bot :slight_frown:!")
 
     @commands.command(aliases=["cptd", "chesspuzzleoftheday"])
     @commands.check(ChVote)

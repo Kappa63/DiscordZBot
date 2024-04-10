@@ -3,6 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 import requests
 import randfacts
+from CBot import DClient as CBotDClient
 from Setup import (
     #? ChVote,
     #? ChPatreonT2,
@@ -18,18 +19,18 @@ import re
 
 
 class WrittenStuff(commands.Cog):
-    def __init__(self, DClient):
+    def __init__(self, DClient:CBotDClient) -> None:
         self.DClient = DClient
 
     @commands.hybrid_command(name="advice", description="Because a Discord Bot is Where you Should be Getting Advice From.")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def RandomAdvice(self, ctx):
+    async def RandomAdvice(self, ctx:commands.Context) -> None:
         Advice = requests.get("https://api.adviceslip.com/advice", headers={"Accept": "application/json"} ).json()
         await ctx.send(embed=discord.Embed(title="Some Advice", description=Advice["slip"]["advice"], color=0x7DD7D8))
     
     @commands.hybrid_command(name="news", description="Latest Headline News.")
     @commands.cooldown(1, 3, commands.BucketType.user)
-    async def TheNews(self, ctx):
+    async def TheNews(self, ctx:commands.Context) -> None:
         News = requests.get("https://newsapi.org/v2/top-headlines", params=NClient).json()
         NEm = discord.Embed(title = "News", color = 0x0F49B2)
         for Num, Article in enumerate(News["articles"], start=1): 
@@ -38,17 +39,17 @@ class WrittenStuff(commands.Cog):
 
     @commands.hybrid_command(name="fact",aliases=["funfact"], description="Did you Know this Command Sends Fun Facts?")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def GetAFact(self, ctx): await ctx.send(embed=discord.Embed(title="Fact", description=randfacts.getFact(), color=0x1F002A))
+    async def GetAFact(self, ctx:commands.Context): await ctx.send(embed=discord.Embed(title="Fact", description=randfacts.getFact(), color=0x1F002A))
 
     @commands.hybrid_group(name="bin", aliases=["binary"], description="Deal with Binary Stuff.")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def Bins(self, ctx): pass
+    async def Bins(self, ctx:commands.Context) -> None: pass
     
     @Bins.command(name="make", aliases=["create"], description="Text to Binary")
     @app_commands.rename(txt="text")
     @app_commands.describe(txt="Text to Convert to Binary")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def To(self, ctx, *, txt:str):
+    async def To(self, ctx:commands.Context, *, txt:str) -> None:
         Binary = " ".join([format(i,"b") for i in bytearray(txt,"utf-8")])
         await ctx.send(embed = discord.Embed(title = "Convert To Binary", description = Binary[:2048], color = 0x5ADF44))
 
@@ -56,7 +57,7 @@ class WrittenStuff(commands.Cog):
     @app_commands.rename(bin="binary")
     @app_commands.describe(bin="Text to Convert to Binary")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def From(self, ctx, *, bin:str):
+    async def From(self, ctx:commands.Context, *, bin:str) -> None:
         # print(bin)
         try:
             String = "".join([chr(int(Binary, 2)) for Binary in bin.split(" ")])
@@ -68,25 +69,25 @@ class WrittenStuff(commands.Cog):
 
     @commands.hybrid_command(name="kanye", aliases=["kanyewest"], description="Kanye Yaps. Here are his Yaps.")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def ShitByKanye(self, ctx):
+    async def ShitByKanye(self, ctx:commands.Context) -> None:
         KanyeSays = requests.get("https://api.kanye.rest", headers={"Accept": "application/json"}).json()
         await ctx.send(embed=discord.Embed(title="Kanye Says Alot, Here's One", description=KanyeSays["quote"], color=0x53099B))
 
     @commands.hybrid_command(name="insult", description="Sometimes you Need to Curb your Ego,")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def RandomInsult(self, ctx):
+    async def RandomInsult(self, ctx:commands.Context) -> None:
         InsultGot = requests.get("https://evilinsult.com/generate_insult.php?lang=en&type=json", headers={"Accept": "application/json"}).json()
         await ctx.send(embed=discord.Embed( title="Insult", description=InsultGot["insult"], color=0xBD2DB8))
 
     @commands.hybrid_command(name="dadjoke", description="Remember your Dad's Lame Jokes.")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def KillMe(self, ctx):
+    async def KillMe(self, ctx:commands.Context) -> None:
         DadJoke = requests.get("https://icanhazdadjoke.com/", headers={"Accept": "application/json"}).json()
         await ctx.send(embed=discord.Embed(title="Dad Joke", description=DadJoke["joke"], color=0x99807E))
 
     @commands.hybrid_command(name="joke", description="Jokes for a Tamer Audience.")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def Joke(self, ctx):
+    async def Joke(self, ctx:commands.Context) -> None:
         Joke = requests.get("https://sv443.net/jokeapi/v2/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit", #?blacklistFlags=
                             headers={"Accept": "application/json"}).json()
         if Joke["type"] == "twopart": 
@@ -95,7 +96,7 @@ class WrittenStuff(commands.Cog):
 
     @commands.hybrid_command(name="darkjoke", description="A Joke so Dark it will Probably Make you Uncomfortable.")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def DarkJoke(self, ctx):
+    async def DarkJoke(self, ctx:commands.Context) -> None:
         DarkJoke = requests.get("https://sv443.net/jokeapi/v2/joke/Dark", headers={"Accept": "application/json"}).json()
         if DarkJoke["type"] == "twopart": 
             await ctx.send(embed=discord.Embed(title=f'Joke ({DarkJoke["category"]})', description=f'{DarkJoke["setup"]}\n\n||{DarkJoke["delivery"]}||',
@@ -104,14 +105,14 @@ class WrittenStuff(commands.Cog):
 
     @commands.hybrid_command(name="pun", description="Ba Dumm Tiss.")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def Pun(self, ctx):
+    async def Pun(self, ctx:commands.Context) -> None:
         Pun = requests.get("https://sv443.net/jokeapi/v2/joke/Pun", headers={"Accept": "application/json"}).json()
         if Pun["type"] == "twopart": await ctx.send(embed=discord.Embed(title="Pun", description=f'{Pun["setup"]}\n\n||{Pun["delivery"]}||', color=0x05D111))
         else: await ctx.send(embed=discord.Embed(title="Pun", description=Pun["joke"], color=0x05D111))
 
     @commands.hybrid_command(name="qotd", description="A Daily Quote.")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def QuoteOfTheDay(self, ctx):
+    async def QuoteOfTheDay(self, ctx:commands.Context) -> None:
         TodayQuote = requests.get(
             "https://favqs.com/api/qotd", headers={"Accept": "application/json"}
         ).json()
@@ -173,11 +174,11 @@ class WrittenStuff(commands.Cog):
     #?             await SendWait(ctx, "Removed from QOTD daily successfully")
     #?             return
     #?     await SendWait(ctx, "You are already not in QOTD daily")
-    async def cog_load(self):
+    async def cog_load(self) -> None:
         print(f"{self.__class__.__name__} loaded!")
 
-    async def cog_unload(self):
+    async def cog_unload(self) -> None:
         print(f"{self.__class__.__name__} unloaded!")
 
-async def setup(DClient):
+async def setup(DClient:CBotDClient) -> None:
     await DClient.add_cog(WrittenStuff(DClient))

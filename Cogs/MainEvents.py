@@ -1,5 +1,6 @@
-from discord.ext import commands, tasks
+from discord.ext import commands
 import discord
+from CBot import DClient as CBotDClient
 # from Setup import (IsBot, IsVote, IsPatreon, IsPatreonT2, IsPatreonT3, IsPatreonT4, Ignore, IsAdmin,
 #                    IsSetup, IsNSFW, IsMultiredditLimit, FormatTime, TimeTillMidnight, GetPatreonTier,
 #                    ErrorEmbeds, ChPatreonUserT2, SendWait, AQd)
@@ -42,7 +43,7 @@ Doing = ["Playing With The Laws Of Physics", "Getting Tortured", "Just Vibin'", 
 
 
 class MainEvents(commands.Cog):
-    def __init__(self, DClient):
+    def __init__(self, DClient:CBotDClient) -> None:
         self.DClient = DClient
         
         
@@ -51,7 +52,7 @@ class MainEvents(commands.Cog):
         # self.SendCPTDDaily.start()
 # 
     @commands.Cog.listener("on_ready")
-    async def on_ready(self):
+    async def on_ready(self) -> None:
         await self.DClient.change_presence(activity=discord.Game(f"zhelp || {random.choice(Doing)}"))
         print(f"Online in {len(self.DClient.guilds)}...")
         self.DClient.StaffChannel = self.DClient.get_channel(768461226996662302)
@@ -61,7 +62,7 @@ class MainEvents(commands.Cog):
         # await self.StaffChannel.send(f"Back Online In {len(self.DClient.guilds)}...")
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx, error):
+    async def on_command_error(self, ctx:commands.Context, error) -> None:
         if isinstance(error, commands.CommandOnCooldown): await SendWait(ctx, f'Hold the spam. Wait atleast {FormatTime(round(error.retry_after, 2))}')
         # elif isinstance(error, IsAdmin): await SendWait(ctx, "Non-admins are not allowed to use this command")
         # elif isinstance(error, IsVote): await ctx.send(embed=ErrorEmbeds("Vote"))
@@ -208,12 +209,12 @@ class MainEvents(commands.Cog):
     #?     await self.StaffChannel.send(f"QOTD Regulating for {TimeTillMidnight()}s...")
     #?     await asyncio.sleep(TimeTillMidnight())
 
-    async def cog_load(self):
+    async def cog_load(self) -> None:
         print(f"{self.__class__.__name__} loaded!")
 
-    async def cog_unload(self):
+    async def cog_unload(self) -> None:
         print(f"{self.__class__.__name__} unloaded!")
     
 
-async def setup(DClient):
+async def setup(DClient:CBotDClient) -> None:
     await DClient.add_cog(MainEvents(DClient))

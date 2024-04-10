@@ -1,35 +1,36 @@
 import discord
 from discord.ext import commands
-from Setup import GiClient, SendWait, Navigator, RefreshGISClient
+from Setup import GiClient, SendWait, RefreshGISClient
 import requests
-import asyncio
-from googlesearch import search
+# import asyncio
+from Customs.Navigators import ReactionNavigator as Navigator
+# from googlesearch import search
 from bs4 import BeautifulSoup
 import re
-import numpy as np
+# import numpy as np
 
 class Google(commands.Cog):
     def __init__(self, DClient):
         self.DClient = DClient
 
-    @commands.command(name="google")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def GoogleThat(self, ctx, *args):
-        if not args: await SendWait(ctx, "No search argument :woozy_face:"); return
-        await SendWait(ctx, ":desktop: Getting Results...")
+    # @commands.command(name="google")
+    # @commands.cooldown(1, 2, commands.BucketType.user)
+    # async def GoogleThat(self, ctx, *args):
+    #     if not args: await SendWait(ctx, "No search argument :woozy_face:"); return
+    #     await SendWait(ctx, ":desktop: Getting Results...")
 
-        SearchResults = []
-        ResultNum = 1
-        ResultTotal = 20
-        Colors = [0x4285F4, 0xEA4335, 0xFBBC05, 0x34A853] * 5
-        for Result in search(" ".join(args), tld="com", num=20, pause=2, stop=20):
-            IEm = discord.Embed(title=f'Google Results for **`{" ".join(args)}`**', description=f"Result: [{ResultNum}/{ResultTotal}]", color=Colors.pop(0))
-            SearchResults.append((IEm, Result))
-            ResultNum += 1
-        ResultNum = 0
-        EmbededResults = [i[0] for i in SearchResults]
-        URLResults = [i[1] for i in SearchResults]
-        await Navigator(ctx, EmbededResults, Type="No #", EmbedAndContent=True, ContItems=URLResults)
+    #     SearchResults = []
+    #     ResultNum = 1
+    #     ResultTotal = 20
+    #     Colors = [0x4285F4, 0xEA4335, 0xFBBC05, 0x34A853] * 5
+    #     for Result in search(" ".join(args), tld="com", num=20, pause=2, stop=20):
+    #         IEm = discord.Embed(title=f'Google Results for **`{" ".join(args)}`**', description=f"Result: [{ResultNum}/{ResultTotal}]", color=Colors.pop(0))
+    #         SearchResults.append((IEm, Result))
+    #         ResultNum += 1
+    #     ResultNum = 0
+    #     EmbededResults = [i[0] for i in SearchResults]
+    #     URLResults = [i[1] for i in SearchResults]
+    #     await Navigator(ctx, EmbededResults, Type="No #", EmbedAndContent=True, ContItems=URLResults)
  
     @commands.command(aliases=["gis", "googleimagesearch", "imagesearch"])
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -48,7 +49,7 @@ class Google(commands.Cog):
             ImageResults.append(IEm)
             ImageNum += 1
         if not ImageResults: await SendWait(ctx, "No Images Found..."); return
-        await Navigator(ctx, ImageResults, Type="No #")
+        await Navigator(ctx, ImageResults, Type="No #").autoRun()
 
     @commands.command(name="weather")
     @commands.cooldown(1, 2, commands.BucketType.user)

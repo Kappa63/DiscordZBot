@@ -2,19 +2,21 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 # from Setup import ChDev, SendWait, AQd
-from Setup import SendWait, ChDev
-import random
-import requests
+from Setup import ChDev
+from CBot import DClient as CBotDClient
+from UI.Buttons import EditButton
+# import random
+# import requests
 
-Doing = ["Playing with the laws of physics", "Torture", "Just Vibin'", "With my toes",
-         "Chess with god", "With Leona"]
+# Doing = ["Playing with the laws of physics", "Torture", "Just Vibin'", "With my toes",
+        #  "Chess with god", "With Leona"]
 
 class OnlyMods(commands.Cog):
-    def __init__(self, DClient):
+    def __init__(self, DClient:CBotDClient) -> None:
         self.DClient = DClient
 
     @commands.command(name="status")
-    async def BotStatus(self, ctx):
+    async def BotStatus(self, ctx:commands.Context) -> None:
         SEm = discord.Embed(title="Current ZBot Status", color=0x000000)
         SEm.add_field(name="Guilds in: ", value=len(self.DClient.guilds), inline=False)
         SEm.add_field(name="Latency: ", value=self.DClient.latency * 100, inline=False)
@@ -24,12 +26,21 @@ class OnlyMods(commands.Cog):
 
     @commands.command(name="sync")
     @commands.check(ChDev)
-    async def Syncer(self, ctx):
+    async def Syncer(self, ctx:commands.Context) -> None:
         try:
             slashSync = await self.DClient.tree.sync()
             await ctx.send(embed=discord.Embed(title=f"Synced {len(slashSync)} command(s)"))
         except Exception as e:
             print(e)
+
+    @commands.command(name="test") # Create a command inside a cog
+    async def button(self, ctx:commands.Context) -> None:
+        print(type(ctx))
+        # view = discord.ui.View() # Establish an instance of the discord.ui.View class
+        # style = discord.ButtonStyle.blurple  # The button will be gray in color
+        # item = discord.ui.Button(style=style, label="Read the docs!")  # Create an item to pass into the view class.
+        # view.add_item(item=item)  # Add that item into the view class
+        await ctx.send("This message has buttons!", view=EditButton())
             
     # @commands.command(name="embed")
     # @commands.check(ChDev)
@@ -49,13 +60,13 @@ class OnlyMods(commands.Cog):
     @app_commands.describe(d="Description Text of the Embed")
     @app_commands.rename(c="color")
     @app_commands.describe(c="Embed's Bar Color in HEX")
-    async def slash_Embedder(self, ctx, t:str, d:str, c:str):
+    async def slash_Embedder(self, ctx, t:str, d:str, c:str) -> None:
         await ctx.send(embed=discord.Embed(title=t, description = d, color = int(c, 16)))
 
 
     @commands.command(name="reloadall")
     @commands.check(ChDev)
-    async def MassCogReloader(self, ctx):
+    async def MassCogReloader(self, ctx:commands.Context) -> None:
         await self.DClient.reload_all_cogs()
         REm = discord.Embed(title="ZBot Reloaded", color = 0x000000)
         REm.add_field(name="Cogs Reloaded: ", value="\n".join(self.DClient.LoadedCogs), inline=False)
@@ -63,7 +74,7 @@ class OnlyMods(commands.Cog):
 
     @commands.command(name="reload")
     @commands.check(ChDev)
-    async def CogReloader(self, ctx, *args):
+    async def CogReloader(self, ctx:commands.Context, *args) -> None:
         await self.DClient.reload_cogs(args)
         REm = discord.Embed(title="ZBot Reloaded", color = 0x000000)
         REm.add_field(name="Cogs Reloaded: ", value="\n".join(args), inline=False)
@@ -71,7 +82,7 @@ class OnlyMods(commands.Cog):
 
     @commands.command(name="unload")
     @commands.check(ChDev)
-    async def CogUnloader(self, ctx, *args):
+    async def CogUnloader(self, ctx:commands.Context, *args) -> None:
         await self.DClient.unload_cogs(args)
         REm = discord.Embed(title="ZBot Unloaded", color = 0x000000)
         REm.add_field(name="Cogs Unloaded: ", value="\n".join(args), inline=False)
@@ -79,7 +90,7 @@ class OnlyMods(commands.Cog):
     
     @commands.command(name="load")
     @commands.check(ChDev)
-    async def CogLoader(self, ctx, *args):
+    async def CogLoader(self, ctx:commands.Context, *args) -> None:
         await self.DClient.load_cogs(args)
         REm = discord.Embed(title="ZBot Loaded", color = 0x000000)
         REm.add_field(name="Cogs loaded: ", value="\n".join(args), inline=False)
@@ -118,11 +129,11 @@ class OnlyMods(commands.Cog):
     # async def GetCPTDNum(self, ctx):
     #     await SendWait(ctx, f'{AQd.count_documents({"Type":"CPTD"})} in CPTD Daily')
 
-    async def cog_load(self):
+    async def cog_load(self) -> None:
         print(f"{self.__class__.__name__} loaded!")
 
-    async def cog_unload(self):
+    async def cog_unload(self) -> None:
         print(f"{self.__class__.__name__} unloaded!")
 
-async def setup(DClient):
+async def setup(DClient:CBotDClient) -> None:
     await DClient.add_cog(OnlyMods(DClient))

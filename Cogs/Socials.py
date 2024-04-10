@@ -2,21 +2,23 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from prawcore import NotFound, Forbidden
-import os
+# import os
 import random
 # from Setup import (Reddit, Rdt, GetPatreonTier, SendWait, YClient, Twitter, THelix, ChVote, ChVoteUser,
 #                    ChPatreonT2, ChMaxMultireddits, GetVidDuration, ErrorEmbeds, Navigator, Threader)
-from Setup import SendWait, Navigator, Threader, Reddit
+from CBot import DClient as CBotDClient
+from Setup import SendWait, Threader, Reddit
 # from twitch.helix.resources import StreamNotFound
-import requests
+# import requests
 # import tweepy
-import pyimgbox
+from Customs.Navigators import ReactionNavigator as Navigator
+# import pyimgbox
 import inspect
 import asyncio
 import datetime
 import numpy as np
 
-def RedditbedMaker(SubCpoS, Subname, Nsfchannel, Type="R", PostNum=0, TotalPosts=0):
+def RedditbedMaker(SubCpoS, Subname, Nsfchannel:bool, Type:str="R", PostNum:int=0, TotalPosts:int=0) -> discord.Embed:
     PostTitle = SubCpoS.title[:253]
     PostText = SubCpoS.selftext[:1021]
     if PosType(SubCpoS):
@@ -144,7 +146,7 @@ def RedditbedMaker(SubCpoS, Subname, Nsfchannel, Type="R", PostNum=0, TotalPosts
 #     elif hasattr(TWtimeline, "in_reply_to_status_id") and TWtimeline.in_reply_to_status_id: return "Comment"
 #     else: return "Tweet"
 
-def EmbOri(REm, Type, SubCpoS):
+def EmbOri(REm:discord.Embed, Type:str, SubCpoS) -> discord.Embed:
     REm.add_field(name="\u200b", value=f"The original post is a {Type} [click here]({SubCpoS.url}) to view the original", inline=False)
     try:
         REm.set_image(url=SubCpoS.preview["images"][-1]["source"]["url"])
@@ -152,7 +154,7 @@ def EmbOri(REm, Type, SubCpoS):
         return REm
     return REm
 
-def CheckSub(Sub):
+def CheckSub(Sub:str) -> bool:
     try:
         Reddit.subreddits.search_by_name(Sub, exact=True)
         Reddit.subreddit(Sub).subreddit_type
@@ -162,7 +164,7 @@ def CheckSub(Sub):
 PosType = lambda Sub: Sub.is_self
 
 class Socials(commands.Cog):
-    def __init__(self, DClient):
+    def __init__(self, DClient:CBotDClient) -> None:
         self.DClient = DClient
 
     # @commands.group(name="twitch", invoke_without_command=True)
@@ -388,7 +390,7 @@ class Socials(commands.Cog):
     @app_commands.rename(sub="subreddit")
     @app_commands.describe(sub="Name of Subreddit")
     @commands.cooldown(1, 2, commands.BucketType.user)
-    async def RedditRand(self, ctx, sub:str):
+    async def RedditRand(self, ctx:commands.Context, sub:str) -> None:
         if not sub: await ctx.send("No arguments :no_mouth:"); return
         args = sub[2:] if sub.startswith("r/") else sub
         if CheckSub(args):
@@ -404,7 +406,7 @@ class Socials(commands.Cog):
     @app_commands.rename(sub="subreddit")
     @app_commands.describe(sub="Name of Subreddit")
     @commands.cooldown(1, 4, commands.BucketType.user)
-    async def RedditNav(self, ctx, sub:str):
+    async def RedditNav(self, ctx:commands.Context, sub:str) -> None:
         ChCHEmCH = lambda RcM, RuS: not RuS.bot and RcM.message == KraPosS and str(RcM.emoji) in ["🔝", "📈", "🔥", "📝", "❌"]
         ChCHEmCHT = lambda RcM, RuS: not RuS.bot and RcM.message == KraPosS and str(RcM.emoji) in ["🗓️", "🌍", "📅", "❌"]
         Embeder = lambda i,*x: [RedditbedMaker(P, Name, Nsfchannel=Nsfwcheck, Type="S", PostNum=i+PNum, TotalPosts=TotalPosts) for PNum, P in enumerate(x)]
@@ -468,13 +470,13 @@ class Socials(commands.Cog):
         Thread = Threader([Embeder]*(len(SubCpoS)//2), Crsd)
         if(Thread == False):  await SendWait(ctx, "Failed to Thread subreddit :no_mouth:"); return
         PostEms = sum(Thread, [])
-        await Navigator(ctx, PostEms)
+        await Navigator(ctx, PostEms).autoRun()
 
     @commands.hybrid_command(name="redditor", description="View a Redditors Profile.")
     @app_commands.rename(rdtr="redditor")
     @app_commands.describe(rdtr="Name of Redditor")
     @commands.cooldown(1, 2, commands.BucketType.user)
-    async def GetRedditor(self, ctx, rdtr:str):
+    async def GetRedditor(self, ctx:commands.Context, rdtr:str) -> None:
         if not rdtr: await SendWait(ctx, "No arguments :no_mouth:"); return
         args = rdtr[2:] if rdtr.startswith("u/") else rdtr
         try:
@@ -489,7 +491,7 @@ class Socials(commands.Cog):
             Name = args
             Nsfwcheck = ctx.channel.is_nsfw()
             PostEms = [RedditbedMaker(P, Name, Nsfchannel=Nsfwcheck, Type="S", PostNum=PNum, TotalPosts=TotalPosts) for PNum, P in enumerate(SubCpoS)]
-            await Navigator(ctx, PostEms, Main=True, MainBed=UEm)
+            await Navigator(ctx, PostEms, Main=True, MainBed=UEm).autoRun()
         except NotFound: await SendWait(ctx, "Redditor Not Found :no_mouth:")
             
     # @commands.group(name="multireddit", invoke_without_command=True)
@@ -602,12 +604,12 @@ class Socials(commands.Cog):
     #         if NotRemoved: await SendWait(ctx, f"Following Subreddit(s) didn't exist in Multireddit: `{', '.join(NotRemoved)}`")
     #     else: await SendWait(ctx, f"That Multireddit ({Multi}) does not exist. Check if the name is right or create it.")
             
-    async def cog_load(self):
+    async def cog_load(self) -> None:
         print(f"{self.__class__.__name__} loaded!")
 
-    async def cog_unload(self):
+    async def cog_unload(self) -> None:
         print(f"{self.__class__.__name__} unloaded!")
 
 
-async def setup(DClient):
+async def setup(DClient:CBotDClient) -> None:
     await DClient.add_cog(Socials(DClient))

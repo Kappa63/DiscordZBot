@@ -17,7 +17,7 @@ load_dotenv()
 class DClient(commands.Bot):
     StaffChannel = None
     Me = None
-    def __init__(self, Cogs):
+    def __init__(self, Cogs) -> None:
         REqInt = discord.Intents.all()
         REqInt.members = True
         self.LoadedCogs = Cogs
@@ -29,17 +29,17 @@ class DClient(commands.Bot):
         print("Cogs Loaded...")
         return await super().setup_hook()
     
-    async def reload_all_cogs(self):
+    async def reload_all_cogs(self) -> None:
         for Cog in self.LoadedCogs: 
             await self.reload_extension(Cog)
         print("Cogs Reloaded...")
 
-    async def reload_cogs(self, cogsRe):
+    async def reload_cogs(self, cogsRe) -> None:
         for Cog in cogsRe: 
             await self.reload_extension(Cog)
         print("Cogs Reloaded...")
 
-    async def unload_cogs(self, cogsRe):
+    async def unload_cogs(self, cogsRe) -> None:
         for Cog in cogsRe: 
             try:
                 await self.unload_extension(Cog)
@@ -48,7 +48,7 @@ class DClient(commands.Bot):
                 pass
         print("Cogs Unloaded...")
 
-    async def load_cogs(self, cogsRe):
+    async def load_cogs(self, cogsRe) -> None:
         for Cog in cogsRe: 
             try:
                 await self.load_extension(Cog)

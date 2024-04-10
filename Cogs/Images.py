@@ -2,27 +2,29 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import requests
-import pyimgbox
+# import pyimgbox
 from typing import Optional
 # from Setup import ChVoteUser, SendWait, Threader, ErrorEmbeds, Navigator
-from Setup import SendWait, Threader, Navigator
+from Setup import SendWait
+# , Threader, Navigator
 # from pdf2image import convert_from_path
-import random
+# import random
 from PIL import Image
 import deeppyer
-import asyncio
+# import asyncio
 import os
 import qrcode
 import cv2
+from CBot import DClient as CBotDClient
 
 
 class Images(commands.Cog):
-    def __init__(self, DClient):
+    def __init__(self, DClient:CBotDClient) -> None:
         self.DClient = DClient
 
     @commands.hybrid_command(name="cat", aliases=["kitten", "kitty"], description="For All the Cat Lovers.")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def RandomCat(self, ctx):
+    async def RandomCat(self, ctx:commands.Context) -> None:
         CatGot = requests.get("https://cataas.com/cat", headers={"Accept": "application/json"}, timeout=5).json()
         CEm = discord.Embed(title="Meow", color=0xA3D7C1)
         CEm.set_image(url=f'https://cataas.com/cat/{CatGot["_id"]}')
@@ -36,7 +38,7 @@ class Images(commands.Cog):
 
     @commands.hybrid_command(name="dog", aliases=["doggo", "pupper", "puppy"], description="For All the Dog Lovers.")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def RandomDoggo(self, ctx):
+    async def RandomDoggo(self, ctx:commands.Context) -> None:
         DoggoGot = requests.get("https://random.dog/woof.json", headers={"Accept": "application/json"}).json()
         DEm = discord.Embed(title="Woof Woof", color=0xFF3326)
         DEm.set_image(url=DoggoGot["url"])
@@ -44,7 +46,7 @@ class Images(commands.Cog):
 
     @commands.hybrid_command(name="thispersondoesnotexist", aliases=["thispersondoesntexist", "tpde"], description="Just an Image of Someone That Does Not Exist.")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def GetAnImaginedPerson(self, ctx):
+    async def GetAnImaginedPerson(self, ctx:commands.Context) -> None:
         PEm = discord.Embed(title="This Person Does NOT Exist.", color=0x753684)
         GetTpde = requests.get("https://thispersondoesnotexist.com", allow_redirects=True)
         This = open("Tpde.png", "wb").write(GetTpde.content)
@@ -55,7 +57,7 @@ class Images(commands.Cog):
 
     @commands.hybrid_command(name="fox", description="For All the Fox Lovers.")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def RandomFox(self, ctx):
+    async def RandomFox(self, ctx:commands.Context) -> None:
         FoxGot = requests.get("https://randomfox.ca/floof/", headers={"Accept": "application/json"}).json()
         FEm = discord.Embed(title="What does the fox say?", color=0x9DAA45)
         FEm.set_image(url=FoxGot["image"])
@@ -63,7 +65,7 @@ class Images(commands.Cog):
 
     @commands.hybrid_command(name="food", aliases=["dishes", "dish"], description="For All the Hungry Folk.")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def RandomDishes(self, ctx):
+    async def RandomDishes(self, ctx:commands.Context) -> None:
         Hungry = requests.get("https://foodish-api.com/api/", headers={"Accept": "application/json"}).json()
         FEm = discord.Embed(title="Hungry?", color=0xDE8761)
         FEm.set_image(url=Hungry["image"])
@@ -128,7 +130,7 @@ class Images(commands.Cog):
     @app_commands.rename(img="image")
     @app_commands.describe(img="Attachment of QrCode Image")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def ImageFrier(self, ctx, *, URL:Optional[str], img:Optional[discord.Attachment]=None):
+    async def ImageFrier(self, ctx:commands.Context, *, URL:Optional[str], img:Optional[discord.Attachment]=None) -> None:
         print(ctx.message.content)
         if not URL and not ctx.message.attachments and not img and not (ctx.message.reference.resolved.attachments if ctx.message.type == discord.MessageType.reply else False): await SendWait(ctx, "No image(s) or link(s) were attached :woozy_face:"); return 
         Attached = []
@@ -189,7 +191,7 @@ class Images(commands.Cog):
 
     @commands.hybrid_group(name = "qrcode", aliases=["qr"], description="Deal with QrCode Stuff.")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def QRCodes(self,ctx): pass
+    async def QRCodes(self,ctx) -> None: pass
 
     @QRCodes.command(name="create", aliases=["make"], description="Text/Image to QrCode.")
     @app_commands.rename(txt="text")
@@ -197,7 +199,7 @@ class Images(commands.Cog):
     @app_commands.rename(img="image")
     @app_commands.describe(img="Attachment of QrCode Image")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def QRmake(self, ctx, *, txt:Optional[str], img:Optional[discord.Attachment]=None):
+    async def QRmake(self, ctx:commands.Context, *, txt:Optional[str], img:Optional[discord.Attachment]=None) -> None:
         if not txt and not ctx.message.attachments and not img and not (ctx.message.reference.resolved.attachments if ctx.message.type == discord.MessageType.reply else False): await SendWait(ctx, "Nothing to QR"); return
         Stuff = []
         Files = []
@@ -223,7 +225,7 @@ class Images(commands.Cog):
     @app_commands.rename(img="image")
     @app_commands.describe(img="Attachment of QrCode Image")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def QRread(self, ctx, *, URL:Optional[str], img:Optional[discord.Attachment]=None):
+    async def QRread(self, ctx:commands.Context, *, URL:Optional[str], img:Optional[discord.Attachment]=None) -> None:
         if URL or ctx.message.attachments or (ctx.message.reference.resolved.attachments if ctx.message.type == discord.MessageType.reply else False) or img:
             Attached = []
             if URL:
@@ -256,11 +258,11 @@ class Images(commands.Cog):
                 except requests.exceptions.MissingSchema: pass
         else: await SendWait(ctx, "No image(s) or link(s) were attached :woozy_face:")
 
-    async def cog_load(self):
+    async def cog_load(self) -> None:
         print(f"{self.__class__.__name__} loaded!")
 
-    async def cog_unload(self):
+    async def cog_unload(self) -> None:
         print(f"{self.__class__.__name__} unloaded!")
 
-async def setup(DClient):
+async def setup(DClient:CBotDClient) -> None:
     await DClient.add_cog(Images(DClient))

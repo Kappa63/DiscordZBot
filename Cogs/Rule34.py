@@ -1,13 +1,15 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
+from CBot import DClient as CBotDClient
 # from Setup import ChVote, ChVoteUser, ChNSFW, SendWait, ErrorEmbeds, Navigator
-from Setup import Navigator, SendWait
+from Setup import SendWait
 import asyncio
 import random
 import rule34
+from Customs.Navigators import ReactionNavigator as Navigator
 
-def MakeEmbed(Rule, Total=0, RuleNum = 0, Type="R"):
+def MakeEmbed(Rule, Total:int=0, RuleNum:int = 0, Type:str="R") -> discord.Embed:
     Tags = ", ".join(Rule.tags)[0:253]
     REm = discord.Embed(title="Rule34", description=Tags, color=0xDFE31E)
     REm.add_field(name="Score: ", value=Rule.score)
@@ -19,14 +21,14 @@ def MakeEmbed(Rule, Total=0, RuleNum = 0, Type="R"):
     return REm
 
 class Rule34(commands.Cog):
-    def __init__(self, DClient):
+    def __init__(self, DClient:CBotDClient) -> None:
         self.DClient = DClient
 
     @commands.hybrid_group(name="rule34", aliases=["r34"], invoke_without_command=True, description="For all you Kinky Bastards.")
     @app_commands.rename(srch="search")
     @app_commands.describe(srch="Degenerate Search Term")
     @commands.cooldown(1, 2, commands.BucketType.user)
-    async def GetRule34(self, ctx, *, srch:str):
+    async def GetRule34(self, ctx:commands.Context, *, srch:str) -> None:
         args = srch.split(" ")
         if not args: await SendWait(ctx, "No arguments :no_mouth:"); return
         try:
@@ -45,7 +47,7 @@ class Rule34(commands.Cog):
     @app_commands.rename(srch="search")
     @app_commands.describe(srch="Degenerate Search Term")
     @commands.cooldown(1, 4, commands.BucketType.user)
-    async def SurfRule34(self, ctx, *, srch:str):
+    async def SurfRule34(self, ctx:commands.Context, *, srch:str) -> None:
         args = srch.split(" ")
         if not args: await SendWait(ctx, "No arguments :no_mouth:"); return
         try:
@@ -56,13 +58,13 @@ class Rule34(commands.Cog):
         except TypeError: await SendWait(ctx, "Nothing Found :no_mouth:"); return
         Rule34Total = len(Rule34Surf)
         Rules = [MakeEmbed(i, Total=Rule34Total, RuleNum=v, Type="S") for v, i in enumerate(Rule34Surf)] 
-        await Navigator(ctx, Rules)
+        await Navigator(ctx, Rules).autoRun()
 
-    async def cog_load(self):
+    async def cog_load(self) -> None:
         print(f"{self.__class__.__name__} loaded!")
 
-    async def cog_unload(self):
+    async def cog_unload(self) -> None:
         print(f"{self.__class__.__name__} unloaded!")
 
-async def setup(DClient):
+async def setup(DClient:CBotDClient) -> None:
     await DClient.add_cog(Rule34(DClient))

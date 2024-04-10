@@ -1,12 +1,14 @@
 import discord
 from discord.ext import commands
 # import mal
-from CustomLibs.nHentai import Utils, Sort, Hentai, Format
+from Customs.nHentai import Utils, Sort, Hentai, Format
 # from Setup import MClient, ErrorEmbeds, Navigator, ChVote, ChVoteUser, ChNSFW, SendWait
-from Setup import SendWait, Navigator
+from Setup import SendWait
+from Customs.Navigators import ReactionNavigator as Navigator
 import asyncio
+from CBot import DClient as CBotDClient
 
-def EmbedMaker(DentAi, Tags, Page):
+def EmbedMaker(DentAi, Tags, Page) -> discord.Embed:
     DEmE = discord.Embed(title=DentAi.title(Format.Pretty), description=Tags, url=DentAi.url, color=0x000000)
     DEmE.set_thumbnail(url=DentAi.image_urls[0])
     DEmE.set_footer(text=f"Released on {DentAi.upload_date}\n\nNeed help navigating? zhelp navigation")
@@ -17,7 +19,7 @@ def EmbedMaker(DentAi, Tags, Page):
 
 
 class AnimeManga(commands.Cog):
-    def __init__(self, DClient):
+    def __init__(self, DClient:CBotDClient):
         self.DClient = DClient
 
     # @commands.command(name="manga")
@@ -220,8 +222,8 @@ class AnimeManga(commands.Cog):
         
     @commands.command(name="hentai", description="nHentai \"Manga\" (Cause THATS what You're Looking for).")
     @commands.cooldown(1, 3, commands.BucketType.guild)
-    async def nHentaiReader(self, ctx, *args):
-        def ChCHanS(MSg):
+    async def nHentaiReader(self, ctx:commands.Context, *args) -> None:
+        def ChCHanS(MSg) -> bool:
             MesS = MSg.content.lower()
             MeseS = (MSg.content.lower()).split(" ")
             RsT = False
@@ -284,7 +286,7 @@ class AnimeManga(commands.Cog):
                 if (("lolicon" not in [tag.name for tag in DentAi.tag]) and ("shotacon" not in [tag.name for tag in DentAi.tag])) or ctx.guild.id == 586940644153622550:
                     Tags = (", ".join([tag.name for tag in DentAi.tag]))[:253]
                     HentaiPages = [EmbedMaker(DentAi, Tags, P) for P in range(len(DentAi.image_urls))]
-                    await Navigator(ctx, HentaiPages)
+                    await Navigator(ctx, HentaiPages).autoRun()
                 else: await SendWait(ctx, "In compliance with discord TOS, this is Unavailable. :upside_down: "); return
             else: await SendWait(ctx, "That Doujin doesn't exist :expressionless:")
         except UnboundLocalError: pass
@@ -296,5 +298,5 @@ class AnimeManga(commands.Cog):
         print(f"{self.__class__.__name__} unloaded!")
 
 
-async def setup(DClient):
+async def setup(DClient:CBotDClient):
    await DClient.add_cog(AnimeManga(DClient))

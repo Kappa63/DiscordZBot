@@ -2,16 +2,16 @@ import discord
 from discord.ext import commands
 from Setup import IMClient, SendWait
 import asyncio
-
+from CBot import DClient as CBotDClient
 
 class Movies(commands.Cog):
-    def __init__(self, DClient):
+    def __init__(self, DClient:CBotDClient) -> None:
         self.DClient = DClient
 
     @commands.command(name="imdb", description="Search and Find Info About Your Favourite Movies.")
     @commands.cooldown(1, 3, commands.BucketType.user)
-    async def MovieGetter(self, ctx, *args):
-        def ChCHanS(MSg):
+    async def MovieGetter(self, ctx:commands.Context, *args) -> None:
+        def ChCHanS(MSg) -> bool:
             MesS = MSg.content.lower()
             RsT = False
             try:
@@ -96,11 +96,11 @@ class Movies(commands.Cog):
         if "cover url" in IMDbinfo: YEm.set_thumbnail(url=IMDbinfo["cover url"])
         await ctx.send(embed=YEm)
 
-    async def cog_load(self):
+    async def cog_load(self) -> None:
         print(f"{self.__class__.__name__} loaded!")
 
-    async def cog_unload(self):
+    async def cog_unload(self) -> None:
         print(f"{self.__class__.__name__} unloaded!")
 
-async def setup(DClient):
+async def setup(DClient:CBotDClient) -> None:
     await DClient.add_cog(Movies(DClient))
