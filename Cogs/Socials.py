@@ -502,7 +502,7 @@ class Socials(commands.Cog):
     @app_commands.rename(mltr="multireddit")
     @app_commands.describe(mltr="Name of Multireddit")
     @commands.cooldown(1, 2, commands.BucketType.user)
-    async def GetMultis(self, ctx:commands.Context, mltr:str):
+    async def GetMultis(self, ctx:commands.Context, mltr:str) -> None:
         if not mltr: await SendWait(ctx, "You forgot to add a Multireddit name"); return
         if not Rdt.count_documents({"IDd": ctx.author.id}) > 0: await SendWait(ctx, "No Multireddits Found"); return
         User = Rdt.find({"IDd": ctx.author.id})[0]
@@ -529,7 +529,7 @@ class Socials(commands.Cog):
     @app_commands.rename(mltr="multireddit")
     @app_commands.describe(mltr="Name of Multireddit")
     @commands.cooldown(1, 2, commands.BucketType.user)
-    async def CreateMulti(self, ctx:commands.Context, mltr:str):
+    async def CreateMulti(self, ctx:commands.Context, mltr:str) -> None:
         if not mltr: await SendWait(ctx, "No Arguments"); return
         # ArgumentHandle = list(args)
         TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
@@ -552,7 +552,7 @@ class Socials(commands.Cog):
     @app_commands.rename(mltr="multireddit")
     @app_commands.describe(mltr="Name of Multireddit")
     @commands.cooldown(1, 2, commands.BucketType.user)
-    async def DeleteMulti(self, ctx:commands.Context, mltr:str):
+    async def DeleteMulti(self, ctx:commands.Context, mltr:str) -> None:
         if not mltr: await SendWait(ctx, "No Arguments"); return
         # ArgumentHandle = list(args)
         if not Rdt.count_documents({"IDd": ctx.author.id}): await SendWait(ctx, "You don't have any Multireddits"); return
@@ -574,7 +574,7 @@ class Socials(commands.Cog):
     @app_commands.rename(subs="subreddits")
     @app_commands.describe(subs="Names of Subreddits (Spaced)")
     @commands.cooldown(1, 2, commands.BucketType.user)
-    async def AddMulti(self, ctx:commands.Context, mltr:str, *, subs:str):
+    async def AddMulti(self, ctx:commands.Context, mltr:str, *, subs:str) -> None:
         if not mltr or not subs: await SendWait(ctx, "No Arguments"); return
         # Multi, Subs = args[0], list(args[1:])
         subs = subs.split(" ")
@@ -601,7 +601,7 @@ class Socials(commands.Cog):
     @app_commands.rename(subs="subreddits")
     @app_commands.describe(subs="Names of Subreddits (Spaced)")
     @commands.cooldown(1, 2, commands.BucketType.user)
-    async def RemMulti(self, ctx:commands.Context, mltr:str, *, subs:str):
+    async def RemMulti(self, ctx:commands.Context, mltr:str, *, subs:str) -> None:
         if not mltr or not subs: await SendWait(ctx, "No Arguments"); return
         # Multi, Subs = args[0], list(args[1:])
         subs = subs.split(" ")

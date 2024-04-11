@@ -1,72 +1,87 @@
-from dotenv import load_dotenv
+import dotenv
 import os
 from discord.ext import commands
 import discord
 # import giphy_client
 # import tweepy
-# import malclient
+import malclient
 # import COVID19Py
 # import twitch
-import asyncio
+# import asyncio
 import praw
 import giphpy as GApi
-import pymongo
+# import pymongo
+import time
 from pymongo import MongoClient
 import CBot
 # from google_images_search import GoogleImagesSearch
-import pyyoutube
+# import pyyoutube
 import imdb
-import pafy
+# import pafy
 import datetime
 # import osuapi
 from ossapi import OssapiV1
 import concurrent.futures as Cf
+# import ten
+# import 
 # from ro_py import Client as Roblox
 
-load_dotenv()
+env = dotenv.find_dotenv()
+dotenv.load_dotenv(env)
+
 Cogs = ["Cogs.Randomizers", "Cogs.MainEvents", "Cogs.Rule34", "Cogs.AnimeManga", "Cogs.WrittenStuff", "Cogs.GameAPIs", "Cogs.Games", "Cogs.MongoDB",
         #  "Cogs.HelpInfo", 
-        "Cogs.Socials", "Cogs.OnlyMods", "Cogs.Nasa", "Cogs.Movies", "Cogs.Misc", "Cogs.Images"]
+        "Cogs.Socials", "Cogs.OnlyMods", "Cogs.Nasa", "Cogs.Movies", "Cogs.Misc", "Cogs.Images", "Cogs.Google"]
 
-Cls = MongoClient(os.getenv("MONGODB_URL"))
+DToken = os.environ["DISCORD_TOKEN_TIA"]
+
+Cls = MongoClient(os.environ["MONGODB_URL"])
 DbM = Cls["CBot"]
 ColT = DbM["SerTwo"]
 AQd = DbM["Daily"]
 Rdt = DbM["Reddit"]
 
-GClient = os.getenv("GIPHY_KEY")
+GClient = os.environ["GIPHY_KEY"]
 # GApi = giphy_client.DefaultApi()
 
-CClient = {"X-CMC_PRO_API_KEY": os.getenv("COINBASE_KEY")}
+CClient = {"X-CMC_PRO_API_KEY": os.environ["COINBASE_KEY"]}
 
-NClient = {"country": "us", "apiKey": os.getenv("NEWS_KEY")}
+NClient = {"country": "us", "apiKey": os.environ["NEWS_KEY"]}
 
 # GiClient = GoogleImagesSearch(os.getenv("GCS_KEY"), os.getenv("CX_ID"))
+def MalRefresher():
+    if( (time.time() - float(os.environ["MAL_LAST_REFRESH"])) >= int(os.environ["MAL_REFRESH_TIME"]) ):
+        MClient.refresh_bearer_token(client_id=os.environ["MAL_ID"], client_secret=os.environ["MAL_SECRET"], refresh_token=os.environ["MAL_REFRESH_TOKEN"])
+        os.environ["MAL_LAST_REFRESH"] = str(time.time())
+        dotenv.set_key(env, "MAL_LAST_REFRESH", os.environ["MAL_LAST_REFRESH"])
+        os.environ["MAL_ACCESS_TOKEN"] = MClient._bearer_token
+        dotenv.set_key(env, "MAL_ACCESS_TOKEN", os.environ["MAL_ACCESS_TOKEN"])
+        os.environ["MAL_REFRESH_TOKEN"] = MClient.refresh_token
+        dotenv.set_key(env, "MAL_REFRESH_TOKEN", os.environ["MAL_REFRESH_TOKEN"])
 
-# MClient = malclient.Client()
-# MClient.init(access_token=os.getenv("MAL_ACCESS_TOKEN"))
-# MClient.refresh_bearer_token(client_id=os.getenv("MAL_ID"), client_secret=os.getenv("MAL_SECRET"), refresh_token=os.getenv("MAL_REFRESH_TOKEN"))
+MClient = malclient.Client(client_id=os.environ["MAL_ID"], access_token=os.environ["MAL_ACCESS_TOKEN"], refresh_token=os.environ["MAL_REFRESH_TOKEN"], nsfw=True)
+MalRefresher()
+MALsearch = malclient.Fields(title=True, id=True, media_type=True)
 
-PClient = {"Authorization": os.getenv("PUBG_KEY"), "accept": "application/vnd.api+json"}
+PClient = {"Authorization": os.environ["PUBG_KEY"], "accept": "application/vnd.api+json"}
 
-FClient = {"Authorization": os.getenv("FORTNITE_KEY")}
+FClient = {"Authorization": os.environ["FORTNITE_KEY"]}
 
 # twitter = tweepy.OAuthHandler(os.getenv("TWITTER_KEY"), os.getenv("TWITTER_SECRET"))
 # twitter.set_access_token(os.getenv("TWITTER_ACCESS_TOKEN"), os.getenv("TWITTER_ACCESS_SECRET"))
 # Twitter = tweepy.API(twitter)
 
-Reddit = praw.Reddit(client_id=os.getenv("REDDIT_ID"), client_secret=os.getenv("REDDIT_SECRET"), user_agent="ZBot by u/Kamlin333", check_for_async=False)
+Reddit = praw.Reddit(client_id=os.environ["REDDIT_ID"], client_secret=os.environ["REDDIT_SECRET"], user_agent="ZBot by u/Kamlin333", check_for_async=False)
 
 # Covid = COVID19Py.COVID19()
 
-YClient = pyyoutube.Api(api_key=os.getenv("YOUTUBE_KEY"))
+# YClient = pyyoutube.Api(api_key=os.environ["YOUTUBE_KEY"])
 
-# THelix = twitch.Helix(os.getenv("TWITCH_ID"), os.getenv("TWITCH_SECRET"), use_cache=True, cache_duration=datetime.timedelta(minutes=3))
+# THelix = twitch.TwitchHelix(os.getenv("TWITCH_ID"), os.getenv("TWITCH_SECRET"), use_cache=True, cache_duration=datetime.timedelta(minutes=3))
 
 IMClient = imdb.IMDb()
 
-OClient = OssapiV1(os.getenv("OSU_KEY"))
-
+OClient = OssapiV1(os.environ["OSU_KEY"])
 
 # RLox = Roblox(os.getenv("ROBLOX_SECRET"))
 
@@ -79,7 +94,7 @@ OClient = OssapiV1(os.getenv("OSU_KEY"))
 
 RemoveExtra = lambda listRm, val: [value for value in listRm if value != val]
 
-GetVidDuration = lambda VidId: pafy.new(f"https://www.youtube.com/watch?v={VidId}").duration
+# GetVidDuration = lambda VidId: pafy.new(f"https://www.youtube.com/watch?v={VidId}").duration
 
 async def SendWait(ctx:commands.Context, Notice:str) -> None: await ctx.send(embed=discord.Embed(title=Notice))
 
@@ -362,6 +377,10 @@ class Ignore(commands.CheckFailure): pass
 def ChDev(ctx:commands.Context) -> bool:
     if ctx.author.id == 443986051371892746: return True
     raise Ignore("Ignore")
+
+def RefreshMAL(ctx:commands.Context) -> bool:
+    MalRefresher()
+    return True
 
 
 class IsNSFW(commands.CheckFailure): pass

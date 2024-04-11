@@ -79,7 +79,7 @@ class MainEvents(commands.Cog):
             await self.DClient.StaffChannel.send(self.DClient.Me.mention)
             await self.DClient.StaffChannel.send(f'In {ctx.command} ({ctx.message.content}): {error}')
             return
-    # @tasks.loop(seconds=TimeTillMidnight())
+    # # @tasks.loop(seconds=TimeTillMidnight())
     # async def SendAPODDaily(self):
     #     print("Sending APOD...")
     #     # StaffChannel = self.DClient.get_channel(795080325020909598)

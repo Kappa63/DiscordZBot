@@ -1,10 +1,10 @@
 import discord
 from discord.ext import commands
-# from Setup import Ignore, IsBot
+# from Setup import Ignore, 
 # import dbl
-from dotenv import load_dotenv
-import os
-from Setup import Cogs
+# from dotenv import load_dotenv
+# import os
+from Setup import Cogs, DToken, IsBot, Ignore
 # import random
 # import requests
 # import asyncio
@@ -12,7 +12,7 @@ from Setup import Cogs
 # Doing = ["Playing With The Laws Of Physics", "Getting Tortured", "Just Vibin'", "Playing With My Toes",
 #          "Playing Chess With God", "Playing With Leona", "Yeeting People"]
 
-load_dotenv()
+# load_dotenv()
 
 class DClient(commands.Bot):
     StaffChannel = None
@@ -63,15 +63,7 @@ class DClient(commands.Bot):
 
 # TClient = dbl.client.DBLClient(bot=DClient, token=os.getenv("DBL_TOKEN"), autopost=True)
 
-# @DClient.check
-# async def ChBot(ctx):
-#     if ctx.author.bot: raise IsBot("Bot")
-#     return True
 
-# @DClient.check
-# async def ChDM(ctx):
-#     if ctx.guild: return True
-#     raise Ignore("Ignore")
 
 #_ @DClient.check
 #_ async def ChModDown(ctx):
@@ -87,4 +79,14 @@ class DClient(commands.Bot):
 
 BotClient = DClient(Cogs=Cogs)
 
-BotClient.run(os.getenv("DISCORD_TOKEN_TIA"))
+@BotClient.check
+async def ChBot(ctx):
+    if ctx.author.bot: raise IsBot("Bot")
+    return True
+
+@BotClient.check
+async def ChDM(ctx):
+    if ctx.guild: return True
+    raise Ignore("Ignore")
+
+BotClient.run(DToken)
