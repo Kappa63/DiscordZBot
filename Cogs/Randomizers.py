@@ -19,9 +19,12 @@ class Randomizers(commands.Cog):
     @app_commands.command(name="roll", description="Roll a Dice.")
     @app_commands.checks.cooldown(2, 1)
     async def RollTheDice(self, ctx:discord.Interaction) -> None:
-        DiceFaces = {1: "https://i.imgur.com/A3winYh.png", 2: "https://i.imgur.com/JFuawqi.png",
-                     3: "https://i.imgur.com/2tufStP.png", 4: "https://i.imgur.com/GdtEPw4.png",
-                     5: "https://i.imgur.com/7hgCUOq.png", 6: "https://i.imgur.com/5iyDeF1.png"}
+        # DiceFaces = {1: "https://i.imgur.com/A3winYh.png", 2: "https://i.imgur.com/JFuawqi.png",
+        #              3: "https://i.imgur.com/2tufStP.png", 4: "https://i.imgur.com/GdtEPw4.png",
+        #              5: "https://i.imgur.com/7hgCUOq.png", 6: "https://i.imgur.com/5iyDeF1.png"}
+        DiceFaces = {1: "https://i.imgur.com/hHO0UrI.png", 2: "https://i.imgur.com/pg5M3TR.png",
+                     3: "https://i.imgur.com/ToNk0YB.png", 4: "https://i.imgur.com/QvcZzRQ.png",
+                     5: "https://i.imgur.com/6LkxfKL.png", 6: "https://i.imgur.com/vBRUNQO.png"}
         DiceRolls = {1: "One", 2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six"}
         FaceNumber = random.randint(1, 6)
         DEm = discord.Embed(title="Dice Roll", description=f"**The Dice Rolled a:** *{FaceNumber} ({DiceRolls[FaceNumber]})*", color=0xFAC62D)
