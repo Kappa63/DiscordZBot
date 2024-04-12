@@ -7,7 +7,7 @@ from Setup import SendWait, ChNSFW
 import asyncio
 import random
 import rule34
-from Customs.Navigators import ReactionNavigator as Navigator
+from Customs.Navigators import ButtonNavigator as Navigator
 
 def MakeEmbed(Rule, Total:int=0, RuleNum:int = 0, Type:str="R") -> discord.Embed:
     Tags = ", ".join(Rule.tags)[0:253]
@@ -24,12 +24,15 @@ class Rule34(commands.Cog):
     def __init__(self, DClient:CBotDClient) -> None:
         self.DClient = DClient
 
-    @commands.hybrid_group(name="rule34", aliases=["r34"], invoke_without_command=True, description="For all you Kinky Bastards.")
+    #, aliases=["r34"]
+    # @commands.check(ChNSFW)
+    Rule34Slashes = app_commands.Group(name="rule34", description="Main Command Group for Rule34.", nsfw=True)
+    
+    @Rule34Slashes.command(name="get", description="For all you Kinky Bastards.",)
     @app_commands.rename(srch="search")
     @app_commands.describe(srch="Degenerate Search Term")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.check(ChNSFW)
-    async def GetRule34(self, ctx:commands.Context, *, srch:str) -> None:
+    @app_commands.checks.cooldown(1, 2)
+    async def GetRule34(self, ctx:discord.Interaction, srch:str) -> None:
         args = srch.split(" ")
         if not args: await SendWait(ctx, "No arguments :no_mouth:"); return
         try:
@@ -39,19 +42,19 @@ class Rule34(commands.Cog):
             else: Rule34Choices = await Rule34.getImages(f'{"_".join(args).lower()}')
             ShowRule = random.choice(Rule34Choices)
         except TypeError: await SendWait(ctx, "Nothing Found :no_mouth:"); return
-        await ctx.send(embed=MakeEmbed(ShowRule))
+        await ctx.response.send_message(embed=MakeEmbed(ShowRule))
 
     # @commands.check(ChVote)
     # @commands.cooldown(1, 1, commands.BucketType.user)
-    @GetRule34.command(name="surf", description="For all you Even Kinkier Bastards.")
+    # @commands.check(ChNSFW)
+    @Rule34Slashes.command(name="surf", description="For all you Even Kinkier Bastards.")
     @app_commands.rename(srch="search")
     @app_commands.describe(srch="Degenerate Search Term")
-    @commands.cooldown(1, 4, commands.BucketType.user)
-    @commands.check(ChNSFW)
-    async def SurfRule34(self, ctx:commands.Context, *, srch:str) -> None:
+    @app_commands.checks.cooldown(1, 2)
+    async def SurfRule34(self, ctx:discord.Interaction, srch:str) -> None:
         args = srch.split(" ")
         if not args: await SendWait(ctx, "No arguments :no_mouth:"); return
-        await ctx.defer()
+        await ctx.response.defer()
         try:
             Rule34 = rule34.Rule34(asyncio.get_event_loop())
             if ctx.guild.id != 586940644153622550: 

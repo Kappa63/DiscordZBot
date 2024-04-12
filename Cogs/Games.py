@@ -1,10 +1,12 @@
 import discord
 from discord.ext import commands
 import requests
+from discord import app_commands
 import asyncio
 import random
 # import time
 from CBot import DClient as CBotDClient
+from Customs.UI.TicTacToe import TicTacToeView as TTTView
 import datetime
 # import chess
 import numpy as np
@@ -117,81 +119,85 @@ class Games(commands.Cog):
     def __init__(self, DClient:CBotDClient) -> None:
         self.DClient = DClient
 
-    @commands.command(name="sudoku")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def PlaySudoku(self, ctx:commands.Context, *args) -> None:
-        ChCHEm = lambda RcM, RuS: not RuS.bot and RcM.message == OriginalBoard and str(RcM.emoji) in ["👁️", "❌"]
+    # @commands.command(name="sudoku")
+    # @commands.cooldown(1, 2, commands.BucketType.user)
+    # async def PlaySudoku(self, ctx:commands.Context, *args) -> None:
+    #     ChCHEm = lambda RcM, RuS: not RuS.bot and RcM.message == OriginalBoard and str(RcM.emoji) in ["👁️", "❌"]
         
-        Difficulty = list(args)[0].lower() if args else "random"
-        RanChars = "abcdefghijklmnopqrstuvwxyz1234567890"
-        BoardName = "".join((random.choice(RanChars) for i in range(5)))
-        if Difficulty not in ["easy", "hard", "medium", "random"]: await SendWait(ctx, "Not valid difficulty :confused:"); return
-        SudokuBoard = requests.get(f"https://sugoku.onrender.com/board?difficulty={Difficulty}").json()["board"]
-        #- JSONboard = SudokuBoard.json()["board"]
-        OriginalBoard = await ctx.send(embed=SudokuBoardMaker("Sudoku", BoardName, SudokuBoard, Difficulty))
-        await OriginalBoard.add_reaction("👁️")
-        await OriginalBoard.add_reaction("❌")
-        try:
-            ReaEm = await self.DClient.wait_for("reaction_add", check=ChCHEm, timeout=3600)
-            await OriginalBoard.remove_reaction(ReaEm[0].emoji, ReaEm[1])
-            if ReaEm[0].emoji == "👁️":
-                SudokuSolver(SudokuBoard)
-                await ctx.send(embed=SudokuBoardMaker("Solution", BoardName, SudokuBoard, Difficulty))
-            await OriginalBoard.remove_reaction("👁️", self.DClient.user)
-            await OriginalBoard.remove_reaction("❌", self.DClient.user)
-        except asyncio.TimeoutError:
-            SudokuSolver(SudokuBoard)
-            await ctx.message.channel.send(embed=SudokuBoardMaker("Solution", BoardName, SudokuBoard, Difficulty))
+    #     Difficulty = list(args)[0].lower() if args else "random"
+    #     RanChars = "abcdefghijklmnopqrstuvwxyz1234567890"
+    #     BoardName = "".join((random.choice(RanChars) for i in range(5)))
+    #     if Difficulty not in ["easy", "hard", "medium", "random"]: await SendWait(ctx, "Not valid difficulty :confused:"); return
+    #     SudokuBoard = requests.get(f"https://sugoku.onrender.com/board?difficulty={Difficulty}").json()["board"]
+    #     #- JSONboard = SudokuBoard.json()["board"]
+    #     OriginalBoard = await ctx.response.send_message(embed=SudokuBoardMaker("Sudoku", BoardName, SudokuBoard, Difficulty))
+    #     await OriginalBoard.add_reaction("👁️")
+    #     await OriginalBoard.add_reaction("❌")
+    #     try:
+    #         ReaEm = await self.DClient.wait_for("reaction_add", check=ChCHEm, timeout=3600)
+    #         await OriginalBoard.remove_reaction(ReaEm[0].emoji, ReaEm[1])
+    #         if ReaEm[0].emoji == "👁️":
+    #             SudokuSolver(SudokuBoard)
+    #             await ctx.response.send_message(embed=SudokuBoardMaker("Solution", BoardName, SudokuBoard, Difficulty))
+    #         await OriginalBoard.remove_reaction("👁️", self.DClient.user)
+    #         await OriginalBoard.remove_reaction("❌", self.DClient.user)
+    #     except asyncio.TimeoutError:
+    #         SudokuSolver(SudokuBoard)
+    #         await ctx.message.channel.send(embed=SudokuBoardMaker("Solution", BoardName, SudokuBoard, Difficulty))
 
-    @commands.command(name="tictactoe", aliases=["ttt"], description="Start a Game of TicTacToe with Another User")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def PlayTTT(self, ctx:commands.Context) -> None:
-        def ChCHanS(MSg):
-            MesS = MSg.content.lower()
-            RsT = False
-            try:
-                if 0 < int(MSg.content) < 10:
-                    Position = int(MSg.content) - 1
-                    PlaceOnBoard = TTTGetForm(Position)
-                    if Table[PlaceOnBoard[0]][PlaceOnBoard[1]] not in ["x", "o"]: RsT = True
-            except ValueError:
-                if MesS in ["end", "endgame"]: RsT = True
-            return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT and MSg.author == Player
-
-        if len(ctx.message.mentions) > 0 and not ctx.message.mentions[0].bot:
+    @app_commands.command(name="tictactoe", description="Start a Game of TicTacToe with Another User.")
+    @app_commands.rename(usr="user")
+    @app_commands.describe(usr="@ User to Start Game Against")
+    @app_commands.checks.cooldown(1, 3)
+    async def PlayTTT(self, ctx:discord.Interaction, usr:discord.Member) -> None:
+        async def noP(pl, fin):
+            await ctx.edit_original_response(content=f"{pl.mention} did not Respond. Game Ended.", view=fin)
+        # def ChCHanS(MSg):
+        #     MesS = MSg.content.lower()
+        #     RsT = False
+        #     try:
+        #         if 0 < int(MSg.content) < 10:
+        #             Position = int(MSg.content) - 1
+        #             PlaceOnBoard = TTTGetForm(Position)
+        #             if Table[PlaceOnBoard[0]][PlaceOnBoard[1]] not in ["x", "o"]: RsT = True
+        #     except ValueError:
+        #         if MesS in ["end", "endgame"]: RsT = True
+        #     return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT and MSg.author == Player
+        # (len(ctx.message.mentions) > 0 and not ctx.message.mentions[0].bot) or 
+        if (usr and not usr.bot and usr.id != ctx.user.id):
             Table = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
-            Players = [ctx.message.author, ctx.message.mentions[0]]
+            Players = [ctx.user, usr] # ctx.message.mentions[0]
             PlayerAssign = {Players[0]: "x", Players[1]: "o"}
-            R = 1
-            Board = await ctx.send(embed=TTTBoardMaker(Table, Players[0], Players[1]))
-            while True:
-                if R == 10: await SendWait(ctx, "Its a DRAW!! :partying_face:"); return
-                if R % 2 == 0: Player = Players[1]
-                else: Player = Players[0]   
-                MentionTurn = await ctx.send(f"{Player.mention} Your turn. Please choose a cell number to play.")
-                try:
-                    if R > 1: await ResS.delete()
-                    ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=30)
-                    await MentionTurn.delete()
-                    # await Board.delete()
-                    LResS = ResS.content.lower()
-                    try:
-                        if int(ResS.content) < 10:
-                            Position = int(ResS.content) - 1
-                            PlaceOnBoard = TTTGetForm(Position)
-                            Table[PlaceOnBoard[0]][PlaceOnBoard[1]] = PlayerAssign[ResS.author]
-                            if TTTWinCheck(Table):
-                                await Board.edit(embed=TTTBoardMaker(Table, Players[0], Players[1], f"`{Player.display_name}` WINS"))
-                                await SendWait(ctx, f"`{Player.display_name}` Wins!! :partying_face:")
-                                return
-                            await Board.edit(embed=TTTBoardMaker(Table, Players[0], Players[1]))
-                    except ValueError:
-                        if LResS in ["end", "endgame"]: Board.edit(embed=TTTBoardMaker(Table, Players[0], Players[1], "ENDED")); return
-                except asyncio.TimeoutError:
-                    await ctx.send(embed=TTTBoardMaker(Table, Players[0], Players[1], f"`{Player.display_name}` DID NOT RESPOND"))
-                    await SendWait(ctx, f"`{Player.display_name}` did not play :slight_frown:!")
-                    return
-                R += 1
+            # R = 1
+            await ctx.response.send_message(content=f"{Players[0].mention}'s Turn", view=TTTView(Players[0], Players[1], noP)) # embed=TTTBoardMaker(Table, Players[0], Players[1])
+            # while True:
+            #     if R == 10: await SendWait(ctx, "Its a DRAW!! :partying_face:"); return
+            #     if R % 2 == 0: Player = Players[1]
+            #     else: Player = Players[0]   
+            #     MentionTurn = await ctx.response.send_message(f"{Player.mention} Your turn. Please choose a cell number to play.")
+            #     try:
+            #         if R > 1: await ResS.delete()
+            #         ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=30)
+            #         await MentionTurn.delete()
+            #         # await Board.delete()
+            #         LResS = ResS.content.lower()
+            #         try:
+            #             if int(ResS.content) < 10:
+            #                 Position = int(ResS.content) - 1
+            #                 PlaceOnBoard = TTTGetForm(Position)
+            #                 Table[PlaceOnBoard[0]][PlaceOnBoard[1]] = PlayerAssign[ResS.author]
+            #                 if TTTWinCheck(Table):
+            #                     await Board.edit(embed=TTTBoardMaker(Table, Players[0], Players[1], f"`{Player.display_name}` WINS"))
+            #                     await SendWait(ctx, f"`{Player.display_name}` Wins!! :partying_face:")
+            #                     return
+            #                 await Board.edit(embed=TTTBoardMaker(Table, Players[0], Players[1]))
+            #         except ValueError:
+            #             if LResS in ["end", "endgame"]: Board.edit(embed=TTTBoardMaker(Table, Players[0], Players[1], "ENDED")); return
+            #     except asyncio.TimeoutError:
+            #         await ctx.response.send_message(embed=TTTBoardMaker(Table, Players[0], Players[1], f"`{Player.display_name}` DID NOT RESPOND"))
+            #         await SendWait(ctx, f"`{Player.display_name}` did not play :slight_frown:!")
+            #         return
+            #     R += 1
         else: await SendWait(ctx, "No second player mentioned or Mentioned a bot :slight_frown:!")
 
     # @commands.command(name="chess")
@@ -254,7 +260,7 @@ class Games(commands.Cog):
     #     print(GetCPTD)
     #     CEm = discord.Embed(title=GetCPTD["title"], description=f'[Daily Puzzle]({GetCPTD["url"]}) from [Chess.com](https://www.chess.com/)', color=0x6C9D41)
     #     CEm.set_image(url=GetCPTD["image"])
-    #     await ctx.send(embed=CEm)
+    #     await ctx.response.send_message(embed=CEm)
 
     # @commands.group(name="cptddaily", invoke_without_command=True)
     # @commands.cooldown(1, 1, commands.BucketType.user)

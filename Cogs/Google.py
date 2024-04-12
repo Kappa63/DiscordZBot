@@ -5,8 +5,8 @@ import requests
 from discord import app_commands
 from CBot import DClient as CBotDClient
 # import asyncio
-from Customs.Navigators import ReactionNavigator as Navigator
-# from googlesearch import search
+from Customs.Navigators import ButtonNavigator as Navigator
+from googlesearch import search
 from bs4 import BeautifulSoup
 import re
 # import numpy as np
@@ -15,24 +15,28 @@ class Google(commands.Cog):
     def __init__(self, DClient:CBotDClient) -> None:
         self.DClient = DClient
 
-    # @commands.command(name="google")
-    # @commands.cooldown(1, 2, commands.BucketType.user)
-    # async def GoogleThat(self, ctx, *args):
-    #     if not args: await SendWait(ctx, "No search argument :woozy_face:"); return
-    #     await SendWait(ctx, ":desktop: Getting Results...")
+    @app_commands.command(name="google", description="Give Something a Quick Search.")
+    @app_commands.rename(srch="search")
+    @app_commands.describe(srch="Search Text to Google")
+    @app_commands.checks.cooldown(1, 3)
+    async def GoogleThat(self, ctx:discord.Interaction, srch:str) -> None:
+        if not srch: await SendWait(ctx, "No search argument :woozy_face:"); return
+        # await SendWait(ctx, ":desktop: Getting Results...")
+        await ctx.response.defer(thinking=True)
 
-    #     SearchResults = []
-    #     ResultNum = 1
-    #     ResultTotal = 20
-    #     Colors = [0x4285F4, 0xEA4335, 0xFBBC05, 0x34A853] * 5
-    #     for Result in search(" ".join(args), tld="com", num=20, pause=2, stop=20):
-    #         IEm = discord.Embed(title=f'Google Results for **`{" ".join(args)}`**', description=f"Result: [{ResultNum}/{ResultTotal}]", color=Colors.pop(0))
-    #         SearchResults.append((IEm, Result))
-    #         ResultNum += 1
-    #     ResultNum = 0
-    #     EmbededResults = [i[0] for i in SearchResults]
-    #     URLResults = [i[1] for i in SearchResults]
-    #     await Navigator(ctx, EmbededResults, Type="No #", EmbedAndContent=True, ContItems=URLResults)
+        SearchResults = []
+        ResultNum = 1
+        ResultTotal = 20
+        Colors = [0x4285F4, 0xEA4335, 0xFBBC05, 0x34A853] * 5
+        for Result in search(srch, num_results=19):
+            # print(ResultNum)
+            IEm = discord.Embed(title=f'Google Results for **`{srch}`**', description=f"Result: [{ResultNum}/{ResultTotal}]", color=Colors.pop(0))
+            SearchResults.append((IEm, Result))
+            ResultNum += 1
+        ResultNum = 0
+        EmbededResults = [i[0] for i in SearchResults]
+        URLResults = [i[1] for i in SearchResults]
+        await Navigator(ctx, EmbededResults, Type="No #", EmbedAndContent=True, ContItems=URLResults).autoRun()
  
     # @commands.command(name="googleimagesearch", aliases=["gis", "imagesearch"], description="Look for an Image Relating to the Search.")
     # @app_commands.rename(srch="search")
@@ -55,12 +59,13 @@ class Google(commands.Cog):
     #     if not ImageResults: await SendWait(ctx, "No Images Found..."); return
     #     await Navigator(ctx, ImageResults, Type="No #").autoRun()
 
-    @commands.hybrid_command(name="weather", description="Find Weather Data in Places.")
+    @app_commands.command(name="weather", description="Find Weather Data in Places.")
     @app_commands.describe(place="Place to Check Weather")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def GetTemp(self, ctx:commands.Context, *, place:str) -> None:
+    @app_commands.checks.cooldown(1, 1)
+    async def GetTemp(self, ctx:discord.Interaction, place:str) -> None:
         if not place: await SendWait(ctx, "No search argument :woozy_face:"); return
-        await SendWait(ctx, ":white_sun_small_cloud: Getting Weather...")
+        # await SendWait(ctx, ":white_sun_small_cloud: Getting Weather...")
+        await ctx.response.defer(thinking=True)
         RWeather = requests.get(f'https://google.com/search?q=weather+in+{place.replace(" ", "+")}')
         try:
             Soup = BeautifulSoup(RWeather.content, "html.parser")
@@ -75,7 +80,7 @@ class Google(commands.Cog):
             WEm.add_field(name="Time:", value=f"**`{Time}`**", inline=False)
             WEm.add_field(name="Temperature:", value=f"**`{Temp} // {TempCelsius}`**", inline=False)
         except AttributeError: await SendWait(ctx, "Failed... :woozy_face:"); return
-        await ctx.send(embed=WEm)
+        await ctx.followup.send(embed=WEm)
 
     async def cog_load(self) -> None:
         print(f"{self.__class__.__name__} loaded!")

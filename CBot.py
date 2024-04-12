@@ -18,10 +18,10 @@ class DClient(commands.Bot):
     StaffChannel = None
     Me = None
     def __init__(self, Cogs) -> None:
-        REqInt = discord.Intents.all()
+        REqInt = discord.Intents.default()
         REqInt.members = True
         self.LoadedCogs = Cogs
-        super().__init__(case_insensitive=True, command_prefix=["Z","z"], intents=REqInt)
+        super().__init__(case_insensitive=True, command_prefix=["Z","z"], intents=REqInt, help_command=None)
    
     async def setup_hook(self) -> None:
         for Cog in self.LoadedCogs: 
@@ -84,9 +84,9 @@ async def ChBot(ctx):
     if ctx.author.bot: raise IsBot("Bot")
     return True
 
-@BotClient.check
-async def ChDM(ctx):
-    if ctx.guild: return True
-    raise Ignore("Ignore")
+# @BotClient.check
+# async def ChDM(ctx):
+#     if ctx.guild: return True
+#     raise Ignore("Ignore")
 
 BotClient.run(DToken)

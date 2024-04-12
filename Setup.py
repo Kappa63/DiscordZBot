@@ -29,9 +29,9 @@ import concurrent.futures as Cf
 env = dotenv.find_dotenv()
 dotenv.load_dotenv(env)
 
-Cogs = ["Cogs.Randomizers", "Cogs.MainEvents", "Cogs.Rule34", "Cogs.AnimeManga", "Cogs.WrittenStuff", "Cogs.GameAPIs", "Cogs.Games", "Cogs.MongoDB",
-        #  "Cogs.HelpInfo", 
-        "Cogs.Socials", "Cogs.OnlyMods", "Cogs.Nasa", "Cogs.Movies", "Cogs.Misc", "Cogs.Images", "Cogs.Google"]
+Cogs = ["Cogs.Randomizers", "Cogs.MainEvents", "Cogs.Rule34", "Cogs.AnimeManga", "Cogs.WrittenStuff", "Cogs.GameAPIs", "Cogs.Games",
+        #  "Cogs.HelpInfo", "Cogs.MongoDB",  "Cogs.Misc",
+        "Cogs.Socials", "Cogs.OnlyMods", "Cogs.Nasa", "Cogs.Movies", "Cogs.Images", "Cogs.Google"]
 
 DToken = os.environ["DISCORD_TOKEN_TIA"]
 
@@ -96,7 +96,7 @@ RemoveExtra = lambda listRm, val: [value for value in listRm if value != val]
 
 # GetVidDuration = lambda VidId: pafy.new(f"https://www.youtube.com/watch?v={VidId}").duration
 
-async def SendWait(ctx:commands.Context, Notice:str) -> None: await ctx.send(embed=discord.Embed(title=Notice))
+async def SendWait(ctx:discord.Interaction, Notice:str) -> None: await ctx.followup.send(embed=discord.Embed(title=Notice))
 
 def TimeTillMidnight() -> int:
     Now = datetime.datetime.now()

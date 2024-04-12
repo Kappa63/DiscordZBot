@@ -4,7 +4,8 @@ from discord.ext import commands
 # from Setup import ChDev, SendWait, AQd
 from Setup import ChDev
 from CBot import DClient as CBotDClient
-from UI.Buttons import EditButton
+from Customs.UI.TicTacToe import TicTacToeView as TTT
+# from UI.Buttons import EditButton
 # import random
 # import requests
 
@@ -15,14 +16,15 @@ class OnlyMods(commands.Cog):
     def __init__(self, DClient:CBotDClient) -> None:
         self.DClient = DClient
 
-    @commands.command(name="status")
-    async def BotStatus(self, ctx:commands.Context) -> None:
+    @app_commands.command(name="status", description="Revealse the Current Status of ZBot.")
+    @app_commands.checks.cooldown(1, 1)
+    async def BotStatus(self, ctx:discord.Interaction) -> None:
         SEm = discord.Embed(title="Current ZBot Status", color=0x000000)
         SEm.add_field(name="Guilds in: ", value=len(self.DClient.guilds), inline=False)
         SEm.add_field(name="Latency: ", value=self.DClient.latency * 100, inline=False)
         SEm.add_field(name="ShardCount: ", value=self.DClient.shard_count, inline=False)
         SEm.add_field(name="Loaded Cogs: ", value="\n".join(self.DClient.LoadedCogs), inline=False)
-        await ctx.send(embed=SEm)
+        await ctx.response.send_message(embed=SEm)
 
     @commands.command(name="sync")
     @commands.check(ChDev)
@@ -33,14 +35,14 @@ class OnlyMods(commands.Cog):
         except Exception as e:
             print(e)
 
-    @commands.command(name="test") 
-    async def button(self, ctx:commands.Context) -> None:
+    # @commands.command(name="test") 
+    # async def button(self, ctx:commands.Context) -> None:
         # print(type(ctx))
         # view = discord.ui.View() # Establish an instance of the discord.ui.View class
         # style = discord.ButtonStyle.blurple  # The button will be gray in color
         # item = discord.ui.Button(style=style, label="Read the docs!")  # Create an item to pass into the view class.
         # view.add_item(item=item)  # Add that item into the view class
-        await ctx.send("This message has buttons!", view=EditButton())
+        # await ctx.send("This message has buttons!", view=EditButton())
             
     # @commands.command(name="embed")
     # @commands.check(ChDev)
@@ -60,9 +62,9 @@ class OnlyMods(commands.Cog):
     @app_commands.describe(d="Description Text of the Embed")
     @app_commands.rename(c="color")
     @app_commands.describe(c="Embed's Bar Color in HEX")
+    @app_commands.checks.cooldown(1, 1)
     async def slash_Embedder(self, ctx:discord.Interaction, t:str, d:str, c:str) -> None:
         await ctx.response.send_message(embed=discord.Embed(title=t, description=d, color=int(c, 16)))
-
 
     @commands.command(name="reloadall")
     @commands.check(ChDev)

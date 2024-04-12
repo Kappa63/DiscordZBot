@@ -56,7 +56,7 @@ class MongoDB(commands.Cog):
     @commands.check(ChSer)
     @app_commands.describe(phrase="Phrase to Add to Counter")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def AWord(self, ctx:commands.Context, phrase:str) -> None:
+    async def AWord(self, ctx:commands.Context, phrase:str=None) -> None:
         print(phrase, len(phrase))
         Word = re.sub(r"\.", "\u2024", phrase)
         Word = re.sub(r"\$", "\u00A4", Word)
@@ -74,7 +74,7 @@ class MongoDB(commands.Cog):
     @commands.check(ChSer)
     @app_commands.describe(phrase="Phrase to Remove from Counter")
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def RWord(self, ctx:commands.Context, phrase:str) -> None:
+    async def RWord(self, ctx:commands.Context, phrase:str=None) -> None:
         Word = re.sub(r"\.", "\u2024", phrase)
         Word = re.sub(r"\$", "\u00A4", Word)
         Get = ColT.find({"IDg":str(ctx.guild.id)})[0]

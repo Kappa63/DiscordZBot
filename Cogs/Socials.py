@@ -12,9 +12,9 @@ from Setup import SendWait, Threader, Reddit, Rdt
 # from twitch.helix.resources import StreamNotFound
 # import requests
 # import tweepy
-from Customs.Navigators import ReactionNavigator as Navigator
+from Customs.Navigators import ButtonNavigator as Navigator
 # import pyimgbox
-import inspect
+# import inspect
 import asyncio
 import datetime
 import numpy as np
@@ -186,7 +186,7 @@ class Socials(commands.Cog):
     #         ThEm.set_thumbnail(url=HImg)
     #         ThEm.add_field(name = "Total Views: ", value = f'{TViews:,}', inline=False)
     #         if IsLive: ThEm.add_field(name = ":red_circle: CURRENTLY LIVE :red_circle:", value="\u200b", inline=False)
-    #         await ctx.send(embed = ThEm)
+    #         await ctx.response.send_message(embed = ThEm)
     #     except AttributeError: await SendWait(ctx, "User Not Found")
 
     # @TTwitch.command(name="stream")
@@ -216,7 +216,7 @@ class Socials(commands.Cog):
     #         ThEm.set_image(url=ThumbnailShot)
     #         ThEm.add_field(name = "Live Viewers: ", value = f'{CurrentViewers:,}')
     #         ThEm.add_field(name = "Started At: ", value = StartTime)
-    #         await ctx.send(embed = ThEm)
+    #         await ctx.response.send_message(embed = ThEm)
     #     except Exception as error:
     #         if error.__class__ == StreamNotFound: await SendWait(ctx, "Streamer is not currently LIVE")
     #         if error.__class__ == AttributeError: await SendWait(ctx, "User Not Found")
@@ -275,7 +275,7 @@ class Socials(commands.Cog):
     #                 SrchTw.append(TWuser)
     #             if not C: await SendWait(ctx, "Not Found :expressionless:"); return
     #             STEm.set_footer(text='Choose a number to open Twitter User Profile. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
-    #             TwSent = await ctx.send(embed=STEm)
+    #             TwSent = await ctx.response.send_message(embed=STEm)
     #             try:
     #                 ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=20)
     #                 LResS = ResS.content.lower()
@@ -320,7 +320,7 @@ class Socials(commands.Cog):
     #     for Trend in Trends[0]["trends"]:
     #         if Trend["tweet_volume"]: TEm.add_field(name=Trend["name"], value=f'{Trend["tweet_volume"]:,} Tweets', inline=False)
     #         else: TEm.add_field(name=Trend["name"], value=f"\u200b", inline=False)
-    #     await ctx.send(embed=TEm)
+    #     await ctx.response.send_message(embed=TEm)
 
     # @commands.command(aliases=["youtube", "yt"])
     # @commands.cooldown(1, 2, commands.BucketType.user)
@@ -350,7 +350,7 @@ class Socials(commands.Cog):
     #                 SrchYT.append(ChannelGetter)
     #             if C == 0: await SendWait(ctx, "Nothing Found :woozy_face:"); return
     #             SYem.set_footer(text='Choose a number to open Youtube Channel. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
-    #             YTSent = await ctx.send(embed=SYem)
+    #             YTSent = await ctx.response.send_message(embed=SYem)
     #             try:
     #                 ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=20)
     #                 LResS = ResS.content.lower()
@@ -387,38 +387,34 @@ class Socials(commands.Cog):
     #     YTEs = [YoutubebedMaker(Vid.contentDetails.upload.videoId, YTinfo.items[0], VNum, len(YTVids.items)) for VNum, Vid in enumerate(YTVids.items)]
     #     await Navigator(ctx, YTEs, Main=True, MainBed=YEm)
 
-    @commands.hybrid_group(name="reddit", invoke_without_command=True, fallback="get", description="Get a Post from a Subreddits's HOT Posts.")
+    RedditSlashes = app_commands.Group(name="reddit", description="Main Command Group for Reddit.")
+
+    @RedditSlashes.command(name="get", description="Get a Post from a Subreddits's HOT Posts.")
     @app_commands.rename(sub="subreddit")
     @app_commands.describe(sub="Name of Subreddit")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def RedditRand(self, ctx:commands.Context, sub:str) -> None:
-        if not sub: await ctx.send("No arguments :no_mouth:"); return
+    @app_commands.checks.cooldown(1, 2)
+    async def RedditRand(self, ctx:discord.Interaction, sub:str) -> None:
+        if not sub: await SendWait("No arguments :no_mouth:"); return
         args = sub[2:] if sub.startswith("r/") else sub
+        await ctx.response.defer(thinking=True)
         if CheckSub(args):
-            await SendWait(ctx, ":mobile_phone: Finding Post...")
             Post = [i for i in list(Reddit.subreddit(args).hot()) if not i.stickied]
-            if not Post: await ctx.send("No posts on that subreddit :no_mouth:"); return
+            if not Post: await ctx.followup.send("No posts on that subreddit :no_mouth:"); return
             SubCpoS = random.choice(Post)
             Nsfwcheck=ctx.channel.is_nsfw()
-            await ctx.send(embed=RedditbedMaker(SubCpoS, args, Nsfwcheck))
-        else: await ctx.send("Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)")
+            await ctx.followup.send(embed=RedditbedMaker(SubCpoS, args, Nsfwcheck))
+        else: await ctx.followup.send("Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)")
 
-    @RedditRand.command(name="surf", description="Navigate a Subreddit on Discord.")
-    @app_commands.rename(sub="subreddit")
-    @app_commands.describe(sub="Name of Subreddit")
-    @commands.cooldown(1, 4, commands.BucketType.user)
-    async def RedditNav(self, ctx:commands.Context, sub:str) -> None:
+    async def RedditNav(self, ctx:discord.Interaction, sub:str, ctp:str) -> None:
         ChCHEmCH = lambda RcM, RuS: not RuS.bot and RcM.message == KraPosS and str(RcM.emoji) in ["🔝", "📈", "🔥", "📝", "❌"]
         ChCHEmCHT = lambda RcM, RuS: not RuS.bot and RcM.message == KraPosS and str(RcM.emoji) in ["🗓️", "🌍", "📅", "❌"]
         Embeder = lambda i,*x: [RedditbedMaker(P, Name, Nsfchannel=Nsfwcheck, Type="S", PostNum=i+PNum, TotalPosts=TotalPosts) for PNum, P in enumerate(x)]
 
-        if not sub: await SendWait(ctx, "No arguments :no_mouth:")
-        await ctx.defer()
-        args = sub[2:] if sub.startswith("r/") else sub
-        if not CheckSub(args) and not inspect.stack()[1].function == "__call__": await SendWait(ctx, "Sub doesn't exist or private :expressionless:"); return
+        args = sub
+        if not CheckSub(args) and not ctp == "c2": await SendWait(ctx, "Sub doesn't exist or private :expressionless:"); return
         ebd = discord.Embed(title="How would you like to sort the subreddit?", description="🔝 to sort by top.\n📈 to sort by rising.\n🔥 to sort by hot.\n📝 to sort by new.\n❌ to cancel")
         ebd.set_footer(text="This timesout in 10s")
-        KraPosS = await ctx.send(embed=ebd)
+        KraPosS = await ctx.followup.send(embed=ebd)
         await KraPosS.add_reaction("🔝")
         await KraPosS.add_reaction("📈")
         await KraPosS.add_reaction("🔥")
@@ -474,13 +470,24 @@ class Socials(commands.Cog):
         PostEms = sum(Thread, [])
         await Navigator(ctx, PostEms).autoRun()
 
-    @commands.hybrid_command(name="redditor", description="View a Redditors Profile.")
+    @RedditSlashes.command(name="surf", description="Navigate a Subreddit on Discord.")
+    @app_commands.rename(sub="subreddit")
+    @app_commands.describe(sub="Name of Subreddit")
+    @app_commands.checks.cooldown(1, 4)
+    async def singleSubNav(self, ctx:discord.Interaction, sub:str) -> None:
+        if not sub: await SendWait(ctx, "No arguments :no_mouth:")
+        args = sub[2:] if sub.startswith("r/") else sub
+        await ctx.response.defer(thinking=True)
+        await self.RedditNav(ctx, args, "c1")
+
+    @app_commands.command(name="redditor", description="View a Redditors Profile.")
     @app_commands.rename(rdtr="redditor")
     @app_commands.describe(rdtr="Name of Redditor")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def GetRedditor(self, ctx:commands.Context, rdtr:str) -> None:
+    @app_commands.checks.cooldown(1, 2)
+    async def GetRedditor(self, ctx:discord.Interaction, rdtr:str) -> None:
         if not rdtr: await SendWait(ctx, "No arguments :no_mouth:"); return
         args = rdtr[2:] if rdtr.startswith("u/") else rdtr
+        await ctx.response.defer(thinking=True)
         try:
             User = Reddit.redditor(args)
             UEm = discord.Embed(title=f"u/{User.name}", description=User.subreddit["public_description"], color=0x8B0000)
@@ -495,51 +502,56 @@ class Socials(commands.Cog):
             PostEms = [RedditbedMaker(P, Name, Nsfchannel=Nsfwcheck, Type="S", PostNum=PNum, TotalPosts=TotalPosts) for PNum, P in enumerate(SubCpoS)]
             await Navigator(ctx, PostEms, Main=True, MainBed=UEm).autoRun()
         except NotFound: await SendWait(ctx, "Redditor Not Found :no_mouth:")
-            
-    @commands.hybrid_group(name="multireddit", aliases=["mltr"], invoke_without_command=True, fallback="get", description="Navigate a Multireddit on Discord.")
+
+    #aliases=["mltr"]
     # @commands.check(ChPatreonT2)
-    # @commands.check(ChMaxMultireddits)
+    # @commands.check(ChMaxMultireddits)        
+    MultiredditSlashes = app_commands.Group(name="multireddit", description="Main Command Group for MultiReddit.")
+
+    @MultiredditSlashes.command(name="surf", description="Navigate a Multireddit on Discord.")
     @app_commands.rename(mltr="multireddit")
     @app_commands.describe(mltr="Name of Multireddit")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def GetMultis(self, ctx:commands.Context, mltr:str) -> None:
+    @app_commands.checks.cooldown(1, 4)
+    async def GetMultis(self, ctx:discord.Interaction, mltr:str) -> None:
         if not mltr: await SendWait(ctx, "You forgot to add a Multireddit name"); return
-        if not Rdt.count_documents({"IDd": ctx.author.id}) > 0: await SendWait(ctx, "No Multireddits Found"); return
-        User = Rdt.find({"IDd": ctx.author.id})[0]
+        await ctx.response.defer(thinking=True)
+        if not Rdt.count_documents({"IDd": ctx.user.id}) > 0: await SendWait(ctx, "No Multireddits Found"); return
+        User = Rdt.find({"IDd": ctx.user.id})[0]
         if mltr in User and mltr not in ["IDd","_id"]:
             Subreddits = "+".join(User[mltr])
-            print(Subreddits)
-            await self.RedditNav(ctx, Subreddits)
+            await self.RedditNav(ctx, Subreddits, "c2")
         else: await SendWait(ctx, f"That Multireddit ({mltr}) doesn't exist")
 
-    @GetMultis.command(name="list", description="Lists your Multireddit and Contained Subreddits.")
     # @commands.check(ChPatreonT2)
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def ListMultis(self, ctx:commands.Context):
-        if not Rdt.count_documents({"IDd": ctx.author.id}): await SendWait(ctx, "No Multireddits Found"); return
-        User = Rdt.find({"IDd": ctx.author.id})[0]
-        MEm = discord.Embed(title=f"{ctx.author.display_name}'s MultiReddits", color=0x8B0000)
+    @MultiredditSlashes.command(name="list", description="Lists your Multireddit and Contained Subreddits.")
+    @app_commands.checks.cooldown(1, 2)
+    async def ListMultis(self, ctx:discord.Interaction):
+        await ctx.response.defer(thinking=True)
+        if not Rdt.count_documents({"IDd": ctx.user.id}): await SendWait(ctx, "No Multireddits Found"); return
+        User = Rdt.find({"IDd": ctx.user.id})[0]
+        MEm = discord.Embed(title=f"{ctx.user.display_name}'s MultiReddits", color=0x8B0000)
         for Multireddit in User:
             if Multireddit not in ["IDd", "_id"]: MEm.add_field(name=Multireddit, value=f'`{", ".join(User[Multireddit])}`')
-        await ctx.send(embed=MEm)
+        await ctx.followup.send(embed=MEm)
 
-    @GetMultis.command(name="create", description="Create a New Multireddit.")
     # @commands.check(ChPatreonT2)
     # @commands.check(ChMaxMultireddits)
+    @MultiredditSlashes.command(name="create", description="Create a New Multireddit.")
     @app_commands.rename(mltr="multireddit")
     @app_commands.describe(mltr="Name of Multireddit")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def CreateMulti(self, ctx:commands.Context, mltr:str) -> None:
+    @app_commands.checks.cooldown(1, 2)
+    async def CreateMulti(self, ctx:discord.Interaction, mltr:str) -> None:
         if not mltr: await SendWait(ctx, "No Arguments"); return
+        await ctx.response.defer(thinking=True)
         # ArgumentHandle = list(args)
         TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
         # TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
         TierLimit = 4
-        if not Rdt.count_documents({"IDd": ctx.author.id}):
-            Rdt.insert_one({"IDd": ctx.author.id, mltr: []})
+        if not Rdt.count_documents({"IDd": ctx.user.id}):
+            Rdt.insert_one({"IDd": ctx.user.id, mltr: []})
             await SendWait(ctx, f"Added the Multireddit ({mltr}), you can now add and remove subreddits from it.")  
             return
-        User = Rdt.find({"IDd": ctx.author.id})[0]
+        User = Rdt.find({"IDd": ctx.user.id})[0]
         if len(User) < TierLimit:
             #- for Multireddit in User:
             if mltr in User: await SendWait(ctx, f"Multireddit ({mltr}) Already Exists"); return
@@ -547,38 +559,40 @@ class Socials(commands.Cog):
             await SendWait(ctx, f"Added the Multireddit ({mltr}), you can now add and remove subreddits from it.")
         else: await SendWait(ctx, "You already have the maximum amount of Multireddits. You can use 'zmultireddit' to see your multireddits or check 'zpatreon' to know more about limits") 
 
-    @GetMultis.command(name="delete", aliases=["del"], description="Delete an Existing Multireddit.")
-    # @commands.check(ChPatreonT2)
+    # @commands.check(ChPatreonT2)  aliases=["del"]
+    @MultiredditSlashes.command(name="delete", description="Delete an Existing Multireddit.")
     @app_commands.rename(mltr="multireddit")
     @app_commands.describe(mltr="Name of Multireddit")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def DeleteMulti(self, ctx:commands.Context, mltr:str) -> None:
+    @app_commands.checks.cooldown(1, 2)
+    async def DeleteMulti(self, ctx:discord.Interaction, mltr:str) -> None:
         if not mltr: await SendWait(ctx, "No Arguments"); return
+        await ctx.response.defer(thinking=True)
         # ArgumentHandle = list(args)
-        if not Rdt.count_documents({"IDd": ctx.author.id}): await SendWait(ctx, "You don't have any Multireddits"); return
-        User = Rdt.find({"IDd": ctx.author.id})[0]
+        if not Rdt.count_documents({"IDd": ctx.user.id}): await SendWait(ctx, "You don't have any Multireddits"); return
+        User = Rdt.find({"IDd": ctx.user.id})[0]
         Multis = len(User) - 2
         #- for Multireddit in User:
         if mltr in User and mltr not in ["_id", "IDd"]:
-            if Multis == 1: Rdt.delete_one({"IDd": ctx.author.id})
+            if Multis == 1: Rdt.delete_one({"IDd": ctx.user.id})
             else: Rdt.update_one(User, {"$unset": {mltr: ""}})
             await SendWait(ctx, f"Deleted the Multireddit ({mltr}).")
             return
         else: await SendWait(ctx, "That Multireddit Doesn't Exist"); return
 
-    @GetMultis.command(name="add", description="Add Subreddits to Multireddit.")
     # @commands.check(ChPatreonT2)
     # @commands.check(ChMaxMultireddits)
+    @MultiredditSlashes.command(name="add", description="Add Subreddits to Multireddit.")
     @app_commands.rename(mltr="multireddit")
     @app_commands.describe(mltr="Name of Multireddit")
     @app_commands.rename(subs="subreddits")
     @app_commands.describe(subs="Names of Subreddits (Spaced)")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def AddMulti(self, ctx:commands.Context, mltr:str, *, subs:str) -> None:
+    @app_commands.checks.cooldown(1, 2)
+    async def AddMulti(self, ctx:discord.Interaction, mltr:str, subs:str) -> None:
         if not mltr or not subs: await SendWait(ctx, "No Arguments"); return
+        await ctx.response.defer(thinking=True)
         # Multi, Subs = args[0], list(args[1:])
         subs = subs.split(" ")
-        User = Rdt.find({"IDd": ctx.author.id})[0]
+        User = Rdt.find({"IDd": ctx.user.id})[0]
         Added, NotAdded = [], []
         if mltr in User and mltr not in ["IDd", "_id"]:
             for Sub in subs:
@@ -588,35 +602,39 @@ class Socials(commands.Cog):
                     Added.append(Sub) 
                 else: NotAdded.append(Sub)
             if Added:
+                print({"$set": {mltr: User[mltr]+Added}})
                 Rdt.update_one(User, {"$set": {mltr: User[mltr]+Added}})
                 await SendWait(ctx, f'Added the following Subreddit(s) to Multireddit: `{", ".join(Added)}`')
             if NotAdded: await SendWait(ctx, f"Following Subreddit(s) didn't exist, private, or already added: `{', '.join(NotAdded)}`")
         else: await SendWait(ctx, f"That Multireddit ({mltr}) does not exist. Check if the name is right or create it.")
 
-    @GetMultis.command(name="remove", aliases=["rem"], description="Remove Subreddits from Multireddit")
     # @commands.check(ChPatreonT2)
-    # @commands.check(ChMaxMultireddits)
+    # @commands.check(ChMaxMultireddits) aliases=["rem"], 
+    @MultiredditSlashes.command(name="remove", description="Remove Subreddits from Multireddit.")
     @app_commands.rename(mltr="multireddit")
     @app_commands.describe(mltr="Name of Multireddit")
     @app_commands.rename(subs="subreddits")
     @app_commands.describe(subs="Names of Subreddits (Spaced)")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def RemMulti(self, ctx:commands.Context, mltr:str, *, subs:str) -> None:
+    @app_commands.checks.cooldown(1, 2)
+    async def RemMulti(self, ctx:discord.Interaction, mltr:str, subs:str) -> None:
         if not mltr or not subs: await SendWait(ctx, "No Arguments"); return
+        await ctx.response.defer(thinking=True)
         # Multi, Subs = args[0], list(args[1:])
         subs = subs.split(" ")
         Removed, NotRemoved = [], []
-        if not Rdt.count_documents({"IDd": ctx.author.id}): await SendWait(ctx, "You don't have any Multireddits"); return
-        User = Rdt.find({"IDd": ctx.author.id})[0]
+        if not Rdt.count_documents({"IDd": ctx.user.id}): await SendWait(ctx, "You don't have any Multireddits"); return
+        User = Rdt.find({"IDd": ctx.user.id})[0]
         if mltr in User and mltr not in ["IDd","_id"]:
             Remover = User[mltr]
             for Sub in subs:
-                if Sub not in User[mltr] and Sub not in Removed:
-                    Sub = Sub[2:] if Sub.startswith("r/") else Sub
+                Sub = Sub[2:] if Sub.startswith("r/") else Sub
+                if Sub in Remover and Sub not in Removed:
                     if not CheckSub(Sub): NotRemoved.append(Sub); continue
                     Remover.remove(Sub)
                     Removed.append(Sub)
+            
             if Removed: 
+                print({"$set": {mltr: Remover}})
                 Rdt.update_one(User, {"$set": {mltr: Remover}})
                 await SendWait(ctx, f'Removed the following Subreddit(s) from Multireddit: `{", ".join(Removed)}`')
             if NotRemoved: await SendWait(ctx, f"Following Subreddit(s) didn't exist in Multireddit: `{', '.join(NotRemoved)}`")

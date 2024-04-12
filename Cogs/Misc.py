@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from Setup import FormatTime, SendWait, CClient
-from Customs.Navigators import ReactionNavigator as Navigator
+from Customs.Navigators import ButtonNavigator as Navigator
 import asyncio
 import requests
 from CBot import DClient as CBotDClient
@@ -75,7 +75,7 @@ class Misc(commands.Cog):
     @commands.command(aliases=["crypto", "cryptocurrency"])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def GetCrypto(self, ctx:commands.Context) -> None:
-        await ctx.defer()
+        await ctx.response.defer()
         Crypts = requests.get("https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest", headers=CClient).json()
         CrEm = discord.Embed(title="Markets", description="Today's Cryptocurrency Prices by Market Cap.", color=0xF3F18A)
         C = 0

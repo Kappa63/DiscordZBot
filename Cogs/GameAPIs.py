@@ -30,11 +30,11 @@ class GameAPIs(commands.Cog):
     def __init__(self, DClient:CBotDClient) -> None:
         self.DClient = DClient
 
-    @commands.hybrid_command(name="osu", description="Profile of an OSU Player.")
+    @app_commands.command(name="osu", description="Profile of an OSU Player.")
     @app_commands.rename(usr="username")
     @app_commands.describe(usr="Player Username")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def OSUuser(self, ctx:commands.Context, *, usr:str) -> None:
+    @app_commands.checks.cooldown(1, 2)
+    async def OSUuser(self, ctx:discord.Interaction, *, usr:str) -> None:
         if not usr: await SendWait(ctx, "No Username Given. Try add a Username First."); return
         User = OClient.get_user(usr)
         if User:
@@ -51,53 +51,50 @@ class GameAPIs(commands.Cog):
                           inline=True)
             OEm.set_thumbnail(url=f"http://s.ppy.sh/a/{User.user_id}")
             OEm.set_footer(text=f"User ({User.username}) joined on {str(User.join_date)[:10]}")
-            await ctx.send(embed=OEm)
+            await ctx.response.send_message(embed=OEm)
         else: await SendWait(ctx, "No User Found. Try a Valid Username")
             
-    @commands.hybrid_command(name="fortnite", description="Profile of a Fortnite Player.")
+    @app_commands.command(name="fortnite", description="Profile of a Fortnite Player.")
     @app_commands.rename(usr="username")
     @app_commands.describe(usr="Player Username")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def FortniteUser(self, ctx:commands.Context, *, usr:str):
+    @app_commands.checks.cooldown(1, 2)
+    async def FortniteUser(self, ctx:discord.Interaction, *, usr:str) -> None:
         if not usr: await SendWait(ctx, "No Username Given. Try add a Username First."); return
         try:
             ImageStats = requests.get("https://fortnite-api.com/v1/stats/br/v2", params={"name": usr, "image": "all"}, headers=FClient).json()["data"]["image"]
             FEm = discord.Embed(title=f'Fortnite BR Stats for **`{usr}`**', color=0x00D8EB)
             FEm.set_image(url=ImageStats)
-            await ctx.send(embed=FEm)
+            await ctx.response.send_message(embed=FEm)
         except KeyError: await SendWait(ctx, "No User Found. Try a Valid Username")
 
-    @commands.hybrid_group(name="pubg",  description="Profile of a PUBG Player.")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def PUBGUser(self, ctx:commands.Context): pass
+    PUBGSlashes = app_commands.Group(name="pubg",  description="Main Command Group for PUBG.")
 
-    @PUBGUser.command(name="all", description="All Time Profile of a PUBG Player.")
+    @PUBGSlashes.command(name="all", description="All Time Profile of a PUBG Player.")
     @app_commands.rename(usr="username")
     @app_commands.describe(usr="Player Username")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def GetAllTime(self, ctx:commands.Context, *, usr:str):
+    @app_commands.checks.cooldown(1, 2)
+    async def GetAllTime(self, ctx:discord.Interaction, usr:str) -> None:
         if not usr: await SendWait(ctx, "No Username Given. Try add a Username First."); return
         try:
             a = requests.get("https://api.pubg.com/shards/steam/players", headers=PClient, params={"filter[playerNames]": usr}).json()
-            print(a)
             Player = a["data"][0]
             PlayerID, PlayerName = Player["id"], Player["attributes"]["name"]
             AllData = requests.get(f"https://api.pubg.com/shards/steam/players/{PlayerID}/seasons/lifetime", headers=PClient).json()["data"]["attributes"]["gameModeStats"]
-            await ctx.send(embed=PUBGDataEmbed(AllData, PlayerName))
+            await ctx.response.send_message(embed=PUBGDataEmbed(AllData, PlayerName))
         except KeyError: await SendWait(ctx, "No User Found. Try a Valid Username")
 
-    @PUBGUser.command(name="season",  description="Season Profile of a PUBG Player.")
+    @PUBGSlashes.command(name="season",  description="Season Profile of a PUBG Player.")
     @app_commands.rename(usr="username")
     @app_commands.describe(usr="Player Username")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def GetSeason(self, ctx:commands.Context, *, usr:str):
+    @app_commands.checks.cooldown(1, 2)
+    async def GetSeason(self, ctx:discord.Interaction, usr:str) -> None:
         if not usr: await SendWait(ctx, "No Username Given. Try add a Username First."); return
         try:
             Player = requests.get("https://api.pubg.com/shards/steam/players", headers=PClient, params={"filter[playerNames]": usr}).json()["data"][0]
             PlayerID, PlayerName = Player["id"], Player["attributes"]["name"]
             SeasonID = requests.get("https://api.pubg.com/shards/steam/seasons", headers=PClient).json()["data"][-1]["id"]
             SeasonData = requests.get(f"https://api.pubg.com/shards/steam/players/{PlayerID}/seasons/{SeasonID}", headers=PClient).json()["data"]["attributes"]["gameModeStats"]
-            await ctx.send(embed=PUBGDataEmbed(SeasonData, PlayerName))
+            await ctx.response.send_message(embed=PUBGDataEmbed(SeasonData, PlayerName))
         except KeyError: await SendWait(ctx, "No User Found. Try a Valid Username")
 
     # @commands.command(name="Roblox")

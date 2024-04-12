@@ -1,10 +1,11 @@
-from discord.ext import commands
+# from discord.ext import commands
 import discord
 import CBot
 import asyncio
+from Customs.UI.Navigation import NavigationView
 
 class Navigator:
-    def __init__(self, ctx:commands.Context, Items:discord.Embed, Type:str="#", EmbedAndContent:bool=False, ContItems:str=None, Main:bool=False, MainBed:discord.Embed=None) -> None:
+    def __init__(self, ctx:discord.Interaction, Items:discord.Embed, Type:str="#", EmbedAndContent:bool=False, ContItems:str=None, Main:bool=False, MainBed:discord.Embed=None) -> None:
         self.ctx = ctx
         self.Items = Items
         self.Type = Type
@@ -13,18 +14,18 @@ class Navigator:
         self.Main = Main
         self.MainBed = MainBed
 
-    async def previous(self) -> None:
-        if self.ItemNum:
-            self.ItemNum -= 1
+    async def previous(self, num:int) -> None:
+        if self.ItemNum >= num:
+            self.ItemNum -= num
             await self.Nav.edit(embed=self.Items[self.ItemNum])
             if self.EmbedAndContent: await self.Cont.edit(content=self.ContItems[self.ItemNum])
         elif self.MainBed: await self.Nav.edit(embed=self.MainBed); self.Main = True
 
-    async def next(self) -> bool:
-        if self.ItemNum < self.TotalItems - 1:
+    async def next(self, num:int) -> bool:
+        if self.ItemNum < self.TotalItems - num:
             if self.Main: await self.Nav.edit(embed=self.Items[self.ItemNum]); self.Main = False
             else:
-                self.ItemNum += 1
+                self.ItemNum += num
                 await self.Nav.edit(embed=self.Items[self.ItemNum])
                 if self.EmbedAndContent: await self.Cont.edit(content=self.ContItems[self.ItemNum])
             return False
@@ -41,7 +42,7 @@ class Navigator:
                 if MesS in ["cancel", "c"]: RsT = True
             return MSg.guild.id == self.ctx.guild.id and MSg.channel.id == self.ctx.channel.id and RsT
         
-        TempNG = await self.ctx.send('Choose a number to open navigate to ItemNum. "c" or "cancel" to exit navigation.')
+        TempNG = await self.ctx.response.send_message('Choose a number to open navigate to ItemNum. "c" or "cancel" to exit navigation.')
         try:
             ResE = await CBot.BotClient.wait_for("message", check=ChCHEmFN, timeout=10)
             await TempNG.delete()
@@ -66,9 +67,9 @@ class Navigator:
 class ReactionNavigator(Navigator):
     async def setup(self) -> None:
         self.ItemNum = 0
-        if not self.Main: self.Nav = await self.ctx.send(embed=self.Items[self.ItemNum])
-        else: self.Nav = await self.ctx.send(embed=self.MainBed)
-        if self.EmbedAndContent: self.Cont = await self.ctx.send(content=self.ContItems[self.ItemNum])
+        if not self.Main: self.Nav = await self.ctx.followup.send(embed=self.Items[self.ItemNum])
+        else: self.Nav = await self.ctx.followup.send(embed=self.MainBed)
+        if self.EmbedAndContent: self.Cont = await self.ctx.response.send_message(content=self.ContItems[self.ItemNum])
         self.TotalItems = len(self.Items)
         await self.Nav.add_reaction("⬅️")
         await self.Nav.add_reaction("❌")
@@ -88,7 +89,7 @@ class ReactionNavigator(Navigator):
         await self.setup()
         while True:
             try:
-                Res = await CBot.BotClient.wait_for("reaction_add", check=ChCHEm, timeout=120)
+                Res = await CBot.BotClient.wait_for("reaction_add", check=ChCHEm, timeout=30)
                 await self.Nav.remove_reaction(Res[0].emoji, Res[1])
                 if Res[0].emoji == "⬅️":
                     await self.previous()
@@ -104,4 +105,15 @@ class ReactionNavigator(Navigator):
             except asyncio.TimeoutError:
                 await self.exitNavigation()
 
-# class ButtonNavigator:
+class ButtonNavigator(Navigator):
+    async def setup(self) -> None:
+        self.ItemNum = 0
+        self.Nav = await self.ctx.followup.send(embed=((self.Items[self.ItemNum]) if not self.Main else self.MainBed), view=NavigationView(self.previous, self.next, self.exitNavigation, self.selectPage))
+        if self.EmbedAndContent: self.Cont = await self.ctx.followup.send(content=self.ContItems[self.ItemNum])
+        self.TotalItems = len(self.Items)
+
+    async def exitNavigation(self) -> None:
+        await self.Nav.edit(view=None)
+
+    async def autoRun(self) -> None:
+        await self.setup()

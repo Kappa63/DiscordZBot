@@ -1,10 +1,11 @@
 import discord
 import random
 import requests
+from discord import app_commands
 from discord.ext import commands
 from CBot import DClient as CBotDClient
 # from Setup import ChVote, ChVoteUser, ChPatreonT2, ChAdmin, FormatTime, TimeTillMidnight, GetPatreonTier, SendWait, ErrorEmbeds, Navigator, AQd
-from Customs.Navigators import ReactionNavigator as Navigator
+from Customs.Navigators import ButtonNavigator as Navigator
 # import asyncio
 
 
@@ -12,9 +13,9 @@ class Nasa(commands.Cog):
     def __init__(self, DClient:CBotDClient) -> None:
         self.DClient = DClient
 
-    @commands.hybrid_command(name="apod", description="A Daily Astronomy Post by NASA.")
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def GetNasaApod(self, ctx:commands.Context) -> None:
+    @app_commands.command(name="apod", description="A Daily Astronomy Post by NASA.")
+    @app_commands.checks.cooldown(1, 1)
+    async def GetNasaApod(self, ctx:discord.Interaction) -> None:
         NASAapod = requests.get("https://api.nasa.gov/planetary/apod?api_key=0dsw3SiQmYCeNnwKZROSQIyrcZqjoDzMBo4ggCwS", headers={"Accept": "application/json"}).json()
         Explanation = NASAapod["explanation"][:1021]
         DEm = discord.Embed(title=NASAapod["title"], description=f'Date {NASAapod["date"]}', color=0xA9775A)
@@ -22,7 +23,7 @@ class Nasa(commands.Cog):
         if "hdurl" in NASAapod: DEm.set_image(url=NASAapod["hdurl"])
         else: DEm.add_field(name="\u200b", value=f'[Video Url]({NASAapod["url"]})', inline=False)
         if "copyright" in NASAapod: DEm.set_footer(text=f'Copyright: {NASAapod["copyright"]}')
-        await ctx.send(embed=DEm)
+        await ctx.response.send_message(embed=DEm)
 
     # @commands.group(name="apoddaily", invoke_without_command=True)
     # @commands.cooldown(1, 1, commands.BucketType.user)
@@ -58,10 +59,10 @@ class Nasa(commands.Cog):
     #         return
     #     await SendWait(ctx, "You are already not in APOD daily")
 
-    @commands.hybrid_command(name="mars", description="Images From Mars.")
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def GetNasaMars(self, ctx:commands.Context) -> None:
-        await ctx.defer()
+    @app_commands.command(name="mars", description="Images From Mars.")
+    @app_commands.checks.cooldown(1, 1)
+    async def GetNasaMars(self, ctx:discord.Interaction) -> None:
+        await ctx.response.defer()
         def MakeEmbed(MarsImage, ImageNum, Total) -> discord.Embed:
             NEm = discord.Embed(title="Mars", description="By: Curiosity Rover (NASA)", color=0xCD5D2E)
             NEm.set_thumbnail(url="https://i.imgur.com/xmSmG0f.jpeg")
