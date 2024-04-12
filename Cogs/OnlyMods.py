@@ -4,7 +4,10 @@ from discord.ext import commands
 # from Setup import ChDev, SendWait, AQd
 from Setup import ChDev
 from CBot import DClient as CBotDClient
-from Customs.UI.TicTacToe import TicTacToeView as TTT
+# import numpy as np
+# from PIL import Image
+# import os
+# from Customs.UI.TicTacToe import TicTacToeView as TTT
 # from UI.Buttons import EditButton
 # import random
 # import requests
@@ -25,6 +28,12 @@ class OnlyMods(commands.Cog):
         SEm.add_field(name="ShardCount: ", value=self.DClient.shard_count, inline=False)
         SEm.add_field(name="Loaded Cogs: ", value="\n".join(self.DClient.LoadedCogs), inline=False)
         await ctx.response.send_message(embed=SEm)
+        # I1 = np.asarray(Image.open("Customs.DeckCards.ac.png"))
+        # I2 = np.asarray(Image.open("Customs.DeckCards.4s.png")/255)
+        # Ic = np.hstack((I1, I2))
+        # E1 = discord.Embed(description="Your Cards", url="https://imgur.com").set_image(url="https://i.imgur.com/SzlpptY.png")
+        # E2 = discord.Embed(url="https://imgur.com").set_image(url="https://i.imgur.com/SzlpptY.png")
+        # await self.DClient.StaffChannel.send(embeds=[E1, E2])
 
     @commands.command(name="sync")
     @commands.check(ChDev)
@@ -37,6 +46,14 @@ class OnlyMods(commands.Cog):
 
     # @commands.command(name="test") 
     # async def button(self, ctx:commands.Context) -> None:
+    #     # print(os.getcwd())
+    #     # ClrImg = discord.File("./Customs/DeckCards/2c.png", "2c.png")
+
+    #     E1 = discord.Embed(description="Your Cards", url="https://imgur.com").set_image(url="https://i.imgur.com/SzlpptY.png")
+    #     # E1./
+    #     E2 = discord.Embed(url="https://imgur.com").set_image(url="https://i.imgur.com/SzlpptY.png")
+    #     # E2
+    #     await self.DClient.StaffChannel.send(embeds=[E1, E2])
         # print(type(ctx))
         # view = discord.ui.View() # Establish an instance of the discord.ui.View class
         # style = discord.ButtonStyle.blurple  # The button will be gray in color

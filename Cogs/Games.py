@@ -1,10 +1,14 @@
 import discord
 from discord.ext import commands
-import requests
+# import requests
 from discord import app_commands
-import asyncio
-import random
+# import asyncio
+# from PIL import Image
+# import os
+from Customs.BlackJack import BJ
+# import random
 # import time
+# import io
 from CBot import DClient as CBotDClient
 from Customs.UI.TicTacToe import TicTacToeView as TTTView
 import datetime
@@ -80,7 +84,6 @@ def TTTBoardMaker(Board, User1, User2, AnExtra="\u200b"):
     TEm.set_footer(text='"zhelp ttt" for more info')
     return TEm
 
-
 def TTTWinCheck(Board):
     if any(any(i in j for j in [Board, np.dstack(Board)[0].tolist(), [np.diag(Board).tolist(), np.diag(np.fliplr(Board)).tolist()]]) for i in [["o"]*3, ["x"]*3]): return True
     return False
@@ -118,6 +121,12 @@ def MakeChessBoard(Board, PlayerTimes, Players):
 class Games(commands.Cog):
     def __init__(self, DClient:CBotDClient) -> None:
         self.DClient = DClient
+
+    @app_commands.command(name="blackjack", description="Start a Game of Blackjack.")
+    @app_commands.checks.cooldown(1, 2)
+    async def PlayBJ(self, ctx:discord.Interaction) -> None:
+        await ctx.response.defer(thinking=True)
+        await BJ(ctx).autoRun()
 
     # @commands.command(name="sudoku")
     # @commands.cooldown(1, 2, commands.BucketType.user)

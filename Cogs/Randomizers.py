@@ -7,6 +7,7 @@ import numpy
 from CBot import DClient as CBotDClient
 # import requests
 import os
+# import io
 from Setup import GClient, GApi, SendWait
 # import pyimgbox
 

@@ -70,7 +70,6 @@ class Nasa(commands.Cog):
             NEm.add_field(name="Taken on:", value=MarsImage["earth_date"], inline=True)
             NEm.add_field(name=f"`Image: {ImageNum+1}/{Total}`", value="\u200b", inline=False)
             NEm.set_image(url=MarsImage["img_src"])
-            NEm.set_footer(text="Need help navigating? zhelp navigation")
             return NEm
         NASAmars = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=1000&api_key=0dsw3SiQmYCeNnwKZROSQIyrcZqjoDzMBo4ggCwS", 
                                 headers={"Accept": "application/json"}).json()

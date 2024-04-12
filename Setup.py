@@ -7,6 +7,7 @@ import discord
 import malclient
 # import COVID19Py
 # import twitch
+from discord import app_commands
 # import asyncio
 import praw
 import giphpy as GApi
@@ -33,7 +34,7 @@ Cogs = ["Cogs.Randomizers", "Cogs.MainEvents", "Cogs.Rule34", "Cogs.AnimeManga",
         #  "Cogs.HelpInfo", "Cogs.MongoDB",  "Cogs.Misc",
         "Cogs.Socials", "Cogs.OnlyMods", "Cogs.Nasa", "Cogs.Movies", "Cogs.Images", "Cogs.Google"]
 
-DToken = os.environ["DISCORD_TOKEN_TIA"]
+DToken = os.environ["DISCORD_TOKEN_ZBOT"]
 
 Cls = MongoClient(os.environ["MONGODB_URL"])
 DbM = Cls["CBot"]
@@ -233,8 +234,8 @@ def FormatTime(SecondsFormat:int) -> str:
 #             break
 
 
-class IsSetup(commands.CheckFailure): pass
-def ChSer(ctx):
+class IsSetup(app_commands.CheckFailure): pass
+def ChSer(ctx:discord.Interaction):
     if ColT.count_documents({"IDg": str(ctx.guild.id)}): return True
     raise IsSetup("Unready")
 ChSerGuild = lambda guild: ColT.count_documents({"IDg": str(guild.id)})
@@ -250,9 +251,9 @@ ChSerGuild = lambda guild: ColT.count_documents({"IDg": str(guild.id)})
 #     return True
 
 
-class IsAdmin(commands.CheckFailure): pass
-def ChAdmin(ctx):
-    if ctx.author.guild_permissions.administrator: return True
+class IsAdmin(app_commands.CheckFailure): pass
+def ChAdmin(ctx:discord.Interaction):
+    if ctx.user.guild_permissions.administrator: return True
     raise IsAdmin("Normie")
 
 
@@ -378,15 +379,15 @@ def ChDev(ctx:commands.Context) -> bool:
     if ctx.author.id == 443986051371892746: return True
     raise Ignore("Ignore")
 
-def RefreshMAL(ctx:commands.Context) -> bool:
+def RefreshMAL(ctx:discord.Interaction) -> bool:
     MalRefresher()
     return True
 
 
-class IsNSFW(commands.CheckFailure): pass
-def ChNSFW(ctx):
+class IsNSFW(app_commands.CheckFailure): pass
+def ChNSFW(ctx:discord.Interaction):
     if ctx.channel.is_nsfw(): return True
     raise IsNSFW("Not Safe")
 
 
-class IsBot(commands.CheckFailure): pass
+class IsBot(app_commands.CheckFailure): pass

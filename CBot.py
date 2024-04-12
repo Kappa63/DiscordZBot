@@ -14,7 +14,7 @@ from Setup import Cogs, DToken, IsBot, Ignore
 
 # load_dotenv()
 
-class DClient(commands.Bot):
+class DClient(commands.AutoShardedBot):
     StaffChannel = None
     Me = None
     def __init__(self, Cogs) -> None:
@@ -79,10 +79,10 @@ class DClient(commands.Bot):
 
 BotClient = DClient(Cogs=Cogs)
 
-@BotClient.check
-async def ChBot(ctx):
-    if ctx.author.bot: raise IsBot("Bot")
-    return True
+# @BotClient.check
+# async def ChBot(ctx:discord.Interaction):
+#     if ctx.user.bot: raise IsBot("Bot")
+#     return True
 
 # @BotClient.check
 # async def ChDM(ctx):

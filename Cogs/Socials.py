@@ -64,8 +64,7 @@ def RedditbedMaker(SubCpoS, Subname, Nsfchannel:bool, Type:str="R", PostNum:int=
                     elif "redgifs" in SubCpoS.url: EmbOri(REm, "video (redgifs)", SubCpoS)
                     else: EmbOri(REm, "webpage", SubCpoS)
         else: REm.add_field(name="NSFW: ", value="This isn't an NSFW channel. No NSFW allowed here.", inline=False)
-    if Type == "S": REm.set_footer(text=f"From r/{SubCpoS.subreddit.display_name}\n\nNeed help navigating? zhelp navigation")
-    else: REm.set_footer(text=f"From r/{SubCpoS.subreddit.display_name}")
+    if Type != "S": REm.set_footer(text=f"From r/{SubCpoS.subreddit.display_name}")
     REm.set_author(name=f"*By u/{SubCpoS.author}*")
     return REm
 

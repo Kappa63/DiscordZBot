@@ -25,6 +25,9 @@ class TicTacToeView(discord.ui.View):
                     i.disabled = True
                 await interaction.response.edit_message(content=f"{(self.usr1 if self.Trn%2 else self.usr2).mention} WINS!!!",view=self)
                 return
+            if(self.Trn >= 9):
+                await interaction.response.edit_message(content=f"It's a DRAW!!!", view=self)
+                return
             self.Trn+=1
             await interaction.response.edit_message(content=f"{(self.usr1 if self.Trn%2 else self.usr2).mention}'s Turn",view=self)
             return

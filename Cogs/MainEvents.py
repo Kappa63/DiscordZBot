@@ -9,9 +9,10 @@ import random
 # import requests
 # import asyncio
 
-Doing = ["Playing With The Laws Of Physics", "Getting Tortured", "Just Vibin'", "Playing With My Toes",
-         "Playing Chess With God", "Playing With Leona", "Yeeting People"]
+# Doing = ["Playing With The Laws Of Physics", "Getting Tortured", "Just Vibin'", "Playing With My Toes",
+#          "Playing Chess With God", "Playing With Leona", "Yeeting People"]
 
+Doing = ["ZBot IS BACK ONLINE!!", "4 Years Later", "Revived from the Dead"]
 
 # def MakeAPODEmbed():
 #     NASAapod = requests.get("https://api.nasa.gov/planetary/apod?api_key=0dsw3SiQmYCeNnwKZROSQIyrcZqjoDzMBo4ggCwS", headers={"Accept": "application/json"}).json()
@@ -53,7 +54,7 @@ class MainEvents(commands.Cog):
 # 
     @commands.Cog.listener("on_ready")
     async def on_ready(self) -> None:
-        await self.DClient.change_presence(activity=discord.Game(f"zhelp || {random.choice(Doing)}"))
+        await self.DClient.change_presence(activity=discord.Game(f"{random.choice(Doing)}"))
         print(f"Online in {len(self.DClient.guilds)}...")
         self.DClient.StaffChannel = self.DClient.get_channel(768461226996662302)
         self.DClient.Me = self.DClient.get_user(443986051371892746)

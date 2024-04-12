@@ -99,7 +99,7 @@ class AnimeManga(commands.Cog):
             C += 1
             SAEm.add_field(name="\u200b", value=f"{C}. `{MangaResult.title}` **({MangaResult.media_type.value})**", inline=False)
             SrchManga.append(MangaResult)
-        SAEm.set_footer(text='Choose a number to view MAL entry. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
+        # SAEm.set_footer(text='Choose a number to view MAL entry. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
         await ctx.edit_original_response(embed=SAEm, view=Selector(getSel, exTimOt, list(range(1, C+1))))
             # try:
             #     ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=20)
@@ -208,7 +208,7 @@ class AnimeManga(commands.Cog):
             C += 1
             SAEm.add_field(name="\u200b", value=f"{C}. `{AnimeResult.title}`", inline=False)#**({AnimeResult.id})**
             SrchAnime.append(AnimeResult)
-        SAEm.set_footer(text='Choose a number to view MAL entry. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
+        # SAEm.set_footer(text='Choose a number to view MAL entry. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
         await ctx.edit_original_response(embed=SAEm, view=Selector(getSel, exTimOt, list(range(1, C+1))))
         # try:
         #     ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=20)
