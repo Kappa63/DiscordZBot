@@ -1,18 +1,7 @@
 import discord
 from discord.ext import commands
-# from Setup import Ignore, 
 # import dbl
-# from dotenv import load_dotenv
-# import os
 from Setup import Cogs, DToken, IsBot, Ignore
-# import random
-# import requests
-# import asyncio
-
-# Doing = ["Playing With The Laws Of Physics", "Getting Tortured", "Just Vibin'", "Playing With My Toes",
-#          "Playing Chess With God", "Playing With Leona", "Yeeting People"]
-
-# load_dotenv()
 
 class DClient(commands.Bot):
     StaffChannel = None
@@ -58,12 +47,7 @@ class DClient(commands.Bot):
 
         print("Cogs Loaded...")
 
-    # DClient = commands.Bot()
-
-
 # TClient = dbl.client.DBLClient(bot=DClient, token=os.getenv("DBL_TOKEN"), autopost=True)
-
-
 
 #_ @DClient.check
 #_ async def ChModDown(ctx):
@@ -75,9 +59,6 @@ class DClient(commands.Bot):
 # Cogs = ["Cogs.Misc", "Cogs.MongoDB", "Cogs.Covid", "Cogs.Nasa", "Cogs.Socials", "Cogs.AnimeManga",
 #         "Cogs.HelpInfo", "Cogs.Randomizers", "Cogs.OnlyMods", "Cogs.MainEvents", "Cogs.Rule34",
 #         "Cogs.Images","Cogs.WrittenStuff", "Cogs.Movies", "Cogs.Games", "Cogs.GameAPIs", "Cogs.Google"]
-    
-
-BotClient = DClient(Cogs=Cogs)
 
 # @BotClient.check
 # async def ChBot(ctx:discord.Interaction):
@@ -89,4 +70,5 @@ BotClient = DClient(Cogs=Cogs)
 #     if ctx.guild: return True
 #     raise Ignore("Ignore")
 
+BotClient = DClient(Cogs=Cogs)
 BotClient.run(DToken)
