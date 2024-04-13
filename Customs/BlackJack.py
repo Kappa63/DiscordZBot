@@ -17,16 +17,16 @@ class BJ:
 
     def cardsValue(self, cards) -> None:
         vls = []
-        aTrgr = False
+        aTrgr = 0
         for i in cards:
             v = i[:-1]
             if v not in ["j", "q", "k", "a"]: vls.append(int(v))
             elif v != "a": vls.append(10)
-            else: aTrgr = True
+            else: aTrgr += 1
 
         vls = sum(vls)
         if aTrgr: 
-            return (vls+1, vls+11)
+            return (vls+(1*aTrgr), vls+11+(1*(aTrgr-1)))
         return (vls, vls)
                 
     def addCard(self, c1:Image.Image, c2:Image.Image) -> Image.Image:
@@ -34,6 +34,8 @@ class BJ:
         In = Image.new("RGBA", (w+250, h))
         In.paste(c1, (0,0))
         In.paste(c2, (w-250,0), c2) 
+        c1.close()
+        c2.close()
         return In
     
     async def plyrBust(self) -> None:
@@ -87,6 +89,12 @@ class BJ:
 
     async def dlrBust(self) -> None:
         await self.ctx.followup.send(embed=discord.Embed(title="Dealer BUSTED!", color=0x00A36C))
+
+    async def clsBfrs(self) -> None:
+        self.ib1.close()
+        self.ib2.close()
+        self.DealerCardsIm.close()
+        self.PlayerCardsIm.close()
 
     async def dlrHit(self) -> None:
         self.Dealer.append(self.DeckCards.pop(0))

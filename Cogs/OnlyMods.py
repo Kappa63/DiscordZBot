@@ -8,10 +8,9 @@ from CBot import DClient as CBotDClient
 # from PIL import Image
 # import os
 # from Customs.UI.TicTacToe import TicTacToeView as TTT
-# from UI.Buttons import EditButton
 # import random
 # import requests
-
+# from Customs.UI.Navigation import NavigationWithSelectorView as NavigatedSelector
 # Doing = ["Playing with the laws of physics", "Torture", "Just Vibin'", "With my toes",
         #  "Chess with god", "With Leona"]
 

@@ -1,11 +1,12 @@
 import discord
-from typing import List
+from typing import List, Optional
 
 class SelectionView(discord.ui.View):
-    def __init__(self, selectFunc, exitFunc, labels:List[str]) -> None:
+    def __init__(self, selectFunc, exitFunc, labels:List[str], emojis:Optional[List[discord.Emoji]]) -> None:
         self.selectFunc = selectFunc
         self.exitFunc = exitFunc
-        self.SELECTIONS = [discord.SelectOption(label=i) for i in labels]
+        self.SELECTIONS = [discord.SelectOption(label=i, emoji=j) for i, j in zip(labels, emojis)] if emojis else [discord.SelectOption(label=i) for i in labels]
+
         self.selector = discord.ui.Select(placeholder="Select Number", options=self.SELECTIONS, max_values=1, row=1)
         self.selector.callback = self.selectorCall
         super().__init__(timeout=30)

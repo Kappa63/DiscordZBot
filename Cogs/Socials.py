@@ -13,6 +13,7 @@ from Setup import SendWait, Threader, Reddit, Rdt
 # import requests
 # import tweepy
 from Customs.Navigators import ButtonNavigator as Navigator
+from Customs.Navigators import SortableButtonNavigator as SortedNav
 # import pyimgbox
 # import inspect
 import asyncio
@@ -398,76 +399,50 @@ class Socials(commands.Cog):
         await ctx.response.defer(thinking=True)
         if CheckSub(args):
             Post = [i for i in list(Reddit.subreddit(args).hot()) if not i.stickied]
-            if not Post: await ctx.followup.send("No posts on that subreddit :no_mouth:"); return
+            if not Post: []
             SubCpoS = random.choice(Post)
             Nsfwcheck=ctx.channel.is_nsfw()
             await ctx.followup.send(embed=RedditbedMaker(SubCpoS, args, Nsfwcheck))
         else: await ctx.followup.send("Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)")
 
     async def RedditNav(self, ctx:discord.Interaction, sub:str, ctp:str) -> None:
-        ChCHEmCH = lambda RcM, RuS: not RuS.bot and RcM.message == KraPosS and str(RcM.emoji) in ["🔝", "📈", "🔥", "📝", "❌"]
-        ChCHEmCHT = lambda RcM, RuS: not RuS.bot and RcM.message == KraPosS and str(RcM.emoji) in ["🗓️", "🌍", "📅", "❌"]
-        Embeder = lambda i,*x: [RedditbedMaker(P, Name, Nsfchannel=Nsfwcheck, Type="S", PostNum=i+PNum, TotalPosts=TotalPosts) for PNum, P in enumerate(x)]
+        def rdtEmBldr(pst):
+            Embeder = lambda i,*x: [RedditbedMaker(P, sub, Nsfchannel=Nsfwcheck, Type="S", PostNum=i+PNum, TotalPosts=TotalPosts) for PNum, P in enumerate(x)]
+            SubCpoS = [SuTPos for SuTPos in pst if not SuTPos.stickied]
+            TotalPosts = len(SubCpoS)
+            if TotalPosts == 0: return []
+            Nsfwcheck=ctx.channel.is_nsfw
+            Crsd = np.array_split(SubCpoS, len(SubCpoS)//2)
+            Crsd = [np.insert(i, 0, v*2) for v,i in enumerate(Crsd)]
+            Thread = Threader([Embeder]*(len(SubCpoS)//2), Crsd)
+            if(Thread == False):  return []
+            return sum(Thread, [])
+            
+        def updateNav(srt:str):
+            match srt:
+                case "Top All Time":
+                    Post = Reddit.subreddit(sub).top("all")
+                case "Top This Month":
+                    Post = Reddit.subreddit(sub).top("month")
+                case "Top Today":
+                    Post = Reddit.subreddit(sub).top("day")
+                case "Rising":
+                    Post = Reddit.subreddit(sub).rising()
+                case "Hot":
+                    Post = Reddit.subreddit(sub).hot()
+                case "New":
+                    Post = Reddit.subreddit(sub).new()
+            return rdtEmBldr(Post)
+        
+        
 
-        args = sub
-        if not CheckSub(args) and not ctp == "c2": await SendWait(ctx, "Sub doesn't exist or private :expressionless:"); return
-        ebd = discord.Embed(title="How would you like to sort the subreddit?", description="🔝 to sort by top.\n📈 to sort by rising.\n🔥 to sort by hot.\n📝 to sort by new.\n❌ to cancel")
-        ebd.set_footer(text="This timesout in 10s")
-        KraPosS = await ctx.followup.send(embed=ebd)
-        await KraPosS.add_reaction("🔝")
-        await KraPosS.add_reaction("📈")
-        await KraPosS.add_reaction("🔥")
-        await KraPosS.add_reaction("📝")
-        await KraPosS.add_reaction("❌")
-        try:
-            ResIni = await self.DClient.wait_for("reaction_add", check=ChCHEmCH, timeout=10)
-            if ResIni[0].emoji != "🔝":
-                await KraPosS.edit(embed=discord.Embed(title=":mobile_phone: Finding Posts..."))
-                await KraPosS.remove_reaction("❌", self.DClient.user)
-            await KraPosS.remove_reaction(ResIni[0].emoji, ResIni[1])
-            await KraPosS.remove_reaction("🔝", self.DClient.user)
-            await KraPosS.remove_reaction("📝", self.DClient.user)
-            await KraPosS.remove_reaction("📈", self.DClient.user)
-            await KraPosS.remove_reaction("🔥", self.DClient.user)
-            if ResIni[0].emoji == "❌": await KraPosS.delete(); return
-            elif ResIni[0].emoji == "📝": Post = Reddit.subreddit(args).new()
-            elif ResIni[0].emoji == "🔥": Post = Reddit.subreddit(args).hot()
-            elif ResIni[0].emoji == "📈": Post = Reddit.subreddit(args).rising()
-            elif ResIni[0].emoji == "🔝":
-                ebd2 = discord.Embed(title="How would you like to sort by top?", description="🌍 to sort by top all time.\n🗓️ to sort by top this month.\n📅 to sort by top today.\n❌ to cancel")
-                ebd2.set_footer(text="This timesout in 10s")
-                await KraPosS.edit(embed=ebd2)
-                await KraPosS.add_reaction("🌍")
-                await KraPosS.add_reaction("🗓️")
-                await KraPosS.add_reaction("📅")
-                ResIniT = await self.DClient.wait_for("reaction_add", check=ChCHEmCHT, timeout=10)
-                await KraPosS.remove_reaction(ResIniT[0].emoji, ResIniT[1])
-                await KraPosS.edit(embed=discord.Embed(title=":mobile_phone: Finding Posts..."))
-                await KraPosS.remove_reaction("❌", self.DClient.user)
-                await KraPosS.remove_reaction("🌍", self.DClient.user)
-                await KraPosS.remove_reaction("🗓️", self.DClient.user)
-                await KraPosS.remove_reaction("📅", self.DClient.user)
-                if ResIniT[0].emoji == "❌": await KraPosS.delete(); return
-                elif ResIniT[0].emoji == "🌍": Post = Reddit.subreddit(args).top("all")
-                elif ResIniT[0].emoji == "🗓️": Post = Reddit.subreddit(args).top("month")
-                elif ResIniT[0].emoji == "📅": Post = Reddit.subreddit(args).top("day")
-        except asyncio.TimeoutError:
-            await KraPosS.edit(embed=discord.Embed(title="Timeout"))
-            await asyncio.sleep(5)
-            await KraPosS.delete()
-            return
+        if not CheckSub(sub) and not ctp == "c2": await SendWait(ctx, "Sub doesn't exist or private :expressionless:"); return
 
-        SubCpoS = [SuTPos for SuTPos in Post if not SuTPos.stickied]
-        TotalPosts = len(SubCpoS)
-        if TotalPosts == 0: await SendWait(ctx, "No posts on that subreddit :no_mouth:"); return
-        Name = args
-        Nsfwcheck=ctx.channel.is_nsfw()
-        Crsd = np.array_split(SubCpoS, len(SubCpoS)//2)
-        Crsd = [np.insert(i, 0, v*2) for v,i in enumerate(Crsd)]
-        Thread = Threader([Embeder]*(len(SubCpoS)//2), Crsd)
-        if(Thread == False):  await SendWait(ctx, "Failed to Thread subreddit :no_mouth:"); return
-        PostEms = sum(Thread, [])
-        await Navigator(ctx, PostEms).autoRun()
+        # await ctx.followup.send(, view=, view=NavigatedSelector(b, a, b, a, b, ))
+
+        await SortedNav(updateNav, ["Top All Time", "Top This Month", "Top Today", "Rising", "Hot", "New"], 
+                        ["🌍", "🗓️", "📅", "📈", "🔥", "📝"], ctx).autoRun()
+        # await Navigator(ctx, PostEms).autoRun()
 
     @RedditSlashes.command(name="surf", description="Navigate a Subreddit on Discord.")
     @app_commands.rename(sub="subreddit")

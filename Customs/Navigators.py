@@ -2,7 +2,7 @@
 import discord
 import CBot
 import asyncio
-from Customs.UI.Navigation import NavigationView
+from Customs.UI.Navigation import NavigationView, NavigationWithSelectorView
 
 class Navigator:
     def __init__(self, ctx:discord.Interaction, Items:discord.Embed, Type:str="#", EmbedAndContent:bool=False, ContItems:str=None, Main:bool=False, MainBed:discord.Embed=None) -> None:
@@ -31,6 +31,11 @@ class Navigator:
             return False
         else:
             return True
+        
+    async def resetWithNewItems(self, Items:discord.Embed):
+        self.ItemNum = 0
+        self.Items = Items
+        await self.Nav.edit(embed=self.Items[self.ItemNum])
 
     async def selectPage(self) -> None:
         def ChCHEmFN(MSg) -> bool:
@@ -61,8 +66,6 @@ class Navigator:
             await TempNG.edit("Request Timeout")
             await asyncio.sleep(5)
             await TempNG.delete()
-
-    
 
 class ReactionNavigator(Navigator):
     async def setup(self) -> None:
@@ -108,11 +111,43 @@ class ReactionNavigator(Navigator):
 class ButtonNavigator(Navigator):
     async def setup(self) -> None:
         self.ItemNum = 0
-        self.Nav = await self.ctx.followup.send(embed=((self.Items[self.ItemNum]) if not self.Main else self.MainBed), view=NavigationView(self.previous, self.next, self.exitNavigation, self.selectPage))
+        self.Nav = await self.ctx.followup.send(embed=((self.Items[self.ItemNum]) if not self.Main else self.MainBed), view=NavigationView(self.previous, self.next, self.exitNavigation))
         if self.EmbedAndContent: self.Cont = await self.ctx.followup.send(content=self.ContItems[self.ItemNum])
         self.TotalItems = len(self.Items)
 
     async def exitNavigation(self) -> None:
+        await self.Nav.edit(view=None)
+
+    async def autoRun(self) -> None:
+        await self.setup()
+
+class SortableButtonNavigator(Navigator):
+    def __init__(self, onSlct, lbls, emjis, ctx:discord.Interaction, Type:str="#", EmbedAndContent:bool=False, ContItems:str=None, Main:bool=False, MainBed:discord.Embed=None) -> None:
+        self.onSlct = onSlct
+        self.Cache = {}
+        self.lbls = lbls
+        self.emjis = emjis
+        super().__init__(ctx, [], Type, EmbedAndContent, ContItems, Main, MainBed)
+
+    async def setup(self) -> None:
+        self.ItemNum = 0
+        self.Nav = await self.ctx.followup.send(embed=discord.Embed(title="Select Sorting..."), 
+                                                view=NavigationWithSelectorView(self.previous, self.next, self.exitNavigation, self.slctUpdt, True, self.lbls, self.emjis))
+        if self.EmbedAndContent: self.Cont = await self.ctx.followup.send(content=self.ContItems[self.ItemNum])
+        self.TotalItems = len(self.Items)
+
+    async def slctUpdt(self, srt:str) -> None:
+        await self.Nav.edit(embed=discord.Embed(title="Getting Posts..."))
+        if(srt not in self.Cache):
+            self.Cache[srt] = self.onSlct(srt)
+        if(self.Cache[srt]):
+            self.TotalItems = len(self.Cache[srt])
+            await self.resetWithNewItems(self.Cache[srt])
+        else:
+            await self.Nav.edit(embed=discord.Embed(title="Empty or Doesn't Exist..."))
+
+    async def exitNavigation(self) -> None:
+        self.Cache = None
         await self.Nav.edit(view=None)
 
     async def autoRun(self) -> None:

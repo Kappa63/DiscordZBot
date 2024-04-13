@@ -14,7 +14,7 @@ from Setup import Cogs, DToken, IsBot, Ignore
 
 # load_dotenv()
 
-class DClient(commands.AutoShardedBot):
+class DClient(commands.Bot):
     StaffChannel = None
     Me = None
     def __init__(self, Cogs) -> None:
