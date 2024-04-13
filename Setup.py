@@ -1,114 +1,135 @@
-from dotenv import load_dotenv
+import dotenv
 import os
 from discord.ext import commands
 import discord
-import giphy_client
-import tweepy
+# import tweepy
 import malclient
-import COVID19Py
-import twitch
-import asyncio
+# import twitch
+from discord import app_commands
+# import asyncio
 import praw
-import pymongo
+import giphpy as GApi
+# import pymongo
+import time
 from pymongo import MongoClient
 import CBot
-from google_images_search import GoogleImagesSearch
-import pyyoutube
+# from google_images_search import GoogleImagesSearch
+# import pyyoutube
 import imdb
-import pafy
+# import pafy
 import datetime
-import osuapi
+from ossapi import OssapiV1
 import concurrent.futures as Cf
-from ro_py import Client as Roblox
 
-load_dotenv()
+env = dotenv.find_dotenv()
+dotenv.load_dotenv(env)
 
-Cls = MongoClient(os.getenv("MONGODB_URL"))
+Cogs = ["Cogs.Randomizers", "Cogs.MainEvents", "Cogs.AnimeManga", "Cogs.WrittenStuff", "Cogs.GameAPIs", "Cogs.Games",
+        #  "Cogs.HelpInfo", "Cogs.MongoDB",  "Cogs.Misc",
+        "Cogs.Socials", "Cogs.OnlyMods", "Cogs.Nasa", "Cogs.Movies", "Cogs.Images", "Cogs.Google"]
+
+DToken = os.environ["DISCORD_TOKEN_ZBOT"]
+
+Cls = MongoClient(os.environ["MONGODB_URL"])
 DbM = Cls["CBot"]
 ColT = DbM["SerTwo"]
 AQd = DbM["Daily"]
 Rdt = DbM["Reddit"]
 
-GClient = os.getenv("GIPHY_KEY")
-GApi = giphy_client.DefaultApi()
+GClient = os.environ["GIPHY_KEY"]
 
-CClient = {"X-CMC_PRO_API_KEY": os.getenv("COINBASE_KEY")}
+CClient = {"X-CMC_PRO_API_KEY": os.environ["COINBASE_KEY"]}
 
-NClient = {"country": "us", "apiKey": os.getenv("NEWS_KEY")}
+NClient = {"country": "us", "apiKey": os.environ["NEWS_KEY"]}
 
-GiClient = GoogleImagesSearch(os.getenv("GCS_KEY"), os.getenv("CX_ID"))
+# GiClient = GoogleImagesSearch(os.getenv("GCS_KEY"), os.getenv("CX_ID"))
+def MalRefresher():
+    if( (time.time() - float(os.environ["MAL_LAST_REFRESH"])) >= int(os.environ["MAL_REFRESH_TIME"]) ):
+        MClient.refresh_bearer_token(client_id=os.environ["MAL_ID"], client_secret=os.environ["MAL_SECRET"], refresh_token=os.environ["MAL_REFRESH_TOKEN"])
+        os.environ["MAL_LAST_REFRESH"] = str(time.time())
+        dotenv.set_key(env, "MAL_LAST_REFRESH", os.environ["MAL_LAST_REFRESH"])
+        os.environ["MAL_ACCESS_TOKEN"] = MClient._bearer_token
+        dotenv.set_key(env, "MAL_ACCESS_TOKEN", os.environ["MAL_ACCESS_TOKEN"])
+        os.environ["MAL_REFRESH_TOKEN"] = MClient.refresh_token
+        dotenv.set_key(env, "MAL_REFRESH_TOKEN", os.environ["MAL_REFRESH_TOKEN"])
 
-MClient = malclient.Client()
-MClient.init(access_token=os.getenv("MAL_ACCESS_TOKEN"))
-MClient.refresh_bearer_token(client_id=os.getenv("MAL_ID"), client_secret=os.getenv("MAL_SECRET"), refresh_token=os.getenv("MAL_REFRESH_TOKEN"))
+MClient = malclient.Client(client_id=os.environ["MAL_ID"], access_token=os.environ["MAL_ACCESS_TOKEN"], refresh_token=os.environ["MAL_REFRESH_TOKEN"], nsfw=True)
+MalRefresher()
+MALsearch = malclient.Fields(title=True, id=True, media_type=True)
 
-PClient = {"Authorization": os.getenv("PUBG_KEY"), "accept": "application/vnd.api+json"}
+PClient = {"Authorization": os.environ["PUBG_KEY"], "accept": "application/vnd.api+json"}
 
-twitter = tweepy.OAuthHandler(os.getenv("TWITTER_KEY"), os.getenv("TWITTER_SECRET"))
-twitter.set_access_token(os.getenv("TWITTER_ACCESS_TOKEN"), os.getenv("TWITTER_ACCESS_SECRET"))
-Twitter = tweepy.API(twitter)
+FClient = {"Authorization": os.environ["FORTNITE_KEY"]}
 
-Reddit = praw.Reddit(client_id=os.getenv("REDDIT_ID"), client_secret=os.getenv("REDDIT_SECRET"), user_agent="ZBot by u/Kamlin333", check_for_async=False)
+# twitter = tweepy.OAuthHandler(os.getenv("TWITTER_KEY"), os.getenv("TWITTER_SECRET"))
+# twitter.set_access_token(os.getenv("TWITTER_ACCESS_TOKEN"), os.getenv("TWITTER_ACCESS_SECRET"))
+# Twitter = tweepy.API(twitter)
 
-Covid = COVID19Py.COVID19()
+Reddit = praw.Reddit(client_id=os.environ["REDDIT_ID"], client_secret=os.environ["REDDIT_SECRET"], user_agent="ZBot by u/Kamlin333", check_for_async=False)
 
-YClient = pyyoutube.Api(api_key=os.getenv("YOUTUBE_KEY"))
+# Covid = COVID19Py.COVID19()
 
-THelix = twitch.Helix(os.getenv("TWITCH_ID"), os.getenv("TWITCH_SECRET"), use_cache=True, cache_duration=datetime.timedelta(minutes=3))
+# YClient = pyyoutube.Api(api_key=os.environ["YOUTUBE_KEY"])
+
+# THelix = twitch.TwitchHelix(os.getenv("TWITCH_ID"), os.getenv("TWITCH_SECRET"), use_cache=True, cache_duration=datetime.timedelta(minutes=3))
 
 IMClient = imdb.IMDb()
 
-OClient = osuapi.OsuApi(os.getenv("OSU_KEY"), connector=osuapi.ReqConnector())
+OClient = OssapiV1(os.environ["OSU_KEY"])
 
-RLox = Roblox(os.getenv("ROBLOX_SECRET"))
+# RLox = Roblox(os.getenv("ROBLOX_SECRET"))
 
-PatreonTiers = {
-    783250729686532126: "Tier 1 Casual",
-    783256987655340043: "Tier 2 Super",
-    784123230372757515: "Tier 3 Legend",
-    784124034559377409: "Tier 4 Ultimate",
-}
+# PatreonTiers = {
+#     783250729686532126: "Tier 1 Casual",
+#     783256987655340043: "Tier 2 Super",
+#     784123230372757515: "Tier 3 Legend",
+#     784124034559377409: "Tier 4 Ultimate",
+# }
 
 RemoveExtra = lambda listRm, val: [value for value in listRm if value != val]
 
-GetVidDuration = lambda VidId: pafy.new(f"https://www.youtube.com/watch?v={VidId}").duration
+# GetVidDuration = lambda VidId: pafy.new(f"https://www.youtube.com/watch?v={VidId}").duration
 
-async def SendWait(ctx, Notice): await ctx.message.channel.send(embed=discord.Embed(title=Notice))
+async def SendWait(ctx:discord.Interaction, Notice:str) -> None: await ctx.followup.send(embed=discord.Embed(title=Notice))
+async def SendWaitCMDs(ctx:commands.Context, Notice:str) -> None: await ctx.send(embed=discord.Embed(title=Notice))
 
-def TimeTillMidnight():
+def TimeTillMidnight() -> int:
     Now = datetime.datetime.now()
     return (10 + ((24 - Now.hour - 1) * 60 * 60) + ((60 - Now.minute - 1) * 60) + (60 - Now.second))
 
-def Threader(FunctionList, ParameterList):
-    with Cf.ThreadPoolExecutor() as Execute:
-        Pool = [Execute.submit(Func, *Param) for Func, Param in zip(FunctionList, ParameterList)]
-        Results = [Execution.result() for Execution in Pool]
+def Threader(FunctionList, ParameterList) -> (list | bool):
+    try:
+        with Cf.ThreadPoolExecutor() as Execute:
+            Pool = [Execute.submit(Func, *Param) for Func, Param in zip(FunctionList, ParameterList)]
+            Results = [Execution.result() for Execution in Pool]
+    except:
+        return False
     return Results
 
-def RefreshGISClient():
-    global GiClient
-    del GiClient
-    GiClient = GoogleImagesSearch(os.getenv("GCS_KEY"), os.getenv("CX_ID"))
+# def RefreshGISClient():
+#     global GiClient
+#     del GiClient
+#     GiClient = GoogleImagesSearch(os.getenv("GCS_KEY"), os.getenv("CX_ID"))
 
-def ErrorEmbeds(Type):
-    Descs = {"Vote": "This command is only for voters or patreon! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord) / [Vote](https://top.gg/bot/768397640140062721/vote)",
-             "Patreon": "This command is only for patreons supporters! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord)",
-             "PatreonT2": "This command is only for Tier 2 patreons (Super) supporters or above! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord)",
-             "PatreonT3": "This command is only for Tier 3 patreons (Legend) supporters or above! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord)",
-             "PatreonT4": "This command is only for Tier 4 patreons (Ultimate) supporters or above! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord)"}
-    return discord.Embed(title="Oops",description= Descs[Type])
+# def ErrorEmbeds(Type):
+#     Descs = {"Vote": "This command is only for voters or patreon! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord) / [Vote](https://top.gg/bot/768397640140062721/vote)",
+#              "Patreon": "This command is only for patreons supporters! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord)",
+#              "PatreonT2": "This command is only for Tier 2 patreons (Super) supporters or above! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord)",
+#              "PatreonT3": "This command is only for Tier 3 patreons (Legend) supporters or above! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord)",
+#              "PatreonT4": "This command is only for Tier 4 patreons (Ultimate) supporters or above! [Official Server](https://discord.gg/V6E6prUBPv) / [Patreon](https://www.patreon.com/join/ZBotDiscord)"}
+#     return discord.Embed(title="Oops",description= Descs[Type])
 
-def GetPatreonTier(UserID):
-    try:
-        MemGuild = CBot.DClient.get_guild(783250489843384341)
-        Mem = MemGuild.get_member(UserID)
-        Roles = [discord.utils.get(MemGuild.roles, id=783250729686532126), discord.utils.get(MemGuild.roles, id=783256987655340043),
-                 discord.utils.get(MemGuild.roles, id=784123230372757515), discord.utils.get(MemGuild.roles, id=784124034559377409)]
-        for Role in Roles:
-            if Role in Mem.roles: return PatreonTiers[Role.id]
-    except AttributeError: pass
+# def GetPatreonTier(UserID):
+#     try:
+#         MemGuild = CBot.DClient.get_guild(783250489843384341)
+#         Mem = MemGuild.get_member(UserID)
+#         Roles = [discord.utils.get(MemGuild.roles, id=783250729686532126), discord.utils.get(MemGuild.roles, id=783256987655340043),
+#                  discord.utils.get(MemGuild.roles, id=784123230372757515), discord.utils.get(MemGuild.roles, id=784124034559377409)]
+#         for Role in Roles:
+#             if Role in Mem.roles: return PatreonTiers[Role.id]
+#     except AttributeError: pass
 
-def FormatTime(SecondsFormat):
+def FormatTime(SecondsFormat:int) -> str:
     Day = 0
     Hour = 0
     Min = 0
@@ -126,237 +147,160 @@ def FormatTime(SecondsFormat):
     elif Min != 0: return f"{Min}m {SecondsFormat}s"
     else: return f"{SecondsFormat}s"
 
-async def Navigator(ctx, Items, Type="#", EmbedAndContent=False, ContItems=None, Main=False, MainBed=None):
-    ChCHEm = lambda RcM, RuS: (not RuS.bot) and RcM.message == Nav and str(RcM.emoji) in ["⬅️", "❌", "➡️", "#️⃣"]
-
-    def ChCHEmFN(MSg):
-        MesS = MSg.content.lower()
-        RsT = False
-        try:
-            if int(MSg.content): RsT = True
-        except ValueError:
-            if MesS in ["cancel", "c"]: RsT = True
-        return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
-
-    ItemNum = 0
-    if not Main: Nav = await ctx.message.channel.send(embed=Items[ItemNum])
-    else: Nav = await ctx.message.channel.send(embed=MainBed)
-    if EmbedAndContent: Cont = await ctx.message.channel.send(content=ContItems[ItemNum])
-    TotalItems = len(Items)
-    await Nav.add_reaction("⬅️")
-    await Nav.add_reaction("❌")
-    await Nav.add_reaction("➡️")
-    if Type == "#": await Nav.add_reaction("#️⃣")
-    while True:
-        try:
-            Res = await CBot.DClient.wait_for("reaction_add", check=ChCHEm, timeout=120)
-            await Nav.remove_reaction(Res[0].emoji, Res[1])
-            if Res[0].emoji == "⬅️":
-                if ItemNum:
-                    ItemNum -= 1
-                    await Nav.edit(embed=Items[ItemNum])
-                    if EmbedAndContent: await Cont.edit(content=ContItems[ItemNum])
-                elif MainBed: await Nav.edit(embed=MainBed); Main = True
-
-            elif Res[0].emoji == "➡️":
-                if ItemNum < TotalItems - 1:
-                    if Main: await Nav.edit(embed=Items[ItemNum]); Main = False
-                    else:
-                        ItemNum += 1
-                        await Nav.edit(embed=Items[ItemNum])
-                        if EmbedAndContent: await Cont.edit(content=ContItems[ItemNum])
-                else:
-                    await Nav.remove_reaction("⬅️", CBot.DClient.user)
-                    await Nav.remove_reaction("❌", CBot.DClient.user)
-                    await Nav.remove_reaction("➡️", CBot.DClient.user)
-                    if Type == "#": await Nav.remove_reaction("#️⃣", CBot.DClient.user)
-                    break
-            elif Res[0].emoji == "#️⃣" and Type == "#":
-                if await ChVoteUser(Res[1].id):
-                    TempNG = await ctx.message.channel.send('Choose a number to open navigate to ItemNum. "c" or "cancel" to exit navigation.')
-                    try:
-                        ResE = await CBot.DClient.wait_for("message", check=ChCHEmFN, timeout=10)
-                        await TempNG.delete()
-                        await ResE.delete()
-                        try:
-                            pG = int(ResE.content)
-                            if 0 < pG <= TotalItems - 1: ItemNum = pG - 1
-                            elif pG < 1:
-                                ItemNum = 0
-                                pass
-                            else: ItemNum = TotalItems - 1
-                        except: pass
-                        await Nav.edit(embed=Items[ItemNum])
-                        if EmbedAndContent: await Cont.edit(content=ContItems[ItemNum])
-                    except asyncio.TimeoutError:
-                        await TempNG.edit("Request Timeout")
-                        await asyncio.sleep(5)
-                        await TempNG.delete()
-                else: await ctx.message.channel.send(embed=ErrorEmbeds("Vote"))
-            elif Res[0].emoji == "❌":
-                await Nav.remove_reaction("⬅️", CBot.DClient.user)
-                await Nav.remove_reaction("❌", CBot.DClient.user)
-                await Nav.remove_reaction("➡️", CBot.DClient.user)
-                if Type == "#": await Nav.remove_reaction("#️⃣", CBot.DClient.user)
-                break
-        except asyncio.TimeoutError:
-            await Nav.remove_reaction("⬅️", CBot.DClient.user)
-            await Nav.remove_reaction("❌", CBot.DClient.user)
-            await Nav.remove_reaction("➡️", CBot.DClient.user)
-            if Type == "#": await Nav.remove_reaction("#️⃣", CBot.DClient.user)
-            break
-
-
-class IsSetup(commands.CheckFailure): pass
-def ChSer(ctx):
+class IsSetup(app_commands.CheckFailure): pass
+def ChSer(ctx:discord.Interaction):
     if ColT.count_documents({"IDg": str(ctx.guild.id)}): return True
     raise IsSetup("Unready")
 ChSerGuild = lambda guild: ColT.count_documents({"IDg": str(guild.id)})
 
 
-class IsMultiredditLimit(commands.CheckFailure): pass
-def ChMaxMultireddits(ctx):
-    TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
-    TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
-    if Rdt.count_documents({"IDd": ctx.author.id}):
-        User = Rdt.find({"IDd": ctx.author.id})[0]
-        if len(User)-2 > TierLimit: raise IsMultiredditLimit("Too much")
-    return True
+# class IsMultiredditLimit(commands.CheckFailure): pass
+# def ChMaxMultireddits(ctx):
+#     TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
+#     TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
+#     if Rdt.count_documents({"IDd": ctx.author.id}):
+#         User = Rdt.find({"IDd": ctx.author.id})[0]
+#         if len(User)-2 > TierLimit: raise IsMultiredditLimit("Too much")
+#     return True
 
 
-class IsAdmin(commands.CheckFailure): pass
-def ChAdmin(ctx):
-    if ctx.author.guild_permissions.administrator: return True
+class IsAdmin(app_commands.CheckFailure): pass
+def ChAdmin(ctx:discord.Interaction):
+    if ctx.user.guild_permissions.administrator: return True
     raise IsAdmin("Normie")
 
 
-class IsVote(commands.CheckFailure): pass
-async def ChVote(ctx):
-    if await CBot.TClient.get_user_vote(ctx.author.id): return True
-    else:
-        try:
-            MemGuild = CBot.DClient.get_guild(783250489843384341)
-            Mem = MemGuild.get_member(ctx.author.id)
-            Roles = [discord.utils.get(MemGuild.roles, id=783250729686532126), discord.utils.get(MemGuild.roles, id=783256987655340043),
-                     discord.utils.get(MemGuild.roles, id=784123230372757515), discord.utils.get(MemGuild.roles, id=784124034559377409)]
-            #- Roles.append(discord.utils.get(MemGuild.roles, id=783250729686532126))
-            #- Roles.append(discord.utils.get(MemGuild.roles, id=783256987655340043))
-            #- Roles.append(discord.utils.get(MemGuild.roles, id=784123230372757515))
-            #- Roles.append(discord.utils.get(MemGuild.roles, id=784124034559377409))
-            for Role in Roles:
-                if Role in Mem.roles: return True
-        except AttributeError: pass
-        raise IsVote("No Vote")
-async def ChVoteUser(UserID):
-    if await CBot.TClient.get_user_vote(UserID): return True
-    else:
-        try:
-            MemGuild = CBot.DClient.get_guild(783250489843384341)
-            Mem = MemGuild.get_member(UserID)
-            Roles = [discord.utils.get(MemGuild.roles, id=783250729686532126), discord.utils.get(MemGuild.roles, id=783256987655340043),
-                     discord.utils.get(MemGuild.roles, id=784123230372757515), discord.utils.get(MemGuild.roles, id=784124034559377409)]
-            for Role in Roles:
-                if Role in Mem.roles: return True
-        except AttributeError: pass
-        return False
+# class IsVote(commands.CheckFailure): pass
+# async def ChVote(ctx):
+#     if await CBot.TClient.get_user_vote(ctx.author.id): return True
+#     else:
+#         try:
+#             MemGuild = CBot.DClient.get_guild(783250489843384341)
+#             Mem = MemGuild.get_member(ctx.author.id)
+#             Roles = [discord.utils.get(MemGuild.roles, id=783250729686532126), discord.utils.get(MemGuild.roles, id=783256987655340043),
+#                      discord.utils.get(MemGuild.roles, id=784123230372757515), discord.utils.get(MemGuild.roles, id=784124034559377409)]
+#             #- Roles.append(discord.utils.get(MemGuild.roles, id=783250729686532126))
+#             #- Roles.append(discord.utils.get(MemGuild.roles, id=783256987655340043))
+#             #- Roles.append(discord.utils.get(MemGuild.roles, id=784123230372757515))
+#             #- Roles.append(discord.utils.get(MemGuild.roles, id=784124034559377409))
+#             for Role in Roles:
+#                 if Role in Mem.roles: return True
+#         except AttributeError: pass
+#         raise IsVote("No Vote")
+# async def ChVoteUser(UserID):
+#     if await CBot.TClient.get_user_vote(UserID): return True
+#     else:
+#         try:
+#             MemGuild = CBot.DClient.get_guild(783250489843384341)
+#             Mem = MemGuild.get_member(UserID)
+#             Roles = [discord.utils.get(MemGuild.roles, id=783250729686532126), discord.utils.get(MemGuild.roles, id=783256987655340043),
+#                      discord.utils.get(MemGuild.roles, id=784123230372757515), discord.utils.get(MemGuild.roles, id=784124034559377409)]
+#             for Role in Roles:
+#                 if Role in Mem.roles: return True
+#         except AttributeError: pass
+#         return False
 
 
-class IsPatreon(commands.CheckFailure): pass
-def ChPatreon(ctx):
-    try:
-        MemGuild = CBot.DClient.get_guild(783250489843384341)
-        Mem = MemGuild.get_member(ctx.author.id)
-        Roles = [discord.utils.get(MemGuild.roles, id=783250729686532126), discord.utils.get(MemGuild.roles, id=783256987655340043),
-                 discord.utils.get(MemGuild.roles, id=784123230372757515), discord.utils.get(MemGuild.roles, id=784124034559377409)]
-        for Role in Roles:
-            if Role in Mem.roles: return True
-    except AttributeError: pass
-    raise IsPatreon("Not Patreon")
-def ChPatreonUser(UserID):
-    try:
-        MemGuild = CBot.DClient.get_guild(783250489843384341)
-        Mem = MemGuild.get_member(UserID)
-        Roles = [discord.utils.get(MemGuild.roles, id=783250729686532126), discord.utils.get(MemGuild.roles, id=783256987655340043),
-                 discord.utils.get(MemGuild.roles, id=784123230372757515), discord.utils.get(MemGuild.roles, id=784124034559377409)]
-        for Role in Roles:
-            if Role in Mem.roles: return True
-    except AttributeError: pass
-    return False
+# class IsPatreon(commands.CheckFailure): pass
+# def ChPatreon(ctx):
+#     try:
+#         MemGuild = CBot.DClient.get_guild(783250489843384341)
+#         Mem = MemGuild.get_member(ctx.author.id)
+#         Roles = [discord.utils.get(MemGuild.roles, id=783250729686532126), discord.utils.get(MemGuild.roles, id=783256987655340043),
+#                  discord.utils.get(MemGuild.roles, id=784123230372757515), discord.utils.get(MemGuild.roles, id=784124034559377409)]
+#         for Role in Roles:
+#             if Role in Mem.roles: return True
+#     except AttributeError: pass
+#     raise IsPatreon("Not Patreon")
+# def ChPatreonUser(UserID):
+#     try:
+#         MemGuild = CBot.DClient.get_guild(783250489843384341)
+#         Mem = MemGuild.get_member(UserID)
+#         Roles = [discord.utils.get(MemGuild.roles, id=783250729686532126), discord.utils.get(MemGuild.roles, id=783256987655340043),
+#                  discord.utils.get(MemGuild.roles, id=784123230372757515), discord.utils.get(MemGuild.roles, id=784124034559377409)]
+#         for Role in Roles:
+#             if Role in Mem.roles: return True
+#     except AttributeError: pass
+#     return False
 
 
-class IsPatreonT2(commands.CheckFailure): pass
-def ChPatreonT2(ctx):
-    try:
-        MemGuild = CBot.DClient.get_guild(783250489843384341)
-        Mem = MemGuild.get_member(ctx.author.id)
-        Roles = [discord.utils.get(MemGuild.roles, id=783256987655340043), discord.utils.get(MemGuild.roles, id=784123230372757515), 
-                 discord.utils.get(MemGuild.roles, id=784124034559377409)]
-        for Role in Roles:
-            if Role in Mem.roles: return True
-    except AttributeError: pass
-    raise IsPatreonT2("Not Patreon")
-def ChPatreonUserT2(UserID):
-    try:
-        MemGuild = CBot.DClient.get_guild(783250489843384341)
-        Mem = MemGuild.get_member(UserID)
-        Roles = [discord.utils.get(MemGuild.roles, id=783256987655340043), discord.utils.get(MemGuild.roles, id=784123230372757515), 
-                 discord.utils.get(MemGuild.roles, id=784124034559377409)]
-        for Role in Roles:
-            if Role in Mem.roles: return True
-    except AttributeError: pass
-    return False
+# class IsPatreonT2(commands.CheckFailure): pass
+# def ChPatreonT2(ctx):
+#     try:
+#         MemGuild = CBot.DClient.get_guild(783250489843384341)
+#         Mem = MemGuild.get_member(ctx.author.id)
+#         Roles = [discord.utils.get(MemGuild.roles, id=783256987655340043), discord.utils.get(MemGuild.roles, id=784123230372757515), 
+#                  discord.utils.get(MemGuild.roles, id=784124034559377409)]
+#         for Role in Roles:
+#             if Role in Mem.roles: return True
+#     except AttributeError: pass
+#     raise IsPatreonT2("Not Patreon")
+# def ChPatreonUserT2(UserID):
+#     try:
+#         MemGuild = CBot.DClient.get_guild(783250489843384341)
+#         Mem = MemGuild.get_member(UserID)
+#         Roles = [discord.utils.get(MemGuild.roles, id=783256987655340043), discord.utils.get(MemGuild.roles, id=784123230372757515), 
+#                  discord.utils.get(MemGuild.roles, id=784124034559377409)]
+#         for Role in Roles:
+#             if Role in Mem.roles: return True
+#     except AttributeError: pass
+#     return False
 
 
-class IsPatreonT3(commands.CheckFailure): pass
-def ChPatreonT3(ctx):
-    try:
-        MemGuild = CBot.DClient.get_guild(783250489843384341)
-        Mem = MemGuild.get_member(ctx.author.id)
-        Roles = [discord.utils.get(MemGuild.roles, id=784123230372757515), discord.utils.get(MemGuild.roles, id=784124034559377409)]
-        for Role in Roles:
-            if Role in Mem.roles: return True
-    except AttributeError: pass
-    raise IsPatreonT3("Not Patreon")
-def ChPatreonUserT3(UserID):
-    try:
-        MemGuild = CBot.DClient.get_guild(783250489843384341)
-        Mem = MemGuild.get_member(UserID)
-        Roles = [discord.utils.get(MemGuild.roles, id=784123230372757515), discord.utils.get(MemGuild.roles, id=784124034559377409)]
-        for Role in Roles:
-            if Role in Mem.roles: return True
-    except AttributeError: pass
-    return False
+# class IsPatreonT3(commands.CheckFailure): pass
+# def ChPatreonT3(ctx):
+#     try:
+#         MemGuild = CBot.DClient.get_guild(783250489843384341)
+#         Mem = MemGuild.get_member(ctx.author.id)
+#         Roles = [discord.utils.get(MemGuild.roles, id=784123230372757515), discord.utils.get(MemGuild.roles, id=784124034559377409)]
+#         for Role in Roles:
+#             if Role in Mem.roles: return True
+#     except AttributeError: pass
+#     raise IsPatreonT3("Not Patreon")
+# def ChPatreonUserT3(UserID):
+#     try:
+#         MemGuild = CBot.DClient.get_guild(783250489843384341)
+#         Mem = MemGuild.get_member(UserID)
+#         Roles = [discord.utils.get(MemGuild.roles, id=784123230372757515), discord.utils.get(MemGuild.roles, id=784124034559377409)]
+#         for Role in Roles:
+#             if Role in Mem.roles: return True
+#     except AttributeError: pass
+#     return False
 
 
-class IsPatreonT4(commands.CheckFailure): pass
-def ChPatreonT4(ctx):
-    try:
-        MemGuild = CBot.DClient.get_guild(783250489843384341)
-        Mem = MemGuild.get_member(ctx.author.id)
-        Role = discord.utils.get(MemGuild.roles, id=784124034559377409)
-        if Role in Mem.roles: return True
-    except AttributeError: pass
-    raise IsPatreonT4("Not Patreon")
-def ChPatreonUserT4(UserID):
-    try:
-        MemGuild = CBot.DClient.get_guild(783250489843384341)
-        Mem = MemGuild.get_member(UserID)
-        Role = discord.utils.get(MemGuild.roles, id=784124034559377409)
-        if Role in Mem.roles: return True
-    except AttributeError: pass
-    return False
+# class IsPatreonT4(commands.CheckFailure): pass
+# def ChPatreonT4(ctx):
+#     try:
+#         MemGuild = CBot.DClient.get_guild(783250489843384341)
+#         Mem = MemGuild.get_member(ctx.author.id)
+#         Role = discord.utils.get(MemGuild.roles, id=784124034559377409)
+#         if Role in Mem.roles: return True
+#     except AttributeError: pass
+#     raise IsPatreonT4("Not Patreon")
+# def ChPatreonUserT4(UserID):
+#     try:
+#         MemGuild = CBot.DClient.get_guild(783250489843384341)
+#         Mem = MemGuild.get_member(UserID)
+#         Role = discord.utils.get(MemGuild.roles, id=784124034559377409)
+#         if Role in Mem.roles: return True
+#     except AttributeError: pass
+#     return False
 
 
 class Ignore(commands.CheckFailure): pass
-def ChDev(ctx):
+def ChDev(ctx:commands.Context) -> bool:
     if ctx.author.id == 443986051371892746: return True
     raise Ignore("Ignore")
 
+def RefreshMAL(ctx:discord.Interaction) -> bool:
+    MalRefresher()
+    return True
 
-class IsNSFW(commands.CheckFailure): pass
-def ChNSFW(ctx):
+
+class IsNSFW(app_commands.CheckFailure): pass
+def ChNSFW(ctx:discord.Interaction):
     if ctx.channel.is_nsfw(): return True
     raise IsNSFW("Not Safe")
 
 
-class IsBot(commands.CheckFailure): pass
+class IsBot(app_commands.CheckFailure): pass

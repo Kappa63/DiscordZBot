@@ -1,28 +1,53 @@
 import discord
 from discord.ext import commands
-from Setup import Ignore, IsBot
-import dbl
-from dotenv import load_dotenv
-import os
+# import dbl
+from Setup import Cogs, DToken, IsBot, Ignore
 
-load_dotenv()
+class DClient(commands.Bot):
+    StaffChannel = None
+    Me = None
+    def __init__(self, Cogs) -> None:
+        REqInt = discord.Intents.default()
+        REqInt.members = True
+        self.LoadedCogs = Cogs
+        super().__init__(case_insensitive=True, command_prefix=["Z","z"], intents=REqInt, help_command=None)
+   
+    async def setup_hook(self) -> None:
+        for Cog in self.LoadedCogs: 
+            await self.load_extension(Cog)
+        print("Cogs Loaded...")
+        return await super().setup_hook()
+    
+    async def reload_all_cogs(self) -> None:
+        for Cog in self.LoadedCogs: 
+            await self.reload_extension(Cog)
+        print("Cogs Reloaded...")
 
-REqInt = discord.Intents.default()
-REqInt.members = True
+    async def reload_cogs(self, cogsRe) -> None:
+        for Cog in cogsRe: 
+            await self.reload_extension(Cog)
+        print("Cogs Reloaded...")
 
-DClient = commands.Bot(case_insensitive=True, command_prefix=["z", "Z"], help_command=None, intents=REqInt)
+    async def unload_cogs(self, cogsRe) -> None:
+        for Cog in cogsRe: 
+            try:
+                await self.unload_extension(Cog)
+                self.LoadedCogs.remove(Cog)
+            except:
+                pass
+        print("Cogs Unloaded...")
 
-TClient = dbl.client.DBLClient(bot=DClient, token=os.getenv("DBL_TOKEN"), autopost=True)
+    async def load_cogs(self, cogsRe) -> None:
+        for Cog in cogsRe: 
+            try:
+                await self.load_extension(Cog)
+                self.LoadedCogs.add(Cog)
+            except:
+                pass
 
-@DClient.check
-async def ChBot(ctx):
-    if ctx.author.bot: raise IsBot("Bot")
-    return True
+        print("Cogs Loaded...")
 
-@DClient.check
-async def ChDM(ctx):
-    if ctx.guild: return True
-    raise Ignore("Ignore")
+# TClient = dbl.client.DBLClient(bot=DClient, token=os.getenv("DBL_TOKEN"), autopost=True)
 
 #_ @DClient.check
 #_ async def ChModDown(ctx):
@@ -31,13 +56,19 @@ async def ChDM(ctx):
 #_     OpenState.close()
 #_     if ("".join(State) == "Down") and ctx.author.id not in [507212584634548254, 443986051371892746, 224809178793771009]: raise Ignore("Ignore")
 #_     return True
+# Cogs = ["Cogs.Misc", "Cogs.MongoDB", "Cogs.Covid", "Cogs.Nasa", "Cogs.Socials", "Cogs.AnimeManga",
+#         "Cogs.HelpInfo", "Cogs.Randomizers", "Cogs.OnlyMods", "Cogs.MainEvents", "Cogs.Rule34",
+#         "Cogs.Images","Cogs.WrittenStuff", "Cogs.Movies", "Cogs.Games", "Cogs.GameAPIs", "Cogs.Google"]
 
-Cogs = ["Cogs.Misc", "Cogs.MongoDB", "Cogs.Covid", "Cogs.Nasa", "Cogs.Socials", "Cogs.AnimeManga",
-        "Cogs.HelpInfo", "Cogs.Randomizers", "Cogs.OnlyMods", "Cogs.MainEvents", "Cogs.Rule34",
-        "Cogs.Images","Cogs.WrittenStuff", "Cogs.Movies", "Cogs.Games", "Cogs.GameAPIs", "Cogs.Google"]
+# @BotClient.check
+# async def ChBot(ctx:discord.Interaction):
+#     if ctx.user.bot: raise IsBot("Bot")
+#     return True
 
-if __name__ != "__main__":
-    for Cog in Cogs: DClient.load_extension(Cog)
-    print("Cogs Loaded...")
+# @BotClient.check
+# async def ChDM(ctx):
+#     if ctx.guild: return True
+#     raise Ignore("Ignore")
 
-DClient.run(os.getenv("DISCORD_SECRET"))
+BotClient = DClient(Cogs=Cogs)
+BotClient.run(DToken)

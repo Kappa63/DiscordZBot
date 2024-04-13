@@ -1,7 +1,5 @@
-PaddedReq.txt
-Cogs/Music.py
-EmbedLimits.png
-Desc.txt
-Tests.py
-.google-cookie
+Test.py
 __pycache__
+.env
+Exclusions
+DeckCards
