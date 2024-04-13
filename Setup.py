@@ -28,7 +28,7 @@ Cogs = ["Cogs.Randomizers", "Cogs.MainEvents", "Cogs.AnimeManga", "Cogs.WrittenS
         #  "Cogs.HelpInfo", "Cogs.MongoDB",  "Cogs.Misc",
         "Cogs.Socials", "Cogs.OnlyMods", "Cogs.Nasa", "Cogs.Movies", "Cogs.Images", "Cogs.Google"]
 
-DToken = os.environ["DISCORD_TOKEN_TIA"]
+DToken = os.environ["DISCORD_TOKEN_ZBOT"]
 
 Cls = MongoClient(os.environ["MONGODB_URL"])
 DbM = Cls["CBot"]
