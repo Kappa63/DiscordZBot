@@ -4,12 +4,10 @@ from Setup import SendWait
 import requests
 from discord import app_commands
 from CBot import DClient as CBotDClient
-# import asyncio
 from Customs.Navigators import ButtonNavigator as Navigator
 from googlesearch import search
 from bs4 import BeautifulSoup
 import re
-# import numpy as np
 
 class Google(commands.Cog):
     def __init__(self, DClient:CBotDClient) -> None:

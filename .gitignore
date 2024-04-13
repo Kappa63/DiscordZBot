@@ -1,2 +1,5 @@
 Test.py
 __pycache__
+.env
+Exclusions
+DeckCards

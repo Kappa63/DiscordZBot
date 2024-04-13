@@ -2,21 +2,10 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from prawcore import NotFound, Forbidden
-# import os
-import random
-# from typing import List
-# from Setup import (Reddit, Rdt, GetPatreonTier, SendWait, YClient, Twitter, THelix, ChVote, ChVoteUser,
-#                    ChPatreonT2, ChMaxMultireddits, GetVidDuration, ErrorEmbeds, Navigator, Threader)
 from CBot import DClient as CBotDClient
 from Setup import SendWait, Threader, Reddit, Rdt
-# from twitch.helix.resources import StreamNotFound
-# import requests
-# import tweepy
 from Customs.Navigators import ButtonNavigator as Navigator
 from Customs.Navigators import SortableButtonNavigator as SortedNav
-# import pyimgbox
-# import inspect
-import asyncio
 import datetime
 import numpy as np
 
@@ -389,7 +378,7 @@ class Socials(commands.Cog):
 
     RedditSlashes = app_commands.Group(name="reddit", description="Main Command Group for Reddit.")
 
-    @RedditSlashes.command(name="get", description="Get a Post from a Subreddits's HOT Posts.")
+    @RedditSlashes.command(name="get", description="Get a Post from a Subreddits's RISING Posts.")
     @app_commands.rename(sub="subreddit")
     @app_commands.describe(sub="Name of Subreddit")
     @app_commands.checks.cooldown(1, 2)
@@ -398,12 +387,13 @@ class Socials(commands.Cog):
         args = sub[2:] if sub.startswith("r/") else sub
         await ctx.response.defer(thinking=True)
         if CheckSub(args):
-            Post = [i for i in list(Reddit.subreddit(args).hot()) if not i.stickied]
-            if not Post: []
-            SubCpoS = random.choice(Post)
+            SubCpoS = Reddit.subreddit(args).random() # [i for i in list(Reddit.subreddit(args).hot()) if not i.stickied]
+            # print(len(list(SubCpoS)), SubCpoS)
+            if not SubCpoS: await ctx.followup.send("No Posts Found :expressionless:")
+            # SubCpoS = random.choice(Post)
             Nsfwcheck=ctx.channel.is_nsfw()
             await ctx.followup.send(embed=RedditbedMaker(SubCpoS, args, Nsfwcheck))
-        else: await ctx.followup.send("Sub doesn't exist or private :expressionless: (Make sure the argument doesnt include the r/)")
+        else: await ctx.followup.send("Sub doesn't exist or private :expressionless:")
 
     async def RedditNav(self, ctx:discord.Interaction, sub:str, ctp:str) -> None:
         def rdtEmBldr(pst):
@@ -421,25 +411,20 @@ class Socials(commands.Cog):
         def updateNav(srt:str):
             match srt:
                 case "Top All Time":
-                    Post = Reddit.subreddit(sub).top("all")
+                    Post = Reddit.subreddit(sub).top("all", limit=50)
                 case "Top This Month":
-                    Post = Reddit.subreddit(sub).top("month")
+                    Post = Reddit.subreddit(sub).top("month", limit=50)
                 case "Top Today":
-                    Post = Reddit.subreddit(sub).top("day")
+                    Post = Reddit.subreddit(sub).top("day", limit=50)
                 case "Rising":
-                    Post = Reddit.subreddit(sub).rising()
+                    Post = Reddit.subreddit(sub).rising(limit=50)
                 case "Hot":
-                    Post = Reddit.subreddit(sub).hot()
+                    Post = Reddit.subreddit(sub).hot(limit=50)
                 case "New":
-                    Post = Reddit.subreddit(sub).new()
+                    Post = Reddit.subreddit(sub).new(limit=50)
             return rdtEmBldr(Post)
         
-        
-
         if not CheckSub(sub) and not ctp == "c2": await SendWait(ctx, "Sub doesn't exist or private :expressionless:"); return
-
-        # await ctx.followup.send(, view=, view=NavigatedSelector(b, a, b, a, b, ))
-
         await SortedNav(updateNav, ["Top All Time", "Top This Month", "Top Today", "Rising", "Hot", "New"], 
                         ["🌍", "🗓️", "📅", "📈", "🔥", "📝"], ctx).autoRun()
         # await Navigator(ctx, PostEms).autoRun()

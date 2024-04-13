@@ -5,11 +5,8 @@ import random
 import cv2
 import numpy
 from CBot import DClient as CBotDClient
-# import requests
 import os
-# import io
 from Setup import GClient, GApi, SendWait
-# import pyimgbox
 
 
 class Randomizers(commands.Cog):
@@ -19,9 +16,6 @@ class Randomizers(commands.Cog):
     @app_commands.command(name="roll", description="Roll a Dice.")
     @app_commands.checks.cooldown(2, 1)
     async def RollTheDice(self, ctx:discord.Interaction) -> None:
-        # DiceFaces = {1: "https://i.imgur.com/A3winYh.png", 2: "https://i.imgur.com/JFuawqi.png",
-        #              3: "https://i.imgur.com/2tufStP.png", 4: "https://i.imgur.com/GdtEPw4.png",
-        #              5: "https://i.imgur.com/7hgCUOq.png", 6: "https://i.imgur.com/5iyDeF1.png"}
         DiceFaces = {1: "https://i.imgur.com/hHO0UrI.png", 2: "https://i.imgur.com/pg5M3TR.png",
                      3: "https://i.imgur.com/ToNk0YB.png", 4: "https://i.imgur.com/QvcZzRQ.png",
                      5: "https://i.imgur.com/6LkxfKL.png", 6: "https://i.imgur.com/vBRUNQO.png"}
@@ -53,10 +47,6 @@ class Randomizers(commands.Cog):
         RGBtoHEX = "%02x%02x%02x" % (R, G, B)
         cv2.imwrite("Color.png", MakeClear)
         ClrImg = discord.File("Color.png")
-        # PEm.set_image(url="attachment://Color.png")
-        # await ctx.response.send_message(file=TpdeImg, embed=PEm)
-        # async with pyimgbox.Gallery(title="The Color") as gallery: Img = await gallery.upload("Color.png")
-        # ColoredImage = Img["image_url"]
         ColorObject = discord.Color(value=int(RGBtoHEX, 16))
         CEm = discord.Embed(title="Color", description=f"```-Hex: #{RGBtoHEX}\n-RGB: ({R},{G},{B})```", color=ColorObject)
         CEm.set_thumbnail(url="attachment://Color.png")

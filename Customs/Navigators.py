@@ -2,6 +2,7 @@
 import discord
 import CBot
 import asyncio
+import gc
 from Customs.UI.Navigation import NavigationView, NavigationWithSelectorView
 
 class Navigator:
@@ -149,6 +150,8 @@ class SortableButtonNavigator(Navigator):
     async def exitNavigation(self) -> None:
         self.Cache = None
         await self.Nav.edit(view=None)
+        del self
+        gc.collect()
 
     async def autoRun(self) -> None:
         await self.setup()

@@ -2,16 +2,10 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import requests
-# import pyimgbox
 from typing import Optional
-# from Setup import ChVoteUser, SendWait, Threader, ErrorEmbeds, Navigator
 from Setup import SendWait
-# , Threader, Navigator
-# from pdf2image import convert_from_path
-# import random
 from PIL import Image
 import deeppyer
-# import asyncio
 import os
 import qrcode
 import cv2
@@ -29,12 +23,6 @@ class Images(commands.Cog):
         CEm = discord.Embed(title="Meow", color=0xA3D7C1)
         CEm.set_image(url=f'https://cataas.com/cat/{CatGot["_id"]}')
         await ctx.response.send_message(embed=CEm)
-
-    # @commands.command(aliases=["pog","poggers", "pogger", "pogchamp"])
-    # @commands.cooldown(1, 1, commands.BucketType.user)
-    # async def POOOGGERRRS(self, ctx):
-    #     Pog = random.choice(open("Pog.txt").readlines())
-    #     await ctx.response.send_message(Pog)
 
     @app_commands.command(name="doggo", description="For All the Dog Lovers.")
     @app_commands.checks.cooldown(1, 1)
@@ -131,7 +119,6 @@ class Images(commands.Cog):
     @app_commands.describe(img="Attachment of QrCode Image")
     @app_commands.checks.cooldown(1, 2)
     async def ImageFrier(self, ctx:discord.Interaction, *, URL:Optional[str]=None, img:Optional[discord.Attachment]=None) -> None:
-        # print(ctx.message.content)
         if not URL and not img: await SendWait(ctx, "No image(s) or link(s) were attached :woozy_face:"); return 
         Attached = []
         print(URL)

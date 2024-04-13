@@ -2,24 +2,10 @@ import discord
 from discord.ext import commands
 # import mal
 from discord import app_commands
-from Customs.nHentai import Utils, Sort, Hentai, Format
-# from Setup import MClient, ErrorEmbeds, Navigator, ChVote, ChVoteUser, ChNSFW, SendWait
 from Setup import SendWait, MClient, MALsearch, RefreshMAL
-from Customs.Navigators import ButtonNavigator as Navigator
+# from Customs.Navigators import ButtonNavigator as Navigator
 from Customs.UI.Selector import SelectionView as Selector
-import asyncio
 from CBot import DClient as CBotDClient
-import malclient
-
-def EmbedMaker(DentAi, Tags, Page) -> discord.Embed:
-    DEmE = discord.Embed(title=DentAi.title(Format.Pretty), description=Tags, url=DentAi.url, color=0x000000)
-    DEmE.set_thumbnail(url=DentAi.image_urls[0])
-    DEmE.set_footer(text=f"Released on {DentAi.upload_date}\n\nNeed help navigating? zhelp navigation")
-    DEmE.set_image(url=DentAi.image_urls[Page])
-    DEmE.add_field(name="Doujin ID", value=DentAi.id, inline=False)
-    DEmE.add_field(name="\u200b", value=f"`Page: {(Page+1)}/{len(DentAi.image_urls)}`", inline=False)
-    return DEmE
-
 
 class AnimeManga(commands.Cog):
     def __init__(self, DClient:CBotDClient) -> None:
@@ -89,7 +75,6 @@ class AnimeManga(commands.Cog):
             await ctx.edit_original_response(embed=AEm)
         
         if not manga: await SendWait(ctx, "No Arguments :no_mouth:"); return
-        # try:
         MangaInput = manga
         C = 0
         SrchManga = []
@@ -99,27 +84,7 @@ class AnimeManga(commands.Cog):
             C += 1
             SAEm.add_field(name="\u200b", value=f"{C}. `{MangaResult.title}` **({MangaResult.media_type.value})**", inline=False)
             SrchManga.append(MangaResult)
-        # SAEm.set_footer(text='Choose a number to view MAL entry. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
         await ctx.edit_original_response(embed=SAEm, view=Selector(getSel, exTimOt, list(range(1, C+1))))
-            # try:
-            #     ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=20)
-            #     LResS = ResS.content.lower()
-            #     try:
-            #         if int(ResS.content) <= 10:
-            #             MangaID = SrchManga[int(ResS.content) - 1].id
-                        
-            #     except ValueError:
-            #         if LResS in ["cancel", "c"]: await MnSrS.edit_message()
-            # except asyncio.TimeoutError: await MnSrS.edit_message(embed=discord.Embed(title=":hourglass: Search Timeout...", color=0x3695BA))
-        # except (UnboundLocalError, ValueError) as e:
-        #     SAEm = discord.Embed(title=f':mag: Search for "{MangaInput}"', description="\u200b", color=0x3695BA)
-        #     SAEm.add_field(name="\u200b", value="No Results found :woozy_face:", inline=False)
-        #     await ctx.edit_original_response(embed=SAEm)
-        #     return
-
-        # try:
-        
-        # except UnboundLocalError: pass   
 
     @app_commands.command(name="anime", description="Retrieves a Anime from MAL.")
     @app_commands.describe(anime="Anime Name")
@@ -134,8 +99,6 @@ class AnimeManga(commands.Cog):
             await ctx.edit_original_response(embed=discord.Embed(title=":calling: Finding...", 
                                                             description=f"{AnimeF.title}", color=0x3FC0FF), view=None)
             AnimeGet = MClient.get_anime_details(AnimeF.id)
-            # print(AnimeGet.dict().keys())
-            # AnimeGetmal = mal.Anime(AnimeID)
             AnimeGenres = []
             for Genre in AnimeGet.genres: AnimeGenres.append(Genre.name)
             altEn = AnimeGet.alternative_titles.get("en")
@@ -144,7 +107,6 @@ class AnimeManga(commands.Cog):
                                 description=f'{", ".join(AnimeGenres)}\n[Mal Page](https://myanimelist.net/anime/{AnimeGet.id})', color=0x3FC0FF)
             AEm.set_thumbnail(url=AnimeGet.main_picture.large)
             AnimeSynopsis = AnimeGet.synopsis[:1021]
-            # print("d")
             AEm.add_field(name=f'Studios: {", ".join([i.name for i in AnimeGet.studios])}', value="\u200b", inline=False)
             AEm.add_field(name="Synopsis:", value=AnimeSynopsis, inline=False)
             if hasattr(AnimeGet, "start_date"): AEm.add_field(name="Start Airing on:", value=AnimeGet.start_date, inline=True)
@@ -196,9 +158,7 @@ class AnimeManga(commands.Cog):
             # except TypeError: pass
             await ctx.edit_original_response(embed=AEm)
 
-
         if not anime: await SendWait(ctx, "No Arguments :no_mouth:"); return
-        # try:
         AnimeInput = anime
         C = 0
         SrchAnime = []
@@ -208,100 +168,7 @@ class AnimeManga(commands.Cog):
             C += 1
             SAEm.add_field(name="\u200b", value=f"{C}. `{AnimeResult.title}`", inline=False)#**({AnimeResult.id})**
             SrchAnime.append(AnimeResult)
-        # SAEm.set_footer(text='Choose a number to view MAL entry. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
         await ctx.edit_original_response(embed=SAEm, view=Selector(getSel, exTimOt, list(range(1, C+1))))
-        # try:
-        #     ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=20)
-        #     LResS = ResS.content.lower()
-        #     try:
-        #         if int(ResS.content) <= 10:
-        #             AnimeID = SrchAnime[int(ResS.content) - 1].id
-                    # await ctx.edit_original_response(embed=discord.Embed(title=":calling: Finding...", 
-                    #                                         description=f"{SrchAnime[int(ResS.content)-1].title}", color=0x3FC0FF)) #**({SrchAnime[int(ResS.content)-1].id})**
-        #     except ValueError:
-        #         if LResS in ["cancel", "c"]: await ctx.edit_original_response(embed=discord.Embed(title=":x: Search Cancelled", color=0x3FC0FF))
-        # except asyncio.TimeoutError: await ctx.edit_original_response(embed=discord.Embed(title=":hourglass: Search Timeout...", color=0x3FC0FF))
-        # except (UnboundLocalError, ValueError) as e:
-        #     SAEm = discord.Embed(title=f':mag: Search for "{AnimeInput}"', description="\u200b", color=0x3FC0FF)
-        #     SAEm.add_field(name="\u200b", value="No Results found :woozy_face:", inline=False)
-        #     await AnSrS.edit(embed=SAEm)
-        #     return
-        
-        # try:
-        
-        # except UnboundLocalError: 
-        #     pass
-        
-    # @commands.command(name="hentai", description="nHentai \"Manga\" (Cause THATS what You're Looking for).")
-    # @commands.cooldown(1, 3, commands.BucketType.guild)
-    # async def nHentaiReader(self, ctx:commands.Context, *args) -> None:
-    #     def ChCHanS(MSg) -> bool:
-    #         MesS = MSg.content.lower()
-    #         MeseS = (MSg.content.lower()).split(" ")
-    #         RsT = False
-    #         try:
-    #             if int(MSg.content) <= 10: RsT = True
-    #         except ValueError:
-    #             if MesS in ["cancel", "c", "zhentai"] or MeseS[0] == "zhentai": RsT = True
-    #         return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
-
-    #     if not args: await SendWait(ctx, "No Arguments :no_mouth:"); return
-    #     Chlks = list(args)
-    #     if Chlks[0].lower() == "search":
-    #         Chlks.pop(0)
-    #         C = 0
-    #         SrchDen = []
-    #         if not Chlks: await SendWait(ctx, "No search Argument :woozy_face:"); return
-    #         try:
-    #             if ctx.guild.id != 586940644153622550: Search = Utils.search_by_query(query=f'{" ".join(Chlks)} -tag:"lolicon" -tag:"shotacon"', sort=Sort.Popular)
-    #             else: Search = Utils.search_by_query(query=" ".join(Chlks), sort=Sort.Popular)
-    #             for DeOujin in Search:
-    #                 C += 1
-    #                 if C == 1:
-    #                     SEm = discord.Embed(title=f':mag: Search for "{" ".join(Chlks)}"', description="\u200b", color=0x000000)
-    #                 SEm.add_field(name="\u200b", value=f"{C}. `{DeOujin.title(Format.Pretty)}`", inline=False)
-    #                 SrchDen.append(DeOujin)
-    #                 if C == 10: break
-    #             SEm.set_footer(text='Choose a number to open doujin. "c" or "cancel" to exit search. \n\n*The Search closes automatically after 20sec of inactivity.*')
-    #             DmSent = await ctx.response.send_message(embed=SEm)
-    #             try:
-    #                 ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=20)
-    #                 LResS = ResS.content.lower()
-    #                 ReseS = (ResS.content.lower()).split(" ")
-
-    #                 try:
-    #                     if int(ResS.content) <= 10:
-    #                         Srch = SrchDen[int(ResS.content) - 1].id
-    #                         DentAi = Hentai(Srch)
-    #                         await DmSent.edit(embed=discord.Embed(title=":newspaper: Opening...", description=DentAi.title(Format.Pretty), color=0x000000))
-    #                 except ValueError:
-    #                     if LResS in ["cancel", "c", "zhentai"] or ReseS[0] == "zhentai": await DmSent.edit(embed=discord.Embed(title=":newspaper2: Search Cancelled", 
-    #                                                                                                                            color=0x000000))
-    #             except asyncio.TimeoutError: await DmSent.edit(embed=discord.Embed(title=":hourglass: Search Timeout...", color=0x000000))
-    #         except UnboundLocalError:
-    #             SEm = discord.Embed(title=f':mag: Search for "{" ".join(Chlks)}"', description="\u200b", color=0x000000)
-    #             SEm.add_field(name="\u200b", value="No Results found :woozy_face:", inline=False)
-    #             await ctx.response.send_message(embed=SEm)
-                
-    #     else:
-    #         try: Srch = int(" ".join(args))
-    #         except ValueError:
-    #             if " ".join(args).lower() == "random":
-    #                 while True:
-    #                     Srch = Utils.get_random_id()
-    #                     DentAi = Hentai(Srch)
-    #                     if (("lolicon" not in [tag.name for tag in DentAi.tag]) and ("shotacon" not in [tag.name for tag in DentAi.tag])) or ctx.guild.id == 586940644153622550: break
-    #             else: await SendWait(ctx, "The argument contained non-numeral characters and wasn't a random request. :no_mouth:")
-    #     try:
-    #         if Hentai.exists(Srch)or Srch == 455417:
-    #             DentAi = Hentai(Srch)
-    #             if (("lolicon" not in [tag.name for tag in DentAi.tag]) and ("shotacon" not in [tag.name for tag in DentAi.tag])) or ctx.guild.id == 586940644153622550:
-    #                 Tags = (", ".join([tag.name for tag in DentAi.tag]))[:253]
-    #                 HentaiPages = [EmbedMaker(DentAi, Tags, P) for P in range(len(DentAi.image_urls))]
-    #                 await Navigator(ctx, HentaiPages).autoRun()
-    #             else: await SendWait(ctx, "In compliance with discord TOS, this is Unavailable. :upside_down: "); return
-    #         else: await SendWait(ctx, "That Doujin doesn't exist :expressionless:")
-    #     except UnboundLocalError: pass
 
     async def cog_load(self) -> None:
         print(f"{self.__class__.__name__} loaded!")

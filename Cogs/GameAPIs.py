@@ -4,9 +4,6 @@ import requests
 from Setup import OClient, Threader, SendWait, FClient, PClient
 from CBot import DClient as CBotDClient
 from discord import app_commands
-# , RLox
-# from ro_py.utilities.errors import UserDoesNotExistError
-
 
 def PUBGDataEmbed(data, name) -> discord.Embed:
     PEm = discord.Embed(title=name, color=0x32110A)

@@ -4,17 +4,7 @@ from discord.ext import commands
 import requests
 import randfacts
 from CBot import DClient as CBotDClient
-from Setup import (
-    #? ChVote,
-    #? ChPatreonT2,
-    #? GetPatreonTier,
-    # ChAdmin,
-    #? FormatTime,
-    #? TimeTillMidnight,
-    SendWait,
-    NClient,
-    #? AQd
-)
+from Setup import SendWait, NClient
 import re
 
 
@@ -57,7 +47,6 @@ class WrittenStuff(commands.Cog):
     @app_commands.describe(bin="Text to Convert to Binary")
     @app_commands.checks.cooldown(1, 1)
     async def From(self, ctx:discord.Interaction, bin:str) -> None:
-        # print(bin)
         try:
             String = "".join([chr(int(Binary, 2)) for Binary in bin.split(" ")])
             try:
@@ -122,57 +111,7 @@ class WrittenStuff(commands.Cog):
         )
         QEm.set_footer(text=f'By: {TodayQuote["quote"]["author"]}')
         await ctx.response.send_message(embed=QEm)
-    #? @commands.group(name="qotddaily", invoke_without_command=True)
-    #? @commands.cooldown(1, 1, commands.BucketType.user)
-    #? async def QotdDAILY(self, ctx):
-    #?     TimeLeft = FormatTime(TimeTillMidnight())
-    #?     await SendWait(
-    #?         ctx,
-    #?         f'The next Daily QOTD is in {TimeLeft}.\n You can be added to QOTD Daily with "zqotddaily start" (If patreon tier 2+).\n Check "zhelp qotd" for more info',
-    #?     )
-    #? @QotdDAILY.command(name="start")
-    #? @commands.check(ChPatreonT2)
-    #? @commands.check(ChAdmin)
-    #? @commands.cooldown(1, 1, commands.BucketType.user)
-    #? async def StartQotdDAILY(self, ctx):
-    #?     TierApplicable = {"Tier 2 Super": 1, "Tier 3 Legend": 2, "Tier 4 Ultimate": 4}
-    #?     TierLimit = TierApplicable[GetPatreonTier(ctx.author.id)]
-    #?     if AQd.count_documents({"Type": "QOTD", "IDd": ctx.author.id}) >= TierLimit:
-    #?         await SendWait(
-    #?             ctx,
-    #?             "You already added the max amount of channels to QOTD daily.\nDifferent patreon levels get more channels\nCheck 'zpatreon'",
-    #?         )
-    #?         return
-    #?     QOTDUsers = AQd.find({"Type": "QOTD"})
-    #?     UserToCheckAdd = {
-    #?         "Type": "QOTD",
-    #?         "IDd": ctx.author.id,
-    #?         "IDg": ctx.guild.id,
-    #?         "Channel": ctx.message.channel.id,
-    #?     }
-    #?     if AQd.count_documents(UserToCheckAdd) == 1:
-    #?         await SendWait(ctx, "This channel is already added to QOTD daily")
-    #?         return
-    #?     AQd.insert_one(UserToCheckAdd)
-    #?     await SendWait(ctx, "Added to QOTD daily successfully")
-    #? @QotdDAILY.command(aliases=["stop", "end"])
-    #? @commands.check(ChPatreonT2)
-    #? @commands.check(ChAdmin)
-    #? @commands.cooldown(1, 1, commands.BucketType.user)
-    #? async def RemoveQotddDAILY(self, ctx):
-    #?     UserToCheckRemove = {
-    #?         "Type": "QOTD",
-    #?         "IDd": ctx.author.id,
-    #?         "IDg": ctx.guild.id,
-    #?         "Channel": ctx.message.channel.id,
-    #?     }
-    #?     if AQd.count_documents(UserToCheckRemove) == 1:
-    #?         Users = AQd.find(UserToCheckRemove)
-    #?         for User in Users:
-    #?             AQd.delete_one(User)
-    #?             await SendWait(ctx, "Removed from QOTD daily successfully")
-    #?             return
-    #?     await SendWait(ctx, "You are already not in QOTD daily")
+
     async def cog_load(self) -> None:
         print(f"{self.__class__.__name__} loaded!")
 

@@ -24,6 +24,3 @@ class SelectionView(discord.ui.View):
 
     async def on_timeout(self) -> None:
         await self.exitFunc()
-
-
-    

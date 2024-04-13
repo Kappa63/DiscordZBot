@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from Setup import IMClient, SendWait
-import asyncio
 from CBot import DClient as CBotDClient
 from Customs.UI.Selector import SelectionView as Selector
 
@@ -50,20 +49,11 @@ class Movies(commands.Cog):
         except IndexError: await SendWait(ctx, "Nothing Found :woozy_face:"); return
         await ctx.followup.send(embed=MvEmbed(IMDbI))
 
-
     @IMDbSlashes.command(name="search", description="Search for Your Favourite Movie.")
     @app_commands.rename(mv="movie")
     @app_commands.describe(mv="Movie Name to Find")
     @app_commands.checks.cooldown(1, 3)
     async def MovieSrchr(self, ctx:discord.Interaction, mv:str) -> None:
-        # def ChCHanS(MSg) -> bool:
-        #     MesS = MSg.content.lower()
-        #     RsT = False
-        #     try:
-        #         if int(MSg.content) <= 10: RsT = True
-        #     except ValueError:
-        #         if (MesS == "cancel") or (MesS == "c"): RsT = True
-        #     return MSg.guild.id == ctx.guild.id and MSg.channel.id == ctx.channel.id and RsT
         async def exTimOt():
             await ctx.edit_original_response(embed=discord.Embed(title=":x: Search Timeout or Cancelled", color=0x3695BA), view=None)
 
@@ -96,28 +86,6 @@ class Movies(commands.Cog):
         if not C: await SendWait(ctx, "Nothing Found :woozy_face:"); return
         SYem.set_footer(text='Choose a number to check Movie or Series. "c" or "cancel" to exit search.\n\n*The Search closes automatically after 20sec of inactivity.*')
         await ctx.followup.send(embed=SYem, view=Selector(getSel, exTimOt, list(range(1, C+1))))
-        # try:
-        #     ResS = await self.DClient.wait_for("message", check=ChCHanS, timeout=20)
-        #     LResS = ResS.content.lower()
-        #     try:
-        #         if int(ResS.content) <= 10:
-        #             IMDbChoice = SrchIMDb[int(ResS.content) - 1]
-        #             IMDbID = IMDbChoice.movieID
-        #             Md = ""
-        #             if "kind" in IMDbChoice.data: Mk = IMDbChoice.data["kind"]
-        #             My = ""
-        #             if "year" in IMDbChoice.data: My = IMDbChoice.data["year"]
-        #             await IMDbSent.edit(embed=discord.Embed(title=":calling: Finding...", 
-        #                                                     description=f'{IMDbChoice.data["title"]} ({Mk}) ({My})',
-        #                                                     color=0xDBA506))
-        #     except ValueError:
-        #         if (LResS == "cancel") or (LResS == "c"):
-        #             await IMDbSent.edit(embed=discord.Embed(title=":x: Search Cancelled", description="\u200b", color=0xDBA506))
-        #             return
-        # except asyncio.TimeoutError:
-        #     await IMDbSent.edit(embed=discord.Embed(title=":hourglass: Search Timeout...", description="\u200b", color=0xDBA506))
-        #     return
-        
 
     async def cog_load(self) -> None:
         print(f"{self.__class__.__name__} loaded!")
