@@ -3,11 +3,13 @@ from discord import app_commands
 from discord.ext import commands
 from prawcore import NotFound, Forbidden
 from CBot import DClient as CBotDClient
-from Setup import SendWait, Threader, Reddit, Rdt
+from Setup import SendWait, Threader, Rdt
 from Customs.Navigators import ButtonNavigator as Navigator
 from Customs.Navigators import SortableButtonNavigator as SortedNav
 import datetime
 import numpy as np
+import asyncpraw
+import os
 
 def RedditbedMaker(SubCpoS, Subname, Nsfchannel:bool, Type:str="R", PostNum:int=0, TotalPosts:int=0) -> discord.Embed:
     PostTitle = SubCpoS.title[:253]
@@ -144,18 +146,14 @@ def EmbOri(REm:discord.Embed, Type:str, SubCpoS) -> discord.Embed:
         return REm
     return REm
 
-def CheckSub(Sub:str) -> bool:
-    try:
-        Reddit.subreddits.search_by_name(Sub, exact=True)
-        Reddit.subreddit(Sub).subreddit_type
-    except (NotFound, Forbidden): return False
-    return True
+
 
 PosType = lambda Sub: Sub.is_self
 
 class Socials(commands.Cog):
     def __init__(self, DClient:CBotDClient) -> None:
         self.DClient = DClient
+        self.Reddit = asyncpraw.Reddit(client_id=os.environ["REDDIT_ID"], client_secret=os.environ["REDDIT_SECRET"], user_agent="ZBot by u/Kamlin333")
 
     # @commands.group(name="twitch", invoke_without_command=True)
     # @commands.cooldown(1, 2, commands.BucketType.user)
@@ -375,6 +373,12 @@ class Socials(commands.Cog):
     #     YEm.set_thumbnail(url=YTinfo.items[0].snippet.thumbnails.high.url)
     #     YTEs = [YoutubebedMaker(Vid.contentDetails.upload.videoId, YTinfo.items[0], VNum, len(YTVids.items)) for VNum, Vid in enumerate(YTVids.items)]
     #     await Navigator(ctx, YTEs, Main=True, MainBed=YEm)
+    async def CheckSub(self, Sub:str) -> bool:
+        try:
+            self.Reddit.subreddits.search_by_name(Sub, exact=True)
+            (await self.Reddit.subreddit(Sub, fetch=True)).subreddit_type
+        except (NotFound, Forbidden): return False
+        return True
 
     RedditSlashes = app_commands.Group(name="reddit", description="Main Command Group for Reddit.")
 
@@ -397,9 +401,9 @@ class Socials(commands.Cog):
         else: await ctx.followup.send("Sub doesn't exist or private :expressionless:")
 
     async def RedditNav(self, ctx:discord.Interaction, sub:str, ctp:str) -> None:
-        def rdtEmBldr(pst):
+        async def rdtEmBldr(pst):
             Embeder = lambda i,*x: [RedditbedMaker(P, sub, Nsfchannel=Nsfwcheck, Type="S", PostNum=i+PNum, TotalPosts=TotalPosts) for PNum, P in enumerate(x)]
-            SubCpoS = [SuTPos for SuTPos in pst if not SuTPos.stickied]
+            SubCpoS = [SuTPos async for SuTPos in pst if not SuTPos.stickied]
             TotalPosts = len(SubCpoS)
             if TotalPosts == 0: return []
             Nsfwcheck=ctx.channel.is_nsfw
@@ -409,23 +413,24 @@ class Socials(commands.Cog):
             if(Thread == False):  return []
             return sum(Thread, [])
             
-        def updateNav(srt:str):
+        async def updateNav(srt:str):
+            Post = await self.Reddit.subreddit(sub, fetch=True)
             match srt:
                 case "Top All Time":
-                    Post = Reddit.subreddit(sub).top("all", limit=50)
+                    Post = Post.top("all", limit=50)
                 case "Top This Month":
-                    Post = Reddit.subreddit(sub).top("month", limit=50)
+                    Post = Post.top("month", limit=50)
                 case "Top Today":
-                    Post = Reddit.subreddit(sub).top("day", limit=50)
+                    Post = Post.top("day", limit=50)
                 case "Rising":
-                    Post = Reddit.subreddit(sub).rising(limit=50)
+                    Post = Post.rising(limit=50)
                 case "Hot":
-                    Post = Reddit.subreddit(sub).hot(limit=50)
+                    Post = Post.hot(limit=50)
                 case "New":
-                    Post = Reddit.subreddit(sub).new(limit=50)
-            return rdtEmBldr(Post)
+                    Post = Post.new(limit=50)
+            return await rdtEmBldr(Post)
         
-        if not CheckSub(sub) and not ctp == "c2": await SendWait(ctx, "Sub doesn't exist or private :expressionless:"); return
+        if not (await self.CheckSub(sub)) and not ctp == "c2": await SendWait(ctx, "Sub doesn't exist or private :expressionless:"); return
         await SortedNav(updateNav, ["Top All Time", "Top This Month", "Top Today", "Rising", "Hot", "New"], 
                         ["🌍", "🗓️", "📅", "📈", "🔥", "📝"], ctx).autoRun()
         # await Navigator(ctx, PostEms).autoRun()
@@ -449,12 +454,13 @@ class Socials(commands.Cog):
         args = rdtr[2:] if rdtr.startswith("u/") else rdtr
         await ctx.response.defer(thinking=True)
         try:
-            User = Reddit.redditor(args)
+            # async with asyncReddit as Reddit:
+            User = await self.Reddit.redditor(args, fetch=True)
             UEm = discord.Embed(title=f"u/{User.name}", description=User.subreddit["public_description"], color=0x8B0000)
             UEm.add_field(name=f"{(User.link_karma + User.awarder_karma + User.awardee_karma + User.comment_karma):,} karma **·** {(datetime.datetime.now() - datetime.datetime.fromtimestamp(User.created_utc)).days} days", value="\u200b", inline=False)
-            UEm.add_field(name=f'Trophies: `{", ".join([trophy.name for trophy in User.trophies()])}`', value="\u200b", inline=False)
+            UEm.add_field(name=f'Trophies: `{", ".join([trophy.name for trophy in await User.trophies()])}`', value="\u200b", inline=False)
             UEm.set_thumbnail(url=User.icon_img)
-            SubCpoS = [SuTPos for SuTPos in User.submissions.new() if not SuTPos.stickied]
+            SubCpoS = [SuTPos async for SuTPos in User.submissions.new() if not SuTPos.stickied]
             TotalPosts = len(SubCpoS)
             if TotalPosts == 0: await SendWait(ctx, "No posts :no_mouth:"); return
             Name = args
@@ -558,11 +564,11 @@ class Socials(commands.Cog):
             for Sub in subs:
                 Sub = Sub[2:] if Sub.startswith("r/") else Sub
                 if Sub not in User[mltr] and Sub not in Added:
-                    if not CheckSub(Sub): NotAdded.append(Sub); continue
+                    if not (await self.CheckSub(Sub)): NotAdded.append(Sub); continue
                     Added.append(Sub) 
                 else: NotAdded.append(Sub)
             if Added:
-                print({"$set": {mltr: User[mltr]+Added}})
+                # print({"$set": {mltr: User[mltr]+Added}})
                 Rdt.update_one(User, {"$set": {mltr: User[mltr]+Added}})
                 await SendWait(ctx, f'Added the following Subreddit(s) to Multireddit: `{", ".join(Added)}`')
             if NotAdded: await SendWait(ctx, f"Following Subreddit(s) didn't exist, private, or already added: `{', '.join(NotAdded)}`")
@@ -589,12 +595,12 @@ class Socials(commands.Cog):
             for Sub in subs:
                 Sub = Sub[2:] if Sub.startswith("r/") else Sub
                 if Sub in Remover and Sub not in Removed:
-                    if not CheckSub(Sub): NotRemoved.append(Sub); continue
+                    if not (await self.CheckSub(Sub)): NotRemoved.append(Sub); continue
                     Remover.remove(Sub)
                     Removed.append(Sub)
             
             if Removed: 
-                print({"$set": {mltr: Remover}})
+                # print({"$set": {mltr: Remover}})
                 Rdt.update_one(User, {"$set": {mltr: Remover}})
                 await SendWait(ctx, f'Removed the following Subreddit(s) from Multireddit: `{", ".join(Removed)}`')
             if NotRemoved: await SendWait(ctx, f"Following Subreddit(s) didn't exist in Multireddit: `{', '.join(NotRemoved)}`")
