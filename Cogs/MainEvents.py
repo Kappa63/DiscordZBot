@@ -2,7 +2,7 @@ from discord.ext import commands
 import discord
 from CBot import DClient as CBotDClient
 from discord import app_commands
-from Setup import SendWait, FormatTime, Ignore, IsBot, IsNSFW, IsAdmin, IsSetup
+from Setup import SendWait, FormatTime, Ignore, IsBot, IsNSFW, IsAdmin
 import random
 
 Doing = ["ZBot IS BACK ONLINE!!", "4 Years Later", "Revived from the Dead"]
@@ -30,7 +30,7 @@ class MainEvents(commands.Cog):
         # elif isinstance(error, IsPatreonT2): await ctx.send(embed=ErrorEmbeds("PatreonT2"))
         # elif isinstance(error, IsPatreonT3): await ctx.send(embed=ErrorEmbeds("PatreonT3"))
         # elif isinstance(error, IsPatreonT4): await ctx.send(embed=ErrorEmbeds("PatreonT4"))
-        elif isinstance(error, IsSetup): await SendWait(ctx, 'Please setup your server first (with "zsetup")! Check all server commands (with "zhelp server")')
+        # elif isinstance(error, IsSetup): await SendWait(ctx, 'Please setup your server first (with "zsetup")! Check all server commands (with "zhelp server")')
         elif isinstance(error, IsNSFW): await SendWait(ctx, "This can only be used in NSFW channels.")
         # elif isinstance(error, IsMultiredditLimit): await SendWait(ctx, "You can no longer have this many Multireddits. Remove some to comply with your limit. Until then you cannot use your Multireddits.")
         elif isinstance(error, (app_commands.CommandNotFound, Ignore, IsBot)):print(error); return

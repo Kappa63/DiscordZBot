@@ -7,7 +7,8 @@ import malclient
 # import twitch
 from discord import app_commands
 # import asyncio
-import praw
+# import praw
+# import asyncpraw
 import giphpy as GApi
 # import pymongo
 import time
@@ -32,8 +33,8 @@ DToken = os.environ["DISCORD_TOKEN_ZBOT"]
 
 Cls = MongoClient(os.environ["MONGODB_URL"])
 DbM = Cls["CBot"]
-ColT = DbM["SerTwo"]
-AQd = DbM["Daily"]
+# ColT = DbM["SerTwo"]
+# AQd = DbM["Daily"]
 Rdt = DbM["Reddit"]
 
 GClient = os.environ["GIPHY_KEY"]
@@ -65,7 +66,7 @@ FClient = {"Authorization": os.environ["FORTNITE_KEY"]}
 # twitter.set_access_token(os.getenv("TWITTER_ACCESS_TOKEN"), os.getenv("TWITTER_ACCESS_SECRET"))
 # Twitter = tweepy.API(twitter)
 
-Reddit = praw.Reddit(client_id=os.environ["REDDIT_ID"], client_secret=os.environ["REDDIT_SECRET"], user_agent="ZBot by u/Kamlin333", check_for_async=False)
+# Reddit = asyncpraw.Reddit(client_id=os.environ[   "REDDIT_ID"], client_secret=os.environ["REDDIT_SECRET"], user_agent="ZBot by u/Kamlin333")
 
 # Covid = COVID19Py.COVID19()
 
@@ -147,11 +148,11 @@ def FormatTime(SecondsFormat:int) -> str:
     elif Min != 0: return f"{Min}m {SecondsFormat}s"
     else: return f"{SecondsFormat}s"
 
-class IsSetup(app_commands.CheckFailure): pass
-def ChSer(ctx:discord.Interaction):
-    if ColT.count_documents({"IDg": str(ctx.guild.id)}): return True
-    raise IsSetup("Unready")
-ChSerGuild = lambda guild: ColT.count_documents({"IDg": str(guild.id)})
+# class IsSetup(app_commands.CheckFailure): pass
+# def ChSer(ctx:discord.Interaction):
+#     if ColT.count_documents({"IDg": str(ctx.guild.id)}): return True
+#     raise IsSetup("Unready")
+# ChSerGuild = lambda guild: ColT.count_documents({"IDg": str(guild.id)})
 
 
 # class IsMultiredditLimit(commands.CheckFailure): pass

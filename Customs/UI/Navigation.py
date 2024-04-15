@@ -49,7 +49,7 @@ class NavigationWithSelectorView(NavigationView):
         self.selector = discord.ui.Select(placeholder="Select Sorting", options=self.SELECTIONS, max_values=1, row=0)
         self.selector.callback = self.selectorCall
         self.initlz = False
-        super().__init__(prevFunc, nextFunc, exitFunc) #
+        super().__init__(prevFunc, nextFunc, exitFunc)
         self.add_item(self.selector)
         self.navState(navSt)
 
@@ -60,6 +60,7 @@ class NavigationWithSelectorView(NavigationView):
     async def selectorCall(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer()
         self.selector.placeholder = f'{self.lblEmoji[self.selector.values[0]]} {self.selector.values[0]}'
+        await interaction.edit_original_response(view=self)
         await self.selectFunc(self.selector.values[0])
         if(not self.initlz):
             self.initlz = True

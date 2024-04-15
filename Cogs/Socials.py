@@ -386,8 +386,9 @@ class Socials(commands.Cog):
         if not sub: await SendWait("No arguments :no_mouth:"); return
         args = sub[2:] if sub.startswith("r/") else sub
         await ctx.response.defer(thinking=True)
-        if CheckSub(args):
-            SubCpoS = Reddit.subreddit(args).random() # [i for i in list(Reddit.subreddit(args).hot()) if not i.stickied]
+        if (await self.CheckSub(args)):
+            # async with asyncReddit as Reddit:
+            SubCpoS = await (await self.Reddit.subreddit(args, fetch=True)).random() # [i for i in list(Reddit.subreddit(args).hot()) if not i.stickied]
             # print(len(list(SubCpoS)), SubCpoS)
             if not SubCpoS: await ctx.followup.send("No Posts Found :expressionless:")
             # SubCpoS = random.choice(Post)
