@@ -7,7 +7,8 @@ import malclient
 # import twitch
 from discord import app_commands
 # import asyncio
-import praw
+# import praw
+# import asyncpraw
 import giphpy as GApi
 # import pymongo
 import time
@@ -28,7 +29,7 @@ Cogs = ["Cogs.Randomizers", "Cogs.MainEvents", "Cogs.AnimeManga", "Cogs.WrittenS
         #  "Cogs.HelpInfo", "Cogs.MongoDB",  "Cogs.Misc",
         "Cogs.Socials", "Cogs.OnlyMods", "Cogs.Nasa", "Cogs.Movies", "Cogs.Images", "Cogs.Google"]
 
-DToken = os.environ["DISCORD_TOKEN_ZBOT"]
+DToken = os.environ["DISCORD_TOKEN_TIA"]
 
 Cls = MongoClient(os.environ["MONGODB_URL"])
 DbM = Cls["CBot"]
@@ -65,7 +66,7 @@ FClient = {"Authorization": os.environ["FORTNITE_KEY"]}
 # twitter.set_access_token(os.getenv("TWITTER_ACCESS_TOKEN"), os.getenv("TWITTER_ACCESS_SECRET"))
 # Twitter = tweepy.API(twitter)
 
-Reddit = praw.Reddit(client_id=os.environ["REDDIT_ID"], client_secret=os.environ["REDDIT_SECRET"], user_agent="ZBot by u/Kamlin333", check_for_async=False)
+# Reddit = asyncpraw.Reddit(client_id=os.environ["REDDIT_ID"], client_secret=os.environ["REDDIT_SECRET"], user_agent="ZBot by u/Kamlin333")
 
 # Covid = COVID19Py.COVID19()
 

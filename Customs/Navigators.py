@@ -140,7 +140,7 @@ class SortableButtonNavigator(Navigator):
     async def slctUpdt(self, srt:str) -> None:
         await self.Nav.edit(embed=discord.Embed(title="Getting Posts..."))
         if(srt not in self.Cache):
-            self.Cache[srt] = self.onSlct(srt)
+            self.Cache[srt] = await self.onSlct(srt)
         if(self.Cache[srt]):
             self.TotalItems = len(self.Cache[srt])
             await self.resetWithNewItems(self.Cache[srt])

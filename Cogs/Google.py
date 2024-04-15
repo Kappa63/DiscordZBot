@@ -21,21 +21,22 @@ class Google(commands.Cog):
         if not srch: await SendWait(ctx, "No search argument :woozy_face:"); return
         # await SendWait(ctx, ":desktop: Getting Results...")
         await ctx.response.defer(thinking=True)
-
-        SearchResults = []
-        ResultNum = 1
-        ResultTotal = 20
-        Colors = [0x4285F4, 0xEA4335, 0xFBBC05, 0x34A853] * 5
-        for Result in search(srch, num_results=19):
-            # print(ResultNum)
-            IEm = discord.Embed(title=f'Google Results for **`{srch}`**', description=f"Result: [{ResultNum}/{ResultTotal}]", color=Colors.pop(0))
-            SearchResults.append((IEm, Result))
-            ResultNum += 1
-        ResultNum = 0
-        EmbededResults = [i[0] for i in SearchResults]
-        URLResults = [i[1] for i in SearchResults]
-        await Navigator(ctx, EmbededResults, Type="No #", EmbedAndContent=True, ContItems=URLResults).autoRun()
- 
+        try:
+            SearchResults = []
+            ResultNum = 1
+            ResultTotal = 20
+            Colors = [0x4285F4, 0xEA4335, 0xFBBC05, 0x34A853] * 5
+            for Result in search(srch, num_results=19):
+                # print(ResultNum)
+                IEm = discord.Embed(title=f'Google Results for **`{srch}`**', description=f"Result: [{ResultNum}/{ResultTotal}]", color=Colors.pop(0))
+                SearchResults.append((IEm, Result))
+                ResultNum += 1
+            ResultNum = 0
+            EmbededResults = [i[0] for i in SearchResults]
+            URLResults = [i[1] for i in SearchResults]
+            await Navigator(ctx, EmbededResults, Type="No #", EmbedAndContent=True, ContItems=URLResults).autoRun()
+        except:
+            await SendWait(ctx, "No Results Found :woozy_face:"); 
     # @commands.command(name="googleimagesearch", aliases=["gis", "imagesearch"], description="Look for an Image Relating to the Search.")
     # @app_commands.rename(srch="search")
     # @app_commands.describe(srch="Google Search Term")
