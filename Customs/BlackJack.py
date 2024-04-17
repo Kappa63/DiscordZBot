@@ -156,8 +156,8 @@ class BJ:
         self.CdFD = discord.File(self.ib1, filename="dlr.png")
 
     async def dlrBust(self) -> None:
-        await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title="Dealer BUSTED!", description=f"Current Balance: ${self.bal}", color=0x00A36C)])
         self.onWin()
+        await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title="Dealer BUSTED!", description=f"Current Balance: ${self.bal}", color=0x00A36C)])
         await self.clsDeal()
 
     async def onEnd(self) -> None:
