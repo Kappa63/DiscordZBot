@@ -4,7 +4,8 @@ from discord.ext import commands
 import requests
 import randfacts
 from CBot import DClient as CBotDClient
-from Setup import SendWait, NClient
+from Setup import NClient
+from Customs.Functions import SendWait
 import re
 
 

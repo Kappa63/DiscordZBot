@@ -6,7 +6,8 @@ import cv2
 import numpy
 from CBot import DClient as CBotDClient
 import os
-from Setup import GClient, GApi, SendWait
+from Setup import GClient, GApi
+from Customs.Functions import SendWait
 
 
 class Randomizers(commands.Cog):

@@ -72,4 +72,5 @@ class TicTacToeView(discord.ui.View):
     async def on_timeout(self) -> None:
         for i in self.children:
             i.disabled = True
+        self.stop()
         await self.onTout(self.usr1 if self.Trn%2 else self.usr2, self)

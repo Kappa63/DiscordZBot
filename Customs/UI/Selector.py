@@ -20,7 +20,9 @@ class SelectionView(discord.ui.View):
     @discord.ui.button(label="x", style=discord.ButtonStyle.danger, row=2)
     async def ExitSelector(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
+        self.stop()
         await self.exitFunc()
 
     async def on_timeout(self) -> None:
+        self.stop()
         await self.exitFunc()

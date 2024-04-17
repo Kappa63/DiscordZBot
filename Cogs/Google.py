@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from Setup import SendWait
+from Customs.Functions import SendWait
 import requests
 from discord import app_commands
 from CBot import DClient as CBotDClient

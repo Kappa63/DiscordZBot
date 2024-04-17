@@ -4,7 +4,8 @@ from discord import app_commands
 from Customs.BlackJack import BJ
 from CBot import DClient as CBotDClient
 from Customs.UI.TicTacToe import TicTacToeView as TTTView
-from Setup import SendWait
+from Setup import Gmb
+from Customs.Functions import SendWait
 
 # def SudokuBoardMaker(Title, BoardName, Board, Difficulty):
 #     DigitReplace = [":white_large_square:", ":one:", ":two:", ":three:", ":four:", ":five:", 
@@ -68,7 +69,9 @@ class Games(commands.Cog):
     @app_commands.checks.cooldown(1, 2)
     async def PlayBJ(self, ctx:discord.Interaction) -> None:
         await ctx.response.defer(thinking=True)
-        await BJ(ctx).autoRun()
+        Dt = Gmb.find_one({"_id":ctx.user.id}, projection={"bal": True, "_id":False})
+        await BJ(ctx, Dt["bal"] if Dt["bal"] else 0).autoRun()
+        # Gmb.update_one({"_id":ctx.user.id}, {"$set": {"bal":newB}})
 
     # @commands.command(name="sudoku")
     # @commands.cooldown(1, 2, commands.BucketType.user)

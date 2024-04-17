@@ -18,21 +18,22 @@ import CBot
 # import pyyoutube
 import imdb
 # import pafy
-import datetime
+# import datetime
 from ossapi import OssapiV1
-import concurrent.futures as Cf
+# import concurrent.futures as Cf
 
 env = dotenv.find_dotenv()
 dotenv.load_dotenv(env)
 
-Cogs = ["Cogs.Randomizers", "Cogs.MainEvents", "Cogs.AnimeManga", "Cogs.WrittenStuff", "Cogs.GameAPIs", "Cogs.Games",
+Cogs = ["Cogs.Randomizers", "Cogs.MainEvents", "Cogs.AnimeManga", "Cogs.Economy", "Cogs.WrittenStuff", "Cogs.GameAPIs", "Cogs.Games",
         #  "Cogs.HelpInfo", "Cogs.MongoDB",  "Cogs.Misc",
         "Cogs.Socials", "Cogs.OnlyMods", "Cogs.Nasa", "Cogs.Movies", "Cogs.Images", "Cogs.Google"]
 
-DToken = os.environ["DISCORD_TOKEN_TIA"]
+DToken = os.environ["DISCORD_TOKEN_ZBOT"]
 
 Cls = MongoClient(os.environ["MONGODB_URL"])
 DbM = Cls["CBot"]
+Gmb = DbM["Gamble"]
 # ColT = DbM["SerTwo"]
 # AQd = DbM["Daily"]
 Rdt = DbM["Reddit"]
@@ -87,25 +88,9 @@ OClient = OssapiV1(os.environ["OSU_KEY"])
 #     784124034559377409: "Tier 4 Ultimate",
 # }
 
-RemoveExtra = lambda listRm, val: [value for value in listRm if value != val]
+# RemoveExtra = lambda listRm, val: [value for value in listRm if value != val]
 
 # GetVidDuration = lambda VidId: pafy.new(f"https://www.youtube.com/watch?v={VidId}").duration
-
-async def SendWait(ctx:discord.Interaction, Notice:str) -> None: await ctx.followup.send(embed=discord.Embed(title=Notice))
-async def SendWaitCMDs(ctx:commands.Context, Notice:str) -> None: await ctx.send(embed=discord.Embed(title=Notice))
-
-def TimeTillMidnight() -> int:
-    Now = datetime.datetime.now()
-    return (10 + ((24 - Now.hour - 1) * 60 * 60) + ((60 - Now.minute - 1) * 60) + (60 - Now.second))
-
-def Threader(FunctionList, ParameterList) -> (list | bool):
-    try:
-        with Cf.ThreadPoolExecutor() as Execute:
-            Pool = [Execute.submit(Func, *Param) for Func, Param in zip(FunctionList, ParameterList)]
-            Results = [Execution.result() for Execution in Pool]
-    except:
-        return False
-    return Results
 
 # def RefreshGISClient():
 #     global GiClient
@@ -130,24 +115,6 @@ def Threader(FunctionList, ParameterList) -> (list | bool):
 #             if Role in Mem.roles: return PatreonTiers[Role.id]
 #     except AttributeError: pass
 
-def FormatTime(SecondsFormat:int) -> str:
-    Day = 0
-    Hour = 0
-    Min = 0
-    while SecondsFormat >= 60:
-        Min += 1
-        if Min == 60:
-            Hour += 1
-            Min -= 60
-        if Hour == 24:
-            Day += 1
-            Hour -= 24
-        SecondsFormat -= 60
-    if Day != 0: return f"{Day}d {Hour}h {Min}m {SecondsFormat}s"
-    elif Hour != 0: return f"{Hour}h {Min}m {SecondsFormat}s"
-    elif Min != 0: return f"{Min}m {SecondsFormat}s"
-    else: return f"{SecondsFormat}s"
-
 # class IsSetup(app_commands.CheckFailure): pass
 # def ChSer(ctx:discord.Interaction):
 #     if ColT.count_documents({"IDg": str(ctx.guild.id)}): return True
@@ -163,13 +130,6 @@ def FormatTime(SecondsFormat:int) -> str:
 #         User = Rdt.find({"IDd": ctx.author.id})[0]
 #         if len(User)-2 > TierLimit: raise IsMultiredditLimit("Too much")
 #     return True
-
-
-class IsAdmin(app_commands.CheckFailure): pass
-def ChAdmin(ctx:discord.Interaction):
-    if ctx.user.guild_permissions.administrator: return True
-    raise IsAdmin("Normie")
-
 
 # class IsVote(commands.CheckFailure): pass
 # async def ChVote(ctx):
@@ -201,7 +161,6 @@ def ChAdmin(ctx:discord.Interaction):
 #         except AttributeError: pass
 #         return False
 
-
 # class IsPatreon(commands.CheckFailure): pass
 # def ChPatreon(ctx):
 #     try:
@@ -223,7 +182,6 @@ def ChAdmin(ctx:discord.Interaction):
 #             if Role in Mem.roles: return True
 #     except AttributeError: pass
 #     return False
-
 
 # class IsPatreonT2(commands.CheckFailure): pass
 # def ChPatreonT2(ctx):
@@ -247,7 +205,6 @@ def ChAdmin(ctx:discord.Interaction):
 #     except AttributeError: pass
 #     return False
 
-
 # class IsPatreonT3(commands.CheckFailure): pass
 # def ChPatreonT3(ctx):
 #     try:
@@ -268,7 +225,6 @@ def ChAdmin(ctx:discord.Interaction):
 #     except AttributeError: pass
 #     return False
 
-
 # class IsPatreonT4(commands.CheckFailure): pass
 # def ChPatreonT4(ctx):
 #     try:
@@ -286,22 +242,3 @@ def ChAdmin(ctx:discord.Interaction):
 #         if Role in Mem.roles: return True
 #     except AttributeError: pass
 #     return False
-
-
-class Ignore(commands.CheckFailure): pass
-def ChDev(ctx:commands.Context) -> bool:
-    if ctx.author.id == 443986051371892746: return True
-    raise Ignore("Ignore")
-
-def RefreshMAL(ctx:discord.Interaction) -> bool:
-    MalRefresher()
-    return True
-
-
-class IsNSFW(app_commands.CheckFailure): pass
-def ChNSFW(ctx:discord.Interaction):
-    if ctx.channel.is_nsfw(): return True
-    raise IsNSFW("Not Safe")
-
-
-class IsBot(app_commands.CheckFailure): pass

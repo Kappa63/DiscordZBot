@@ -3,7 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 import requests
 from typing import Optional
-from Setup import SendWait
+from Customs.Functions import SendWait
 from PIL import Image
 import deeppyer
 import os

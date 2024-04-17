@@ -1,7 +1,8 @@
 import discord
 from discord.ext import commands
 import requests
-from Setup import OClient, Threader, SendWait, FClient, PClient
+from Setup import OClient, FClient, PClient
+from Customs.Functions import Threader, SendWait
 from CBot import DClient as CBotDClient
 from discord import app_commands
 

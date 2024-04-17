@@ -1,7 +1,8 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-from Setup import ChDev
+from Customs.Functions import ChDev, RefreshMAL
+from Setup import Gmb
 from CBot import DClient as CBotDClient
 
 class OnlyMods(commands.Cog):
@@ -10,6 +11,7 @@ class OnlyMods(commands.Cog):
 
     @app_commands.command(name="status", description="Revealse the Current Status of ZBot.")
     @app_commands.checks.cooldown(1, 1)
+    @app_commands.check(RefreshMAL)
     async def BotStatus(self, ctx:discord.Interaction) -> None:
         SEm = discord.Embed(title="Current ZBot Status", color=0x000000)
         SEm.add_field(name="Guilds in: ", value=len(self.DClient.guilds), inline=False)
@@ -26,6 +28,12 @@ class OnlyMods(commands.Cog):
             await ctx.send(embed=discord.Embed(title=f"Synced {len(slashSync)} command(s)"))
         except Exception as e:
             print(e)
+
+    @commands.command(name="ecoset")
+    @commands.check(ChDev)
+    async def ecoBalSetter(self, ctx:commands.Context, n:int) -> None:
+        Dt = Gmb.update_one({"_id":ctx.author.id}, {"$set": {"bal":n}})
+        await ctx.send(embed=discord.Embed(title=f"Your Balance is ${n}" if Dt.modified_count else "Failed to Set"))
 
     @app_commands.command(name="embed", description="Creates an embed")
     @app_commands.rename(t="title")

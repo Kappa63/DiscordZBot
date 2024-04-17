@@ -22,6 +22,7 @@ class NavigationView(discord.ui.View):
     @discord.ui.button(label="x", style=discord.ButtonStyle.danger, row=1)
     async def ExitNav(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
+        self.stop()
         await self.exitFunc()
 
 
@@ -36,6 +37,7 @@ class NavigationView(discord.ui.View):
         await self.nextFunc(10)
 
     async def on_timeout(self) -> None:
+        self.stop()
         await self.exitFunc()
 
 class NavigationWithSelectorView(NavigationView):

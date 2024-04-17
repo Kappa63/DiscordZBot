@@ -2,7 +2,7 @@ from discord.ext import commands
 import discord
 from CBot import DClient as CBotDClient
 from discord import app_commands
-from Setup import SendWait, FormatTime, Ignore, IsBot, IsNSFW, IsAdmin
+from Customs.Functions import SendWait, FormatTime, Ignore, IsBot, IsNSFW, IsAdmin
 import random
 
 Doing = ["ZBot IS BACK ONLINE!!", "4 Years Later", "Revived from the Dead"]
@@ -21,7 +21,7 @@ class MainEvents(commands.Cog):
         
         await self.DClient.StaffChannel.send(f"Back Online In {len(self.DClient.guilds)}...")
 
-    async def  on_app_command_error(self, ctx:discord.Interaction, error) -> None:
+    async def on_app_command_error(self, ctx:discord.Interaction, error) -> None:
         await ctx.response.defer()
         if isinstance(error, app_commands.CommandOnCooldown): await SendWait(ctx, f'Hold the spam. Wait atleast {FormatTime(round(error.retry_after, 2))}')
         elif isinstance(error, IsAdmin): await SendWait(ctx, "Non-admins are not allowed to use this command")

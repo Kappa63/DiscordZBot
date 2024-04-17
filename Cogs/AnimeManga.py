@@ -2,7 +2,8 @@ import discord
 from discord.ext import commands
 # import mal
 from discord import app_commands
-from Setup import SendWait, MClient, MALsearch, RefreshMAL
+from Setup import MClient, MALsearch
+from Customs.Functions import SendWait, RefreshMAL
 # from Customs.Navigators import ButtonNavigator as Navigator
 from Customs.UI.Selector import SelectionView as Selector
 from CBot import DClient as CBotDClient

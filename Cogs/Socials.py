@@ -3,7 +3,8 @@ from discord import app_commands
 from discord.ext import commands
 from prawcore import NotFound, Forbidden
 from CBot import DClient as CBotDClient
-from Setup import SendWait, Threader, Rdt
+from Setup import Rdt
+from Customs.Functions import SendWait, Threader
 from Customs.Navigators import ButtonNavigator as Navigator
 from Customs.Navigators import SortableButtonNavigator as SortedNav
 import datetime

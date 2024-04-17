@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 # import dbl
-from Setup import Cogs, DToken, IsBot, Ignore
+from Setup import Cogs, DToken
 
 class DClient(commands.Bot):
     StaffChannel = None

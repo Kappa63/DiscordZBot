@@ -1,7 +1,8 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from Setup import IMClient, SendWait
+from Setup import IMClient
+from Customs.Functions import SendWait
 from CBot import DClient as CBotDClient
 from Customs.UI.Selector import SelectionView as Selector
 
