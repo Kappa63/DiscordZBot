@@ -38,13 +38,13 @@ class BlackJackView(discord.ui.View):
         if(self.player.id == interaction.user.id):
             await self.onLv()
 
-    @discord.ui.button(emoji="<:5p:1229496788436779028>", style=discord.ButtonStyle.grey, row=1, disabled=False)
-    async def add5G(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
-        await interaction.response.defer()
-        if(self.player.id == interaction.user.id):
-            self.chips[0] += 1
-            button.label = f"x{self.chips[0]}"
-            await self.onAdd(5)
+    # @discord.ui.button(emoji="<:5p:1229496788436779028>", style=discord.ButtonStyle.grey, row=1, disabled=False)
+    # async def add5G(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+    #     await interaction.response.defer()
+    #     if(self.player.id == interaction.user.id):
+    #         self.chips[0] += 1
+    #         button.label = f"x{self.chips[0]}"
+    #         await self.onAdd(5)
     
     @discord.ui.button(emoji="<:25p:1229496854031372369>", style=discord.ButtonStyle.grey, row=1, disabled=False)
     async def add25G(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
@@ -78,18 +78,29 @@ class BlackJackView(discord.ui.View):
             button.label = f"x{self.chips[4]}"
             await self.onAdd(500)
 
+    @discord.ui.button(label="ALL IN?", style=discord.ButtonStyle.grey, row=1, disabled=False)
+    async def addAll(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        await interaction.response.defer()
+        if(self.player.id == interaction.user.id):
+            button.disabled = True
+            button.label = f"WE IN"
+            await self.onAdd(0)
+    
+
     def endDeal(self) -> None:
         self.children[0].disabled = True
         self.children[1].disabled = True
         self.children[2].disabled = False
         self.children[3].disabled = False
+        self.children[8].disabled = False
+        self.children[8].label = "ALL IN?"
         self.chips = [0, 0, 0, 0, 0]
-        for i in range(5):
+        for i in range(4):
             self.children[4+i].label = None
         self.upChips()
         
     def upChips(self) -> None:
-        for i in range(5):
+        for i in range(4):
             self.children[4+i].disabled = not self.log[i]
 
     def startDeal(self) -> None:

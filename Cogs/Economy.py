@@ -17,7 +17,7 @@ class Economy(commands.Cog):
         tryF = Gmb.find_one({"_id":ctx.user.id})
         cT = time.time()
         if not tryF or tryF["lastClm"] <= cT-86400:
-            Dt = Gmb.find_one_and_update({"_id":ctx.user.id}, {"$inc":{"bal":100}, "$set":{"lastClm":cT}}, upsert=True, projection={"bal": True, "_id":False}, return_document=ReturnDocument.AFTER)
+            Dt = Gmb.find_one_and_update({"_id":ctx.user.id}, {"$inc":{"bal":100}, "$set":{"lastClm":cT}, "$setOnInsert":{"playing":False}}, upsert=True, projection={"bal": True, "_id":False}, return_document=ReturnDocument.AFTER)
             await SendWait(ctx, f"Claimed! Your Balance is ${Dt['bal']}")
             return
         await SendWait(ctx, f"You Claimed Today. Your Balance is ${tryF['bal']}")

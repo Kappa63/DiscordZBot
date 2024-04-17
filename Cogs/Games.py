@@ -6,6 +6,7 @@ from CBot import DClient as CBotDClient
 from Customs.UI.TicTacToe import TicTacToeView as TTTView
 from Setup import Gmb
 from Customs.Functions import SendWait
+from pymongo.collection import ReturnDocument 
 
 # def SudokuBoardMaker(Title, BoardName, Board, Difficulty):
 #     DigitReplace = [":white_large_square:", ":one:", ":two:", ":three:", ":four:", ":five:", 
@@ -69,8 +70,10 @@ class Games(commands.Cog):
     @app_commands.checks.cooldown(1, 2)
     async def PlayBJ(self, ctx:discord.Interaction) -> None:
         await ctx.response.defer(thinking=True)
-        Dt = Gmb.find_one({"_id":ctx.user.id}, projection={"bal": True, "_id":False})
-        await BJ(ctx, Dt["bal"] if Dt["bal"] else 0).autoRun()
+        Dt = Gmb.find_one_and_update({"_id":ctx.user.id}, {"$set":{"playing":"True"}, "$setOnInsert":{"bal":0, "lastClm":0}}, projection={"bal": True, "_id":False}, return_document=ReturnDocument.BEFORE)
+        if not Dt["playing"]:
+            await BJ(ctx, Dt["bal"] if Dt["bal"] else 0).autoRun()
+        else: await SendWait(ctx, "Close Your Open Game First.")
         # Gmb.update_one({"_id":ctx.user.id}, {"$set": {"bal":newB}})
 
     # @commands.command(name="sudoku")
