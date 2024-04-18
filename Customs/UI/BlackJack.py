@@ -85,7 +85,6 @@ class BlackJackView(discord.ui.View):
             button.disabled = True
             button.label = f"WE IN"
             await self.onAdd(0)
-    
 
     def endDeal(self) -> None:
         self.children[0].disabled = True
@@ -113,7 +112,6 @@ class BlackJackView(discord.ui.View):
         self.children[6].disabled = True
         self.children[7].disabled = True
         self.children[8].disabled = True
-
         
     def chipLogUp(self, log) -> None:
         if log != self.log:

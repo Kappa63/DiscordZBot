@@ -177,6 +177,26 @@ class BJ:
         await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title= t, description=f"Current Balance: ${self.bal}", color=0x00A36C)])
         await self.clsDeal()  
 
+    async def onBJ(self, forP:int) -> None:
+        await self.BJTbl.edit(view=None)
+        await self.dlrRvl()
+        
+        self.DEm.description = f"Total: BLACKJACK"
+
+        await self.BJTbl.edit(embeds=[self.DEm, self.PEm], attachments=[self.CdFD, self.CdFP])
+        
+        if forP == 1:
+            t = "Player BLACKJACK WIN!"
+            self.onWin()
+        elif forP == 2:
+            t = "Dealer BLACKJACK WIN!"
+            self.onLoss()
+        else:
+            t = "Double BLACKJACK DRAW!"
+            self.onDraw()
+        await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title= t, description=f"Current Balance: ${self.bal}", color=0x00A36C)])
+        await self.clsDeal() 
+
     def clsBfrs(self) -> None:
         if(self.TbData[0]):
             self.ib1.close()
@@ -241,8 +261,14 @@ class BJ:
         self.PEm.set_image(url="attachment://plyr.png")
         self.mView.startDeal()
         await self.BJTbl.edit(embeds=[self.DEm, self.PEm], attachments=[self.CdFD, self.CdFP], view=self.mView)
-        if pV[0] == 21 or pV[1] == 21:
-            await self.plyrStnd()
+
+        match (pV[1] == 21, dV[1] == 21):
+            case (True, True):
+                await self.onBJ(0)
+            case (True, False):
+                await self.onBJ(1)
+            case (False, True):
+                await self.onBJ(2)
 
     async def autoRun(self) -> None:
         self.BJTbl = await self.ctx.followup.send(embed=discord.Embed(title="Opening Table...", description=f"Current Balance: ${self.bal}", color=0x00A36C), view=self.mView)

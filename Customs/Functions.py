@@ -47,8 +47,8 @@ def ChAdmin(ctx:discord.Interaction):
 
 class Ignore(commands.CheckFailure): pass
 def ChDev(ctx:commands.Context) -> bool:
-    if ctx.author.id == 443986051371892746: return True
-    raise Ignore("Ignore")
+    return ctx.author.id == 443986051371892746
+    # raise Ignore("Ignore")
 
 def RefreshMAL(ctx:discord.Interaction) -> bool:
     MalRefresher()
