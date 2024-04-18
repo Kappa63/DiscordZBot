@@ -251,7 +251,7 @@ class BJ:
         self.mView.stop()
         await self.BJTbl.edit(embeds=[discord.Embed(title="Table Closed.", description=f"W/L/D\n{self.TbData[0]}/{self.TbData[1]}/{self.TbData[2]}\n\nBal: {self.bal+self.bet}\n\nProfits: {self.prft}", color=0x00A36C)], attachments=[], view=None)
         self.clsBfrs()
-        Gmb.update_one({"_id":self.ctx.user.id}, {"$set": {"bal":self.bal+self.bet, "playing":True}})
+        Gmb.update_one({"_id":self.ctx.user.id}, {"$set": {"bal":self.bal+self.bet, "playing":False}})
     
     async def onTm(self) -> None:
         await self.clsTbl()

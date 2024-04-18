@@ -33,7 +33,7 @@ class OnlyMods(commands.Cog):
     @commands.check(ChDev)
     async def ecoBalSetter(self, ctx:commands.Context, n:int, id:int=None) -> None:
         Dt = Gmb.update_one({"_id":id if id else ctx.author.id}, {"$set": {"bal":n}})
-        await ctx.send(embed=discord.Embed(title=f"Your Balance is ${n}" if Dt.modified_count else "Failed to Set"))
+        await ctx.send(embed=discord.Embed(title=f"{'User' if id else 'Your'} Balance is ${n}" if Dt.modified_count else "Failed to Set"))
 
     @app_commands.command(name="embed", description="Creates an embed")
     @app_commands.rename(t="title")
