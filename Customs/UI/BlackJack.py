@@ -10,7 +10,7 @@ class BlackJackView(discord.ui.View):
         self.onLv = onLv
         self.onAdd = onAdd
         self.onTout = onTout
-        self.chips = [0, 0, 0, 0, 0]
+        self.chips = [0, 0, 0, 0]
         super().__init__(timeout=90)
         self.endDeal()
 

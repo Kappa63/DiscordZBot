@@ -33,15 +33,16 @@ class Economy(commands.Cog):
         await SendWait(ctx, f"Your Current Balance is ${Dt['bal'] if Dt else 0}")
 
     @app_commands.command(name="transfer", description="Transfer Money.")
-    @app_commands.rename(usr="user")
-    @app_commands.describe(usr="@ User to Transfer Money to")
     @app_commands.rename(n="ammount")
     @app_commands.describe(n="How much to Transfer")
+    @app_commands.rename(usr="user")
+    @app_commands.describe(usr="@ User to Transfer Money to")
     @app_commands.checks.cooldown(1, 2)
-    async def monTrans(self, ctx:discord.Interaction, usr:discord.Member, n:int) -> None:
+    async def monTrans(self, ctx:discord.Interaction, n:int, usr:discord.Member) -> None:
         await ctx.response.defer()
         if ctx.user.id == 443986051371892746: Dt1 = True
-        else: Dt1 = Gmb.update_one({"_id":ctx.user.id, "bal":{"$gte":n}}, {"$inc":{"bal":-n}}).modified_count
+        elif n>0: Dt1 = Gmb.update_one({"_id":ctx.user.id, "bal":{"$gte":n}}, {"$inc":{"bal":-n}}).modified_count
+        else: Dt1 = False
         if Dt1: Dt2 = Gmb.update_one({"_id":usr.id}, {"$inc":{"bal":n}, "$setOnInsert":{"lastClm":0, "playing":False}}, upsert=True)
         else:
             await SendWait(ctx, f"Not Enough to Transfer.")

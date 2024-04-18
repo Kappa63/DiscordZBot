@@ -49,17 +49,17 @@ class BJ:
     
     def allowedChips(self):
         if self.bal >= 500:
-            return [True, True, True, True, True]
+            return [True, True, True, True]
         elif self.bal >= 100:
-            return [True, True, True, True, False]
+            return [True, True, True, False]
         elif self.bal >= 50:
-            return [True, True, True, False, False]
+            return [True, True, False, False]
         elif self.bal >= 25:
-            return [True, True, False, False, False] 
-        elif self.bal >=5:
-            return [True, False, False, False, False] 
+            return [True, False, False, False] 
+        # elif self.bal >=5:
+            # return [True, False, False, False, False] 
         else:
-            return [False, False, False, False, False]
+            return [False, False, False, False]
         
     def onWin(self) -> None:
         self.bal += self.bet*2
@@ -180,11 +180,7 @@ class BJ:
     async def onBJ(self, forP:int) -> None:
         await self.BJTbl.edit(view=None)
         await self.dlrRvl()
-        
-        self.DEm.description = f"Total: BLACKJACK"
 
-        await self.BJTbl.edit(embeds=[self.DEm, self.PEm], attachments=[self.CdFD, self.CdFP])
-        
         if forP == 1:
             t = "Player BLACKJACK WIN!"
             self.onWin()
@@ -194,7 +190,7 @@ class BJ:
         else:
             t = "Double BLACKJACK DRAW!"
             self.onDraw()
-        await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title= t, description=f"Current Balance: ${self.bal}", color=0x00A36C)])
+        await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title= t, description=f"Current Balance: ${self.bal}", color=0x00A36C)], attachments=[self.CdFD, self.CdFP])
         await self.clsDeal() 
 
     def clsBfrs(self) -> None:
@@ -255,9 +251,9 @@ class BJ:
         self.ib2.seek(0)
         self.CdFP = discord.File(self.ib2, filename="plyr.png")
             
-        self.DEm = discord.Embed(title="Dealer", description=f"Total: {str(dV[0])+'/'+str(dV[1]) if (dV[0] != dV[1] and dV[1] <= 21) else dV[0]}", color=0x00A36C)
+        self.DEm = discord.Embed(title="Dealer", description=f"Total: {str(dV[0])+'/'+str(dV[1]) if (dV[0] != dV[1] and dV[1] < 21) else 'BLACKJACK' if dV[1]==21 else dV[0]}", color=0x00A36C)
         self.DEm.set_image(url="attachment://dlr.png")
-        self.PEm = discord.Embed(title=self.ctx.user.display_name, description=f"Total: {str(pV[0])+'/'+str(pV[1]) if (pV[0] != pV[1] and pV[1] <= 21) else pV[0]}", color=0x00A36C)
+        self.PEm = discord.Embed(title=self.ctx.user.display_name, description=f"Total: {str(pV[0])+'/'+str(pV[1]) if (pV[0] != pV[1] and pV[1] < 21) else 'BLACKJACK' if pV[1]==21 else pV[0]}", color=0x00A36C)
         self.PEm.set_image(url="attachment://plyr.png")
         self.mView.startDeal()
         await self.BJTbl.edit(embeds=[self.DEm, self.PEm], attachments=[self.CdFD, self.CdFP], view=self.mView)
