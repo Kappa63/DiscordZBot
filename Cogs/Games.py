@@ -5,6 +5,7 @@ from Customs.BlackJack import BJ
 from CBot import DClient as CBotDClient
 from Customs.UI.TicTacToe import TicTacToeView as TTTView
 from Setup import Gmb
+from typing import Optional
 from Customs.Functions import SendWait
 from pymongo.collection import ReturnDocument 
 
@@ -67,14 +68,16 @@ class Games(commands.Cog):
         self.DClient = DClient
 
     @app_commands.command(name="blackjack", description="Start a Game of Blackjack.")
+    @app_commands.rename(mx="max")
+    @app_commands.describe(mx="Max Funds to Use")
     @app_commands.checks.cooldown(1, 2)
-    async def PlayBJ(self, ctx:discord.Interaction) -> None:
+    async def PlayBJ(self, ctx:discord.Interaction, mx:Optional[int]) -> None:
         await ctx.response.defer(thinking=True)
-        Dt = Gmb.find_one_and_update({"_id":ctx.user.id}, {"$set":{"playing":True}, "$setOnInsert":{"bal":0, "lastClm":0}}, projection={"bal": True, "_id":False, "playing": True}, upsert=True, return_document=ReturnDocument.BEFORE)
-        if not Dt["playing"]:
-            await BJ(ctx, Dt["bal"] if Dt["bal"] else 0).autoRun()
+        Dt = Gmb.find_one_and_update({"_id":ctx.user.id, **({"bal":{"$gte":mx}} if mx else {})}, {**({"$set":{"playing":True}, "$inc":{"bal":-mx}} if mx else {"$set":{"playing":True, "bal":0}}), "$setOnInsert":{"lastClm":0, "tProfits":0}}, upsert=False if mx else True, return_document=ReturnDocument.BEFORE)
+        if (Dt and not Dt["playing"]) or (not Dt and not mx):
+            await BJ(ctx, (mx if mx else Dt["bal"]) if (Dt and Dt["bal"]) else 0).autoRun()
+        elif not Dt: await SendWait(ctx, "Not Enough Funds.")
         else: await SendWait(ctx, "Close Your Open Game First.")
-        # Gmb.update_one({"_id":ctx.user.id}, {"$set": {"bal":newB}})
 
     # @commands.command(name="sudoku")
     # @commands.cooldown(1, 2, commands.BucketType.user)

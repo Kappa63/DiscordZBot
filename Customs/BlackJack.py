@@ -124,7 +124,7 @@ class BJ:
         self.DEm.description = f"Total: {str(dV[0])+'/'+str(dV[1]) if (dV[0] != dV[1] and dV[1] <= 21) else dV[0]}"
         self.onLoss()
         await self.BJTbl.edit(embeds=[self.DEm, self.PEm], attachments=[self.CdFD, self.CdFP])
-        await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title=f"{self.ctx.user.display_name} BUSTED!", description=f"Current Balance: ${self.bal}", color=0x00A36C)])
+        await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title=f"{self.ctx.user.display_name} BUSTED!", description=f"Current Balance: ${self.bal:,}", color=0x00A36C)])
         await self.clsDeal()
 
     def checkDlrHit(self, val) -> bool:
@@ -157,7 +157,7 @@ class BJ:
 
     async def dlrBust(self) -> None:
         self.onWin()
-        await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title="Dealer BUSTED!", description=f"Current Balance: ${self.bal}", color=0x00A36C)])
+        await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title="Dealer BUSTED!", description=f"Current Balance: ${self.bal:,}", color=0x00A36C)])
         await self.clsDeal()
 
     async def onEnd(self) -> None:
@@ -174,7 +174,7 @@ class BJ:
         else:
             t = "DRAW!"
             self.onDraw()
-        await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title= t, description=f"Current Balance: ${self.bal}", color=0x00A36C)])
+        await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title= t, description=f"Current Balance: ${self.bal:,}", color=0x00A36C)])
         await self.clsDeal()  
 
     async def onBJ(self, forP:int) -> None:
@@ -193,7 +193,7 @@ class BJ:
         else:
             t = "Double BLACKJACK DRAW!"
             self.onDraw()
-        await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title= t, description=f"Current Balance: ${self.bal}", color=0x00A36C)], attachments=[self.CdFD, self.CdFP])
+        await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title= t, description=f"Current Balance: ${self.bal:,}", color=0x00A36C)], attachments=[self.CdFD, self.CdFP])
         await self.clsDeal() 
 
     def clsBfrs(self) -> None:
@@ -227,7 +227,7 @@ class BJ:
         self.bal-=amm
         self.bet+=amm
         self.mView.chipLogUp(self.allowedChips())
-        await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title=f"Remaining: ${self.bal}", color=0x00A36C)], view=self.mView)
+        await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title=f"Remaining: ${self.bal:,}", color=0x00A36C)], view=self.mView)
 
     async def onDeal(self) -> None:
         if((len(self.shoot)/(52*6))<=0.5 or not self.TbData[0]):
@@ -271,13 +271,13 @@ class BJ:
                 await self.onBJ(2)
 
     async def autoRun(self) -> None:
-        self.BJTbl = await self.ctx.followup.send(embed=discord.Embed(title="Opening Table...", description=f"Current Balance: ${self.bal}", color=0x00A36C), view=self.mView)
+        self.BJTbl = await self.ctx.followup.send(embed=discord.Embed(title="Opening Table...", description=f"Current Balance: ${self.bal:,}", color=0x00A36C), view=self.mView)
 
     async def clsTbl(self) -> None:
         self.mView.stop()
-        await self.BJTbl.edit(embeds=[discord.Embed(title="Table Closed.", description=f"W/L/D\n{self.TbData[0]}/{self.TbData[1]}/{self.TbData[2]}\n\nBal: {self.bal+self.bet}\n\nProfits: {self.prft}", color=0x00A36C)], attachments=[], view=None)
+        await self.BJTbl.edit(embeds=[discord.Embed(title="Table Closed.", description=f"W/L/D\n{self.TbData[0]}/{self.TbData[1]}/{self.TbData[2]}\n\nChip Balance: {(self.bal+self.bet):,}\n\nProfits: {self.prft:,}", color=0x00A36C)], attachments=[], view=None)
         self.clsBfrs()
-        Gmb.update_one({"_id":self.ctx.user.id}, {"$set": {"bal":self.bal+self.bet, "playing":False}})
+        Gmb.update_one({"_id":self.ctx.user.id}, {"$set": {"playing":False}, "$inc":{"bal":self.bal+self.bet, "tProfits":self.prft}})
     
     async def onTm(self) -> None:
         await self.clsTbl()
