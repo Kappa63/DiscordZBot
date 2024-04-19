@@ -181,6 +181,9 @@ class BJ:
         await self.BJTbl.edit(view=None)
         await self.dlrRvl()
 
+        dV = self.cardsValue(self.Dealer)
+        self.DEm.description = f"Total: {str(dV[0])+'/'+str(dV[1]) if (dV[0] != dV[1] and dV[1] <= 21) else dV[0]}"
+
         if forP == 1:
             t = "Player BLACKJACK WIN!"
             self.onWin()
@@ -237,6 +240,7 @@ class BJ:
 
         pV = self.cardsValue(self.Player)
         dV = self.cardsValue([self.Dealer[0]])
+        dVr = self.cardsValue(self.Dealer)
 
         self.DealerCardsIm = self.addCard(Image.open(f"{self.DeckDir}cb.png"), Image.open(f"{self.DeckDir}{self.Dealer[0]}.png"))
         self.PlayerCardsIm = self.addCard(Image.open(f"{self.DeckDir}{self.Player[0]}.png"), Image.open(f"{self.DeckDir}{self.Player[1]}.png"))
@@ -251,14 +255,14 @@ class BJ:
         self.ib2.seek(0)
         self.CdFP = discord.File(self.ib2, filename="plyr.png")
             
-        self.DEm = discord.Embed(title="Dealer", description=f"Total: {str(dV[0])+'/'+str(dV[1]) if (dV[0] != dV[1] and dV[1] < 21) else 'BLACKJACK' if dV[1]==21 else dV[0]}", color=0x00A36C)
+        self.DEm = discord.Embed(title="Dealer", description=f"Total: {str(dV[0])+'/'+str(dV[1]) if (dV[0] != dV[1] and dVr[1] < 21) else 'BLACKJACK' if dVr[1]==21 else dV[0]}", color=0x00A36C)
         self.DEm.set_image(url="attachment://dlr.png")
         self.PEm = discord.Embed(title=self.ctx.user.display_name, description=f"Total: {str(pV[0])+'/'+str(pV[1]) if (pV[0] != pV[1] and pV[1] < 21) else 'BLACKJACK' if pV[1]==21 else pV[0]}", color=0x00A36C)
         self.PEm.set_image(url="attachment://plyr.png")
         self.mView.startDeal()
         await self.BJTbl.edit(embeds=[self.DEm, self.PEm], attachments=[self.CdFD, self.CdFP], view=self.mView)
 
-        match (pV[1] == 21, dV[1] == 21):
+        match (pV[1] == 21, dVr[1] == 21):
             case (True, True):
                 await self.onBJ(0)
             case (True, False):
