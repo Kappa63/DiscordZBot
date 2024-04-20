@@ -55,7 +55,8 @@ class Economy(commands.Cog):
         elif n>0: 
             Dt1 = Gmb.update_one({"_id":ctx.user.id, "bal":{"$gte":n}, "playing":False}, {"$inc":{"bal":-n}}).modified_count
         else: 
-            Dt1 = False
+            await SendWait(ctx, "Yeah....No.. That Doesn't Work.")
+            return
        
         if Dt1: 
             Dt2 = Gmb.update_one({"_id":usr.id}, {"$inc":{"bal":n}, "$setOnInsert":{"lastClm":0, "playing":False, "tProfits":0}}, upsert=True)
