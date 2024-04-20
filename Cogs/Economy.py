@@ -3,7 +3,7 @@ from discord import app_commands
 from CBot import DClient as CBotDClient
 import discord
 from Setup import Gmb
-from Customs.Functions import SendWait
+from Customs.Functions import SendWait, FormatTime
 import time
 from pymongo.collection import ReturnDocument 
 
@@ -22,7 +22,7 @@ class Economy(commands.Cog):
             Dt = Gmb.find_one_and_update({"_id":ctx.user.id}, {"$inc":{"bal":1000}, "$set":{"lastClm":cT}, "$setOnInsert":{"playing":False, "tProfits":0}}, upsert=True, projection={"bal": True, "_id":False}, return_document=ReturnDocument.AFTER)
             await SendWait(ctx, f"Claimed! Your Balance is ${Dt['bal']:,}")
             return
-        await SendWait(ctx, f"You Claimed Today. Your Balance is ${tryF['bal']:,}")
+        await SendWait(ctx, f"You Claimed Today. You Can Claim Again in {FormatTime(int(86400-(cT-tryF['lastClm'])))}")
 
     @app_commands.command(name="balance", description="Check Your Money.")
     @app_commands.checks.cooldown(1, 2)
