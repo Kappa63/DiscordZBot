@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from Customs.BlackJack import BJ
+from Customs.RussianRoulette import RR
 from CBot import DClient as CBotDClient
 from Customs.UI.TicTacToe import TicTacToeView as TTTView
 from Setup import Gmb
@@ -77,6 +78,19 @@ class Games(commands.Cog):
         Dt = Gmb.find_one_and_update({"_id":ctx.user.id, **({"bal":{"$gte":mx}} if mx else {})}, {**({"$set":{"playing":True}, "$inc":{"bal":-mx}} if mx else {"$set":{"playing":True, "bal":0}}), "$setOnInsert":{"lastClm":0, "tProfits":0}}, upsert=False if mx else True, return_document=ReturnDocument.BEFORE)
         if (Dt and not Dt["playing"]) or (not Dt and not mx):
             await BJ(ctx, (mx if mx else Dt["bal"]) if (Dt and Dt["bal"]) else 0).autoRun()
+        elif not Dt: await SendWait(ctx, "Not Enough Funds.")
+        else: await SendWait(ctx, "Close Your Open Game First.")
+
+    @app_commands.command(name="roulette", description="Start a Game of Roulette (The Russian Way).")
+    @app_commands.rename(bt="bet")
+    @app_commands.describe(bt="Entrance Bet")
+    @app_commands.checks.cooldown(1, 2)
+    async def PlayRR(self, ctx:discord.Interaction, bt:int) -> None:
+        await ctx.response.defer(thinking=True)
+        if bt < 0: await SendWait(ctx, "Yeah....No.. That Doesn't Work."); return
+        Dt = Gmb.find_one_and_update({"_id":ctx.user.id, "bal":{"$gte":bt}}, {"$set":{"playing":True}, "$inc":{"bal":-bt}, "$setOnInsert":{"lastClm":0, "tProfits":0}}, return_document=ReturnDocument.BEFORE)
+        if (Dt and not Dt["playing"]):
+            await RR(ctx, bt).autoRun()
         elif not Dt: await SendWait(ctx, "Not Enough Funds.")
         else: await SendWait(ctx, "Close Your Open Game First.")
 

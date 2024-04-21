@@ -197,13 +197,16 @@ class BJ:
         await self.clsDeal() 
 
     def clsBfrs(self) -> None:
-        if(self.TbData[0]):
-            self.ib1.close()
-            self.ib2.close()
-            self.CdFP.close()
-            self.CdFD.close()
-            self.DealerCardsIm.close()
-            self.PlayerCardsIm.close()
+        try:
+            if(self.TbData[0]):
+                self.ib1.close()
+                self.ib2.close()
+                self.CdFP.close()
+                self.CdFD.close()
+                self.DealerCardsIm.close()
+                self.PlayerCardsIm.close()
+        except:
+            pass
         self.Dealer = []
         self.Player = []
         self.bet = 0
@@ -274,9 +277,12 @@ class BJ:
         self.BJTbl = await self.ctx.followup.send(embed=discord.Embed(title="Opening Table...", description=f"Current Balance: ${self.bal:,}", color=0x00A36C), view=self.mView)
 
     async def clsTbl(self) -> None:
-        self.mView.stop()
-        await self.BJTbl.edit(embeds=[discord.Embed(title="Table Closed.", description=f"W/L/D\n{self.TbData[0]}/{self.TbData[1]}/{self.TbData[2]}\n\nChip Balance: {(self.bal+self.bet):,}\n\nProfits: {self.prft:,}", color=0x00A36C)], attachments=[], view=None)
-        self.clsBfrs()
+        try:
+            self.mView.stop()
+            await self.BJTbl.edit(embeds=[discord.Embed(title="Table Closed.", description=f"W/L/D\n{self.TbData[0]}/{self.TbData[1]}/{self.TbData[2]}\n\nChip Balance: {(self.bal+self.bet):,}\n\nProfits: {self.prft:,}", color=0x00A36C)], attachments=[], view=None)
+            self.clsBfrs()
+        except:
+            pass
         Gmb.update_one({"_id":self.ctx.user.id}, {"$set": {"playing":False}, "$inc":{"bal":self.bal+self.bet, "tProfits":self.prft}})
     
     async def onTm(self) -> None:

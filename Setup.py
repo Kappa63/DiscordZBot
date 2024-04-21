@@ -1,11 +1,11 @@
 import dotenv
 import os
-from discord.ext import commands
-import discord
+# from discord.ext import commands
+# import discord
 # import tweepy
 import malclient
 # import twitch
-from discord import app_commands
+# from discord import app_commands
 # import asyncio
 # import praw
 # import asyncpraw
