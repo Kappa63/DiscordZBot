@@ -2,7 +2,7 @@ from discord.ext import commands
 from discord import app_commands
 from CBot import DClient as CBotDClient
 import discord
-from Setup import Gmb
+from Setup import Gmb, AchievementList
 from Customs.Functions import SendWait, FormatTime
 import time
 from pymongo.collection import ReturnDocument 
@@ -19,7 +19,7 @@ class Economy(commands.Cog):
         if tryF["playing"]: await SendWait(ctx, "Close Your Open Game First."); return
         cT = time.time()
         if not tryF or tryF["lastClm"] <= cT-43200:
-            Dt = Gmb.find_one_and_update({"_id":ctx.user.id}, {"$inc":{"bal":1000}, "$set":{"lastClm":cT}, "$setOnInsert":{"playing":False, "tProfits":0}}, upsert=True, projection={"bal": True, "_id":False}, return_document=ReturnDocument.AFTER)
+            Dt = Gmb.find_one_and_update({"_id":ctx.user.id}, {"$inc":{"bal":1000}, "$set":{"lastClm":cT}, "$setOnInsert":{"playing":False, "tProfits":0, "achieved":[]}}, upsert=True, projection={"bal": True, "_id":False}, return_document=ReturnDocument.AFTER)
             await SendWait(ctx, f"Claimed! Your Balance is ${Dt['bal']:,}")
             return
         await SendWait(ctx, f"You Claimed Today. You Can Claim Again in {FormatTime(int(43200-(cT-tryF['lastClm'])))}")
@@ -29,7 +29,7 @@ class Economy(commands.Cog):
     async def monCheck(self, ctx:discord.Interaction) -> None:
         await ctx.response.defer()
         Dt = Gmb.find_one({"_id":ctx.user.id}, projection={"bal": True, "_id":False, "playing":True})
-        if Dt["playing"]: await SendWait(ctx, "Close Your Open Game First."); return
+        if Dt and Dt["playing"]: await SendWait(ctx, "Close Your Open Game First."); return
         await SendWait(ctx, f"Your Current Balance is ${format(Dt['bal'], ',') if Dt else 0}")
 
     @app_commands.command(name="profits", description="Check Your Profits.")
@@ -37,7 +37,7 @@ class Economy(commands.Cog):
     async def prfCheck(self, ctx:discord.Interaction) -> None:
         await ctx.response.defer()
         Dt = Gmb.find_one({"_id":ctx.user.id}, projection={"tProfits": True, "_id":False, "playing":True})
-        if Dt["playing"]: await SendWait(ctx, "Close Your Open Game First."); return
+        if Dt and Dt["playing"]: await SendWait(ctx, "Close Your Open Game First."); return
         await SendWait(ctx, f"Your Profits so Far are ${format(Dt['tProfits'], ',') if Dt else 0}")
 
     @app_commands.command(name="transfer", description="Transfer Money.")
@@ -59,7 +59,7 @@ class Economy(commands.Cog):
             return
        
         if Dt1: 
-            Dt2 = Gmb.update_one({"_id":usr.id}, {"$inc":{"bal":n}, "$setOnInsert":{"lastClm":0, "playing":False, "tProfits":0}}, upsert=True)
+            Dt2 = Gmb.update_one({"_id":usr.id}, {"$inc":{"bal":n}, "$setOnInsert":{"lastClm":0, "playing":False, "tProfits":0, "achieved":[]}}, upsert=True)
         else:
             await SendWait(ctx, f"Not Enough to Transfer or In-Game.")
             return
@@ -69,8 +69,9 @@ class Economy(commands.Cog):
             await SendWait(ctx, f"Failed to Transfer.")
             return
         
-        await SendWait(ctx, f"Transfer Successful.")
+        await SendWait(ctx, f"Transfer of ${n:,} to {usr.display_name} Successful.")
     
+
     TopSlashes = app_commands.Group(name="top",  description="Main Command Group for Economy Top.")
 
     @TopSlashes.command(name="profit", description="Top Most Profits.")
@@ -79,7 +80,7 @@ class Economy(commands.Cog):
         await ctx.response.defer()
         mDt = {i.id:i.display_name for i in ctx.guild.members}
         Dts = Gmb.find({"_id":{"$in":list(mDt.keys())}})
-        pEm = discord.Embed(title="Profits Leaderboard:", color=0x00A36C)
+        pEm = discord.Embed(title="Profits Leaderboard:", color=0x4d6c03)
         C = 1
         for Dt in sorted(Dts, key=lambda x:x["tProfits"], reverse=True):
             pEm.add_field(name=f"{C}. {mDt[Dt['_id']]}: ${Dt['tProfits']:,}", value="\u200b", inline=False)
@@ -92,12 +93,34 @@ class Economy(commands.Cog):
         await ctx.response.defer()
         mDt = {i.id:i.display_name for i in ctx.guild.members}
         Dts = Gmb.find({"_id":{"$in":list(mDt.keys())}})
-        bEm = discord.Embed(title="Balance Leaderboard:", color=0x00A36C)
+        bEm = discord.Embed(title="Balance Leaderboard:", color=0x4d6c03)
         C = 1
         for Dt in sorted(Dts, key=lambda x:x["bal"], reverse=True):
             bEm.add_field(name=f"{C}. {mDt[Dt['_id']]}: ${Dt['bal']:,}", value="\u200b", inline=False)
             C+=1
         await ctx.followup.send(embed=bEm)
+
+
+    AchievementSlashes = app_commands.Group(name="achievements",  description="Main Command Group for Economy Achievements.")
+
+    @AchievementSlashes.command(name="list", description="(WIP) List Available Achievements.")
+    @app_commands.checks.cooldown(1,2)
+    async def achList(self, ctx:discord.Interaction) -> None:
+        await ctx.response.defer()
+        aEm = discord.Embed(title="Achievements", color=0x4d6c03)
+        for i in AchievementList:
+            aEm.add_field(name=i["title"], value="HIDDEN ACHIEVEMENT" if i["hidden"] else f"{i['desc']}\nReward: ${i['reward']:,}", inline=False)
+        await ctx.followup.send(embed=aEm)
+
+    # @AchievementSlashes.command(name="claim", description="(WIP) Claim Achievement Rewards.")
+    # @app_commands.checks.cooldown(1,2)
+    # async def clmAch(self, ctx:discord.Interaction) -> None:
+    #     pass
+        # await ctx.response.defer()
+        # aEm = discord.Embed(title="Achievements", color=0x4d6c03)
+        # for i in AchievementList:
+        #     aEm.add_field(name=i["title"], value="HIDDEN ACHIEVEMENT" if i["hidden"] else i["desc"], inline=True)
+        # await ctx.followup.send(embed=aEm)
 
     async def cog_load(self) -> None:
         print(f"{self.__class__.__name__} loaded!")

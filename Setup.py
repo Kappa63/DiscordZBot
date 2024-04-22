@@ -11,6 +11,7 @@ import malclient
 # import asyncpraw
 import giphpy as GApi
 # import pymongo
+import json
 import time
 from pymongo import MongoClient
 import CBot
@@ -29,7 +30,7 @@ Cogs = ["Cogs.Randomizers", "Cogs.MainEvents", "Cogs.AnimeManga", "Cogs.Economy"
         #  "Cogs.HelpInfo", "Cogs.MongoDB",  "Cogs.Misc",
         "Cogs.Socials", "Cogs.OnlyMods", "Cogs.Nasa", "Cogs.Movies", "Cogs.Images", "Cogs.Google"]
 
-DToken = os.environ["DISCORD_TOKEN_TIA"]
+DToken = os.environ["DISCORD_TOKEN_ZBOT"]
 
 Cls = MongoClient(os.environ["MONGODB_URL"])
 DbM = Cls["CBot"]
@@ -81,6 +82,9 @@ OClient = OssapiV1(os.environ["OSU_KEY"])
 
 # RLox = Roblox(os.getenv("ROBLOX_SECRET"))
 
+with open("./Customs/Data/achievements.json") as af:
+        AchievementList = json.load(af)
+
 # PatreonTiers = {
 #     783250729686532126: "Tier 1 Casual",
 #     783256987655340043: "Tier 2 Super",
@@ -120,7 +124,6 @@ OClient = OssapiV1(os.environ["OSU_KEY"])
 #     if ColT.count_documents({"IDg": str(ctx.guild.id)}): return True
 #     raise IsSetup("Unready")
 # ChSerGuild = lambda guild: ColT.count_documents({"IDg": str(guild.id)})
-
 
 # class IsMultiredditLimit(commands.CheckFailure): pass
 # def ChMaxMultireddits(ctx):

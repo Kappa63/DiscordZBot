@@ -36,7 +36,7 @@ class RussianRoulette(discord.ui.View):
             self.children[2] = True
             await self.onPull()
 
-    @discord.ui.button(label="SPLIT", style=discord.ButtonStyle.danger, row=0, disabled=True)
+    @discord.ui.button(label="SPLIT", style=discord.ButtonStyle.gray, row=0, disabled=True)
     async def splitter(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
         if(self.turnPlayer.id == interaction.user.id):
@@ -63,7 +63,7 @@ class RussianRoulette(discord.ui.View):
     async def cancelRR(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
         if(self.mainPlayer.id == interaction.user.id):
-            await self.onCncl()
+            await self.onCncl(True)
     
     @discord.ui.button(label="JOIN TABLE", style=discord.ButtonStyle.gray, row=3, disabled=False)
     async def joinRR(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:

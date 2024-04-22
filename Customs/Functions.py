@@ -1,6 +1,7 @@
 # import datetime
 import concurrent.futures as Cf
 import discord
+from typing import List
 from discord import app_commands
 from Setup import MalRefresher
 from discord.ext import commands
@@ -38,6 +39,9 @@ def Threader(FunctionList, ParameterList) -> (list | bool):
     except:
         return False
     return Results
+
+def updateAchievments(old:List[int], data):
+    pass
 
 class IsAdmin(app_commands.CheckFailure): pass
 def ChAdmin(ctx:discord.Interaction):

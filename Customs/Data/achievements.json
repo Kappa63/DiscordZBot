@@ -1,0 +1,170 @@
+[
+    {
+        "id": 1,
+        "title": "The House Always Wins.",
+        "desc": "Lose 5 time in a row.",
+        "reward": 1000,
+        "hidden": false
+    },
+    {
+        "id": 2,
+        "title": "Holy BLACKJACK.",
+        "desc": "Get BLACKJACK on a bet larger than $2,000.",
+        "reward": 1000,
+        "hidden": false
+    },
+    {
+        "id": 3,
+        "title": "Some profit. FINALLY!",
+        "desc": "Profit $5,000.",
+        "reward": 1000,
+        "hidden": false
+    },
+    {
+        "id": 4,
+        "title": "Getting Rich.",
+        "desc": "Profit $10,000",
+        "reward": 5000,
+        "hidden": false
+    },
+    {
+        "id": 5,
+        "title": "The Rich Get Richer.",
+        "desc": "Profit $50,000.",
+        "reward": 10000,
+        "hidden": false
+    },
+    {
+        "id": 6,
+        "title": "What The Bullet",
+        "desc": "Die to the first shot in a roulette game.",
+        "reward": 1000,
+        "hidden": true
+    },
+    {
+        "id": 7,
+        "title": "Immortal.",
+        "desc": "Die 20 times in roulette.",
+        "reward": 2000,
+        "hidden": true
+    },
+    {
+        "id": 8,
+        "title": "Worthless Life.",
+        "desc": "Play a roulette game where the bet is 0.",
+        "reward": 500,
+        "hidden": true
+    },
+    {
+        "id": 9,
+        "title": "C..an't Stop... Gamblin..g.",
+        "desc": "Play 100 hands of Blackjack on a single table.",
+        "reward": 2500,
+        "hidden": true
+    },
+    {
+        "id": 10,
+        "title": "The House Always Loses?",
+        "desc": "Win 5 times in a row",
+        "reward": 1000,
+        "hidden": false
+    },
+    {
+        "id": 11,
+        "title": "How Do People Do This?",
+        "desc": "Lose 10k on a single table.",
+        "reward": 500,
+        "hidden": true
+    },
+    {
+        "id": 12,
+        "title": "2 Negatives Make a Positive.",
+        "desc": "Try to start a game with a negative bet.",
+        "reward": 3000,
+        "hidden": true
+    },
+    {
+        "id": 13,
+        "title": "Locked in Loser.",
+        "desc": "Go ALL IN and lose $10,000.",
+        "reward": 5000,
+        "hidden": true
+    },
+    {
+        "id": 14,
+        "title": "Locked in Winner.",
+        "desc": "Go ALL IN and win $10,000.",
+        "reward": 10000,
+        "hidden": true
+    },
+    {
+        "id": 15,
+        "title": "Inevitable.",
+        "desc": "Get a 6 card 21.",
+        "reward": 10000,
+        "hidden": false
+    },
+    {
+        "id": 17,
+        "title": "On a Roll.",
+        "desc": "Profit $5,000 on a single table.",
+        "reward": 1500,
+        "hidden": false
+    },
+    {
+        "id": 18,
+        "title": "Is That a Kappa?",
+        "desc": "Play a game of roulette with the dev.",
+        "reward": 1,
+        "hidden": true
+    },
+    {
+        "id": 19,
+        "title": "The First Million.",
+        "desc": "Have a Balance of $1,000,000",
+        "reward": 100000,
+        "hidden": false
+    },
+    {
+        "id": 20,
+        "title": "The First Billion",
+        "desc": "Have a Balance of $1,000,000,000",
+        "reward": 100000000,
+        "hidden": false
+    },
+    {
+        "id": 21,
+        "title": "Charity Work",
+        "desc": "Transfer $10,000 at once.",
+        "reward": 3000,
+        "hidden": true
+    },
+    {
+        "id": 22,
+        "title": "A Small Loan of a Million Dollars",
+        "desc": "Receive a Transfer of $1,000,000",
+        "reward": 10000,
+        "hidden": true
+    },
+    {
+        "id": 23,
+        "title": "Safe Gambler",
+        "desc": "Play Blackjack with no bets 10 times on a single table.",
+        "reward": 1000,
+        "hidden": true
+    },
+    {
+        "id": 24,
+        "title": "Rage Quit",
+        "desc": "Leave blackjack after losing $5,000.",
+        "reward": 1000,
+        "hidden": false
+    },
+    {
+        "id": 25,
+        "title": "Going Pro",
+        "desc": "Unlock all achievements.",
+        "reward": 5,
+        "hidden": false
+    }
+]
