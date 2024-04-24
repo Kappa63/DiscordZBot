@@ -5,7 +5,7 @@ from Customs.BlackJack import BJ
 from Customs.RussianRoulette import RR
 from CBot import DClient as CBotDClient
 from Customs.UI.TicTacToe import TicTacToeView as TTTView
-from Setup import Gmb
+from Setup import Gmb, GmbOnSetData
 from typing import Optional
 from Customs.Functions import SendWait
 from pymongo.collection import ReturnDocument 
@@ -75,7 +75,7 @@ class Games(commands.Cog):
     async def PlayBJ(self, ctx:discord.Interaction, mx:Optional[int]) -> None:
         await ctx.response.defer(thinking=True)
         if mx and mx < 0: await SendWait(ctx, "Yeah....No.. That Doesn't Work."); return
-        Dt = Gmb.find_one_and_update({"_id":ctx.user.id, **({"bal":{"$gte":mx}} if mx else {})}, {**({"$set":{"playing":True}, "$inc":{"bal":-mx}} if mx else {"$set":{"playing":True, "bal":0}}), "$setOnInsert":{"lastClm":0, "tProfits":0, "achieved":[]}}, upsert=False if mx else True, return_document=ReturnDocument.BEFORE)
+        Dt = Gmb.find_one_and_update({"_id":ctx.user.id, **({"bal":{"$gte":mx}} if mx else {})}, {**({"$set":{"playing":True}, "$inc":{"bal":-mx}} if mx else {"$set":{"playing":True, "bal":0}}), "$setOnInsert":{"lastClm":0, **GmbOnSetData}}, projection={"playing":True, "achieved":True, "bal":True}, upsert=False if mx else True, return_document=ReturnDocument.BEFORE)
         if (Dt and not Dt["playing"]) or (not Dt and not mx):
             await BJ(ctx, (mx if mx else Dt["bal"]) if (Dt and Dt["bal"]) else 0, Dt["achieved"] if Dt else []).autoRun()
         elif not Dt: await SendWait(ctx, "Not Enough Funds.")
@@ -88,7 +88,7 @@ class Games(commands.Cog):
     async def PlayRR(self, ctx:discord.Interaction, bt:int) -> None:
         await ctx.response.defer(thinking=True)
         if bt < 0: await SendWait(ctx, "Yeah....No.. That Doesn't Work."); return
-        Dt = Gmb.find_one_and_update({"_id":ctx.user.id, "bal":{"$gte":bt}}, {"$set":{"playing":True}, "$inc":{"bal":-bt}, "$setOnInsert":{"lastClm":0, "tProfits":0, "achieved":[]}}, return_document=ReturnDocument.BEFORE)
+        Dt = Gmb.find_one_and_update({"_id":ctx.user.id, "bal":{"$gte":bt}}, {"$set":{"playing":True}, "$inc":{"bal":-bt}, "$setOnInsert":{"lastClm":0, **GmbOnSetData}}, projection={"playing":True, "achieved":True}, return_document=ReturnDocument.BEFORE)
         if (Dt and not Dt["playing"]):
             await RR(ctx, bt, Dt["achieved"]).autoRun()
         elif not Dt: await SendWait(ctx, "Not Enough Funds.")

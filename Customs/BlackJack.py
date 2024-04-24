@@ -4,6 +4,8 @@ import discord
 from Setup import Gmb
 from PIL import Image
 from typing import List
+from pymongo.collection import ReturnDocument 
+from Customs.AchievementHelper import BJAchievements
 from Customs.UI.BlackJack import BlackJackView as BJView
 
 class BJ:
@@ -11,6 +13,7 @@ class BJ:
         self.ctx = ctx
         self.bal = bal
         self.acm = acm
+        self.acmHelper = BJAchievements([i[0] for i in acm])
         self.DeckCards = ['kc', '6h', '2s', 'qd', '10c', '5h', 'jh', '8h', 'qs', 'kd', 'ks', '5d', '3s',
                         '7h', '3d', '7s', '10h', 'kh', '8d', '8c', 'qh', 'ad', '2c', '2d', 'jd', '9d', 
                         '10s', 'ac', 'jc', '7c', '6s', 'js', '4s', '2h', '10d', '9s', '8s', '3c', '7d', 
@@ -25,6 +28,9 @@ class BJ:
         self.bet = 0
         self.prft = 0
         self.TbData = [0, 0, 0]
+        self.streak = 0
+        self.allTrigger = False
+        self.streakAch = [False, False]
 
     def cardsValue(self, cards) -> None:
         vls = []
@@ -34,7 +40,6 @@ class BJ:
             if v not in ["j", "q", "k", "a"]: vls.append(int(v))
             elif v != "a": vls.append(10)
             else: aTrgr += 1
-
         vls = sum(vls)
         if aTrgr: 
             return (vls+(1*aTrgr), vls+11+(1*(aTrgr-1)))
@@ -66,15 +71,23 @@ class BJ:
     def onWin(self) -> None:
         self.bal += self.bet*2
         self.prft += self.bet
-        self.TbData[0] += 1    
+        self.TbData[0] += 1
+        self.acmHelper.updateStreak(1)
+        if self.allTrigger:
+            self.acmHelper.allInProfit(self.bet)
 
     def onDraw(self) -> None:
-        self.bal += self.bet
-        self.TbData[2] += 1    
+        self.bal += self.betupdate_one
+        self.TbData[2] += 1   
+        self.streak = 0
+        self.acmHelper.updateStreak(0)
 
     def onLoss(self) -> None:
         self.TbData[1] += 1  
-        self.prft -= self.bet  
+        self.prft -= self.bet
+        self.acmHelper.updateStreak(-1)
+        if self.allTrigger:
+            self.acmHelper.allInProfit(-self.bet)
     
     async def plyrHit(self) -> None:
         self.Player.append(self.shoot.pop(0))
@@ -99,6 +112,8 @@ class BJ:
         if (pV[0] > 21):
             await self.plyrBust()
         elif (pV[0] == 21 or pV[1] == 21):
+            if len(self.Player) >= 6:
+                self.acmHelper.addAchieved(15)
             await self.plyrStnd()
 
     async def plyrStnd(self) -> None:
@@ -188,6 +203,7 @@ class BJ:
 
         if forP == 1:
             t = "Player BLACKJACK WIN!"
+            self.acmHelper.onBJ(self.bet)
             self.onWin()
         elif forP == 2:
             t = "Dealer BLACKJACK WIN!"
@@ -228,13 +244,18 @@ class BJ:
         random.shuffle(self.shoot)
 
     async def addBet(self, amm) -> None:
-        amm = amm if amm else self.bal
+        if not amm:
+            amm = self.bal
+            self.allTrigger = True
+
         self.bal-=amm
         self.bet+=amm
         self.mView.chipLogUp(self.allowedChips())
         await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title=f"Remaining: ${self.bal:,}", color=0x00A36C)], view=self.mView)
 
     async def onDeal(self) -> None:
+        if not self.bet:
+            self.acmHelper.updateEmptyBet()
         if((len(self.shoot)/(52*6))<=0.5 or not self.TbData[0]):
             await self.shuffle()
 
@@ -285,7 +306,14 @@ class BJ:
             self.clsBfrs()
         except:
             pass
-        Gmb.update_one({"_id":self.ctx.user.id}, {"$set": {"playing":False}, "$inc":{"bal":self.bal+self.bet, "tProfits":self.prft}})
-    
+        Dt = Gmb.find_one_and_update({"_id":self.ctx.user.id}, {"$set": {"playing":False}, "$inc":{"bal":self.bal+self.bet, "bjProfits":self.prft, "bjWins":self.TbData[0], "bjDraws":self.TbData[2], "bjLosses":self.TbData[1]}}, projection={"bjProfits":True, "bal":True}, return_document=ReturnDocument.AFTER)
+        self.acmHelper.dealsPlayed(sum(self.TbData))
+        self.acmHelper.tableProfit(self.prft)
+        self.acmHelper.allTimeProfits(Dt["bjProfits"])
+        self.acmHelper.allTimeBalance(Dt["bal"])
+        nAcm = self.acmHelper.getAchieved()
+        if self.acm != nAcm:
+            Gmb.update_one({"_id":self.ctx.user.id}, {"$push": {"achieved":{"$each":[[i,False] for i in nAcm]}}})
+
     async def onTm(self) -> None:
         await self.clsTbl()

@@ -1,0 +1,16 @@
+[
+    {
+        "id": 12,
+        "title": "Survival Instinct",
+        "desc": "Survive 10 rounds of Roulette.",
+        "reward": 3000,
+        "hidden": true
+    },
+    {
+        "id": 7,
+        "title": "Immortal.",
+        "desc": "Die 20 times in Roulette.",
+        "reward": 2000,
+        "hidden": true
+    }
+]

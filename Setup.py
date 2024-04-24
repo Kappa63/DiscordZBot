@@ -28,16 +28,16 @@ dotenv.load_dotenv(env)
 
 Cogs = ["Cogs.Randomizers", "Cogs.MainEvents", "Cogs.AnimeManga", "Cogs.Economy", "Cogs.WrittenStuff", "Cogs.GameAPIs", "Cogs.Games",
         #  "Cogs.HelpInfo", "Cogs.MongoDB",  "Cogs.Misc",
-        "Cogs.Socials", "Cogs.OnlyMods", "Cogs.Nasa", "Cogs.Movies", "Cogs.Images", "Cogs.Google"]
+        "Cogs.Socials", "Cogs.OnlyMods", "Cogs.Nasa", "Cogs.Movies", "Cogs.Images", "Cogs.Google", "Cogs.Rule34"]
 
 DToken = os.environ["DISCORD_TOKEN_ZBOT"]
 
 Cls = MongoClient(os.environ["MONGODB_URL"])
 DbM = Cls["CBot"]
 Gmb = DbM["Gamble"]
-# ColT = DbM["SerTwo"]
-# AQd = DbM["Daily"]
 Rdt = DbM["Reddit"]
+
+GmbOnSetData = {"achieved":[], "bjProfits":0, "bjWins":0, "bjDraws":0, "bjLosses":0, "rrProfits":0, "rrWins":0, "rrDeaths":0}
 
 GClient = os.environ["GIPHY_KEY"]
 

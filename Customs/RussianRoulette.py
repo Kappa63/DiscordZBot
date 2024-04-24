@@ -11,6 +11,8 @@ class RR:
         self.ctx = ctx
         self.bet = bet
         self.acm = acm
+        self.idAcm = [i[0] for i in acm]
+        self.nAcm = []
         self.mView = RRView(ctx.user, self.onSpin, self.onPull, self.onSplit, self.chSplit, self.onPlayer, self.start, self.onTim, self.cancelGame)
         self.players = [[ctx.user, 1]]
         self.agreeSplit = 0
@@ -19,6 +21,7 @@ class RR:
         self.dead = 0
         self.curP = 0
         self.onBullet = 0
+        self.rnd = 1
         self.reloadURLs = ["https://media1.tenor.com/m/1l2ahrbFZ_sAAAAC/loading-gun.gif", "https://media1.tenor.com/m/p38XIgRTGMkAAAAd/gun.gif", "https://media1.tenor.com/m/5KBeg8bTVxgAAAAC/gold-rule.gif"]
         self.shotURLs = ["https://media1.tenor.com/m/PDXJWOZHIPIAAAAC/kim-pine-shoot.gif", "https://media1.tenor.com/m/7XCpJLcagyQAAAAC/joker-finger-gun.gif", "https://media1.tenor.com/m/bEkEbaP_67AAAAAC/shoot-me-kill.gif"]
         self.survivedURLs = ["https://media1.tenor.com/m/A_HXcBh96J0AAAAC/denzel-washington-gun.gif"]
@@ -73,6 +76,8 @@ class RR:
         self.onBullet += 1
         gEnd = False
         if shot:
+            if self.curP == 0 and self.rnd == 1 and 6 not in self.idAcm:
+                self.nAcm.append([6, False])
             self.dead += 1
             self.onBullet = 0
             self.players[self.curP][1] = 0
@@ -105,6 +110,9 @@ class RR:
     async def onPlayer(self, int:discord.Interaction) -> None:
         for i in self.players:
             if int.user.id == i[0].id: return
+
+        if int.user.id == 443986051371892746 and 18 not in self.idAcm:
+            self.nAcm.append([18, False])
       
         self.players.append([int.user, 1])
         Dt = Gmb.find_one_and_update({"_id":int.user.id, "bal":{"$gte":self.bet}}, {"$set":{"playing":True}, "$inc":{"bal":-self.bet}, "$setOnInsert":{"lastClm":0, "tProfits":0}}, return_document=ReturnDocument.BEFORE)
@@ -125,6 +133,8 @@ class RR:
         
         
     async def start(self) -> None:
+        if self.bet == 0 and 8 not in self.idAcm:
+            self.nAcm.append([8, False])
         random.shuffle(self.cylinder)
         await self.RRTbl.edit(embed=self.sEm, view=self.mView)
         self.mView.loaded()
@@ -169,8 +179,10 @@ class RR:
         mE = (self.bet*self.nPlayers)/(self.nPlayers-self.dead)
         if cncl:
             await self.RRTbl.edit(embed=discord.Embed(title=f"Game Ended", description=f"The Pot of ${(self.bet*self.nPlayers):,} has been split back. ${mE:,} each", color=0xe44c22), view=None)
-        Gmb.update_many({"_id":{"$in":[i[0].id for i in self.players if i[1]]}}, {"$inc":{"bal":mE, "tProfits":mE-self.bet}, "$set":{"playing":False}})
-        Gmb.update_many({"_id":{"$in":[i[0].id for i in self.players if not i[1]]}}, {"$inc":{"tProfits":-self.bet}, "$set":{"playing":False}})
+        Gmb.update_many({"_id":{"$in":[i[0].id for i in self.players if i[1]]}}, {"$inc":{"bal":mE, "rrProfits":mE-self.bet, "rrWins":1}, "$set":{"playing":False}})
+        Gmb.update_many({"_id":{"$in":[i[0].id for i in self.players if not i[1]]}}, {"$inc":{"rrProfits":-self.bet, "rrLosses":1}, "$set":{"playing":False}})
+        if self.nAcm:
+            Gmb.update_one({"_id":self.ctx.user.id}, {"$push": {"achieved": {"$each":self.nAcm}}})
 
     async def onTim(self) -> None:
         await self.cancelGame(True)

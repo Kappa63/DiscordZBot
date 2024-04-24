@@ -40,9 +40,6 @@ def Threader(FunctionList, ParameterList) -> (list | bool):
         return False
     return Results
 
-def updateAchievments(old:List[int], data):
-    pass
-
 class IsAdmin(app_commands.CheckFailure): pass
 def ChAdmin(ctx:discord.Interaction):
     if ctx.user.guild_permissions.administrator: return True
