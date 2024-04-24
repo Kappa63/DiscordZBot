@@ -10,10 +10,9 @@ class BJAchievements:
         if res > 0 and self.streak > 0:
             self.streak += res
         elif res < 0 and self.streak < 0:
-            self.streak -= res
+            self.streak += res
         else:
             self.streak = res
-        
         if self.streak >= 5:
             if 1 not in self.achieved:
                 self.achieved.append(1)
