@@ -140,7 +140,8 @@ class Economy(commands.Cog):
             added.append(i[0])
             for j in AchievementList:
                 if i[0] == j["id"]:
-                    aEm.add_field(name=f"{i['title']} - UNLOCKED", value=f"{i['desc']}\nReward: ${i['reward']:,} - {'Claimed' if i[1] else 'Unclaimed'}")
+                    aEm.add_field(name=f"{j['title']} - UNLOCKED", value=f"{j['desc']}\nReward: ${j['reward']:,} - {'Claimed' if i[1] else 'Unclaimed'}")
+                    break
         for i in AchievementList:
             if i in added: continue
             aEm.add_field(name=f"{i['title']} - LOCKED", value="HIDDEN ACHIEVEMENT" if i["hidden"] else f"{i['desc']}\nReward: ${i['reward']:,}", inline=False)

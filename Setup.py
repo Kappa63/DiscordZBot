@@ -28,7 +28,7 @@ dotenv.load_dotenv(env)
 
 Cogs = ["Cogs.Randomizers", "Cogs.MainEvents", "Cogs.AnimeManga", "Cogs.Economy", "Cogs.WrittenStuff", "Cogs.GameAPIs", "Cogs.Games",
         #  "Cogs.HelpInfo", "Cogs.MongoDB",  "Cogs.Misc",
-        "Cogs.Socials", "Cogs.OnlyMods", "Cogs.Nasa", "Cogs.Movies", "Cogs.Images", "Cogs.Google", "Cogs.Rule34"]
+        "Cogs.Socials", "Cogs.OnlyMods", "Cogs.Nasa", "Cogs.Movies", "Cogs.Images", "Cogs.Google"]
 
 DToken = os.environ["DISCORD_TOKEN_ZBOT"]
 

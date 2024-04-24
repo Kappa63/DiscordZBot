@@ -10,7 +10,7 @@ class BJAchievements:
         if res > 0 and self.streak > 0:
             self.streak += res
         elif res < 0 and self.streak < 0:
-            self.streak -+ res
+            self.streak -= res
         else:
             self.streak = res
         
