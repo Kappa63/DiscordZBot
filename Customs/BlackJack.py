@@ -13,8 +13,7 @@ class BJ:
         self.ctx = ctx
         self.bal = bal
         self.acm = acm
-        self.idAcm = [i[0] for i in acm]
-        self.acmHelper = BJAchievements(self.idAcm)
+        self.acmHelper = BJAchievements([i[0] for i in acm])
         self.DeckCards = ['kc', '6h', '2s', 'qd', '10c', '5h', 'jh', '8h', 'qs', 'kd', 'ks', '5d', '3s',
                         '7h', '3d', '7s', '10h', 'kh', '8d', '8c', 'qh', 'ad', '2c', '2d', 'jd', '9d', 
                         '10s', 'ac', 'jc', '7c', '6s', 'js', '4s', '2h', '10d', '9s', '8s', '3c', '7d', 
@@ -309,8 +308,8 @@ class BJ:
         self.acmHelper.tableProfit(self.prft)
         self.acmHelper.allTimeProfits(Dt["bjProfits"])
         self.acmHelper.allTimeBalance(Dt["bal"])
-        nAcm = self.acmHelper.getAchieved()
-        if self.idAcm != nAcm:
+        nAcm = self.acmHelper.getAchieved()[len(self.acm):]
+        if nAcm:
             Gmb.update_one({"_id":self.ctx.user.id}, {"$push": {"achieved":{"$each":[[i,False] for i in nAcm]}}})
 
     async def onTm(self) -> None:

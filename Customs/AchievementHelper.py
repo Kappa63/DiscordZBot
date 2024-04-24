@@ -14,11 +14,11 @@ class BJAchievements:
         else:
             self.streak = res
         if self.streak >= 5:
-            if 1 not in self.achieved:
-                self.achieved.append(1)
-        if self.streak <= -5:
             if 10 not in self.achieved:
                 self.achieved.append(10)
+        if self.streak <= -5:
+            if 1 not in self.achieved:
+                self.achieved.append(1)
     
     def onBJ(self, bet:int) -> None:
         if bet >= 2000:
