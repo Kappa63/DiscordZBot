@@ -84,6 +84,8 @@ class Mines:
     async def clsRnd(self) -> None:
         self.mControls.chipLogUp(self.allowedChips())
         self.bet = 0
+        self.bombHit = False
+        self.collected = 0
         await self.rdyNRnd()
 
     async def onStart(self) -> None:

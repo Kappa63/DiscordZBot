@@ -19,7 +19,7 @@ class Economy(commands.Cog):
         if tryF["playing"]: await SendWait(ctx, "Close Your Open Game First."); return
         cT = time.time()
         if not tryF or tryF["lastClm"] <= cT-86400:
-            Dt = Gmb.find_one_and_update({"_id":ctx.user.id}, {"$inc":{"bal":500}, "$set":{"lastClm":cT}, "$setOnInsert":{"playing":False, **GmbOnSetData}}, upsert=True, projection={"bal": True}, return_document=ReturnDocument.AFTER)
+            Dt = Gmb.find_one_and_update({"_id":ctx.user.id}, {"$inc":{"bal":1000}, "$set":{"lastClm":cT}, "$setOnInsert":{"playing":False, **GmbOnSetData}}, upsert=True, projection={"bal": True}, return_document=ReturnDocument.AFTER)
             await SendWait(ctx, f"Claimed! Your Balance is ${Dt['bal']:,}")
             return
         await SendWait(ctx, f"You Claimed Today. You Can Claim Again in {FormatTime(int(86400-(cT-tryF['lastClm'])))}")
