@@ -3,7 +3,7 @@ import discord
 from CBot import DClient as CBotDClient
 from discord import app_commands
 from Customs.Functions import SendWait, FormatTime, Ignore, IsBot, IsNSFW, IsAdmin
-import random
+from numpy import random
 
 Doing = ["ZBot IS BACK ONLINE!!", "4 Years Later", "Revived from the Dead"]
 
@@ -37,7 +37,7 @@ class MainEvents(commands.Cog):
         else:
             print(error)
             await self.DClient.StaffChannel.send(self.DClient.Me.mention)
-            await self.DClient.StaffChannel.send(f'In {ctx.command} ({ctx.message.content}): {error}')
+            await self.DClient.StaffChannel.send(f'In {ctx.command}: {error}')
             return
 
     async def cog_load(self) -> None:

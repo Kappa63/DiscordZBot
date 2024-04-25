@@ -1,5 +1,5 @@
 import discord
-import random
+from numpy import random
 import requests
 from discord import app_commands
 from discord.ext import commands

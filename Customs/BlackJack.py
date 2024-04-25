@@ -1,4 +1,4 @@
-import random
+from numpy import random
 import io
 import discord
 from Setup import Gmb

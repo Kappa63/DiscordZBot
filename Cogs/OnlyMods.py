@@ -3,6 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 from Customs.Functions import ChDev, RefreshMAL
 from Setup import Gmb
+from Customs.Mines import Mines
 from CBot import DClient as CBotDClient
 
 class OnlyMods(commands.Cog):

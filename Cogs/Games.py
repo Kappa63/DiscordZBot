@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 from Customs.BlackJack import BJ
 from Customs.RussianRoulette import RR
+from Customs.Mines import Mines
 from CBot import DClient as CBotDClient
 from Customs.UI.TicTacToe import TicTacToeView as TTTView
 from Setup import Gmb, GmbOnSetData
@@ -91,6 +92,19 @@ class Games(commands.Cog):
         Dt = Gmb.find_one_and_update({"_id":ctx.user.id, "bal":{"$gte":bt}}, {"$set":{"playing":True}, "$inc":{"bal":-bt}, "$setOnInsert":{"lastClm":0, **GmbOnSetData}}, projection={"playing":True, "achieved":True}, return_document=ReturnDocument.BEFORE)
         if (Dt and not Dt["playing"]):
             await RR(ctx, bt, Dt["achieved"]).autoRun()
+        elif not Dt: await SendWait(ctx, "Not Enough Funds.")
+        else: await SendWait(ctx, "Close Your Open Game First.")
+    
+    @app_commands.command(name="mines", description="(WIP) Start a Game of Mines.")
+    @app_commands.rename(mx="max")
+    @app_commands.describe(mx="Max Funds to Use")
+    @app_commands.checks.cooldown(1, 2)
+    async def PlayM(self, ctx:discord.Interaction, mx:int) -> None:
+        await ctx.response.defer(thinking=True)
+        if mx < 0: await SendWait(ctx, "Yeah....No.. That Doesn't Work."); return
+        Dt = Gmb.find_one_and_update({"_id":ctx.user.id, "bal":{"$gte":mx}}, {"$set":{"playing":True}, "$inc":{"bal":-mx}, "$setOnInsert":{"lastClm":0, **GmbOnSetData}}, projection={"playing":True, "achieved":True}, return_document=ReturnDocument.BEFORE)
+        if (Dt and not Dt["playing"]):
+            await Mines(ctx, mx, Dt["achieved"]).autoRun()
         elif not Dt: await SendWait(ctx, "Not Enough Funds.")
         else: await SendWait(ctx, "Close Your Open Game First.")
 

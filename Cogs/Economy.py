@@ -18,11 +18,11 @@ class Economy(commands.Cog):
         tryF = Gmb.find_one({"_id":ctx.user.id})
         if tryF["playing"]: await SendWait(ctx, "Close Your Open Game First."); return
         cT = time.time()
-        if not tryF or tryF["lastClm"] <= cT-43200:
-            Dt = Gmb.find_one_and_update({"_id":ctx.user.id}, {"$inc":{"bal":1000}, "$set":{"lastClm":cT}, "$setOnInsert":{"playing":False, **GmbOnSetData}}, upsert=True, projection={"bal": True}, return_document=ReturnDocument.AFTER)
+        if not tryF or tryF["lastClm"] <= cT-86400:
+            Dt = Gmb.find_one_and_update({"_id":ctx.user.id}, {"$inc":{"bal":500}, "$set":{"lastClm":cT}, "$setOnInsert":{"playing":False, **GmbOnSetData}}, upsert=True, projection={"bal": True}, return_document=ReturnDocument.AFTER)
             await SendWait(ctx, f"Claimed! Your Balance is ${Dt['bal']:,}")
             return
-        await SendWait(ctx, f"You Claimed Today. You Can Claim Again in {FormatTime(int(43200-(cT-tryF['lastClm'])))}")
+        await SendWait(ctx, f"You Claimed Today. You Can Claim Again in {FormatTime(int(86400-(cT-tryF['lastClm'])))}")
 
     @app_commands.command(name="stats", description="Check Your Game Stats")
     @app_commands.checks.cooldown(1, 2)

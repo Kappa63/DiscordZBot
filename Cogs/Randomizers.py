@@ -1,9 +1,9 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-import random
+from numpy import random
 import cv2
-import numpy
+import numpy as np
 from CBot import DClient as CBotDClient
 import os
 from Setup import GClient, GApi
@@ -40,7 +40,7 @@ class Randomizers(commands.Cog):
     @app_commands.command(name="color", description="Generates a Random Color.")
     @app_commands.checks.cooldown(1, 1)
     async def ColorRandom(self, ctx:discord.Interaction) -> None:
-        MakeClear = numpy.zeros((360, 360, 3), numpy.uint8)
+        MakeClear = np.zeros((360, 360, 3), np.uint8)
         R = random.randint(0, 255)
         G = random.randint(0, 255)
         B = random.randint(0, 255)
