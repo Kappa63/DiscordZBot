@@ -4,7 +4,7 @@ class MinesView(discord.ui.View):
     def __init__(self, player:discord.User, onClck) -> None:
         self.player = player
         self.onClck = onClck
-        super().__init__(timeout=90)
+        super().__init__(timeout=180)
         for i in range(25):
             a = discord.ui.Button(label="\u200b", custom_id=str(i), disabled=True)
             a.callback = self.checkClck
@@ -22,6 +22,8 @@ class MinesView(discord.ui.View):
         else:
             self.children[idx].style = discord.ButtonStyle.green
             self.children[idx].label = "💎"
+            self.children[idx].disabled = True
+
 
     def offAll(self) -> None:
         for i in self.children:
@@ -43,7 +45,7 @@ class MinesControls(discord.ui.View):
         self.onCOut = onCOut
         self.onLeave = onLeave
         self.chips = [0, 0, 0, 0]
-        super().__init__(timeout=90)
+        super().__init__(timeout=180)
         self.endRnd()
 
     @discord.ui.select(placeholder="💣 1", options=[discord.SelectOption(label=i, emoji="💣") for i in range(1, 25)], max_values=1, row=0, disabled=False)
@@ -142,3 +144,6 @@ class MinesControls(discord.ui.View):
         if log != self.log:
             self.log = log
             self.upChips()
+
+    async def on_timeout(self) -> None:
+        await self.onLeave()

@@ -20,14 +20,14 @@ class RussianRoulette(discord.ui.View):
 
         super().__init__(timeout=120)
 
-    @discord.ui.button(label="SPIN", style=discord.ButtonStyle.green, row=0, disabled=True)
+    @discord.ui.button(label="SPIN", style=discord.ButtonStyle.green, row=1, disabled=True)
     async def spinner(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
         if(self.turnPlayer.id == interaction.user.id):
             button.disabled = True
             await self.onSpin()
 
-    @discord.ui.button(label="PULL", style=discord.ButtonStyle.danger, row=0, disabled=True)
+    @discord.ui.button(label="PULL", style=discord.ButtonStyle.danger, row=1, disabled=True)
     async def puller(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
         if(self.turnPlayer.id == interaction.user.id):
@@ -36,7 +36,7 @@ class RussianRoulette(discord.ui.View):
             self.children[2] = True
             await self.onPull()
 
-    @discord.ui.button(label="SPLIT", style=discord.ButtonStyle.gray, row=0, disabled=True)
+    @discord.ui.button(label="SPLIT", style=discord.ButtonStyle.gray, row=1, disabled=True)
     async def splitter(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
         if(self.turnPlayer.id == interaction.user.id):
@@ -70,11 +70,11 @@ class RussianRoulette(discord.ui.View):
         await interaction.response.defer()
         await self.onJoin(interaction)
 
-    async def chSlctdOk(self, interaction: discord.Interaction, button:discord.ui.Button) -> None:
-        self.onCh(interaction.user, True)
+    async def chSlctdOk(self, interaction: discord.Interaction) -> None:
+        await self.onCh(interaction.user, True)
 
-    async def chSlctdNot(self, interaction: discord.Interaction, button:discord.ui.Button) -> None:
-        self.onCh(interaction.user, False)
+    async def chSlctdNot(self, interaction: discord.Interaction) -> None:
+        await self.onCh(interaction.user, False)
 
     def fullTable(self) -> None:
         self.children[5].disabled = True

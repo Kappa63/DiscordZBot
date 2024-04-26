@@ -35,8 +35,8 @@ class Economy(commands.Cog):
         UEm.add_field(name="Roulette Profits: ", value=f"${Dt['rrProfits']:,}", inline=True)
         UEm.add_field(name="Total Profits: ", value=f"${(Dt['rrProfits']+Dt['bjProfits']):,}", inline=True)
         UEm.add_field(name="Blackjack W/L/D: ", value=f"{Dt['bjWins']}/{Dt['bjLosses']}/{Dt['bjDraws']}", inline=True)
-        UEm.add_field(name="Roulette W/L: ", value=f"{Dt['rrWins']}/{Dt['rrDeaths']}", inline=True)
-        UEm.add_field(name="Total W/L/D: ", value=f"{Dt['bjWins']+Dt['rrWins']}/{Dt['bjLosses']+Dt['rrDeaths']}/{Dt['bjDraws']}", inline=True)
+        UEm.add_field(name="Roulette W/L/D: ", value=f"{Dt['rrWins']}/{Dt['rrDeaths']}/{Dt['rrSplits']}", inline=True)
+        UEm.add_field(name="Total W/L/D: ", value=f"{Dt['bjWins']+Dt['rrWins']}/{Dt['bjLosses']+Dt['rrDeaths']}/{Dt['bjDraws']+Dt['rrSplits']}", inline=True)
         UEm.set_thumbnail(url=ctx.user.display_avatar)
         await ctx.followup.send(embed=UEm)
 

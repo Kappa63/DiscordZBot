@@ -1,7 +1,7 @@
 from numpy import random
 import asyncio
 import discord
-from Setup import Gmb
+from Setup import Gmb, GmbOnSetData
 from pymongo.collection import ReturnDocument 
 from typing import List
 from Customs.UI.RussianRoulette import RussianRoulette as RRView
@@ -13,6 +13,7 @@ class RR:
         self.acm = acm
         self.idAcm = [i[0] for i in acm]
         self.nAcm = []
+        self.splitters = []
         self.mView = RRView(ctx.user, self.onSpin, self.onPull, self.onSplit, self.chSplit, self.onPlayer, self.start, self.onTim, self.cancelGame)
         self.players = [[ctx.user, 1]]
         self.agreeSplit = 0
@@ -21,6 +22,7 @@ class RR:
         self.dead = 0
         self.curP = 0
         self.onBullet = 0
+        self.splitFlag = False
         self.rnd = 1
         self.reloadURLs = ["https://media1.tenor.com/m/1l2ahrbFZ_sAAAAC/loading-gun.gif", "https://media1.tenor.com/m/p38XIgRTGMkAAAAd/gun.gif", "https://media1.tenor.com/m/5KBeg8bTVxgAAAAC/gold-rule.gif"]
         self.shotURLs = ["https://media1.tenor.com/m/PDXJWOZHIPIAAAAC/kim-pine-shoot.gif", "https://media1.tenor.com/m/7XCpJLcagyQAAAAC/joker-finger-gun.gif", "https://media1.tenor.com/m/bEkEbaP_67AAAAAC/shoot-me-kill.gif"]
@@ -30,7 +32,7 @@ class RR:
         self.pEm.add_field(name=ctx.user.display_name, value="\u200b", inline=False)
         self.sEm = discord.Embed(title="Loading Bullet...", description="Only one walks out alive\nReady to Die?", color=0xe44c22)
         self.sEm.set_thumbnail(url="https://media1.tenor.com/m/p38XIgRTGMkAAAAd/gun.gif")
-        self.wsEm = discord.Embed(title=f"{self.players[self.curP]} suggests to SPLIT the Pot.", description=f"The Pot of ${(self.bet*self.nPlayers):,}")
+        self.wsEm = discord.Embed(title=f"{self.players[self.curP][0].display_name} suggests to SPLIT the Pot.", description=f"The Pot of ${(self.bet*self.nPlayers):,}")
 
     def bldSpinEm(self, plyr:discord.Member) -> discord.Embed:
         spEm = discord.Embed(title=f"{plyr.display_name} spins the chamber", description="FATE has NOT changed. Pull the Trigger.", color=0xe44c22)
@@ -115,7 +117,7 @@ class RR:
             self.nAcm.append([18, False])
       
         self.players.append([int.user, 1])
-        Dt = Gmb.find_one_and_update({"_id":int.user.id, "bal":{"$gte":self.bet}}, {"$set":{"playing":True}, "$inc":{"bal":-self.bet}, "$setOnInsert":{"lastClm":0, "tProfits":0}}, return_document=ReturnDocument.BEFORE)
+        Dt = Gmb.find_one_and_update({"_id":int.user.id, "bal":{"$gte":self.bet}}, {"$set":{"playing":True}, "$inc":{"bal":-self.bet}}, return_document=ReturnDocument.BEFORE)
         if (Dt and not Dt["playing"]):
             self.nPlayers += 1
             self.pEm.description = f"{self.nPlayers}/6 (${(self.bet*self.nPlayers):,} in Pot)"
@@ -147,7 +149,7 @@ class RR:
         self.agreeSplit = 1
         self.voteSplit = 1
         self.wsEm.add_field(name=self.players[self.curP][0].display_name, value="Wants to Split", inline=False)
-        await self.RRTbl.edit(embed=self.wsEm)
+        await self.RRTbl.edit(embed=self.wsEm, view=self.mView)
 
     async def chSplit(self, usr:discord.Member, ch:bool) -> None:
         for i in self.players:
@@ -156,22 +158,29 @@ class RR:
                     break
                 else:
                     return
+        if usr.id in self.splitters: return
+        self.splitters.append(usr.id)
         self.voteSplit += 1
         if ch:
             self.agreeSplit += 1
             self.wsEm.add_field(name=usr.display_name, value="Wants to Split", inline=False)
         else:
             self.wsEm.add_field(name=usr.display_name, value="Does NOT want to Split", inline=False)
+        await self.RRTbl.edit(embed=self.wsEm)
 
         if self.agreeSplit > self.nPlayers/2:
+            self.splitFlag = True
             await self.cancelGame(True)
 
         if self.voteSplit == (self.nPlayers - self.dead):
             if self.agreeSplit > (self.voteSplit-self.agreeSplit):
+                self.splitFlag = True
                 await self.cancelGame(True)
             else:
                 self.mView.loaded()
                 self.mView.onFail()
+                self.splitters = []
+                self.wsEm.fields = []
                 await self.RRTbl.edit(embed=self.bldGameEm(self.players[self.curP][0]), view=self.mView)
 
     async def cancelGame(self, cncl) -> None:
@@ -179,8 +188,10 @@ class RR:
         mE = (self.bet*self.nPlayers)/(self.nPlayers-self.dead)
         if cncl:
             await self.RRTbl.edit(embed=discord.Embed(title=f"Game Ended", description=f"The Pot of ${(self.bet*self.nPlayers):,} has been split back. ${mE:,} each", color=0xe44c22), view=None)
-        Gmb.update_many({"_id":{"$in":[i[0].id for i in self.players if i[1]]}}, {"$inc":{"bal":mE, "rrProfits":mE-self.bet, "rrWins":1}, "$set":{"playing":False}})
-        Gmb.update_many({"_id":{"$in":[i[0].id for i in self.players if not i[1]]}}, {"$inc":{"rrProfits":-self.bet, "rrLosses":1}, "$set":{"playing":False}})
+            Gmb.update_many({"_id":{"$in":[i[0].id for i in self.players]}}, {"$inc":{"bal":mE}, "$set":{"playing":False}})
+            return
+        Gmb.update_many({"_id":{"$in":[i[0].id for i in self.players if i[1]]}}, {"$inc":{"bal":mE, "rrProfits":mE-self.bet, ("rrSplits" if self.splitFlag else "rrWins"):1}, "$set":{"playing":False}})
+        Gmb.update_many({"_id":{"$in":[i[0].id for i in self.players if not i[1]]}}, {"$inc":{"rrProfits":-self.bet, "rrDeaths":1}, "$set":{"playing":False}})
         if self.nAcm:
             Gmb.update_one({"_id":self.ctx.user.id}, {"$push": {"achieved": {"$each":self.nAcm}}})
 
