@@ -37,7 +37,7 @@ class Economy(commands.Cog):
         # UEm.add_field(name="Total Profits: ", value=f"${(Dt['rrProfits']+Dt['bjProfits']):,}", inline=True)
         UEm.add_field(name="Blackjack Win/Loss/Draw: ", value=f"{Dt['bjWins']}/{Dt['bjLosses']}/{Dt['bjDraws']}", inline=True)
         UEm.add_field(name="Roulette Win/Death/Split: ", value=f"{Dt['rrWins']}/{Dt['rrDeaths']}/{Dt['rrSplits']}", inline=True)
-        UEm.add_field(name="Mines Games/Diam./Mines: ", value=f"{Dt['mPlayed']}/{Dt['mCollected']}/{Dt['mExploded']}", inline=True)
+        UEm.add_field(name="Mines Rnds/Diam./Mines: ", value=f"{Dt['mPlayed']}/{Dt['mCollected']}/{Dt['mExploded']}", inline=True)
         # UEm.add_field(name="Total W/L/D: ", value=f"{Dt['bjWins']+Dt['rrWins']}/{Dt['bjLosses']+Dt['rrDeaths']}/{Dt['bjDraws']+Dt['rrSplits']}", inline=True)
         UEm.set_thumbnail(url=ctx.user.display_avatar)
         await ctx.followup.send(embed=UEm)

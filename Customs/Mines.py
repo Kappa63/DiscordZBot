@@ -87,7 +87,7 @@ class Mines:
 
     async def clsRnd(self) -> None:
         self.mControls.chipLogUp(self.allowedChips())
-        self.tCollected = self.collected
+        self.tCollected += self.collected
         self.rnds += 1
         self.bHits += self.bombHit
         self.bet = 0
