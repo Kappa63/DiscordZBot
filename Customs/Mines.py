@@ -13,6 +13,10 @@ class Mines:
         self.acm = acm
         
         self.collected = 0
+        self.tCollected = 0
+        self.bHits = 0
+        self.rnds = 0
+
         self.bombHit = False
         self.bet = 0
         self.prft = 0
@@ -77,12 +81,15 @@ class Mines:
 
     async def rdyNRnd(self) -> None:
         self.mControls.endRnd()
-        self.mView.offAll()
+        self.mView.offAll(self.grid)
         await self.MinesMain.edit(view=self.mControls)
         await self.MinesTbl.edit(view=self.mView)
 
     async def clsRnd(self) -> None:
         self.mControls.chipLogUp(self.allowedChips())
+        self.tCollected = self.collected
+        self.rnds += 1
+        self.bHits += self.bombHit
         self.bet = 0
         self.bombHit = False
         self.collected = 0
@@ -118,5 +125,5 @@ class Mines:
         except:
             pass
             
-        Gmb.update_one({"_id":self.ctx.user.id}, {"$set": {"playing":False}, "$inc":{"bal":self.bal+self.bet, "bjProfits":self.prft}})
+        Gmb.update_one({"_id":self.ctx.user.id}, {"$set": {"playing":False}, "$inc":{"bal":self.bal+self.bet, "mProfits":self.prft, "mCollected":self.tCollected, "mExploded":self.bHits, "mPlayed":self.rnds}})
         

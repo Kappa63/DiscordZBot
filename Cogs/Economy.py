@@ -33,10 +33,12 @@ class Economy(commands.Cog):
         UEm = discord.Embed(title=ctx.user.display_name, description=f"BALANCE: ${Dt['bal']:,}", color=0x415f78)
         UEm.add_field(name="Blackjack Profits: ", value=f"${Dt['bjProfits']:,}", inline=True)
         UEm.add_field(name="Roulette Profits: ", value=f"${Dt['rrProfits']:,}", inline=True)
-        UEm.add_field(name="Total Profits: ", value=f"${(Dt['rrProfits']+Dt['bjProfits']):,}", inline=True)
-        UEm.add_field(name="Blackjack W/L/D: ", value=f"{Dt['bjWins']}/{Dt['bjLosses']}/{Dt['bjDraws']}", inline=True)
-        UEm.add_field(name="Roulette W/L/D: ", value=f"{Dt['rrWins']}/{Dt['rrDeaths']}/{Dt['rrSplits']}", inline=True)
-        UEm.add_field(name="Total W/L/D: ", value=f"{Dt['bjWins']+Dt['rrWins']}/{Dt['bjLosses']+Dt['rrDeaths']}/{Dt['bjDraws']+Dt['rrSplits']}", inline=True)
+        UEm.add_field(name="Mines Profits: ", value=f"${Dt['mProfits']:,}", inline=True)
+        # UEm.add_field(name="Total Profits: ", value=f"${(Dt['rrProfits']+Dt['bjProfits']):,}", inline=True)
+        UEm.add_field(name="Blackjack Win/Loss/Draw: ", value=f"{Dt['bjWins']}/{Dt['bjLosses']}/{Dt['bjDraws']}", inline=True)
+        UEm.add_field(name="Roulette Win/Death/Split: ", value=f"{Dt['rrWins']}/{Dt['rrDeaths']}/{Dt['rrSplits']}", inline=True)
+        UEm.add_field(name="Mines Games/Diam./Mines: ", value=f"{Dt['mPlayed']}/{Dt['mCollected']}/{Dt['mExploded']}", inline=True)
+        # UEm.add_field(name="Total W/L/D: ", value=f"{Dt['bjWins']+Dt['rrWins']}/{Dt['bjLosses']+Dt['rrDeaths']}/{Dt['bjDraws']+Dt['rrSplits']}", inline=True)
         UEm.set_thumbnail(url=ctx.user.display_avatar)
         await ctx.followup.send(embed=UEm)
 
@@ -52,7 +54,7 @@ class Economy(commands.Cog):
     @app_commands.checks.cooldown(1, 2)
     async def prfCheck(self, ctx:discord.Interaction) -> None:
         await ctx.response.defer()
-        Dt = Gmb.find_one({"_id":ctx.user.id}, projection={"bjProfits": True, "playing":True, "rrProfits":0})
+        Dt = Gmb.find_one({"_id":ctx.user.id}, projection={"bjProfits": True, "playing":True, "rrProfits":True, "mProfits":True})
         if Dt and Dt["playing"]: await SendWait(ctx, "Close Your Open Game First."); return
         await SendWait(ctx, f"Your Profits so Far are ${format((Dt['rrProfits']+Dt['bjProfits']), ',') if Dt else 0}")
 
@@ -105,11 +107,11 @@ class Economy(commands.Cog):
     async def topPrfCheck(self, ctx:discord.Interaction) -> None:
         await ctx.response.defer()
         mDt = {i.id:i.display_name for i in ctx.guild.members}
-        Dts = Gmb.find({"_id":{"$in":list(mDt.keys())}}, projection={"bjProfits":True, "rrProfits":True})
+        Dts = Gmb.find({"_id":{"$in":list(mDt.keys())}}, projection={"bjProfits":True, "rrProfits":True, "mProfits":True})
         pEm = discord.Embed(title="Profits Leaderboard:", color=0x4d6c03)
         C = 1
         for Dt in sorted(Dts, key=lambda x:x["bjProfits"]+x["rrProfits"], reverse=True):
-            pEm.add_field(name=f"{C}. {mDt[Dt['_id']]}: ${(Dt['bjProfits']+Dt['rrProfits']):,}", value="\u200b", inline=False)
+            pEm.add_field(name=f"{C}. {mDt[Dt['_id']]}: ${(Dt['bjProfits']+Dt['rrProfits']+Dt['mProfits']):,}", value="\u200b", inline=False)
             C+=1
         await ctx.followup.send(embed=pEm)
 
@@ -143,7 +145,7 @@ class Economy(commands.Cog):
                     aEm.add_field(name=f"{j['title']} - UNLOCKED", value=f"{j['desc']}\nReward: ${j['reward']:,} - {'Claimed' if i[1] else 'Unclaimed'}")
                     break
         for i in AchievementList:
-            if i in added: continue
+            if i["id"] in added: continue
             aEm.add_field(name=f"{i['title']} - LOCKED", value="HIDDEN ACHIEVEMENT" if i["hidden"] else f"{i['desc']}\nReward: ${i['reward']:,}", inline=False)
         await ctx.followup.send(embed=aEm)
     

@@ -37,7 +37,10 @@ DbM = Cls["CBot"]
 Gmb = DbM["Gamble"]
 Rdt = DbM["Reddit"]
 
-GmbOnSetData = {"achieved":[], "bjProfits":0, "bjWins":0, "bjDraws":0, "bjLosses":0, "rrProfits":0, "rrWins":0, "rrDeaths":0}
+GmbOnSetData = {"achieved":[], 
+                "bjProfits":0, "bjWins":0, "bjDraws":0, "bjLosses":0, 
+                "rrProfits":0, "rrWins":0, "rrDeaths":0, "rrSplits":0,
+                "mCollected":0, "mProfits":0, "mExploded":0, "mPlayed":0}
 
 GClient = os.environ["GIPHY_KEY"]
 

@@ -12,7 +12,6 @@ class OnlyMods(commands.Cog):
 
     @app_commands.command(name="status", description="Revealse the Current Status of ZBot.")
     @app_commands.checks.cooldown(1, 1)
-    @app_commands.check(RefreshMAL)
     async def BotStatus(self, ctx:discord.Interaction) -> None:
         SEm = discord.Embed(title="Current ZBot Status", color=0x000000)
         SEm.add_field(name="Guilds in: ", value=len(self.DClient.guilds), inline=False)

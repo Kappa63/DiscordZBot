@@ -1,4 +1,5 @@
 import discord
+from typing import List
 
 class MinesView(discord.ui.View):
     def __init__(self, player:discord.User, onClck) -> None:
@@ -24,10 +25,13 @@ class MinesView(discord.ui.View):
             self.children[idx].label = "💎"
             self.children[idx].disabled = True
 
-
-    def offAll(self) -> None:
-        for i in self.children:
-            i.disabled = True
+    def offAll(self, grid:List[bool]) -> None:
+        for i, v in enumerate(grid):
+            self.children[i].disabled = True
+            if v:
+                self.children[i].label = "💣"
+            else:
+                self.children[i].label = "💎"
     
     def rdyStart(self) -> None:
         for i in self.children:
