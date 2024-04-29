@@ -122,7 +122,6 @@ class GameAPIs(commands.Cog):
     #     REm.add_field(name="Friends: ", value=FriendsN, inline=True)
     #     REm.add_field(name="Badges: ", value=f'_*{Badges}*_', inline=False)          
     #     await ctx.message.channel.send(embed=REm)
-        
 
 async def setup(DClient) -> None:
     await DClient.add_cog(GameAPIs(DClient))

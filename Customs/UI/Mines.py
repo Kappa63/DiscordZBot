@@ -30,7 +30,7 @@ class MinesView(discord.ui.View):
             self.children[i].disabled = True
             if v:
                 self.children[i].label = "💣"
-            else:
+            else:   
                 self.children[i].label = "💎"
     
     def rdyStart(self) -> None:

@@ -6,6 +6,7 @@ from Setup import Gmb, AchievementList, GmbOnSetData
 from Customs.Functions import SendWait, FormatTime
 import time
 from pymongo.collection import ReturnDocument 
+from typing import Optional
 
 class Economy(commands.Cog):
     def __init__(self, DClient:CBotDClient) -> None:
@@ -15,22 +16,23 @@ class Economy(commands.Cog):
     @app_commands.checks.cooldown(1, 2)
     async def monGive(self, ctx:discord.Interaction) -> None:
         await ctx.response.defer()
-        tryF = Gmb.find_one({"_id":ctx.user.id})
+        tryF = Gmb.find_one({"_id":ctx.user.id}, projection={"playing":True, "lastClm":True})
         if tryF["playing"]: await SendWait(ctx, "Close Your Open Game First."); return
         cT = time.time()
         if not tryF or tryF["lastClm"] <= cT-86400:
-            Dt = Gmb.find_one_and_update({"_id":ctx.user.id}, {"$inc":{"bal":1000}, "$set":{"lastClm":cT}, "$setOnInsert":{"playing":False, **GmbOnSetData}}, upsert=True, projection={"bal": True}, return_document=ReturnDocument.AFTER)
-            await SendWait(ctx, f"Claimed! Your Balance is ${Dt['bal']:,}")
+            Dt = Gmb.find_one_and_update({"_id":ctx.user.id}, {"$inc":{"bal":1000}, "$set":{"lastClm":cT}, "$setOnInsert":{"tLoans":0, "lastLoan":0, "debt":0, "playing":False, **GmbOnSetData}}, upsert=True, projection={"bal": True}, return_document=ReturnDocument.AFTER)
+            await SendWait(ctx, f"Claimed $1,000! Your Balance is ${Dt['bal']:,}")
             return
         await SendWait(ctx, f"You Claimed Today. You Can Claim Again in {FormatTime(int(86400-(cT-tryF['lastClm'])))}")
 
-    @app_commands.command(name="stats", description="Check Your Game Stats")
+    @app_commands.command(name="stats", description="Check Your Game Stats.")
+    @app_commands.rename(usr="user")
+    @app_commands.describe(usr="User to Check Stats For")
     @app_commands.checks.cooldown(1, 2)
-    async def statsLookup(self, ctx:discord.Interaction) -> None:
+    async def statsLookup(self, ctx:discord.Interaction, usr:Optional[discord.Member]) -> None:
         await ctx.response.defer()
-        Dt = Gmb.find_one_and_update({"_id":ctx.user.id}, {"$setOnInsert":{"bal":0, "lastClm":0, "playing":False, **GmbOnSetData}}, upsert=True, return_document=ReturnDocument.AFTER)
-
-        UEm = discord.Embed(title=ctx.user.display_name, description=f"BALANCE: ${Dt['bal']:,}", color=0x415f78)
+        Dt = Gmb.find_one_and_update({"_id":(usr if usr else ctx.user).id}, {"$setOnInsert":{"tLoans":0, "lastLoan":0, "debt":0, "bal":0, "lastClm":0, "playing":False, **GmbOnSetData}}, upsert=True, return_document=ReturnDocument.AFTER)
+        UEm = discord.Embed(title=(usr if usr else ctx.user).display_name, description=f"**Balance:** ${Dt['bal']:,}\n**Debt:** ${format(Dt['debt']*(1+(((time.time()-Dt['lastLoan'])//86400)*0.02)), ',') }\n**Total Loans:** ${Dt['tLoans']:,}", color=0x415f78)
         UEm.add_field(name="Blackjack Profits: ", value=f"${Dt['bjProfits']:,}", inline=True)
         UEm.add_field(name="Roulette Profits: ", value=f"${Dt['rrProfits']:,}", inline=True)
         UEm.add_field(name="Mines Profits: ", value=f"${Dt['mProfits']:,}", inline=True)
@@ -39,7 +41,7 @@ class Economy(commands.Cog):
         UEm.add_field(name="Roulette Win/Death/Split: ", value=f"{Dt['rrWins']}/{Dt['rrDeaths']}/{Dt['rrSplits']}", inline=True)
         UEm.add_field(name="Mines Rnds/Diam./Mines: ", value=f"{Dt['mPlayed']}/{Dt['mCollected']}/{Dt['mExploded']}", inline=True)
         # UEm.add_field(name="Total W/L/D: ", value=f"{Dt['bjWins']+Dt['rrWins']}/{Dt['bjLosses']+Dt['rrDeaths']}/{Dt['bjDraws']+Dt['rrSplits']}", inline=True)
-        UEm.set_thumbnail(url=ctx.user.display_avatar)
+        UEm.set_thumbnail(url=(usr if usr else ctx.user).display_avatar)
         await ctx.followup.send(embed=UEm)
 
     @app_commands.command(name="balance", description="Check Your Money.")
@@ -56,7 +58,43 @@ class Economy(commands.Cog):
         await ctx.response.defer()
         Dt = Gmb.find_one({"_id":ctx.user.id}, projection={"bjProfits": True, "playing":True, "rrProfits":True, "mProfits":True})
         if Dt and Dt["playing"]: await SendWait(ctx, "Close Your Open Game First."); return
-        await SendWait(ctx, f"Your Profits so Far are ${format((Dt['rrProfits']+Dt['bjProfits']), ',') if Dt else 0}")
+        await SendWait(ctx, f"Your Profits so Far are ${format((Dt['rrProfits']+Dt['bjProfits']+Dt['mProfits']), ',') if Dt else 0}")
+
+    @app_commands.command(name="debt", description="Check Your Debt.")
+    @app_commands.checks.cooldown(1, 2)
+    async def debtCheck(self, ctx:discord.Interaction) -> None:
+        await ctx.response.defer()
+        Dt = Gmb.find_one({"_id":ctx.user.id}, projection={"debt": True, "lastLoan":True})
+        await SendWait(ctx, f"You're Currently ${format(Dt['debt']*(1+(((time.time()-Dt['lastLoan'])//86400)*0.02)), ',') if Dt else 0} in Debt")
+
+    @app_commands.command(name="debt-payment", description="Pay Your Debts.")
+    @app_commands.checks.cooldown(1, 2)
+    async def debtPay(self, ctx:discord.Interaction) -> None:
+        await ctx.response.defer()
+        tryF = Gmb.find_one({"_id":ctx.user.id}, projection={"playing":True, "lastLoan":True, "debt":True, "bal":True})
+        if tryF["playing"]: await SendWait(ctx, "Close Your Open Game First."); return
+        if tryF["debt"] <= 0: await SendWait(ctx, "No Debts to Pay."); return
+        debtVal = tryF['debt']*(1+(((time.time()-tryF['lastLoan'])//86400)*0.02))
+        if tryF["bal"] >= debtVal:
+            Dt = Gmb.find_one_and_update({"_id":ctx.user.id}, {"$inc":{"bal":-debtVal}, "$set":{"debt":0}},  projection={"bal": True}, return_document=ReturnDocument.AFTER)
+            await SendWait(ctx, f"Paid ${debtVal}! You are now Debt Free! Your Balance is ${Dt['bal']:,}")
+            return
+        await SendWait(ctx, "Not Enough Funds to Pay Debt.")
+
+    @app_commands.command(name="loan", description=r"Take out a Loan. 2% interest/Day.")
+    @app_commands.rename(amt="amount")
+    @app_commands.describe(amt="Amount to Loan.")
+    @app_commands.checks.cooldown(1, 2)
+    async def takeLoan(self, ctx:discord.Interaction, amt:int) -> None:
+        await ctx.response.defer()
+        tryF = Gmb.find_one({"_id":ctx.user.id}, projection={"playing":True, "lastLoan":True, "debt":True})
+        if tryF["playing"]: await SendWait(ctx, "Close Your Open Game First."); return
+        if not tryF or tryF["debt"] <= 0:
+            if amt > 10000: await SendWait(ctx, "Max loan is $10,000."); return
+            Dt = Gmb.find_one_and_update({"_id":ctx.user.id}, {"$inc":{"bal":amt, "debt":amt, "tLoans":amt}, "$set":{"lastLoan":time.time()}, "$setOnInsert":{"lastClm":0, "playing":False, **GmbOnSetData}}, upsert=True, projection={"bal": True}, return_document=ReturnDocument.AFTER)
+            await SendWait(ctx, f"Taken a ${amt:,} Loan! Your Balance is ${Dt['bal']:,}")
+            return
+        await SendWait(ctx, "You can't take Loans while in Debt.")
 
     @app_commands.command(name="transfer", description="Transfer Money.")
     @app_commands.rename(n="ammount")
@@ -78,7 +116,7 @@ class Economy(commands.Cog):
             return
        
         if Dt1: 
-            Dt2 = Gmb.update_one({"_id":usr.id}, {"$inc":{"bal":n}, "$setOnInsert":{"lastClm":0, "playing":False, **GmbOnSetData}}, upsert=True)
+            Dt2 = Gmb.update_one({"_id":usr.id}, {"$inc":{"bal":n}, "$setOnInsert":{"tLoans":0, "lastLoan":0, "debt":0, "lastClm":0, "playing":False, **GmbOnSetData}}, upsert=True)
         else:
             await SendWait(ctx, f"Not Enough to Transfer or In-Game.")
             return
@@ -110,7 +148,7 @@ class Economy(commands.Cog):
         Dts = Gmb.find({"_id":{"$in":list(mDt.keys())}}, projection={"bjProfits":True, "rrProfits":True, "mProfits":True})
         pEm = discord.Embed(title="Profits Leaderboard:", color=0x4d6c03)
         C = 1
-        for Dt in sorted(Dts, key=lambda x:x["bjProfits"]+x["rrProfits"], reverse=True):
+        for Dt in sorted(Dts, key=lambda x:x["bjProfits"]+x["rrProfits"]+x["mProfits"], reverse=True):
             pEm.add_field(name=f"{C}. {mDt[Dt['_id']]}: ${(Dt['bjProfits']+Dt['rrProfits']+Dt['mProfits']):,}", value="\u200b", inline=False)
             C+=1
         await ctx.followup.send(embed=pEm)
@@ -166,7 +204,7 @@ class Economy(commands.Cog):
             if i["id"] in toClm:
                 rwrdVal += i["reward"]
         Dt = Gmb.find_one_and_update({"_id":ctx.user.id}, {"$inc":{"bal":rwrdVal}, "$set":{"achieved":[[i[0], True] for i in Dt["achieved"]]}}, projection={"bal": True, "_id":False}, return_document=ReturnDocument.AFTER)
-        await SendWait(ctx, f"Claimed! Your Balance is ${Dt['bal']:,}")
+        await SendWait(ctx, f"Claimed ${rwrdVal:,}! Your Balance is ${Dt['bal']:,}")
 
     async def cog_load(self) -> None:
         print(f"{self.__class__.__name__} loaded!")
