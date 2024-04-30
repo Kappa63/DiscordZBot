@@ -24,11 +24,6 @@ class Misc(commands.Cog):
         Calculated = Calc("".join(args))
         await SendWait(ctx, Calculated)
 
-    @commands.command(name="kys")
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def Killself(self, ctx:commands.Context) -> None:
-        await ctx.send(embed=discord.Embed(title="YOU KYS YOU FUCKING NIGGER", description="WORTHLESS PIECE OF SHIT"))
-
     @commands.command(name="remind")
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def RemindAfter(self, ctx:commands.Context, *args) -> None:
