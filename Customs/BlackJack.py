@@ -24,7 +24,7 @@ class BJ:
         self.Player = []
         self.DEm = discord.Embed(title="Dealer", color=0x00A36C)
         self.PEm = discord.Embed(title=self.ctx.user.display_name, color=0x00A36C)
-        self.mView = BJView(self.ctx.user, self.allowedChips(), self.plyrHit, self.plyrStnd, self.onDeal, self.clsTbl, self.addBet, self.onTm)
+        self.mView = BJView(self.ctx.user, self.allowedChips(), self.plyrHit, self.plyrDouble, self.plyrStnd, self.onDeal, self.clsTbl, self.addBet, self.onTm)
         self.bet = 0
         self.prft = 0
         self.TbData = [0, 0, 0]
@@ -130,6 +130,11 @@ class BJ:
         else:
             if (dV[0] > 21): await self.dlrBust()
             else: await self.onEnd()
+
+    async def plyrDouble(self) -> None:
+        await self.addBet(self.bet)
+        await self.plyrHit()
+        await self.plyrStnd()
 
     async def plyrBust(self) -> None:
         await self.BJTbl.edit(view=None)
@@ -282,7 +287,7 @@ class BJ:
         self.DEm.set_image(url="attachment://dlr.png")
         self.PEm = discord.Embed(title=self.ctx.user.display_name, description=f"Total: {str(pV[0])+'/'+str(pV[1]) if (pV[0] != pV[1] and pV[1] < 21) else 'BLACKJACK' if pV[1]==21 else pV[0]}", color=0x00A36C)
         self.PEm.set_image(url="attachment://plyr.png")
-        self.mView.startDeal()
+        self.mView.startDeal(self.bal < self.bet)
         await self.BJTbl.edit(embeds=[self.DEm, self.PEm], attachments=[self.CdFD, self.CdFP], view=self.mView)
 
         match (pV[1] == 21, dVr[1] == 21):
