@@ -94,7 +94,7 @@ class BlackJackView(discord.ui.View):
         if(self.player.id == interaction.user.id):
             button.disabled = True
             button.label = f"WE IN"
-            await self.onAdd(0)
+            await self.onAdd(-1)
 
     def endDeal(self) -> None:
         self.children[0].disabled = True

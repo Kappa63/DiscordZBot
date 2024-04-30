@@ -246,7 +246,7 @@ class BJ:
         random.shuffle(self.shoot)
 
     async def addBet(self, amm) -> None:
-        if not amm:
+        if amm == -1:
             amm = self.bal
             self.allTrigger = True
 
