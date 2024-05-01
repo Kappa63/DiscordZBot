@@ -31,6 +31,7 @@ class Economy(commands.Cog):
     @app_commands.checks.cooldown(1, 2)
     async def statsLookup(self, ctx:discord.Interaction, usr:Optional[discord.Member]) -> None:
         await ctx.response.defer()
+        if usr and usr.bot: await SendWait(ctx, f"That's a Bot!"); return
         Dt = Gmb.find_one_and_update({"_id":(usr if usr else ctx.user).id}, {"$setOnInsert":{"tLoans":0, "lastLoan":0, "debt":0, "bal":0, "lastClm":0, "playing":False, **GmbOnSetData}}, upsert=True, return_document=ReturnDocument.AFTER)
         UEm = discord.Embed(title=(usr if usr else ctx.user).display_name, description=f"**Balance:** ${Dt['bal']:,}\n**Debt:** ${format(Dt['debt']*(1+(((time.time()-Dt['lastLoan'])//86400)*0.02)), ',') }\n**Total Loans:** ${Dt['tLoans']:,}", color=0x415f78)
         UEm.add_field(name="Blackjack Profits: ", value=f"${Dt['bjProfits']:,}", inline=True)
@@ -104,6 +105,7 @@ class Economy(commands.Cog):
     @app_commands.checks.cooldown(1, 2)
     async def monTrans(self, ctx:discord.Interaction, n:int, usr:discord.Member) -> None:
         await ctx.response.defer()
+        if usr.bot: await SendWait(ctx, f"That's a Bot!"); return
         tryF = Gmb.find_one({"_id":usr.id})
         if tryF and tryF["playing"]: await SendWait(ctx, f"User is Playing."); return
 

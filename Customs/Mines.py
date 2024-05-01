@@ -25,7 +25,7 @@ class Mines:
         self.mView = MinesView(self.ctx.user, self.onClick)
         self.mControls = MinesControls(self.ctx.user, self.allowedChips(), self.changeBomb, self.addBet, self.onStart, self.endRnd, self.closeMines)
 
-    calcMultiplier = lambda self, d: round(0.97*math.comb(25,d)/math.comb(25-self.nMines, d), 2)
+    calcMultiplier = lambda self, d: round(0.985*math.comb(25,d)/math.comb(25-self.nMines, d), 2)
 
     async def changeBomb(self, nBmb:int) -> None:
         self.nMines = nBmb

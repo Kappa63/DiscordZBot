@@ -19,15 +19,17 @@ class BlackJackView(discord.ui.View):
     async def hitter(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
         if(self.player.id == interaction.user.id):
+            self.children[1].disabled = True
             await self.onHit()
 
-    @discord.ui.button(label="DOUBLE", style=discord.ButtonStyle.red, row=0, disabled=True)
+    @discord.ui.button(label="DOUBLE", style=discord.ButtonStyle.green, row=0, disabled=True)
     async def dblr(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
         if(self.player.id == interaction.user.id):
             for i in range(4):
                 self.chips[i] += self.chips[i]
-                self.children[5+i].label = f"x{self.chips[i]}"
+                if self.chips[i]:
+                    self.children[5+i].label = f"x{self.chips[i]}"
             await self.dDown()
 
     @discord.ui.button(label="STAND", style=discord.ButtonStyle.red, row=0, disabled=True)

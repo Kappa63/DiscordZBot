@@ -86,7 +86,7 @@ class BJ:
         if self.allTrigger:
             self.acmHelper.allInProfit(-self.bet)
     
-    async def plyrHit(self) -> None:
+    async def plyrHit(self) -> bool:
         self.Player.append(self.shoot.pop(0))
         self.PlayerCardsIm = self.addCard(self.PlayerCardsIm, Image.open(f"{self.DeckDir}{self.Player[-1]}.png"))
 
@@ -108,10 +108,13 @@ class BJ:
 
         if (pV[0] > 21):
             await self.plyrBust()
+            return False
         elif (pV[0] == 21 or pV[1] == 21):
             if len(self.Player) >= 6:
                 self.acmHelper.addAchieved(15)
             await self.plyrStnd()
+            return False
+        return True
 
     async def plyrStnd(self) -> None:
         await self.BJTbl.edit(view=None)
@@ -133,8 +136,8 @@ class BJ:
 
     async def plyrDouble(self) -> None:
         await self.addBet(self.bet)
-        await self.plyrHit()
-        await self.plyrStnd()
+        if await self.plyrHit():
+            await self.plyrStnd()
 
     async def plyrBust(self) -> None:
         await self.BJTbl.edit(view=None)
