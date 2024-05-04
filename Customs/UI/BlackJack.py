@@ -1,11 +1,12 @@
 import discord
 
 class BlackJackView(discord.ui.View):
-    def __init__(self, player:discord.User, log, onHit, dDown, onStand, onDeal, onLv, onAdd, onTout) -> None: 
+    def __init__(self, player:discord.User, log, onHit, dDown, onSplt, onStand, onDeal, onLv, onAdd, onTout) -> None: 
         self.player = player
         self.log = log
         self.onHit = onHit
         self.dDown = dDown
+        self.onSplt = onSplt
         self.onStand = onStand
         self.onDeal = onDeal
         self.onLv = onLv
@@ -20,17 +21,28 @@ class BlackJackView(discord.ui.View):
         await interaction.response.defer()
         if(self.player.id == interaction.user.id):
             self.children[1].disabled = True
+            self.children[2].disabled = True
             await self.onHit()
 
-    @discord.ui.button(label="DOUBLE", style=discord.ButtonStyle.green, row=0, disabled=True)
+    @discord.ui.button(label="DOUBLE", style=discord.ButtonStyle.blurple, row=0, disabled=True)
     async def dblr(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
         if(self.player.id == interaction.user.id):
             for i in range(4):
                 self.chips[i] += self.chips[i]
                 if self.chips[i]:
-                    self.children[5+i].label = f"x{self.chips[i]}"
+                    self.children[6+i].label = f"x{self.chips[i]}"
             await self.dDown()
+            
+    @discord.ui.button(label="SPLIT", style=discord.ButtonStyle.blurple, row=0, disabled=True)
+    async def splttr(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        await interaction.response.defer()
+        if(self.player.id == interaction.user.id):
+            self.children[0].disabled = True
+            self.children[1].disabled = True
+            self.children[2].disabled = True
+            self.children[3].disabled = True
+            await self.onSplt()
 
     @discord.ui.button(label="STAND", style=discord.ButtonStyle.red, row=0, disabled=True)
     async def stndr(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
@@ -38,13 +50,13 @@ class BlackJackView(discord.ui.View):
         if(self.player.id == interaction.user.id):
             await self.onStand()
 
-    @discord.ui.button(label="DEAL", style=discord.ButtonStyle.blurple, row=0, disabled=False)
+    @discord.ui.button(label="DEAL", style=discord.ButtonStyle.blurple, row=2, disabled=False)
     async def dlr(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
         if(self.player.id == interaction.user.id):
             await self.onDeal()
     
-    @discord.ui.button(label="LEAVE TABLE", style=discord.ButtonStyle.grey, row=0, disabled=False)
+    @discord.ui.button(label="LEAVE TABLE", style=discord.ButtonStyle.grey, row=2, disabled=False)
     async def lvr(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
         if(self.player.id == interaction.user.id):
@@ -102,31 +114,37 @@ class BlackJackView(discord.ui.View):
         self.children[0].disabled = True
         self.children[1].disabled = True
         self.children[2].disabled = True
-        self.children[3].disabled = False
+        self.children[3].disabled = True
         self.children[4].disabled = False
-        self.children[9].disabled = False
-        self.children[9].label = "ALL IN?"
+        self.children[5].disabled = False
+        self.children[10].disabled = False
+        self.children[10].label = "ALL IN?"
         self.chips = [0, 0, 0, 0]
         for i in range(4):
-            self.children[5+i].label = None
+            self.children[6+i].label = None
         self.upChips()
         
     def upChips(self) -> None:
         for i in range(4):
-            self.children[5+i].disabled = not self.log[i]
+            self.children[6+i].disabled = not self.log[i]
 
-    def startDeal(self, canDouble) -> None:
+    def startDeal(self, canDouble, canSplit) -> None:
         self.children[0].disabled = False
         self.children[1].disabled = canDouble
-        self.children[2].disabled = False
-        self.children[3].disabled = True
+        self.children[2].disabled = canSplit
+        self.children[3].disabled = False
         self.children[4].disabled = True
         self.children[5].disabled = True
         self.children[6].disabled = True
         self.children[7].disabled = True
         self.children[8].disabled = True
         self.children[9].disabled = True
-        
+        self.children[10].disabled = True
+
+    def enableBase(self) -> None:
+        self.children[0].disabled = False
+        self.children[3].disabled = False
+    
     def chipLogUp(self, log) -> None:
         if log != self.log:
             self.log = log

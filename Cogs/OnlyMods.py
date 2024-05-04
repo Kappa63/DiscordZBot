@@ -42,9 +42,13 @@ class OnlyMods(commands.Cog):
     @app_commands.describe(d="Description Text of the Embed")
     @app_commands.rename(c="color")
     @app_commands.describe(c="Embed's Bar Color in HEX")
+    @app_commands.rename(i="image")
+    @app_commands.describe(i="Embed Image")
     @app_commands.checks.cooldown(1, 1)
-    async def slash_Embedder(self, ctx:discord.Interaction, t:str, d:str, c:str) -> None:
-        await ctx.response.send_message(embed=discord.Embed(title=t, description=d, color=int(c, 16)))
+    async def slash_Embedder(self, ctx:discord.Interaction, t:str, d:str, c:str, i:discord.Attachment) -> None:
+        sEm = discord.Embed(title=t, description=d, color=int(c, 16))
+        sEm.set_image(url=i.url)
+        await ctx.response.send_message(embed=sEm)
 
     @commands.command(name="reloadall")
     @commands.check(ChDev)

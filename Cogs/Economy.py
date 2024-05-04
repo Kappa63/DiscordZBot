@@ -17,7 +17,7 @@ class Economy(commands.Cog):
     async def monGive(self, ctx:discord.Interaction) -> None:
         await ctx.response.defer()
         tryF = Gmb.find_one({"_id":ctx.user.id}, projection={"playing":True, "lastClm":True})
-        if tryF["playing"]: await SendWait(ctx, "Close Your Open Game First."); return
+        if tryF and tryF["playing"]: await SendWait(ctx, "Close Your Open Game First."); return
         cT = time.time()
         if not tryF or tryF["lastClm"] <= cT-86400:
             Dt = Gmb.find_one_and_update({"_id":ctx.user.id}, {"$inc":{"bal":1000}, "$set":{"lastClm":cT}, "$setOnInsert":{"tLoans":0, "lastLoan":0, "debt":0, "playing":False, **GmbOnSetData}}, upsert=True, projection={"bal": True}, return_document=ReturnDocument.AFTER)
