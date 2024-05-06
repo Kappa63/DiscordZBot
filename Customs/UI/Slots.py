@@ -109,4 +109,4 @@ class SlotsView(discord.ui.View):
             self.upChips()
 
     async def on_timeout(self) -> None:
-        await self.onTout()
+        await self.onLv()
