@@ -290,6 +290,9 @@ class BJ:
         self.DealerCardsIm = self.addCard(Image.open(f"{self.DECK_DIR}{self.Dealer[1]}.png"), Image.open(f"{self.DECK_DIR}{self.Dealer[0]}.png"))
 
         if self.cache:
+            pV1 = self.cardsValue(self.Player[0])
+            pV2 = self.cardsValue(self.Player[1])
+            self.PEm.description = f"Total (Hand 1): {str(pV1[0])+'/'+str(pV1[1]) if (pV1[0] != pV1[1] and pV1[1] <= 21) else pV1[0]}\nTotal (Hand 2): {str(pV2[0])+'/'+str(pV2[1]) if (pV2[0] != pV2[1] and pV2[1] <= 21) else pV2[0]}"
             self.PlayerCardsIm = self.createTable([self.cache, self.PlayerCardsIm])
             self.cache = None
 

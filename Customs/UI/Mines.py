@@ -91,7 +91,7 @@ class MinesControls(discord.ui.View):
     async def add25G(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
         if(self.player.id == interaction.user.id):
-            self.chips[1] += 1
+            self.chips[0] += 1
             button.label = f"x{self.chips[0]}"
             self.children[3].disabled = False
             await self.onAdd(25)
@@ -100,7 +100,7 @@ class MinesControls(discord.ui.View):
     async def add50G(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
         if(self.player.id == interaction.user.id):
-            self.chips[2] += 1
+            self.chips[1] += 1
             button.label = f"x{self.chips[1]}"
             self.children[3].disabled = False
             await self.onAdd(50)
@@ -109,7 +109,7 @@ class MinesControls(discord.ui.View):
     async def add100G(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
         if(self.player.id == interaction.user.id):
-            self.chips[3] += 1
+            self.chips[2] += 1
             button.label = f"x{self.chips[2]}"
             self.children[3].disabled = False
             await self.onAdd(100)
@@ -118,7 +118,7 @@ class MinesControls(discord.ui.View):
     async def add500G(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
         if(self.player.id == interaction.user.id):
-            self.chips[4] += 1
+            self.chips[3] += 1
             button.label = f"x{self.chips[3]}"
             self.children[3].disabled = False
             await self.onAdd(500)

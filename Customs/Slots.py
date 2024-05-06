@@ -20,7 +20,7 @@ class Slots:
         self.WINDOW_SIZE = 3
         self.PAYLINE_POS = self.WINDOW_SIZE//2
         self.EMBED_COLOR = 0xA8140C
-        self.REEL_PAUSE_TIME = 0.6
+        self.REEL_PAUSE_TIME = 0.35
         # self.REEL_WEIGHTS = [[5, 6, 4, 3, 1, 1], [5, 5, 5, 2, 2, 1], [6, 4, 5, 3, 1, 1], [7, 4, 4, 2, 2, 1], [7, 5, 4, 2, 1, 1]]
         # self.SYMBOLS_PER_REEL = 20
 
