@@ -37,10 +37,12 @@ class Economy(commands.Cog):
         UEm.add_field(name="Blackjack Profits: ", value=f"${Dt['bjProfits']:,}", inline=True)
         UEm.add_field(name="Roulette Profits: ", value=f"${Dt['rrProfits']:,}", inline=True)
         UEm.add_field(name="Mines Profits: ", value=f"${Dt['mProfits']:,}", inline=True)
+        UEm.add_field(name="Slots Profits: ", value=f"${Dt['sProfits']:,}", inline=False)
         # UEm.add_field(name="Total Profits: ", value=f"${(Dt['rrProfits']+Dt['bjProfits']):,}", inline=True)
         UEm.add_field(name="Blackjack Win/Loss/Draw: ", value=f"{Dt['bjWins']}/{Dt['bjLosses']}/{Dt['bjDraws']}", inline=True)
         UEm.add_field(name="Roulette Win/Death/Split: ", value=f"{Dt['rrWins']}/{Dt['rrDeaths']}/{Dt['rrSplits']}", inline=True)
         UEm.add_field(name="Mines Rnds/Diam./Mines: ", value=f"{Dt['mPlayed']}/{Dt['mCollected']}/{Dt['mExploded']}", inline=True)
+        UEm.add_field(name="Slots Spins/Wins/JP: ", value=f"{Dt['sPlayed']}/{Dt['sWins']}/{Dt['sJackpot']}", inline=True)
         # UEm.add_field(name="Total W/L/D: ", value=f"{Dt['bjWins']+Dt['rrWins']}/{Dt['bjLosses']+Dt['rrDeaths']}/{Dt['bjDraws']+Dt['rrSplits']}", inline=True)
         UEm.set_thumbnail(url=(usr if usr else ctx.user).display_avatar)
         await ctx.followup.send(embed=UEm)
@@ -57,9 +59,9 @@ class Economy(commands.Cog):
     @app_commands.checks.cooldown(1, 2)
     async def prfCheck(self, ctx:discord.Interaction) -> None:
         await ctx.response.defer()
-        Dt = Gmb.find_one({"_id":ctx.user.id}, projection={"bjProfits": True, "playing":True, "rrProfits":True, "mProfits":True})
+        Dt = Gmb.find_one({"_id":ctx.user.id}, projection={"bjProfits": True, "playing":True, "rrProfits":True, "mProfits":True, "sProfits":True})
         if Dt and Dt["playing"]: await SendWait(ctx, "Close Your Open Game First."); return
-        await SendWait(ctx, f"Your Profits so Far are ${format((Dt['rrProfits']+Dt['bjProfits']+Dt['mProfits']), ',') if Dt else 0}")
+        await SendWait(ctx, f"Your Profits so Far are ${format((Dt['rrProfits']+Dt['sProfits']+Dt['bjProfits']+Dt['mProfits']), ',') if Dt else 0}")
 
     @app_commands.command(name="debt", description="Check Your Debt.")
     @app_commands.checks.cooldown(1, 2)
@@ -78,7 +80,7 @@ class Economy(commands.Cog):
         debtVal = tryF['debt']*(1+(((time.time()-tryF['lastLoan'])//86400)*0.02))
         if tryF["bal"] >= debtVal:
             Dt = Gmb.find_one_and_update({"_id":ctx.user.id}, {"$inc":{"bal":-debtVal}, "$set":{"debt":0}},  projection={"bal": True}, return_document=ReturnDocument.AFTER)
-            await SendWait(ctx, f"Paid ${debtVal}! You are now Debt Free! Your Balance is ${Dt['bal']:,}")
+            await SendWait(ctx, f"Paid ${debtVal:,}! You are now Debt Free! Your Balance is ${Dt['bal']:,}")
             return
         await SendWait(ctx, "Not Enough Funds to Pay Debt.")
 
@@ -98,7 +100,7 @@ class Economy(commands.Cog):
         await SendWait(ctx, "You can't take Loans while in Debt.")
 
     @app_commands.command(name="transfer", description="Transfer Money.")
-    @app_commands.rename(n="ammount")
+    @app_commands.rename(n="amount")
     @app_commands.describe(n="How much to Transfer")
     @app_commands.rename(usr="user")
     @app_commands.describe(usr="@ User to Transfer Money to")
@@ -147,11 +149,11 @@ class Economy(commands.Cog):
     async def topPrfCheck(self, ctx:discord.Interaction) -> None:
         await ctx.response.defer()
         mDt = {i.id:i.display_name for i in ctx.guild.members}
-        Dts = Gmb.find({"_id":{"$in":list(mDt.keys())}}, projection={"bjProfits":True, "rrProfits":True, "mProfits":True})
+        Dts = Gmb.find({"_id":{"$in":list(mDt.keys())}}, projection={"bjProfits":True, "rrProfits":True, "mProfits":True, "sProfits":True})
         pEm = discord.Embed(title="Profits Leaderboard:", color=0x4d6c03)
         C = 1
-        for Dt in sorted(Dts, key=lambda x:x["bjProfits"]+x["rrProfits"]+x["mProfits"], reverse=True):
-            pEm.add_field(name=f"{C}. {mDt[Dt['_id']]}: ${(Dt['bjProfits']+Dt['rrProfits']+Dt['mProfits']):,}", value="\u200b", inline=False)
+        for Dt in sorted(Dts, key=lambda x:x["bjProfits"]+x["rrProfits"]+x["mProfits"]+x["sProfits"], reverse=True):
+            pEm.add_field(name=f"{C}. {mDt[Dt['_id']]}: ${(Dt['bjProfits']+Dt['rrProfits']+Dt['mProfits']+Dt['sProfits']):,}", value="\u200b", inline=False)
             C+=1
         await ctx.followup.send(embed=pEm)
 

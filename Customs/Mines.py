@@ -7,6 +7,9 @@ from Customs.UI.Mines import MinesView, MinesControls
 
 class Mines:
     def __init__(self, ctx:discord.Interaction, bal:int, acm:List[int]) -> None:
+        self.HOUSE_EDGE = 0.985
+        self.EMBED_COLOR = 0x5f86cd
+
         self.ctx = ctx
         self.nMines = 1
         self.bal = bal
@@ -25,7 +28,8 @@ class Mines:
         self.mView = MinesView(self.ctx.user, self.onClick)
         self.mControls = MinesControls(self.ctx.user, self.allowedChips(), self.changeBomb, self.addBet, self.onStart, self.endRnd, self.closeMines)
 
-    calcMultiplier = lambda self, d: round(0.985*math.comb(25,d)/math.comb(25-self.nMines, d), 2)
+    def calcMultiplier(self, d): 
+        return round(self.HOUSE_EDGE*math.comb(25,d)/math.comb(25-self.nMines, d), 2)
 
     async def changeBomb(self, nBmb:int) -> None:
         self.nMines = nBmb
@@ -50,21 +54,25 @@ class Mines:
             self.collected+=1
             self.mView.setBtn(pos, False)
             mlt = self.calcMultiplier(self.collected)
-            await self.MinesMain.edit(embed=discord.Embed(title=f"Round Bet: ${self.bet}", description=f"Current Multiplier: {mlt}x\nProfit: ${(round(self.bet*mlt, 2)-self.bet):,}", color=0x5f86cd))
+            await self.MinesMain.edit(embed=discord.Embed(title=f"Round Bet: ${self.bet}", description=f"Current Multiplier: {mlt}x\nProfit: ${(round(self.bet*mlt, 2)-self.bet):,}", color=self.EMBED_COLOR))
         else:
             self.bombHit = True
             self.mView.setBtn(pos, True)
             await self.endRnd()
         await self.MinesTbl.edit(view=self.mView)
     
-    async def addBet(self, amm) -> None:
-        if not amm:
-            amm = self.bal
+    async def addBet(self, amnt) -> None:
+        if amnt == -1:
+            amnt = self.bal
+        if amnt == -2:
+            self.bal += self.bet
+            self.bet = 0
+        else:
+            self.bal-=amnt
+            self.bet+=amnt
 
-        self.bal-=amm
-        self.bet+=amm
         self.mControls.chipLogUp(self.allowedChips())
-        await self.MinesMain.edit(embed=discord.Embed(title=f"Remaining: ${self.bal:,}", color=0x5f86cd), view=self.mControls)
+        await self.MinesMain.edit(embed=discord.Embed(title=f"Remaining: ${self.bal:,}", color=self.EMBED_COLOR), view=self.mControls)
 
     async def endRnd(self) -> None:
         if self.bombHit:
@@ -76,7 +84,7 @@ class Mines:
             self.prft += toPrft-self.bet
             t = "ROUND END"
 
-        await self.MinesMain.edit(embed=discord.Embed(title=t, description=f"Current Balance: ${self.bal:,}", color=0x5f86cd))
+        await self.MinesMain.edit(embed=discord.Embed(title=t, description=f"Current Balance: ${self.bal:,}", color=self.EMBED_COLOR))
         await self.clsRnd() 
 
     async def rdyNRnd(self) -> None:
@@ -105,22 +113,20 @@ class Mines:
         for i in random.choice(range(25), self.nMines, replace=False):
             self.grid[i] = True
 
-        print(self.grid)
-
         self.mView.rdyStart()
         self.mControls.startRnd()
         await self.MinesTbl.edit(view=self.mView)
-        await self.MinesMain.edit(embed=discord.Embed(title=f"Round Bet: ${self.bet}", description=f"Current Multiplier: 0.97x\nProfit: ${(round(self.bet*0.97, 2)-self.bet):,}", color=0x5f86cd), view=self.mControls)
+        await self.MinesMain.edit(embed=discord.Embed(title=f"Round Bet: ${self.bet}", description=f"Current Multiplier: 0.97x\nProfit: ${(round(self.bet*0.97, 2)-self.bet):,}", color=self.EMBED_COLOR), view=self.mControls)
 
     async def autoRun(self) -> None:
-        self.MinesMain = await self.ctx.followup.send(embed=discord.Embed(title=f"Remaining: ${self.bal:,}", color=0x5f86cd), view=self.mControls)
+        self.MinesMain = await self.ctx.followup.send(embed=discord.Embed(title=f"Remaining: ${self.bal:,}", color=self.EMBED_COLOR), view=self.mControls)
         self.MinesTbl = await self.ctx.channel.send(view=self.mView)
 
     async def closeMines(self) -> None:
         try:
             self.mView.stop()
             self.mControls.stop()
-            await self.MinesMain.edit(embeds=[discord.Embed(title="Table Closed.", description=f"Chip Balance: ${(self.bal+self.bet):,}\n\nProfits: ${self.prft:,}", color=0x5f86cd)], view=None)
+            await self.MinesMain.edit(embeds=[discord.Embed(title="Table Closed.", description=f"Chip Balance: ${(self.bal+self.bet):,}\n\nProfits: ${self.prft:,}", color=self.EMBED_COLOR)], view=None)
             await self.MinesTbl.delete()
         except:
             pass

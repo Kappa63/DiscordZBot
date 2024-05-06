@@ -13,7 +13,7 @@ class OnlyMods(commands.Cog):
     @app_commands.command(name="status", description="Revealse the Current Status of ZBot.")
     @app_commands.checks.cooldown(1, 1)
     async def BotStatus(self, ctx:discord.Interaction) -> None:
-        SEm = discord.Embed(title="Current ZBot Status", color=0x000000)
+        SEm = discord.Embed(title="<:bnr0:1230869635826450462><:bnr1:1230869697893761106><:bnr2:1230869719905603615><:bnr3:1230869735554682910><:bnr4:1230869757146828831>", color=0x000000)
         SEm.add_field(name="Guilds in: ", value=len(self.DClient.guilds), inline=False)
         SEm.add_field(name="Latency: ", value=self.DClient.latency * 100, inline=False)
         SEm.add_field(name="ShardCount: ", value=self.DClient.shard_count, inline=False)

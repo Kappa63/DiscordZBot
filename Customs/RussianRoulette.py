@@ -8,6 +8,8 @@ from Customs.UI.RussianRoulette import RussianRoulette as RRView
 
 class RR:
     def __init__(self, ctx:discord.Interaction, bet:int, acm:List[int]) -> None:
+        self.EMBED_COLOR = 0xe44c22
+
         self.ctx = ctx
         self.bet = bet
         self.acm = acm
@@ -28,29 +30,29 @@ class RR:
         self.shotURLs = ["https://media1.tenor.com/m/PDXJWOZHIPIAAAAC/kim-pine-shoot.gif", "https://media1.tenor.com/m/7XCpJLcagyQAAAAC/joker-finger-gun.gif", "https://media1.tenor.com/m/bEkEbaP_67AAAAAC/shoot-me-kill.gif"]
         self.survivedURLs = ["https://media1.tenor.com/m/A_HXcBh96J0AAAAC/denzel-washington-gun.gif"]
         self.cylinder = [True, False, False, False, False, False]
-        self.pEm = discord.Embed(title=f"Waiting For Players... (${self.bet:,} Entry)", description=f"1/6 (${self.bet:,} in Pot)", color=0xe44c22)
+        self.pEm = discord.Embed(title=f"Waiting For Players... (${self.bet:,} Entry)", description=f"1/6 (${self.bet:,} in Pot)", color=self.EMBED_COLOR)
         self.pEm.add_field(name=ctx.user.display_name, value="\u200b", inline=False)
-        self.sEm = discord.Embed(title="Loading Bullet...", description="Only one walks out alive\nReady to Die?", color=0xe44c22)
+        self.sEm = discord.Embed(title="Loading Bullet...", description="Only one walks out alive\nReady to Die?", color=self.EMBED_COLOR)
         self.sEm.set_thumbnail(url="https://media1.tenor.com/m/p38XIgRTGMkAAAAd/gun.gif")
         self.wsEm = discord.Embed(title=f"{self.players[self.curP][0].display_name} suggests to SPLIT the Pot.", description=f"The Pot of ${(self.bet*self.nPlayers):,}")
 
     def bldSpinEm(self, plyr:discord.Member) -> discord.Embed:
-        spEm = discord.Embed(title=f"{plyr.display_name} spins the chamber", description="FATE has NOT changed. Pull the Trigger.", color=0xe44c22)
+        spEm = discord.Embed(title=f"{plyr.display_name} spins the chamber", description="FATE has NOT changed. Pull the Trigger.", color=self.EMBED_COLOR)
         spEm.set_thumbnail(url=random.choice(self.reloadURLs))
         return spEm
     
     def bldKilledEm(self, plyr:discord.Member) -> discord.Embed:
-        spEm = discord.Embed(title=f"{plyr.display_name} dies to the bullet of FATE", description=f"Another Dies. {self.nPlayers-self.dead} Remain.", color=0xe44c22)
+        spEm = discord.Embed(title=f"{plyr.display_name} dies to the bullet of FATE", description=f"Another Dies. {self.nPlayers-self.dead} Remain.", color=self.EMBED_COLOR)
         spEm.set_thumbnail(url=random.choice(self.shotURLs))
         return spEm
     
     def bldSrvdEm(self, plyr:discord.Member) -> discord.Embed:
-        spEm = discord.Embed(title=f"{plyr.display_name}. dodges FATE.", description="Next Time. Fate Will Get You.", color=0xe44c22)
+        spEm = discord.Embed(title=f"{plyr.display_name}. dodges FATE.", description="Next Time. Fate Will Get You.", color=self.EMBED_COLOR)
         spEm.set_thumbnail(url=random.choice(self.survivedURLs))
         return spEm
 
     def bldGameEm(self, plyr:discord.Member) -> discord.Embed:
-        gEm = discord.Embed(title=f"{plyr.display_name}. Your Play", description="Pull? Spin?\nDeath Comes Regardless.", color=0xe44c22)
+        gEm = discord.Embed(title=f"{plyr.display_name}. Your Play", description="Pull? Spin?\nDeath Comes Regardless.", color=self.EMBED_COLOR)
         gEm.set_thumbnail(url=plyr.display_avatar)
         for i in self.players:
             gEm.add_field(name=i[0].display_name, value="\u200b" if i[1] else "In The Depths of Hell", inline=False)
@@ -63,7 +65,7 @@ class RR:
                     wnr = i[0]
                     break
             self.mView.stop()
-            await self.RRTbl.edit(embed=discord.Embed(title=f"{wnr.display_name} FATE has decided that your life is worth keeping. You Win.", description=f"The Pot of ${(self.bet*self.nPlayers):,} is ALL yours", color=0xe44c22), view=None)
+            await self.RRTbl.edit(embed=discord.Embed(title=f"{wnr.display_name} FATE has decided that your life is worth keeping. You Win.", description=f"The Pot of ${(self.bet*self.nPlayers):,} is ALL yours", color=self.EMBED_COLOR), view=None)
             await asyncio.sleep(1)
             await self.cancelGame(False)
             return True
@@ -187,7 +189,7 @@ class RR:
         self.mView.stop()
         mE = (self.bet*self.nPlayers)/(self.nPlayers-self.dead)
         if cncl:
-            await self.RRTbl.edit(embed=discord.Embed(title=f"Game Ended", description=f"The Pot of ${(self.bet*self.nPlayers):,} has been split back. ${mE:,} each", color=0xe44c22), view=None)
+            await self.RRTbl.edit(embed=discord.Embed(title=f"Game Ended", description=f"The Pot of ${(self.bet*self.nPlayers):,} has been split back. ${mE:,} each", color=self.EMBED_COLOR), view=None)
             Gmb.update_many({"_id":{"$in":[i[0].id for i in self.players]}}, {"$inc":{"bal":mE}, "$set":{"playing":False}})
             return
         Gmb.update_many({"_id":{"$in":[i[0].id for i in self.players if i[1]]}}, {"$inc":{"bal":mE, "rrProfits":mE-self.bet, ("rrSplits" if self.splitFlag else "rrWins"):1}, "$set":{"playing":False}})

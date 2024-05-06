@@ -50,6 +50,16 @@ class BlackJackView(discord.ui.View):
         if(self.player.id == interaction.user.id):
             await self.onStand()
 
+    @discord.ui.button(label="REMOVE BETS", style=discord.ButtonStyle.grey, row=2, disabled=True)
+    async def removeAll(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        await interaction.response.defer()
+        if(self.player.id == interaction.user.id):
+            button.disabled = True
+            self.chips = [0, 0, 0, 0]
+            for i in range(4):
+                self.children[7+i].label = None
+            await self.onAdd(-2)
+
     @discord.ui.button(label="DEAL", style=discord.ButtonStyle.blurple, row=2, disabled=False)
     async def dlr(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
@@ -76,6 +86,7 @@ class BlackJackView(discord.ui.View):
         if(self.player.id == interaction.user.id):
             self.chips[0] += 1
             button.label = f"x{self.chips[0]}"
+            self.children[4].disabled = False
             await self.onAdd(25)
     
     @discord.ui.button(emoji="<:50p:1229496904275198104>", style=discord.ButtonStyle.grey, row=1, disabled=False)
@@ -84,6 +95,7 @@ class BlackJackView(discord.ui.View):
         if(self.player.id == interaction.user.id):
             self.chips[1] += 1
             button.label = f"x{self.chips[1]}"
+            self.children[4].disabled = False
             await self.onAdd(50)
 
     @discord.ui.button(emoji="<:100p:1229496944985116673>", style=discord.ButtonStyle.grey, row=1, disabled=False)
@@ -92,6 +104,7 @@ class BlackJackView(discord.ui.View):
         if(self.player.id == interaction.user.id):
             self.chips[2] += 1
             button.label = f"x{self.chips[2]}"
+            self.children[4].disabled = False
             await self.onAdd(100)
 
     @discord.ui.button(emoji="<:500p:1229496985497636945>", style=discord.ButtonStyle.grey, row=1, disabled=False)
@@ -100,6 +113,7 @@ class BlackJackView(discord.ui.View):
         if(self.player.id == interaction.user.id):
             self.chips[3] += 1
             button.label = f"x{self.chips[3]}"
+            self.children[4].disabled = False
             await self.onAdd(500)
 
     @discord.ui.button(label="ALL IN?", style=discord.ButtonStyle.grey, row=1, disabled=False)
@@ -108,6 +122,7 @@ class BlackJackView(discord.ui.View):
         if(self.player.id == interaction.user.id):
             button.disabled = True
             button.label = f"WE IN"
+            self.children[4].disabled = False
             await self.onAdd(-1)
 
     def endDeal(self) -> None:
@@ -115,18 +130,19 @@ class BlackJackView(discord.ui.View):
         self.children[1].disabled = True
         self.children[2].disabled = True
         self.children[3].disabled = True
-        self.children[4].disabled = False
+        self.children[4].disabled = True
         self.children[5].disabled = False
-        self.children[10].disabled = False
-        self.children[10].label = "ALL IN?"
+        self.children[6].disabled = False
+        self.children[11].disabled = False
+        self.children[11].label = "ALL IN?"
         self.chips = [0, 0, 0, 0]
         for i in range(4):
-            self.children[6+i].label = None
+            self.children[7+i].label = None
         self.upChips()
         
     def upChips(self) -> None:
         for i in range(4):
-            self.children[6+i].disabled = not self.log[i]
+            self.children[7+i].disabled = not self.log[i]
 
     def startDeal(self, canDouble, canSplit) -> None:
         self.children[0].disabled = False
@@ -140,9 +156,11 @@ class BlackJackView(discord.ui.View):
         self.children[8].disabled = True
         self.children[9].disabled = True
         self.children[10].disabled = True
+        self.children[11].disabled = True
 
     def enableBase(self) -> None:
         self.children[0].disabled = False
+        self.children[1].disabled = False
         self.children[3].disabled = False
     
     def chipLogUp(self, log) -> None:

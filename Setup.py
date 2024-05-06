@@ -30,7 +30,7 @@ Cogs = ["Cogs.Randomizers", "Cogs.MainEvents", "Cogs.AnimeManga", "Cogs.Economy"
         #  "Cogs.HelpInfo", "Cogs.MongoDB",  "Cogs.Misc",
         "Cogs.Socials", "Cogs.OnlyMods", "Cogs.Nasa", "Cogs.Movies", "Cogs.Images", "Cogs.Google"]
 
-DToken = os.environ["DISCORD_TOKEN_TIA"]
+DToken = os.environ["DISCORD_TOKEN_ZBOT"]
 
 Cls = MongoClient(os.environ["MONGODB_URL"])
 DbM = Cls["CBot"]
@@ -40,7 +40,8 @@ Rdt = DbM["Reddit"]
 GmbOnSetData = {"achieved":[], 
                 "bjProfits":0, "bjWins":0, "bjDraws":0, "bjLosses":0, 
                 "rrProfits":0, "rrWins":0, "rrDeaths":0, "rrSplits":0,
-                "mCollected":0, "mProfits":0, "mExploded":0, "mPlayed":0}
+                "mCollected":0, "mProfits":0, "mExploded":0, "mPlayed":0,
+                "sProfits":0, "sWins":0, "sPlayed":0, "sJackpot":0}
 
 GClient = os.environ["GIPHY_KEY"]
 

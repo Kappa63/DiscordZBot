@@ -401,13 +401,16 @@ class BJ:
         self.shoot = self.DeckCards*self.DECKS_IN_SHOOT
         random.shuffle(self.shoot)
 
-    async def addBet(self, amm) -> None:
-        if amm == -1:
-            amm = self.bal
+    async def addBet(self, amnt) -> None:
+        if amnt == -1:
+            amnt = self.bal
             self.allTrigger = True
-
-        self.bal-=amm
-        self.bet+=amm
+        if amnt == -2:
+            self.bal += self.bet
+            self.bet = 0
+        else:
+            self.bal-=amnt
+            self.bet+=amnt
         self.mView.chipLogUp(self.allowedChips())
         await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title=f"Remaining: ${self.bal:,}", color=self.EMBED_COLOR)], view=self.mView)
 
