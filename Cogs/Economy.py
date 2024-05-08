@@ -4,6 +4,7 @@ from CBot import DClient as CBotDClient
 import discord
 from Setup import Gmb, AchievementList, GmbOnSetData, BadgesList
 from Customs.Functions import SendWait, FormatTime
+from Customs.Navigators import ButtonNavigator as Navigator
 import time
 from Customs.UI.Selector import SelectionView as Selector
 from pymongo.collection import ReturnDocument 
@@ -218,18 +219,32 @@ class Economy(commands.Cog):
     async def achList(self, ctx:discord.Interaction) -> None:
         await ctx.response.defer()
         Dt = Gmb.find_one({"_id":ctx.user.id}, projection={"achieved": True, "_id":False})
-        aEm = discord.Embed(title="Achievements", color=0x4d6c03)
+        mainEm = lambda p: discord.Embed(title=f"Achievements - Page {p}", color=0x4d6c03)
         added = []
+        c = 0
+        pg = 0
+        aEm = []
         for i in Dt["achieved"]:
+            if c%20 == 0:
+                pg += 1
+                aEm.append(mainEm(pg))
             added.append(i[0])
             for j in AchievementList:
                 if i[0] == j["id"]:
-                    aEm.add_field(name=f"{j['title']} - UNLOCKED", value=f"{j['desc']}\nReward: ${j['reward']:,} - {'Claimed' if i[1] else 'Unclaimed'}")
+                    aEm[-1].add_field(name=f"{j['title']} - UNLOCKED", value=f"{j['desc']}\nReward: ${j['reward']:,} - {'Claimed' if i[1] else 'Unclaimed'}")
+                    c+=1
                     break
         for i in AchievementList:
+            if c%20 == 0:
+                pg += 1
+                aEm.append(mainEm(pg))
             if i["id"] in added: continue
-            aEm.add_field(name=f"{i['title']} - LOCKED", value="HIDDEN ACHIEVEMENT" if i["hidden"] else f"{i['desc']}\nReward: ${i['reward']:,}", inline=False)
-        await ctx.followup.send(embed=aEm)
+            aEm[-1].add_field(name=f"{i['title']} - LOCKED", value="HIDDEN ACHIEVEMENT" if i["hidden"] else f"{i['desc']}\nReward: ${i['reward']:,}", inline=False)
+            c+=1
+            
+        await Navigator(ctx, aEm).autoRun()
+        # await ctx.followup.send(embed=aEm)
+        
     
     # @AchievementSlashes.command(name="user", description="Check Your Unlocked Achievements")
     # @app_commands.checks.cooldown(1,2)
