@@ -1,8 +1,29 @@
 from typing import List
-
-class BJAchievements:
+    
+class GeneralAchievements:
     def __init__(self, acq:List[int]) -> None:
         self.achieved = acq
+
+    def allTimeBalance(self, bal:float) -> None:
+        if bal >= 1000000:
+            self.addAchieved(19)
+        if bal >= 1000000000:
+            self.addAchieved(20)
+
+    def inOutProfit(self, prft:float, rnds:int):
+        if rnds == 1 and prft >= 10000:
+            self.addAchieved(29)
+    
+    def addAchieved(self, id:int) -> None:
+        if id not in self.achieved:
+            self.achieved.append(id)
+    
+    def getAchieved(self) -> List[int]:
+        return self.achieved
+    
+class BJAchievements(GeneralAchievements):
+    def __init__(self, acq:List[int]) -> None:
+        super().__init__(acq)
         self.streak = 0
         self.emptyBets = 0
 
@@ -14,77 +35,77 @@ class BJAchievements:
         else:
             self.streak = res
         if self.streak >= 5:
-            if 10 not in self.achieved:
-                self.achieved.append(10)
+            self.addAchieved(10)
         if self.streak <= -5:
-            if 1 not in self.achieved:
-                self.achieved.append(1)
+            self.addAchieved(1)
     
     def onBJ(self, bet:int) -> None:
         if bet >= 2000:
-            if 2 not in self.achieved:
-                self.achieved.append(2)
+            self.addAchieved(2)
 
     def allTimeProfits(self, profit:int) -> None:
         if profit >= 5000:
-            if 3 not in self.achieved:
-                self.achieved.append(3)
+            self.addAchieved(3)
         if profit >= 10000:
-            if 4 not in self.achieved:
-                self.achieved.append(4)
+            self.addAchieved(4)
         if profit >= 50000:
-            if 5 not in self.achieved:
-                self.achieved.append(5)
+            self.addAchieved(5)
 
     def dealsPlayed(self, nDeals:int) -> None:
         if nDeals >= 100:
-            if 9 not in self.achieved:
-                self.achieved.append(9)
+            self.addAchieved(9)
     
-    def allInProfit(self, profit:int) -> None:
+    def allInProfit(self, profit:float) -> None:
         if profit <= -10000:
-            if 13 not in self.achieved:
-                self.achieved.append(13)
+            self.addAchieved(13)
         if profit >= 10000:
-            if 14 not in self.achieved:
-                self.achieved.append(14)
+            self.addAchieved(14)
 
-    def tableProfit(self, profit:int) -> None:
+    def tableProfit(self, profit:float) -> None:
         if profit <= -10000:
-            if 11 not in self.achieved:
-                self.achieved.append(11)
+            self.addAchieved(11)
         if profit >= 5000:
-            if 17 not in self.achieved:
-                self.achieved.append(17)
+            self.addAchieved(17)
         if profit <= -50000:
-            if 24 not in self.achieved:
-                self.achieved.append(24)
-
-    def allTimeBalance(self, bet:int) -> None:
-        if bet >= 1000000:
-            if 19 not in self.achieved:
-                self.achieved.append(19)
-        if bet >= 1000000000:
-            if 20 not in self.achieved:
-                self.achieved.append(20)
+            self.addAchieved(24)
 
     def updateEmptyBet(self) -> None:
         self.emptyBets += 1
         if self.emptyBets >= 10:
-            if 23 not in self.achieved:
-                self.achieved.append(23)
-
-    def addAchieved(self, id:int) -> None:
-        if id not in self.achieved:
-            self.achieved.append(id)
+            self.addAchieved(23)
     
-    def getAchieved(self) -> List[int]:
-        return self.achieved
-    
-class GeneralAchievements:
-     def __init__(self, acq:List[int]) -> None:
-        self.achieved = acq
+    def onCards21(self, nCards:int) -> None:
+        if nCards >= 6:
+            self.addAchieved(15)
 
-class RRAchievements:
-     def __init__(self, acq:List[int]) -> None:
-        self.achieved = acq
+class RRAchievements(GeneralAchievements):
+    def roundDeath(self, pPos:int, rnd:int):
+        if pPos == 0 and rnd == 1:
+            self.addAchieved(6)
+
+    def usrJoin(self, id:int):
+        if id == 443986051371892746:
+            self.addAchieved(18)
+
+    def headPrice(self, bet:float):
+        if bet == 0:
+            self.addAchieved(8)
+
+class SAchievements(GeneralAchievements):
+    def __init__(self, acq:List[int]) -> None:
+        super().__init__(acq)
+        self.foodWins = []
+
+    def onWin(self, type):
+        if type in ["🍒", "🍉", "🍋", "🍫"] and type not in self.foodWins:
+            self.foodWins.append(type)
+        if len(self.foodWins) == 4:
+            self.addAchieved(28)
+
+    def allTimeJackPots(self, jp:int) -> None:
+        if jp >= 5:
+            self.addAchieved(27)
+        
+class MAchievements(GeneralAchievements):
+    def boardFinished(self):
+        self.addAchieved(26)

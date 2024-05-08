@@ -4,6 +4,7 @@ import discord
 from Setup import Gmb, GmbOnSetData
 from pymongo.collection import ReturnDocument 
 from typing import List
+from Customs.AchievementHelper import RRAchievements
 from Customs.UI.RussianRoulette import RussianRoulette as RRView
 
 class RR:
@@ -13,8 +14,7 @@ class RR:
         self.ctx = ctx
         self.bet = bet
         self.acm = acm
-        self.idAcm = [i[0] for i in acm]
-        self.nAcm = []
+        self.acmHelper = RRAchievements([i[0] for i in acm])
         self.splitters = []
         self.mView = RRView(ctx.user, self.onSpin, self.onPull, self.onSplit, self.chSplit, self.onPlayer, self.start, self.onTim, self.cancelGame)
         self.players = [[ctx.user, 1]]
@@ -80,8 +80,7 @@ class RR:
         self.onBullet += 1
         gEnd = False
         if shot:
-            if self.curP == 0 and self.rnd == 1 and 6 not in self.idAcm:
-                self.nAcm.append([6, False])
+            self.acmHelper.roundDeath(self.curP, self.rnd)
             self.dead += 1
             self.onBullet = 0
             self.players[self.curP][1] = 0
@@ -115,8 +114,7 @@ class RR:
         for i in self.players:
             if int.user.id == i[0].id: return
 
-        if int.user.id == 443986051371892746 and 18 not in self.idAcm:
-            self.nAcm.append([18, False])
+        self.acmHelper.usrJoin(int.user.id)
       
         self.players.append([int.user, 1])
         Dt = Gmb.find_one_and_update({"_id":int.user.id, "bal":{"$gte":self.bet}}, {"$set":{"playing":True}, "$inc":{"bal":-self.bet}}, return_document=ReturnDocument.BEFORE)
@@ -137,8 +135,7 @@ class RR:
         
         
     async def start(self) -> None:
-        if self.bet == 0 and 8 not in self.idAcm:
-            self.nAcm.append([8, False])
+        self.acmHelper.headPrice(self.bet)
         random.shuffle(self.cylinder)
         await self.RRTbl.edit(embed=self.sEm, view=self.mView)
         self.mView.loaded()
@@ -194,8 +191,9 @@ class RR:
             return
         Gmb.update_many({"_id":{"$in":[i[0].id for i in self.players if i[1]]}}, {"$inc":{"bal":mE, "rrProfits":mE-self.bet, ("rrSplits" if self.splitFlag else "rrWins"):1}, "$set":{"playing":False}})
         Gmb.update_many({"_id":{"$in":[i[0].id for i in self.players if not i[1]]}}, {"$inc":{"rrProfits":-self.bet, "rrDeaths":1}, "$set":{"playing":False}})
-        if self.nAcm:
-            Gmb.update_one({"_id":self.ctx.user.id}, {"$push": {"achieved": {"$each":self.nAcm}}})
+        nAcm = self.acmHelper.getAchieved()[len(self.acm):]
+        if nAcm:
+            Gmb.update_one({"_id":self.ctx.user.id}, {"$push": {"achieved":{"$each":[[i,False] for i in nAcm]}}})
 
     async def onTim(self) -> None:
         await self.cancelGame(True)

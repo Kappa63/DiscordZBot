@@ -4,6 +4,7 @@ import discord
 from Setup import Gmb
 from typing import List
 from Customs.UI.Mines import MinesView, MinesControls
+from Customs.AchievementHelper import MAchievements
 
 class Mines:
     def __init__(self, ctx:discord.Interaction, bal:int, acm:List[int]) -> None:
@@ -14,6 +15,7 @@ class Mines:
         self.nMines = 1
         self.bal = bal
         self.acm = acm
+        self.acmHelper = MAchievements([i[0] for i in acm])
         
         self.collected = 0
         self.tCollected = 0
@@ -55,6 +57,9 @@ class Mines:
             self.mView.setBtn(pos, False)
             mlt = self.calcMultiplier(self.collected)
             await self.MinesMain.edit(embed=discord.Embed(title=f"Round Bet: ${self.bet}", description=f"Current Multiplier: {mlt}x\nProfit: ${(round(self.bet*mlt, 2)-self.bet):,}", color=self.EMBED_COLOR))
+            if self.collected == 25-self.nMines:
+                self.acmHelper.boardFinished()
+                self.endRnd()
         else:
             self.bombHit = True
             self.mView.setBtn(pos, True)
@@ -132,4 +137,7 @@ class Mines:
             pass
             
         Gmb.update_one({"_id":self.ctx.user.id}, {"$set": {"playing":False}, "$inc":{"bal":self.bal+self.bet, "mProfits":self.prft, "mCollected":self.tCollected, "mExploded":self.bHits, "mPlayed":self.rnds}})
-        
+        self.acmHelper.inOutProfit(self.prft, self.rnds)
+        nAcm = self.acmHelper.getAchieved()[len(self.acm):]
+        if nAcm:
+            Gmb.update_one({"_id":self.ctx.user.id}, {"$push": {"achieved":{"$each":[[i,False] for i in nAcm]}}})

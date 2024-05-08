@@ -2,49 +2,57 @@
     {
         "id": 1,
         "title": "Sugar Daddy",
-        "desc": "Achieved by: TBD",
+        "desc": "Achieved by: Charity Work",
+        "achievementId": 21,
         "badge": "<:sd0:1237806420012044348><:sd1:1237806442543841290><:sd2:1237806462701539468><:sd3:1237806484998586429><:sd4:1237806507005972501><:sd5:1237806529298825316>"
     },
     {
         "id": 2,
         "title": "Hobo",
-        "desc": "Achieved by: TBD",
+        "desc": "Achieved by: Locked in Loser",
+        "achievementId": 13,
         "badge": "<:h0:1237806560323960893><:h1:1237806581081702510><:h2:1237806605060538378><:h3:1237806628355440681>"
     },
     {
         "id": 3,
         "title": "Gambling Addict",
-        "desc": "Achieved by: TBD",
+        "desc": "Achieved by: C..an't Stop... Gamblin..g.",
+        "achievementId": 9,
         "badge": "<:ga0:1237805156758720532><:ga1:1237805179429064727><:ga2:1237805198240514098><:ga3:1237805217228001370><:ga4:1237805233862742158><:ga5:1237805252837904395><:ga6:1237805272106405909>"
     },
     {
         "id": 4,
         "title": "Pro Gambler",
-        "desc": "Achieved by: TBD",
+        "desc": "Achieved by: The First Million.",
+        "achievementId": 19,
         "badge": "<:pg0:1237806769439379547><:pg1:1237806793850224731><:pg2:1237806817011175434><:pg3:1237806835847794759><:pg4:1237806862452264991><:pg5:1237806886779097170>"
     },
     {
         "id": 5,
         "title": "Cold Blood",
-        "desc": "Achieved by: TBD",
+        "desc": "Achieved by: The Roulette Killer",
+        "achievementId": 31,
         "badge": "<:cb0:1237806656579174452><:cb1:1237806676816564366><:cb2:1237806697725165668><:cb3:1237806718520659978><:cb4:1237806741144604766>"
     },
     {
         "id": 6,
         "title": "Bomb Diffuser",
-        "desc": "Achieved by: TBD",
+        "desc": "Achieved by: Mine Sniffer",
+        "achievementId": 26,
         "badge": "<:bd0:1237805958827081818><:bd1:1237805975302574090><:bd2:1237805992452952145><:bd3:1237806010253578291><:bd4:1237806027815260251><:bd5:1237806043850080327><:bd6:1237806061671546890>"
     },
     {
         "id": 7,
         "title": "Slots Master",
-        "desc": "Achieved by: TBD",
+        "desc": "Achieved by: Full Course Meal",
+        "achievementId": 28,
         "badge": "<:sm0:1237814089825259633><:sm1:1237814107097403442><:sm2:1237814129662885938><:sm3:1237814149262610544><:sm4:1237814168405672038><:sm5:1237814188173299803>"
     },
     {
         "id": 8,
         "title": "Card Counter",
-        "desc": "Achieved by: TBD",
+        "desc": "Achieved by: The House Always Loses?",
+        "achievementId": 10,
         "badge": "<:cc0:1237814207819546686><:cc1:1237814224458092564><:cc2:1237814241679904799><:cc3:1237814259690377358><:cc4:1237814276404809738><:cc5:1237814292041175181>"
     }
 ]

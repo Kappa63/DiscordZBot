@@ -5,6 +5,7 @@ import discord
 from Setup import Gmb, AchievementList, GmbOnSetData, BadgesList
 from Customs.Functions import SendWait, FormatTime
 import time
+from Customs.UI.Selector import SelectionView as Selector
 from pymongo.collection import ReturnDocument 
 from typing import Optional
 
@@ -116,7 +117,6 @@ class Economy(commands.Cog):
         if usr.bot: await SendWait(ctx, f"That's a Bot!"); return
         tryF = Gmb.find_one({"_id":usr.id})
         if tryF and tryF["playing"]: await SendWait(ctx, f"User is Playing."); return
-
         if ctx.user.id == 443986051371892746: Dt1 = True
         elif n>0: 
             Dt1 = Gmb.find_one_and_update({"_id":ctx.user.id, "bal":{"$gte":n}, "playing":False}, {"$inc":{"bal":-n}}, projection={"achieved": True})
@@ -124,18 +124,15 @@ class Economy(commands.Cog):
         else: 
             await SendWait(ctx, "Yeah....No.. That Doesn't Work.")
             return
-       
         if Dt1: 
             Dt2 = Gmb.update_one({"_id":usr.id}, {"$inc":{"bal":n}, "$setOnInsert":{"tLoans":0, "lastLoan":0, "debt":0, "lastClm":0, "playing":False, **GmbOnSetData}}, upsert=True)
         else:
             await SendWait(ctx, f"Not Enough to Transfer or In-Game.")
             return
-        
         if not Dt2:
             Gmb.update_one({"_id":ctx.user.id}, {"$inc":{"bal":n}})
             await SendWait(ctx, f"Failed to Transfer.")
             return
-        
         if ctx.user.id != 443986051371892746:
             toAdd = []
             if n>=10000 and 21 not in acm:
@@ -144,9 +141,46 @@ class Economy(commands.Cog):
                 toAdd.append([22, False])
             if toAdd:
                 Gmb.update_one({"_id":ctx.user.id}, {"$push": {"achieved": {"$each":toAdd}}})
-
         await SendWait(ctx, f"Transfer of ${n:,} to {usr.display_name} Successful.")
+
+    @app_commands.command(name="badges", description="View/Select your Badge.")
+    @app_commands.checks.cooldown(1,2)
+    async def bdgList(self, ctx:discord.Interaction) -> None:
+        def mkEmbed(actv) -> discord.Embed:
+            bEm = discord.Embed(title="Badges", color=0xfd7107)
+            for i in BadgesList:
+                for j in Dt["achieved"]:
+                    if j[0] == i["id"]:
+                        bdgId[i["title"]] = i["id"]
+                        bEm.add_field(name=i["badge"]+(" --Active" if i["id"]==actv else ""), value=i["desc"], inline=False)
+                        break
+            return bEm
+
+        async def exTimOt() -> None:
+            await ctx.edit_original_response(view=None)
+
+        async def changeUsrBdge(name) -> None:
+            aBadge = bdgId[name]
+            Gmb.update_one({"_id":ctx.user.id}, {"$set": {"activeBadge": aBadge}})
+            await ctx.edit_original_response(embed=mkEmbed(aBadge))
+
+        await ctx.response.defer()
+        Dt = Gmb.find_one({"_id":ctx.user.id}, projection={"achieved": True, "_id":False, "activeBadge":True})
+        bdgId = {}
+        mEm = mkEmbed(Dt["activeBadge"])
+        if not bdgId: await SendWait("No Active Badge."); return
+        await ctx.edit_original_response(embed=mEm, view=Selector(changeUsrBdge, exTimOt, list(bdgId.keys())))
     
+    @app_commands.command(name="badge-flex", description="Flex your Badge.")
+    @app_commands.checks.cooldown(1,2)
+    async def bdgFlx(self, ctx:discord.Interaction) -> None:
+        await ctx.response.defer()
+        Dt = Gmb.find_one({"_id":ctx.user.id}, projection={"_id":False, "activeBadge":True})
+        if not Dt["activeBadge"]: await SendWait("No Active Badge."); return
+        for i in BadgesList:
+            if i["id"] == Dt["activeBadge"]:
+                await ctx.followup.send(i["badge"])
+                break
 
     TopSlashes = app_commands.Group(name="top",  description="Main Command Group for Economy Top.")
 

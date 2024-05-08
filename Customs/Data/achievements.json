@@ -70,6 +70,34 @@
         "hidden": false
     },
     {
+        "id": 26,
+        "title": "Mine Sniffer",
+        "desc": "Find every diamond in any size Mines board.",
+        "reward": 3000,
+        "hidden": false
+    },
+    {
+        "id": 29,
+        "title": "In N Out",
+        "desc": "Win $10,000 on your first play of any game and leave.",
+        "reward": 10000,
+        "hidden": false
+    },
+    {
+        "id": 28,
+        "title": "Full Course Meal",
+        "desc": "Win all food items from 1 table of Slots.",
+        "reward": 7500,
+        "hidden": false
+    },
+    {
+        "id": 27,
+        "title": "Jackpot Madness",
+        "desc": "Hit the Jackpot 5 times.",
+        "reward": 500000,
+        "hidden": false
+    },
+    {
         "id": 19,
         "title": "The First Million.",
         "desc": "Have a Balance of $1,000,000",
@@ -129,7 +157,7 @@
         "id": 9,
         "title": "C..an't Stop... Gamblin..g.",
         "desc": "Play 100 hands of Blackjack on a single table.",
-        "reward": 2500,
+        "reward": 10000,
         "hidden": true
     },
     {

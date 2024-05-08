@@ -5,6 +5,8 @@ from Setup import Gmb
 import asyncio
 from typing import List
 from Customs.UI.Slots import SlotsView
+from Customs.AchievementHelper import SAchievements
+from pymongo.collection import ReturnDocument 
 
 class Slots:
     def __init__(self, ctx:discord.Interaction, bal:int, acm:List[int]) -> None:
@@ -27,6 +29,7 @@ class Slots:
         self.ctx = ctx
         self.bal = bal
         self.acm = acm
+        self.acmHelper = SAchievements([i[0] for i in acm])
         
         self.jp = 0
         self.wins = 0
@@ -117,6 +120,7 @@ class Slots:
     async def endRnd(self, mlt) -> None:
         self.spins += 1
         if mlt:
+            self.acmHelper.onWin(self.payline[0])
             self.wins += 1
             if self.payline[0] == "7️⃣":
                 self.jp += 1
@@ -171,5 +175,9 @@ class Slots:
         except:
             pass
             
-        Gmb.update_one({"_id":self.ctx.user.id}, {"$set": {"playing":False}, "$inc":{"bal":self.bal+self.bet, "sProfits":self.prft, "sWins":self.wins, "sJackpot":self.jp, "sPlayed":self.spins}})
-        
+        Dt = Gmb.find_one_and_update({"_id":self.ctx.user.id}, {"$set": {"playing":False}, "$inc":{"bal":self.bal+self.bet, "sProfits":self.prft, "sWins":self.wins, "sJackpot":self.jp, "sPlayed":self.spins}}, projection={"sJackpot":True}, return_document=ReturnDocument.AFTER)
+        self.acmHelper.inOutProfit(self.prft, self.spins)
+        self.acmHelper.allTimeJackPots(Dt["sJackpot"])
+        nAcm = self.acmHelper.getAchieved()[len(self.acm):]
+        if nAcm:
+            Gmb.update_one({"_id":self.ctx.user.id}, {"$push": {"achieved":{"$each":[[i,False] for i in nAcm]}}})

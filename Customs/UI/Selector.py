@@ -7,7 +7,7 @@ class SelectionView(discord.ui.View):
         self.exitFunc = exitFunc
         self.SELECTIONS = [discord.SelectOption(label=i, emoji=j) for i, j in zip(labels, emojis)] if emojis else [discord.SelectOption(label=i) for i in labels]
 
-        self.selector = discord.ui.Select(placeholder="Select Number", options=self.SELECTIONS, max_values=1, row=1)
+        self.selector = discord.ui.Select(placeholder="Select Value", options=self.SELECTIONS, max_values=1, row=1)
         self.selector.callback = self.selectorCall
         super().__init__(timeout=30)
         self.add_item(self.selector)

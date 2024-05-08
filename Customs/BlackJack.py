@@ -168,31 +168,17 @@ class BJ:
             await self.plyrBust()
             return False
         elif (pV[0] == 21 or pV[1] == 21):
-            if len(self.Player[self.curHand]) >= 6:
-                self.acmHelper.addAchieved(15)
+            self.acmHelper.onCards21(len(self.Player[self.curHand]))
             await self.plyrStnd()
             return False
         return True
-
+    
     async def plyrStnd(self) -> None:
         self.handRes.append(-1)
         if await self.plyrNextHand():
             return
         await self.BJTbl.edit(view=None)
-        await self.dlrRvl()
-        dV = self.cardsValue(self.Dealer)
-        self.DEm.description = f"Total: {str(dV[0])+'/'+str(dV[1]) if (dV[0] != dV[1] and dV[1] <= 21) else dV[0]}"
-        
-        await self.BJTbl.edit(embeds=[self.DEm, self.PEm], attachments=[self.CdFD, self.CdFP])
-
-        while (self.checkDlrHit(dV)):
-            await self.dlrHit()
-            dV = self.cardsValue(self.Dealer)
-            self.DEm.description = f"Total: {str(dV[0])+'/'+str(dV[1]) if (dV[0] != dV[1] and dV[1] <= 21) else dV[0]}"
-            await self.BJTbl.edit(embeds=[self.DEm, self.PEm], attachments=[self.CdFD, self.CdFP])
-        else:
-            if (dV[0] > 21): await self.dlrBust()
-            else: await self.onEnd()
+        await self.dlrPlay()
 
     async def plyrDouble(self) -> None:
         handBet = self.bet/len(self.Player)
@@ -249,12 +235,15 @@ class BJ:
         if await self.plyrNextHand():
             return
         await self.BJTbl.edit(view=None)
-        await self.dlrRvl()
-        dV = self.cardsValue(self.Dealer)
-        self.DEm.description = f"Total: {str(dV[0])+'/'+str(dV[1]) if (dV[0] != dV[1] and dV[1] <= 21) else dV[0]}"
-        await self.BJTbl.edit(embeds=[self.DEm, self.PEm], attachments=[self.CdFD, self.CdFP])
-        await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title=self.resText(), description=f"Current Balance: ${self.bal:,}", color=self.EMBED_COLOR)])
-        await self.clsDeal()
+        if self.handRes[0]:
+            await self.dlrPlay()
+        else:
+            await self.dlrRvl()
+            dV = self.cardsValue(self.Dealer)
+            self.DEm.description = f"Total: {str(dV[0])+'/'+str(dV[1]) if (dV[0] != dV[1] and dV[1] <= 21) else dV[0]}"
+            await self.BJTbl.edit(embeds=[self.DEm, self.PEm], attachments=[self.CdFD, self.CdFP])
+            await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title=self.resText(), description=f"Current Balance: ${self.bal:,}", color=self.EMBED_COLOR)])
+            await self.clsDeal()
 
     async def plyrNextHand(self) -> None:
         if self.curHand == len(self.Player)-1:
@@ -283,6 +272,22 @@ class BJ:
         if pV[1] == 21:
             await self.onBJ(1)
         return True
+    
+    async def dlrPlay(self) -> None:
+        await self.dlrRvl()
+        dV = self.cardsValue(self.Dealer)
+        self.DEm.description = f"Total: {str(dV[0])+'/'+str(dV[1]) if (dV[0] != dV[1] and dV[1] <= 21) else dV[0]}"
+        
+        await self.BJTbl.edit(embeds=[self.DEm, self.PEm], attachments=[self.CdFD, self.CdFP])
+
+        while (self.checkDlrHit(dV)):
+            await self.dlrHit()
+            dV = self.cardsValue(self.Dealer)
+            self.DEm.description = f"Total: {str(dV[0])+'/'+str(dV[1]) if (dV[0] != dV[1] and dV[1] <= 21) else dV[0]}"
+            await self.BJTbl.edit(embeds=[self.DEm, self.PEm], attachments=[self.CdFD, self.CdFP])
+        else:
+            if (dV[0] > 21): await self.dlrBust()
+            else: await self.onEnd()
 
     def checkDlrHit(self, val) -> bool:
         return not ((val[1] >= 17 and val[1] <= 21) or (val[0] >= 17))
@@ -349,7 +354,6 @@ class BJ:
                 else:
                     self.handRes[k] = 4
                     self.onDraw()
-
         await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title=self.resText(), description=f"Current Balance: ${self.bal:,}", color=self.EMBED_COLOR)])
         await self.clsDeal()  
 
@@ -479,6 +483,7 @@ class BJ:
         self.acmHelper.tableProfit(self.prft)
         self.acmHelper.allTimeProfits(Dt["bjProfits"])
         self.acmHelper.allTimeBalance(Dt["bal"])
+        self.acmHelper.inOutProfit(self.prft, sum(self.TbData))
         nAcm = self.acmHelper.getAchieved()[len(self.acm):]
         if nAcm:
             Gmb.update_one({"_id":self.ctx.user.id}, {"$push": {"achieved":{"$each":[[i,False] for i in nAcm]}}})
