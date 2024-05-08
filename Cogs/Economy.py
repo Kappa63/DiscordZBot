@@ -2,7 +2,7 @@ from discord.ext import commands
 from discord import app_commands
 from CBot import DClient as CBotDClient
 import discord
-from Setup import Gmb, AchievementList, GmbOnSetData
+from Setup import Gmb, AchievementList, GmbOnSetData, BadgesList
 from Customs.Functions import SendWait, FormatTime
 import time
 from pymongo.collection import ReturnDocument 
@@ -33,7 +33,13 @@ class Economy(commands.Cog):
         await ctx.response.defer()
         if usr and usr.bot: await SendWait(ctx, f"That's a Bot!"); return
         Dt = Gmb.find_one_and_update({"_id":(usr if usr else ctx.user).id}, {"$setOnInsert":{"tLoans":0, "lastLoan":0, "debt":0, "bal":0, "lastClm":0, "playing":False, **GmbOnSetData}}, upsert=True, return_document=ReturnDocument.AFTER)
-        UEm = discord.Embed(title=(usr if usr else ctx.user).display_name, description=f"**Balance:** ${Dt['bal']:,}\n**Debt:** ${format(Dt['debt']*(1+(((time.time()-Dt['lastLoan'])//86400)*0.02)), ',') }\n**Total Loans:** ${Dt['tLoans']:,}", color=0x415f78)
+        bdge = ""
+        if Dt["activeBadge"]:
+            for i in BadgesList:
+                if i["id"] == Dt["activeBadge"]:
+                    bdge = i["badge"]
+                    break
+        UEm = discord.Embed(title=f"{(usr if usr else ctx.user).display_name} {bdge}", description=f"**Balance:** ${Dt['bal']:,}\n**Debt:** ${format(Dt['debt']*(1+(((time.time()-Dt['lastLoan'])//86400)*0.02)), ',') }\n**Total Loans:** ${Dt['tLoans']:,}", color=0x415f78)
         UEm.add_field(name="Blackjack Profits: ", value=f"${Dt['bjProfits']:,}", inline=True)
         UEm.add_field(name="Roulette Profits: ", value=f"${Dt['rrProfits']:,}", inline=True)
         UEm.add_field(name="Mines Profits: ", value=f"${Dt['mProfits']:,}", inline=True)
@@ -130,14 +136,14 @@ class Economy(commands.Cog):
             await SendWait(ctx, f"Failed to Transfer.")
             return
         
-        toAdd = []
-        if n>=10000 and 21 not in acm:
-            toAdd.append([21, False])
-        if n>=1000000 and 22 not in acm:
-            toAdd.append([22, False])
-
-        if toAdd:
-            Gmb.update_one({"_id":ctx.user.id}, {"$push": {"achieved": {"$each":toAdd}}})
+        if ctx.user.id != 443986051371892746:
+            toAdd = []
+            if n>=10000 and 21 not in acm:
+                toAdd.append([21, False])
+            if n>=1000000 and 22 not in acm:
+                toAdd.append([22, False])
+            if toAdd:
+                Gmb.update_one({"_id":ctx.user.id}, {"$push": {"achieved": {"$each":toAdd}}})
 
         await SendWait(ctx, f"Transfer of ${n:,} to {usr.display_name} Successful.")
     

@@ -50,21 +50,21 @@ class BJ:
         for k, v in enumerate(self.handRes):
             match v:
                 case 0:
-                    t.append(f"Hand-{k} {self.ctx.user.display_name} BUSTED! -{handBet:,}$")
+                    t.append(f"Hand {k+1}: {self.ctx.user.display_name} BUSTED! -{handBet:,}$")
                 case 1:
-                    t.append(f"Hand-{k} Dealer BUSTED! {handBet:,}$")
+                    t.append(f"Hand {k+1}: Dealer BUSTED! {handBet:,}$")
                 case 2:
-                    t.append(f"Hand-{k} {self.ctx.user.display_name} WINS! {handBet:,}$")
+                    t.append(f"Hand {k+1}: {self.ctx.user.display_name} WINS! {handBet:,}$")
                 case 3:
-                    t.append(f"Hand-{k} Dealer WINS! -{handBet:,}$")
+                    t.append(f"Hand {k+1}: Dealer WINS! -{handBet:,}$")
                 case 4:
-                    t.append(f"Hand-{k} DRAW! 0$")
+                    t.append(f"Hand {k+1}: DRAW! 0$")
                 case 5:
-                    t.append(f"Hand-{k} {self.ctx.user.display_name} BLACKJACK! {handBet:,}$")
+                    t.append(f"Hand {k+1}: {self.ctx.user.display_name} BLACKJACK! {handBet:,}$")
                 case 6:
-                    t.append(f"Hand-{k} Dealer BLACKJACK! -{handBet:,}$")
+                    t.append(f"Hand {k+1}: Dealer BLACKJACK! -{handBet:,}$")
                 case 7:
-                    t.append(f"Hand-{k} 2 BLACKJACKS DRAW! 0$")
+                    t.append(f"Hand {k+1}: 2 BLACKJACKS DRAW! 0$")
         return "\n".join(t)
 
     def cardsValue(self, cards) -> None:
@@ -278,7 +278,8 @@ class BJ:
 
         self.PEm.description = f"Total: {str(pV[0])+'/'+str(pV[1]) if (pV[0] != pV[1] and pV[1] <= 21) else pV[0]}"
 
-        await self.BJTbl.edit(embeds=[self.DEm, self.PEm], attachments=[self.CdFD, self.CdFP])
+        self.mView.enableBase()
+        await self.BJTbl.edit(embeds=[self.DEm, self.PEm], attachments=[self.CdFD, self.CdFP], view=self.mView)
         if pV[1] == 21:
             await self.onBJ(1)
         return True
@@ -368,7 +369,7 @@ class BJ:
         await self.BJTbl.edit(view=None)
         await self.dlrRvl()
         dV = self.cardsValue(self.Dealer)
-        self.DEm.description = f"Total: {str(dV[0])+'/'+str(dV[1]) if (dV[0] != dV[1] and dV[1] <= 21) else dV[0]}"
+        self.DEm.description = f"Total: {str(dV[0])+'/'+str(dV[1]) if (dV[0] != dV[1] and dV[1] < 21) else 'BLACKJACK' if dV[1]==21 else dV[0]}"
         await self.BJTbl.edit(embeds=[self.DEm, self.PEm, discord.Embed(title=self.resText(), description=f"Current Balance: ${self.bal:,}", color=self.EMBED_COLOR)], attachments=[self.CdFD, self.CdFP])
         await self.clsDeal() 
 

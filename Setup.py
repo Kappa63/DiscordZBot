@@ -37,7 +37,7 @@ DbM = Cls["CBot"]
 Gmb = DbM["Gamble"]
 Rdt = DbM["Reddit"]
 
-GmbOnSetData = {"achieved":[], 
+GmbOnSetData = {"achieved":[], "activeBadge":None, "badges":[],
                 "bjProfits":0, "bjWins":0, "bjDraws":0, "bjLosses":0, 
                 "rrProfits":0, "rrWins":0, "rrDeaths":0, "rrSplits":0,
                 "mCollected":0, "mProfits":0, "mExploded":0, "mPlayed":0,
@@ -88,6 +88,9 @@ OClient = OssapiV1(os.environ["OSU_KEY"])
 
 with open("./Customs/Data/achievements.json") as af:
         AchievementList = json.load(af)
+
+with open("./Customs/Data/badges.json") as bf:
+        BadgesList = json.load(bf)
 
 # PatreonTiers = {
 #     783250729686532126: "Tier 1 Casual",
