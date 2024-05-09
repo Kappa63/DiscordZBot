@@ -151,7 +151,8 @@ class Economy(commands.Cog):
             bEm = discord.Embed(title="Badges", color=0xfd7107)
             for i in BadgesList:
                 for j in Dt["achieved"]:
-                    if j[0] == i["id"]:
+                    if j[0] == i["achievementId"]:
+                        print(j, i)
                         bdgId[i["title"]] = i["id"]
                         bEm.add_field(name=i["badge"]+(" --Active" if i["id"]==actv else ""), value=i["desc"], inline=False)
                         break
@@ -167,9 +168,10 @@ class Economy(commands.Cog):
 
         await ctx.response.defer()
         Dt = Gmb.find_one({"_id":ctx.user.id}, projection={"achieved": True, "_id":False, "activeBadge":True})
+        print(Dt)
         bdgId = {}
         mEm = mkEmbed(Dt["activeBadge"])
-        if not bdgId: await SendWait("No Active Badge."); return
+        if not bdgId: await SendWait(ctx, "No Badges."); return
         await ctx.edit_original_response(embed=mEm, view=Selector(changeUsrBdge, exTimOt, list(bdgId.keys())))
     
     @app_commands.command(name="badge-flex", description="Flex your Badge.")
@@ -177,7 +179,7 @@ class Economy(commands.Cog):
     async def bdgFlx(self, ctx:discord.Interaction) -> None:
         await ctx.response.defer()
         Dt = Gmb.find_one({"_id":ctx.user.id}, projection={"_id":False, "activeBadge":True})
-        if not Dt["activeBadge"]: await SendWait("No Active Badge."); return
+        if not Dt["activeBadge"]: await SendWait(ctx, "No Active Badge."); return
         for i in BadgesList:
             if i["id"] == Dt["activeBadge"]:
                 await ctx.followup.send(i["badge"])

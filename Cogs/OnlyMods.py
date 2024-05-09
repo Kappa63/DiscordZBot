@@ -3,7 +3,6 @@ from discord import app_commands
 from discord.ext import commands
 from Customs.Functions import ChDev, RefreshMAL
 from Setup import Gmb
-from Customs.Mines import Mines
 from CBot import DClient as CBotDClient
 
 class OnlyMods(commands.Cog):
@@ -34,6 +33,12 @@ class OnlyMods(commands.Cog):
     async def ecoBalSetter(self, ctx:commands.Context, n:int, id:int=None) -> None:
         Dt = Gmb.update_one({"_id":id if id else ctx.author.id}, {"$set": {"bal":n}})
         await ctx.send(embed=discord.Embed(title=f"{'User' if id else 'Your'} Balance is ${n}" if Dt.modified_count else "Failed to Set"))
+
+    @commands.command(name="achset")
+    @commands.check(ChDev)
+    async def ecoAchSetter(self, ctx:commands.Context, n:int, s:bool, id:int=None) -> None:
+        Dt = Gmb.update_one({"_id":id if id else ctx.author.id}, {"$push": {"achieved":[n, s]}})
+        await ctx.send(embed=discord.Embed(title=f"Achievement ID {n} Added to {'User' if id else 'You'}" if Dt.modified_count else "Failed to Add"))
 
     @app_commands.command(name="embed", description="Creates an embed")
     @app_commands.rename(t="title")
