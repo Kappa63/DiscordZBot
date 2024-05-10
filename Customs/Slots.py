@@ -37,6 +37,7 @@ class Slots:
 
         self.bet = 0
         self.payline = []
+        self.otherLines = []
         self.prft = 0
 
         self.window = [["⬛"]*self.WINDOW_SIZE for _ in range(self.NUMBER_OF_REELS)]
@@ -124,6 +125,13 @@ class Slots:
             self.wins += 1
             if self.payline[0] == "7️⃣":
                 self.jp += 1
+        else:
+            self.acmHelper.onSandwiched(self.otherLines, self.NUMBER_OF_REELS)
+        # else:
+        #     for i in range(self.WINDOW_SIZE):
+        #         if i == self.PAYLINE_POS: continue
+        #         for j in self.NUMBER_OF_REELS:
+        #             self.window[j][i]
         toPrft = round(self.bet*mlt, 2)
         self.bal += toPrft
         self.prft += toPrft-self.bet
@@ -140,6 +148,7 @@ class Slots:
         self.mView.chipLogUp(self.allowedChips())
         self.bet = 0
         self.payline = []
+        self.otherLines = []
         await self.rdyNRnd()
 
     async def onStart(self) -> None:
@@ -156,6 +165,8 @@ class Slots:
                 self.window[i][j] = curReelPos[j]
                 if j == self.PAYLINE_POS:
                     self.payline.append(self.window[i][j])
+                else:
+                    self.otherLines.append(self.window[i][j])
             mult = self.calcMultiplier2([self.getWeight(k, self.payline[0]) for k in range(i+1)]) if len(set(self.payline)) == 1 else 0
             self.mEm.title = f"Current Multiplier: {mult}x"
             self.mEm.description = self.createWinEm()

@@ -147,6 +147,13 @@
         "hidden": true
     },
     {
+        "id": 30,
+        "title": "Sandwiched Loss",
+        "desc": "Lose a spin of Slots while sandwiched between to wins.",
+        "reward": 7500,
+        "hidden": true
+    },
+    {
         "id": 8,
         "title": "Worthless.",
         "desc": "Start a Roulette game where the bet is 0.",

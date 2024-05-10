@@ -14,13 +14,6 @@
         "hidden": true
     },
     {
-        "id": 30,
-        "title": "Sandwiched Loss",
-        "desc": "Lose a spin of Slots while sandwiched between to wins.",
-        "reward": 10000,
-        "hidden": true
-    },
-    {
         "id": 31,
         "title": "The Roulette Killer",
         "desc": "Win 20 times in Roulette.",

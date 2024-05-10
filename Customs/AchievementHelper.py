@@ -1,4 +1,5 @@
 from typing import List
+import numpy as np
     
 class GeneralAchievements:
     def __init__(self, acq:List[int]) -> None:
@@ -105,6 +106,15 @@ class SAchievements(GeneralAchievements):
     def allTimeJackPots(self, jp:int) -> None:
         if jp >= 5:
             self.addAchieved(27)
+
+    def onSandwiched(self, slotsRows, totalReels) -> None:
+        sndwch = True
+        for i in np.array_split(slotsRows, totalReels-1):
+            if len(set(i)) != 1:
+                sndwch = False
+                break
+        if sndwch:
+            self.addAchieved()
         
 class MAchievements(GeneralAchievements):
     def boardFinished(self):
