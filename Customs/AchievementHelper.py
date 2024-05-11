@@ -67,6 +67,8 @@ class BJAchievements(GeneralAchievements):
             self.addAchieved(11)
         if profit >= 5000:
             self.addAchieved(17)
+        if profit >= 50000:
+            self.addAchieved(32)
         if profit <= -50000:
             self.addAchieved(24)
 

@@ -28,6 +28,13 @@
         "hidden": false
     },
     {
+        "id": 32,
+        "title": "Card Counter",
+        "desc": "Win $50,000 on a single table of Blackjack.",
+        "reward": 10000,
+        "hidden": false
+    },
+    {
         "id": 4,
         "title": "Getting Rich.",
         "desc": "Profit $10,000 from Blackjack",
@@ -149,7 +156,7 @@
     {
         "id": 30,
         "title": "Sandwiched Loss",
-        "desc": "Lose a spin of Slots while sandwiched between to wins.",
+        "desc": "Lose a spin of Slots while sandwiched between two \"wins\".",
         "reward": 7500,
         "hidden": true
     },

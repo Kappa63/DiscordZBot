@@ -6,7 +6,7 @@ import gc
 from Customs.UI.Navigation import NavigationView, NavigationWithSelectorView
 
 class Navigator:
-    def __init__(self, ctx:discord.Interaction, Items:discord.Embed, Type:str="#", EmbedAndContent:bool=False, ContItems:str=None, Main:bool=False, MainBed:discord.Embed=None) -> None:
+    def __init__(self, ctx:discord.Interaction, Items:discord.Embed, Type:str="#", EmbedAndContent:bool=False, ContItems:str=None, Main:bool=False, MainBed:discord.Embed=None, clrOnly:bool=False) -> None:
         self.ctx = ctx
         self.Items = Items
         self.Type = Type
@@ -14,6 +14,7 @@ class Navigator:
         self.ContItems = ContItems
         self.Main = Main
         self.MainBed = MainBed
+        self.clrOnly = clrOnly
 
     async def previous(self, num:int) -> None:
         if self.ItemNum >= num:
@@ -112,7 +113,7 @@ class ReactionNavigator(Navigator):
 class ButtonNavigator(Navigator):
     async def setup(self) -> None:
         self.ItemNum = 0
-        self.Nav = await self.ctx.followup.send(embed=((self.Items[self.ItemNum]) if not self.Main else self.MainBed), view=NavigationView(self.previous, self.next, self.exitNavigation))
+        self.Nav = await self.ctx.followup.send(embed=((self.Items[self.ItemNum]) if not self.Main else self.MainBed), view=NavigationView(self.previous, self.next, self.exitNavigation, self.ctx.user if self.clrOnly else None))
         if self.EmbedAndContent: self.Cont = await self.ctx.followup.send(content=self.ContItems[self.ItemNum])
         self.TotalItems = len(self.Items)
 
@@ -123,17 +124,17 @@ class ButtonNavigator(Navigator):
         await self.setup()
 
 class SortableButtonNavigator(Navigator):
-    def __init__(self, onSlct, lbls, emjis, ctx:discord.Interaction, Type:str="#", EmbedAndContent:bool=False, ContItems:str=None, Main:bool=False, MainBed:discord.Embed=None) -> None:
+    def __init__(self, onSlct, lbls, emjis, ctx:discord.Interaction, Type:str="#", EmbedAndContent:bool=False, ContItems:str=None, Main:bool=False, MainBed:discord.Embed=None, clrOnly:bool=False) -> None:
         self.onSlct = onSlct
         self.Cache = {}
         self.lbls = lbls
         self.emjis = emjis
-        super().__init__(ctx, [], Type, EmbedAndContent, ContItems, Main, MainBed)
+        super().__init__(ctx, [], Type, EmbedAndContent, ContItems, Main, MainBed, clrOnly)
 
     async def setup(self) -> None:
         self.ItemNum = 0
         self.Nav = await self.ctx.followup.send(embed=discord.Embed(title="Select Sorting..."), 
-                                                view=NavigationWithSelectorView(self.previous, self.next, self.exitNavigation, self.slctUpdt, True, self.lbls, self.emjis))
+                                                view=NavigationWithSelectorView(self.previous, self.next, self.exitNavigation, self.slctUpdt, True, self.lbls, self.emjis, self.ctx.user if self.clrOnly else None))
         if self.EmbedAndContent: self.Cont = await self.ctx.followup.send(content=self.ContItems[self.ItemNum])
         self.TotalItems = len(self.Items)
 

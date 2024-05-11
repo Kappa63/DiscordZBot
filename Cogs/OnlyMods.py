@@ -28,13 +28,13 @@ class OnlyMods(commands.Cog):
         except Exception as e:
             print(e)
 
-    @commands.command(name="ecoset")
+    @commands.command(name="balset")
     @commands.check(ChDev)
-    async def ecoBalSetter(self, ctx:commands.Context, n:int, id:int=None) -> None:
+    async def ecoBalSetter(self, ctx:commands.Context, n:float, id:int=None) -> None:
         Dt = Gmb.update_one({"_id":id if id else ctx.author.id}, {"$set": {"bal":n}})
         await ctx.send(embed=discord.Embed(title=f"{'User' if id else 'Your'} Balance is ${n}" if Dt.modified_count else "Failed to Set"))
 
-    @commands.command(name="achset")
+    @commands.command(name="achpush")
     @commands.check(ChDev)
     async def ecoAchSetter(self, ctx:commands.Context, n:int, s:bool, id:int=None) -> None:
         Dt = Gmb.update_one({"_id":id if id else ctx.author.id}, {"$push": {"achieved":[n, s]}})

@@ -244,7 +244,7 @@ class Economy(commands.Cog):
             aEm[-1].add_field(name=f"{i['title']} - LOCKED", value="HIDDEN ACHIEVEMENT" if i["hidden"] else f"{i['desc']}\nReward: ${i['reward']:,}", inline=False)
             c+=1
             
-        await Navigator(ctx, aEm).autoRun()
+        await Navigator(ctx, aEm, clrOnly=True).autoRun()
         # await ctx.followup.send(embed=aEm)
         
     

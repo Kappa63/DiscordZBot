@@ -3,45 +3,51 @@ from typing import Optional, List
 from Customs.UI.Selector import SelectionView
 
 class NavigationView(discord.ui.View):
-    def __init__(self, prevFunc, nextFunc, exitFunc) -> None:
+    def __init__(self, prevFunc, nextFunc, exitFunc, clrOnly:discord.Member = None) -> None:
         self.prevFunc = prevFunc
         self.nextFunc = nextFunc
         self.exitFunc = exitFunc
+        self.clrOnly = clrOnly
         super().__init__(timeout=30)
 
     @discord.ui.button(label="<<", style=discord.ButtonStyle.primary, row=1)
     async def FarPrevPage(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
-        await self.prevFunc(10)
+        if self.clrOnly and self.clrOnly.id == interaction.user.id:
+            await self.prevFunc(10)
 
     @discord.ui.button(label="<", style=discord.ButtonStyle.primary, row=1)
     async def PrevPage(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
-        await self.prevFunc(1)
+        if self.clrOnly and self.clrOnly.id == interaction.user.id:
+            await self.prevFunc(1)
 
     @discord.ui.button(label="x", style=discord.ButtonStyle.danger, row=1)
     async def ExitNav(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
         self.stop()
-        await self.exitFunc()
+        if self.clrOnly and self.clrOnly.id == interaction.user.id:
+            await self.exitFunc()
 
 
     @discord.ui.button(label=">", style=discord.ButtonStyle.primary, row=1)
     async def NextPage(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
-        await self.nextFunc(1)
+        if self.clrOnly and self.clrOnly.id == interaction.user.id:
+            await self.nextFunc(1)
 
     @discord.ui.button(label=">>", style=discord.ButtonStyle.primary, row=1)
     async def FarNextPage(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.defer()
-        await self.nextFunc(10)
+        if self.clrOnly and self.clrOnly.id == interaction.user.id:
+            await self.nextFunc(10)
 
     async def on_timeout(self) -> None:
         self.stop()
         await self.exitFunc()
 
 class NavigationWithSelectorView(NavigationView):
-    def __init__(self, prevFunc, nextFunc, exitFunc, selectFunc, navSt, labels:List[str], emojis:Optional[List[discord.Emoji]]) -> None:
+    def __init__(self, prevFunc, nextFunc, exitFunc, selectFunc, navSt, labels:List[str], emojis:Optional[List[discord.Emoji]], clrOnly:discord.Member = None) -> None:
         self.selectFunc = selectFunc
         if emojis:
             self.lblEmoji = {k:v for k, v in zip(labels, emojis)}
@@ -51,7 +57,7 @@ class NavigationWithSelectorView(NavigationView):
         self.selector = discord.ui.Select(placeholder="Select Sorting", options=self.SELECTIONS, max_values=1, row=0)
         self.selector.callback = self.selectorCall
         self.initlz = False
-        super().__init__(prevFunc, nextFunc, exitFunc)
+        super().__init__(prevFunc, nextFunc, exitFunc, clrOnly)
         self.add_item(self.selector)
         self.navState(navSt)
 
@@ -61,11 +67,12 @@ class NavigationWithSelectorView(NavigationView):
 
     async def selectorCall(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer()
-        self.selector.placeholder = f'{self.lblEmoji[self.selector.values[0]]} {self.selector.values[0]}'
-        await interaction.edit_original_response(view=self)
-        await self.selectFunc(self.selector.values[0])
-        if(not self.initlz):
-            self.initlz = True
-            self.navState(False)
+        if self.clrOnly and self.clrOnly.id == interaction.user.id:
+            self.selector.placeholder = f'{self.lblEmoji[self.selector.values[0]]} {self.selector.values[0]}'
             await interaction.edit_original_response(view=self)
+            await self.selectFunc(self.selector.values[0])
+            if(not self.initlz):
+                self.initlz = True
+                self.navState(False)
+                await interaction.edit_original_response(view=self)
             
