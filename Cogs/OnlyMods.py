@@ -4,6 +4,7 @@ from discord.ext import commands
 from Customs.Functions import ChDev, RefreshMAL
 from Setup import Gmb
 from CBot import DClient as CBotDClient
+from Customs.UI.Roulette import RouletteView
 
 class OnlyMods(commands.Cog):
     def __init__(self, DClient:CBotDClient) -> None:
@@ -12,12 +13,15 @@ class OnlyMods(commands.Cog):
     @app_commands.command(name="status", description="Revealse the Current Status of ZBot.")
     @app_commands.checks.cooldown(1, 1)
     async def BotStatus(self, ctx:discord.Interaction) -> None:
-        SEm = discord.Embed(title="<:bnr0:1230869635826450462><:bnr1:1230869697893761106><:bnr2:1230869719905603615><:bnr3:1230869735554682910><:bnr4:1230869757146828831>", color=0x000000)
-        SEm.add_field(name="Guilds in: ", value=len(self.DClient.guilds), inline=False)
-        SEm.add_field(name="Latency: ", value=self.DClient.latency * 100, inline=False)
-        SEm.add_field(name="ShardCount: ", value=self.DClient.shard_count, inline=False)
-        SEm.add_field(name="Loaded Cogs: ", value="\n".join(self.DClient.LoadedCogs), inline=False)
-        await ctx.response.send_message(embed=SEm)
+        # SEm = discord.Embed(title="<:bnr0:1230869635826450462><:bnr1:1230869697893761106><:bnr2:1230869719905603615><:bnr3:1230869735554682910><:bnr4:1230869757146828831>", color=0x000000)
+        # SEm.add_field(name="Guilds in: ", value=len(self.DClient.guilds), inline=False)
+        # SEm.add_field(name="Latency: ", value=self.DClient.latency * 100, inline=False)
+        # SEm.add_field(name="ShardCount: ", value=self.DClient.shard_count, inline=False)
+        # SEm.add_field(name="Loaded Cogs: ", value="\n".join(self.DClient.LoadedCogs), inline=False)
+        # await ctx.response.send_message(embed=SEm)
+        await ctx.response.send_message(view=RouletteView(1, 0, [1, 3, 5, 7, 9, 12], ctx.user, lambda a: a))
+        await ctx.channel.send(view=RouletteView(13, 1, [14, 16, 18, 19, 21, 23], ctx.user, lambda a: a))
+        await ctx.channel.send(view=RouletteView(25, 2, [25, 27, 30, 32, 34, 36], ctx.user, lambda a: a))
 
     @commands.command(name="sync")
     @commands.check(ChDev)
