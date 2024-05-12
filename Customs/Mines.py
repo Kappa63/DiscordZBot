@@ -59,7 +59,7 @@ class Mines:
             await self.MinesMain.edit(embed=discord.Embed(title=f"Round Bet: ${self.bet}", description=f"Current Multiplier: {mlt}x\nProfit: ${(round(self.bet*mlt, 2)-self.bet):,}", color=self.EMBED_COLOR))
             if self.collected == 25-self.nMines:
                 self.acmHelper.boardFinished()
-                self.endRnd()
+                await self.endRnd()
         else:
             self.bombHit = True
             self.mView.setBtn(pos, True)

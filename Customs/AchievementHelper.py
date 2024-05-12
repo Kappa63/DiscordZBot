@@ -116,7 +116,7 @@ class SAchievements(GeneralAchievements):
                 sndwch = False
                 break
         if sndwch:
-            self.addAchieved()
+            self.addAchieved(30)
         
 class MAchievements(GeneralAchievements):
     def boardFinished(self):

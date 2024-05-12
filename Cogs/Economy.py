@@ -172,7 +172,7 @@ class Economy(commands.Cog):
         bdgId = {}
         mEm = mkEmbed(Dt["activeBadge"])
         if not bdgId: await SendWait(ctx, "No Badges."); return
-        await ctx.edit_original_response(embed=mEm, view=Selector(changeUsrBdge, exTimOt, list(bdgId.keys())))
+        await ctx.edit_original_response(embed=mEm, view=Selector(changeUsrBdge, exTimOt, list(bdgId.keys()), clrOnly=ctx.user))
     
     @app_commands.command(name="badge-flex", description="Flex your Badge.")
     @app_commands.checks.cooldown(1,2)

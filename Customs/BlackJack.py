@@ -469,7 +469,8 @@ class BJ:
                 await self.onBJ(2)
 
     async def autoRun(self) -> None:
-        self.BJTbl = await self.ctx.followup.send(embed=discord.Embed(title="Opening Table...", description=f"Current Balance: ${self.bal:,}", color=self.EMBED_COLOR), view=self.mView)
+        await self.ctx.followup.send(embed=discord.Embed(title="Blackjack Table Opened!", color=self.EMBED_COLOR))
+        self.BJTbl = await self.ctx.channel.send(embed=discord.Embed(title="Opening Table...", description=f"Current Balance: ${self.bal:,}", color=self.EMBED_COLOR), view=self.mView)
 
     async def clsTbl(self) -> None:
         try:

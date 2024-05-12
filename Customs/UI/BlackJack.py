@@ -31,7 +31,7 @@ class BlackJackView(discord.ui.View):
             for i in range(4):
                 self.chips[i] += self.chips[i]
                 if self.chips[i]:
-                    self.children[6+i].label = f"x{self.chips[i]}"
+                    self.children[7+i].label = f"x{self.chips[i]}"
             await self.dDown()
             
     @discord.ui.button(label="SPLIT", style=discord.ButtonStyle.blurple, row=0, disabled=True)
